@@ -70,6 +70,14 @@ namespace DandyDoc.Core
 
 		public IEnumerable<MemberRecord> Members { get { return CoreType.GetMembers().Select(ToMemberRecord); } }
 
+		public string Namespace {
+			get { return CoreType.Namespace; }
+		}
+
+		public string[] NamespaceParts{
+			get { return NameUtilities.SplitNamespaceParts(Namespace); }
+		}
+
 		private MemberRecord ToMemberRecord(MemberInfo mi) {
 			return _memberRecordCache.GetOrAdd(mi, x => new MemberRecord(this, x));
 		}
@@ -94,7 +102,7 @@ namespace DandyDoc.Core
 			if (null == targetNode)
 				return null;
 
-			return TextUtilities.ExtractIndentedNormalizedInnerText(targetNode.InnerText);
+			return TextUtilities.ExtractIndentedNormalizedInnerText(targetNode.InnerXml);
 		}
 
 		private XmlNode GetDocNode() {

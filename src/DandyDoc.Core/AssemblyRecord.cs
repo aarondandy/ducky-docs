@@ -19,6 +19,10 @@ namespace DandyDoc.Core
 			Contract.EndContractBlock();
 
 			var assembly = Assembly.ReflectionOnlyLoadFrom(filePath);
+			var assemblyName = assembly.GetName();
+			assembly = AppDomain.CreateDomain("filePath").Load(assemblyName);
+
+			
 			if (null == assembly)
 				return null;
 			return new AssemblyRecord(assembly);

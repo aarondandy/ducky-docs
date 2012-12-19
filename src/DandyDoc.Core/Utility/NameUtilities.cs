@@ -31,5 +31,9 @@ namespace DandyDoc.Core.Utility
 			return name.Substring(dotIndex+1);
 		}
 
+
+		public static string[] SplitNamespaceParts(string namespaceName){
+			return namespaceName.Split('.');
+		}
 	}
 }

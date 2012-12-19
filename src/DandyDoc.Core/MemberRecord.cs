@@ -76,7 +76,7 @@ namespace DandyDoc.Core
 			if (null == targetNode)
 				return null;
 
-			return TextUtilities.ExtractIndentedNormalizedInnerText(targetNode.InnerText);
+			return TextUtilities.ExtractIndentedNormalizedInnerText(targetNode.InnerXml);
 		}
 
 		public IList<SeeAlsoReference> SeeAlso {
