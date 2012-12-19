@@ -5,8 +5,8 @@ namespace DandyDoc.Core
 	public interface IDocumentableEntity
 	{
 
-		string Summary { get; }
-		string Remarks { get; }
+		ParsedXmlDoc Summary { get; }
+		ParsedXmlDoc Remarks { get; }
 		IList<SeeAlsoReference> SeeAlso { get; }
 
 	}

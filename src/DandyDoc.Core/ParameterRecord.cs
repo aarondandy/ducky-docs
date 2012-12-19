@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using System.Reflection;
+using Mono.Cecil;
 
 namespace DandyDoc.Core
 {
 	public class ParameterRecord : IDocumentableEntity
 	{
 
-		internal ParameterRecord(MemberRecord parent, ParameterInfo parameterInfo) {
+		internal ParameterRecord(MemberRecord parent, ParameterDefinition parameterInfo) {
 			if(null == parent) throw new ArgumentNullException("parent");
 			if(null == parameterInfo) throw new ArgumentNullException("parameterInfo");
 			Contract.EndContractBlock();
@@ -15,20 +16,22 @@ namespace DandyDoc.Core
 			ParentEntity = parent;
 		}
 
-		public ParameterInfo CoreParameterInfo { get; private set; }
+		public ParameterDefinition CoreParameterInfo { get; private set; }
 
 		public MemberRecord ParentEntity { get; private set; }
 
-		public string Summary {
-			get { return ParentEntity.GetXmlDocText(String.Format("param[@name=\"{0}\"]",CoreParameterInfo.Name)); }
+		public ParsedXmlDoc Summary {
+			get { return new ParsedXmlDoc(ParentEntity.GetXmlDocText(String.Format("param[@name=\"{0}\"]", CoreParameterInfo.Name)), this); }
 		}
 
-		public string Remarks {
+		public ParsedXmlDoc Remarks {
 			get { return null; }
 		}
 
 		public System.Collections.Generic.IList<SeeAlsoReference> SeeAlso {
 			get { return null; }
 		}
+
+		public string FullTypeName { get { return CoreParameterInfo.ParameterType.FullName; } }
 	}
 }

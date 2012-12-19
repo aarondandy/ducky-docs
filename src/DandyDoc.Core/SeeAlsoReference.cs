@@ -6,15 +6,15 @@ namespace DandyDoc.Core
 	public class SeeAlsoReference
 	{
 
-		public SeeAlsoReference(IDocumentableEntity target, string text) {
+		public SeeAlsoReference(IDocumentableEntity target, ParsedXmlDoc description) {
 			if(null == target) throw new ArgumentNullException("target");
 			Contract.EndContractBlock();
 
 			Target = target;
-			Text = text;
+			Description = description;
 		}
 
-		public string Text { get; private set; }
+		public ParsedXmlDoc Description { get; private set; }
 
 		public IDocumentableEntity Target { get; private set; }
 

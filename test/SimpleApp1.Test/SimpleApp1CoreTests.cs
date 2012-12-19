@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Reflection;
 using DandyDoc.Core;
 using NUnit.Framework;
 
@@ -34,18 +33,18 @@ namespace SimpleApp1.Test
 		[Test]
 		public void check_summary_for_Thing1() {
 			var record = GetThing1();
-			Assert.IsNotNullOrEmpty(record.Summary);
-			Assert.AreEqual("This is just a thing. Here is some garbage: & < .", record.Summary);
+			Assert.IsNotNullOrEmpty(record.Summary.RawText);
+			Assert.AreEqual("This is just a thing. Here is some garbage: &amp; &lt; .", record.Summary.RawText);
 		}
 
 		[Test]
 		public void check_remarks_for_Thing1() {
 			var record = GetThing1();
 			var remarks = record.Remarks;
-			Assert.IsNotNullOrEmpty(remarks);
+			Assert.IsNotNullOrEmpty(remarks.RawText);
 			Assert.AreEqual(
 				"    This\n   is\n  a\n spacing\nsample!",
-				remarks);
+				remarks.RawText);
 		}
 
 		[Test]
@@ -53,7 +52,7 @@ namespace SimpleApp1.Test
 			var record = GetThing1();
 			Assert.IsNotNull(record.SeeAlso);
 			Assert.AreEqual(2, record.SeeAlso.Count);
-			Assert.AreEqual("The other thing.", record.SeeAlso[0].Text);
+			Assert.AreEqual("The other thing.", record.SeeAlso[0].Description.RawText);
 		}
 
 		[Test]
@@ -61,7 +60,7 @@ namespace SimpleApp1.Test
 			var record = GetThing1();
 			var methods = record.Members.Where(x => x.IsMethod).ToList();
 			Assert.Greater(methods.Count, 0);
-			Assert.That(methods.Any(x => !String.IsNullOrWhiteSpace(x.Summary)));
+			Assert.That(methods.Any(x => !String.IsNullOrWhiteSpace(x.Summary.RawText)));
 		}
 
 		[Test]
@@ -70,7 +69,7 @@ namespace SimpleApp1.Test
 			var method = record.Members.First(x => x.IsMethod && x.Name == "DoSomething");
 			var param = method.Parameters.Single();
 			Assert.IsNotNull(param);
-			Assert.IsNotNullOrEmpty(param.Summary);
+			Assert.IsNotNullOrEmpty(param.Summary.RawText);
 		}
 
 	}

@@ -11,33 +11,34 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using DandyDoc.Core.Utility;
+using Mono.Cecil;
 
 namespace DandyDoc.Core
 {
 	public class TypeRecord : IDocumentableEntity
 	{
 
-		private readonly ConcurrentDictionary<MemberInfo, MemberRecord> _memberRecordCache;
+		private readonly ConcurrentDictionary<IMemberDefinition, MemberRecord> _memberRecordCache;
 		private Lazy<XmlNode> _typeDocNode;
 
-		internal TypeRecord(AssemblyRecord parent, Type core) {
+		internal TypeRecord(AssemblyRecord parent, TypeDefinition core) {
 			Contract.Requires(null != parent);
 			Contract.Requires(null != core);
 			CoreType = core;
 			Parent = parent;
 			_typeDocNode = new Lazy<XmlNode>(GetDocNode, LazyThreadSafetyMode.ExecutionAndPublication);
-			_memberRecordCache = new ConcurrentDictionary<MemberInfo, MemberRecord>();
+			_memberRecordCache = new ConcurrentDictionary<IMemberDefinition, MemberRecord>();
 		}
 
-		public Type CoreType { get; private set; }
+		public TypeDefinition CoreType { get; private set; }
 
 		public AssemblyRecord Parent { get; private set; }
 
 		public string Name { get { return CoreType.Name; } }
 
-		public string Summary { get { return GetXmlDocText("summary"); } }
+		public ParsedXmlDoc Summary { get { return new ParsedXmlDoc(GetXmlDocText("summary"),this); } }
 
-		public string Remarks { get { return GetXmlDocText("remarks"); } }
+		public ParsedXmlDoc Remarks { get { return new ParsedXmlDoc(GetXmlDocText("remarks"),this); } }
 
 		public IList<SeeAlsoReference> SeeAlso {
 			get {
@@ -61,14 +62,24 @@ namespace DandyDoc.Core
 						continue;
 					var entity = Parent.ResolveCref(cref);
 					if (null != entity) {
-						results.Add(new SeeAlsoReference(entity, seeAlsoNode.InnerXml));
+						results.Add(new SeeAlsoReference(entity, new ParsedXmlDoc(seeAlsoNode.InnerXml,this)));
 					}
 				}
 				return results;
 			}
 		}
 
-		public IEnumerable<MemberRecord> Members { get { return CoreType.GetMembers().Select(ToMemberRecord); } }
+		public IEnumerable<MemberRecord> Members{
+			get{
+				//return CoreType.GetMembers().Select(ToMemberRecord);
+				var memberDefinitions = CoreType.Methods.Cast<IMemberDefinition>()
+					.Concat(CoreType.Properties.Cast<IMemberDefinition>())
+					.Concat(CoreType.Fields.Cast<IMemberDefinition>());
+				return memberDefinitions.Select(ToMemberRecord);
+			}
+		}
+
+		public bool IsPublic { get { return CoreType.IsPublic; } }
 
 		public string Namespace {
 			get { return CoreType.Namespace; }
@@ -78,8 +89,12 @@ namespace DandyDoc.Core
 			get { return NameUtilities.SplitNamespaceParts(Namespace); }
 		}
 
-		private MemberRecord ToMemberRecord(MemberInfo mi) {
+		/*private MemberRecord ToMemberRecord(MemberInfo mi) {
 			return _memberRecordCache.GetOrAdd(mi, x => new MemberRecord(this, x));
+		}*/
+
+		private MemberRecord ToMemberRecord(IMemberDefinition md){
+			return _memberRecordCache.GetOrAdd(md, x => new MemberRecord(this, md));
 		}
 
 		public MemberRecord ResolveCrefAsMember(string cref) {

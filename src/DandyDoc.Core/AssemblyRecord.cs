@@ -8,85 +8,75 @@ using System.Reflection;
 using System.Threading;
 using System.Xml;
 using DandyDoc.Core.Utility;
+using Mono.Cecil;
 
 namespace DandyDoc.Core
 {
-	public class AssemblyRecord
+	public class AssemblyRecord : IDocumentableEntity
 	{
 
-		public static AssemblyRecord CreateFromFilePath(string filePath) {
+		public static AssemblyRecord CreateFromFilePath(string filePath, AssemblyGroup parentGroup = null) {
 			if(String.IsNullOrEmpty(filePath)) throw new ArgumentException("Invalid file path.","filePath");
 			Contract.EndContractBlock();
 
-			var assembly = Assembly.ReflectionOnlyLoadFrom(filePath);
-			var assemblyName = assembly.GetName();
-			assembly = AppDomain.CreateDomain("filePath").Load(assemblyName);
+			var fileInfo = new FileInfo(filePath);
 
-			
-			if (null == assembly)
-				return null;
-			return new AssemblyRecord(assembly);
+			if(!fileInfo.Exists)
+				throw new FileNotFoundException("The given file was not found.",filePath);
+
+
+			var assemblyDefinition = AssemblyDefinition.ReadAssembly(fileInfo.FullName);
+			return new AssemblyRecord(assemblyDefinition, fileInfo, parentGroup);
 		}
 
-		public static IList<FileInfo> PossibleAssemblyLocations(Assembly assembly) {
-			var results = new List<FileInfo>(2);
-			var codeBase = assembly.CodeBase;
-			if (!String.IsNullOrEmpty(codeBase)) {
-				var localPath = new Uri(codeBase).LocalPath;
-				if (!String.IsNullOrEmpty(localPath) && File.Exists(localPath))
-					results.Add(new FileInfo(localPath));
-			}
+		public static List<FileInfo> PossibleXmlDocLocations(FileInfo assemblyFileLocation) {
+			if(null == assemblyFileLocation) throw new ArgumentNullException("assemblyFileLocation");
+			Contract.EndContractBlock();
 
-			var location = assembly.Location;
-			if (!String.IsNullOrEmpty(location) && File.Exists(location))
-				results.Add(new FileInfo(location));
-
-			return results.Distinct().ToArray();
+			var directory = assemblyFileLocation.Directory;
+			if (null == directory) return null;
+			var searchName = Path.ChangeExtension(assemblyFileLocation.Name, "XML").ToUpperInvariant();
+			var candidates = directory.GetFiles().Where(x => String.Equals(x.Name, searchName, StringComparison.OrdinalIgnoreCase));
+			return candidates.ToList();
 		}
 
-		public static List<FileInfo> PossibleXmlDocLocations(Assembly assembly) {
-			var results = new List<FileInfo>();
-			foreach (var assemblyFileLocation in PossibleAssemblyLocations(assembly)) {
-				var directory = assemblyFileLocation.Directory;
-				if (null == directory) continue;
-
-				var searchName = Path.ChangeExtension(assemblyFileLocation.Name, "XML").ToUpperInvariant();
-				var candidates = directory.GetFiles().Where(x => String.Equals(x.Name, searchName, StringComparison.OrdinalIgnoreCase));
-				results.AddRange(candidates);
-			}
-			return results;
-		}
-
-		private readonly ConcurrentDictionary<TypeInfo, TypeRecord> _typeRecordCache;
+		private readonly ConcurrentDictionary<TypeDefinition, TypeRecord> _typeRecordCache;
 		private readonly Lazy<XmlDocument> _xmlDocument;
 
-		public AssemblyRecord(Assembly coreAssembly, AssemblyGroup parentGroup = null) {
+		public AssemblyRecord(AssemblyDefinition coreAssembly, FileInfo coreAssemblyFilePath, AssemblyGroup parentGroup = null) {
 			if(null == coreAssembly) throw new ArgumentNullException("coreAssembly");
 			Contract.EndContractBlock();
 
-			CoreAssembly = coreAssembly;
-			_typeRecordCache = new ConcurrentDictionary<TypeInfo, TypeRecord>();
+			CoreAssemblyDefinition = coreAssembly;
+			CoreAssemblyFilePath = coreAssemblyFilePath;
+			_typeRecordCache = new ConcurrentDictionary<TypeDefinition, TypeRecord>();
 			_xmlDocument = new Lazy<XmlDocument>(ReadXmlDocumentation, LazyThreadSafetyMode.ExecutionAndPublication);
 			ParentGroup = parentGroup ?? new AssemblyGroup(this);
 		}
 
+		[ContractInvariantMethod]
+		private void CodeContractInvariant() {
+			Contract.Invariant(CoreAssemblyDefinition != null);
+			Contract.Invariant(ParentGroup != null);
+		}
+
 		public AssemblyGroup ParentGroup { get; private set; }
 
-		public Assembly CoreAssembly { get; private set; }
+		public AssemblyDefinition CoreAssemblyDefinition { get; private set; }
 
-		public FileInfo CoreAssemblyFilePath {
-			get { return PossibleAssemblyLocations(CoreAssembly).FirstOrDefault(); }
-		}
+		public FileInfo CoreAssemblyFilePath { get; private set; }
+
+		public string Name { get { return CoreAssemblyDefinition.Name.Name; } }
 
 		public IEnumerable<TypeRecord> TypeRecords {
 			get {
 				Contract.Ensures(Contract.Result<IEnumerable<TypeRecord>>() != null);
-				return CoreAssembly.DefinedTypes.Select(ToTypeRecord);
+				return CoreAssemblyDefinition.Modules.SelectMany(x => x.Types).Select(ToTypeRecord);
 			}
 		}
 
 		private XmlDocument ReadXmlDocumentation() {
-			var location = PossibleXmlDocLocations(CoreAssembly).FirstOrDefault(x => x.Exists);
+			var location = PossibleXmlDocLocations(CoreAssemblyFilePath).FirstOrDefault(x => x.Exists);
 			if (null == location)
 				return null;
 
@@ -95,19 +85,13 @@ namespace DandyDoc.Core
 			return xmlDoc;
 		}
 
-		private TypeRecord ToTypeRecord(TypeInfo arg) {
+		private TypeRecord ToTypeRecord(TypeDefinition arg){
 			Contract.Requires(null != arg);
 			Contract.Ensures(Contract.Result<TypeRecord>() != null);
-			return _typeRecordCache.GetOrAdd(arg, ti => new TypeRecord(this, ti));
+			return _typeRecordCache.GetOrAdd(arg, td => new TypeRecord(this, td));
 		}
 
-		[ContractInvariantMethod]
-		private void CodeContractInvariant() {
-			Contract.Invariant(CoreAssembly != null);
-		}
-
-
-		public XmlNode GetXmlNodeForType(Type type) {
+		public XmlNode GetXmlNodeForType(TypeDefinition type){
 			var xmlDoc = _xmlDocument.Value;
 			if (null == xmlDoc)
 				return null;
@@ -115,15 +99,15 @@ namespace DandyDoc.Core
 				String.Format("/doc/members/member[@name=\"T:{0}\"]", type.FullName));
 		}
 
-		public XmlNode GetXmlNodeForMember(Type type, MemberRecord member) {
+		public XmlNode GetXmlNodeForMember(TypeDefinition type, MemberRecord member) {
 			var xmlDoc = _xmlDocument.Value;
 			if (null == xmlDoc)
 				return null;
 
 			var memberName = member.Name;
-			var parameters = member.ParameterInfos;
-			if (null != parameters && parameters.Length > 0) {
-				memberName += String.Concat('(',String.Join(",",parameters.Select(x => x.ParameterType.FullName)),')');
+			var parameters = member.Parameters;
+			if (null != parameters && parameters.Count > 0) {
+				memberName += String.Concat('(', String.Join(",", parameters.Select(x => x.FullTypeName)), ')');
 			}
 
 			return xmlDoc.SelectSingleNode(
@@ -154,7 +138,7 @@ namespace DandyDoc.Core
 		}
 
 		private IDocumentableEntity ResolveCref(char hint, string cref) {
-			if (hint == 'M') {
+			if (hint == 'M' || hint == 'P') {
 				return ResolveCrefAsMember(cref)
 					?? ResolveCrefAsType(cref);
 			}
@@ -178,6 +162,20 @@ namespace DandyDoc.Core
 				return null;
 			return typeEntity.ResolveCrefAsMember(cref);
 		}
+
+
+		public ParsedXmlDoc Summary {
+			get { throw new NotImplementedException(); }
+		}
+
+		public ParsedXmlDoc Remarks {
+			get { throw new NotImplementedException(); }
+		}
+
+		public IList<SeeAlsoReference> SeeAlso {
+			get { throw new NotImplementedException(); }
+		}
+
 
 	}
 }

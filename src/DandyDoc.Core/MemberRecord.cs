@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Xml;
 using DandyDoc.Core.Utility;
+using Mono.Cecil;
+using Mono.Collections.Generic;
 
 namespace DandyDoc.Core
 {
@@ -13,7 +16,7 @@ namespace DandyDoc.Core
 
 		private Lazy<XmlNode> _memberDocNode;
 
-		internal MemberRecord(TypeRecord parentType, MemberInfo memberInfo) {
+		internal MemberRecord(TypeRecord parentType, IMemberDefinition memberInfo) {
 			if(null == parentType) throw new ArgumentNullException("parentType");
 			if(null == memberInfo) throw new ArgumentNullException("memberInfo");
 			Contract.EndContractBlock();
@@ -31,39 +34,35 @@ namespace DandyDoc.Core
 
 		public TypeRecord ParentType { get; private set; }
 
-		public MemberInfo CoreMemberInfo { get; private set; }
+		public IMemberDefinition CoreMemberInfo { get; private set; }
 
-		public bool IsMethod { get { return CoreMemberInfo.MemberType == MemberTypes.Method; } }
+		public bool IsMethod { get { return CoreMemberInfo is MethodDefinition && !((MethodDefinition)CoreMemberInfo).IsConstructor; } }
 
-		public bool IsConstructor { get { return CoreMemberInfo.MemberType == MemberTypes.Constructor; } }
+		public bool IsConstructor { get { return CoreMemberInfo is MethodDefinition && ((MethodDefinition)CoreMemberInfo).IsConstructor; } }
 
-		public bool IsField { get { return CoreMemberInfo.MemberType == MemberTypes.Field; } }
+		public bool IsField { get { return CoreMemberInfo is FieldDefinition; } }
 
-		public string Summary { get { return GetXmlDocText("summary"); } }
+		public ParsedXmlDoc Summary { get { return new ParsedXmlDoc(GetXmlDocText("summary"),this); } }
 
-		public string Remarks { get { return GetXmlDocText("remarks"); } }
+		public ParsedXmlDoc Remarks { get { return new ParsedXmlDoc(GetXmlDocText("remarks"),this); } }
 
-		public ParameterInfo[] ParameterInfos {
+		private Collection<ParameterDefinition> ParameterInfos {
 			get {
-				var methodInfo = CoreMemberInfo as MethodInfo;
-				if (null != methodInfo)
-					return methodInfo.GetParameters();
-
-				var constructorInfo = CoreMemberInfo as ConstructorInfo;
-				if (null != constructorInfo)
-					return constructorInfo.GetParameters();
+				var methodDefinition = CoreMemberInfo as MethodDefinition;
+				if (null != methodDefinition)
+					return methodDefinition.Parameters;
 
 				return null;
 			}
 		}
 
-		public ParameterRecord[] Parameters {
+		public IList<ParameterRecord> Parameters {
 			get {
 				var paramInfos = ParameterInfos;
 				if (null == paramInfos)
 					return null;
 
-				return Array.ConvertAll(paramInfos, x => new ParameterRecord(this, x));
+				return ParameterInfos.Select(x => new ParameterRecord(this, x)).ToList();
 			}
 		}
 

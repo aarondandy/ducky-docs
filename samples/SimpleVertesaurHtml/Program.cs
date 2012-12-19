@@ -32,7 +32,7 @@ namespace SimpleVertesaurHtml
 
 		private static void Document(AssemblyGroup assemblyGroup, DirectoryInfo outputDirectory){
 			var allTypeRecords = assemblyGroup.SelectMany(x => x.TypeRecords);
-			foreach (var typeRecord in allTypeRecords.Where(x => x.CoreType.IsPublic)){
+			foreach (var typeRecord in allTypeRecords.Where(x => x.IsPublic)){
 				var typeDirectory = Path.Combine(outputDirectory.FullName, String.Join("/", typeRecord.NamespaceParts));
 				var typeDirectoryInfo = CreateDirectory(typeDirectory);
 				var typeFileInfo = new FileInfo(Path.Combine(typeDirectory, typeRecord.Name + ".html"));
@@ -50,8 +50,8 @@ namespace SimpleVertesaurHtml
 					writer.WriteElementString("h1", typeRecord.Name + " Class");
 
 					var summary = typeRecord.Summary;
-					if(!String.IsNullOrWhiteSpace(summary))
-						writer.WriteElementString("div", summary);
+					if(!String.IsNullOrWhiteSpace(summary.RawText))
+						writer.WriteElementString("div", summary.RawText);
 
 					writer.WriteStartElement("hr");
 					writer.WriteEndElement();
@@ -63,14 +63,14 @@ namespace SimpleVertesaurHtml
 
 					writer.WriteStartElement("div");
 					writer.WriteElementString("b", "Assembly:");
-					writer.WriteRaw(" " + typeRecord.Parent.CoreAssembly.GetName().Name);
+					writer.WriteRaw(" " + typeRecord.Parent.Name);
 					writer.WriteEndElement();
 
 					var remarks = typeRecord.Remarks;
-					if (!String.IsNullOrWhiteSpace(remarks)){
+					if (null != remarks && !String.IsNullOrWhiteSpace(remarks.RawText)){
 						writer.WriteElementString("h2", "Remarks");
 						writer.WriteStartElement("div");
-						writer.WriteRaw(remarks.Replace("\n", "<br/>"));
+						writer.WriteRaw(remarks.RawText.Replace("\n", "<br/>"));
 						writer.WriteEndElement();
 					}
 
