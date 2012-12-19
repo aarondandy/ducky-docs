@@ -74,11 +74,10 @@ namespace SimpleVertesaurHtml
 						writer.WriteEndElement();
 					}
 
-					writer.WriteEndElement();
 
-					writer.WriteEndElement();
+					writer.WriteEndElement(); // body
 
-					writer.WriteEndElement();
+					writer.WriteEndElement(); // html
 				}
 			}
 		}
