@@ -113,6 +113,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -126,7 +127,16 @@
     <Compile Include="IParsedXmlPart.cs" />
     <Compile Include="MemberRecord.cs" />
     <Compile Include="ParameterRecord.cs" />
+    <Compile Include="ParsedXmlCodeBase.cs" />
+    <Compile Include="ParsedXmlCodeBlock.cs" />
     <Compile Include="ParsedXmlDoc.cs" />
+    <Compile Include="ParsedXmlElementBase.cs" />
+    <Compile Include="ParsedXmlInlineCode.cs" />
+    <Compile Include="ParsedXmlNodeBase.cs" />
+    <Compile Include="ParsedXmlParagraph.cs" />
+    <Compile Include="ParsedXmlSeePart.cs" />
+    <Compile Include="ParsedXmlBasicElementPart.cs" />
+    <Compile Include="ParsedXmlTermDescriptionList.cs" />
     <Compile Include="ParsedXmlTextPart.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SeeAlsoReference.cs" />

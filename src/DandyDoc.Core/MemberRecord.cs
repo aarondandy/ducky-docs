@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Xml;
 using DandyDoc.Core.Utility;
@@ -14,7 +13,7 @@ namespace DandyDoc.Core
 	public class MemberRecord : IDocumentableEntity
 	{
 
-		private Lazy<XmlNode> _memberDocNode;
+		private readonly Lazy<XmlNode> _memberDocNode;
 
 		internal MemberRecord(TypeRecord parentType, IMemberDefinition memberInfo) {
 			if(null == parentType) throw new ArgumentNullException("parentType");
@@ -32,6 +31,8 @@ namespace DandyDoc.Core
 
 		public string Name { get { return CoreMemberInfo.Name; } }
 
+		public string FullName { get { return CoreMemberInfo.FullName; } }
+
 		public TypeRecord ParentType { get; private set; }
 
 		public IMemberDefinition CoreMemberInfo { get; private set; }
@@ -42,9 +43,11 @@ namespace DandyDoc.Core
 
 		public bool IsField { get { return CoreMemberInfo is FieldDefinition; } }
 
-		public ParsedXmlDoc Summary { get { return new ParsedXmlDoc(GetXmlDocText("summary"),this); } }
+		public ParsedXmlDoc Summary { get { return new ParsedXmlDoc(GetSubNode("summary"), this); } }
 
-		public ParsedXmlDoc Remarks { get { return new ParsedXmlDoc(GetXmlDocText("remarks"),this); } }
+		public IList<ParsedXmlDoc> Remarks { get { return GetSubNodes("remarks").Select(x => new ParsedXmlDoc(x, this)).ToList(); } }
+
+		public IList<ParsedXmlDoc> Examples { get { return GetSubNodes("example").Select(x => new ParsedXmlDoc(x, this)).ToList(); } }
 
 		private Collection<ParameterDefinition> ParameterInfos {
 			get {
@@ -66,12 +69,28 @@ namespace DandyDoc.Core
 			}
 		}
 
-		public string GetXmlDocText(string key) {
-			var node = _memberDocNode.Value;
+		private IEnumerable<XmlNode> GetSubNodes(string query) {
+			Contract.Requires(!String.IsNullOrEmpty(query));
+			var node = XmlDocNode;
+			if (null == node)
+				return Enumerable.Empty<XmlNode>();
+			var result = node.SelectNodes(query);
+			if (null == result)
+				return Enumerable.Empty<XmlNode>();
+			return result.Cast<XmlNode>();
+		}
+
+		private XmlNode GetSubNode(string query) {
+			Contract.Requires(!String.IsNullOrEmpty(query));
+			var node = XmlDocNode;
 			if (null == node)
 				return null;
+			return node.SelectSingleNode(query);
+		}
 
-			var targetNode = node.SelectSingleNode(key);
+		public string GetXmlDocText(string key) {
+			Contract.Requires(!String.IsNullOrEmpty(key));
+			var targetNode = GetSubNode(key);
 			if (null == targetNode)
 				return null;
 
@@ -80,6 +99,15 @@ namespace DandyDoc.Core
 
 		public IList<SeeAlsoReference> SeeAlso {
 			get { throw new NotImplementedException(); }
+		}
+
+
+		public XmlNode XmlDocNode {
+			get { return _memberDocNode.Value; }
+		}
+
+		public IDocumentableEntity ResolveCref(string crefName){
+			return ParentType.ResolveCref(crefName);
 		}
 	}
 }

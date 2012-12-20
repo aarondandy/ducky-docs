@@ -1,0 +1,29 @@
+﻿@using DandyDoc.Core
+@model DandyDoc.Core.SeeAlsoReference
+
+@{
+	var target = Model.Target;
+	var description = Model.Description;
+	if (description.ParsedNormalized.Count == 0){
+		description = null;	
+	}	
+	string targetAction = null;
+	if(target is TypeRecord){
+		targetAction = Url.Action("Type", "Doc", new{ cref = ((TypeRecord) target).FullName.Replace('.', ';')});
+	}
+	else if (target is MemberRecord){
+		targetAction = Url.Action("Type", "Doc", new { cref = ((MemberRecord)target).FullName.Replace('.', ';') });
+	}
+	else{
+		targetAction = "#";
+	}
+}
+
+<a href="@targetAction">
+	@if (null == description){
+		@Model.Target.Name
+	}
+	else{
+		Html.RenderPartial("ParsedXmlDoc",description); 
+	}
+</a>

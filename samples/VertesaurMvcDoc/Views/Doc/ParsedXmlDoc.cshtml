@@ -1,0 +1,31 @@
+﻿@using DandyDoc.Core
+@model DandyDoc.Core.ParsedXmlDoc
+@if (null == Model) {
+	return;
+}
+@foreach (var part in Model.ParsedNormalized) {
+	if (part is ParsedXmlElementBase){
+		var elementPart = (ParsedXmlElementBase) part;
+		if (elementPart is ParsedXmlSeePart){
+			Html.RenderPartial("ParsedXmlSeePart", (ParsedXmlSeePart)elementPart);
+		}
+		else if (elementPart is ParsedXmlInlineCode){
+			<code>@{ Html.RenderPartial("ParsedXmlDoc", elementPart.SubParts);}</code>
+		}
+		else if (elementPart is ParsedXmlCodeBlock){
+			<pre>@{ Html.RenderPartial("ParsedXmlDoc", elementPart.SubParts);}</pre>
+		}
+		else if (elementPart is ParsedXmlParagraph){
+			<p>@{ Html.RenderPartial("ParsedXmlDoc", elementPart.SubParts);}</p>
+		}
+		else if (elementPart is ParsedXmlTermDescriptionList){
+			Html.RenderPartial("ParsedXmlTermDescriptionList", (ParsedXmlTermDescriptionList)elementPart);
+		}
+		else{
+			throw new NotImplementedException();
+		}
+	}
+	else{
+		@Html.Raw(part.RawXml);
+	}
+}

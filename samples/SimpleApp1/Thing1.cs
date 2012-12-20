@@ -5,7 +5,7 @@ using System.Diagnostics.Contracts;
 namespace SimpleApp1
 {
 	/// <summary>
-	/// This is just a thing. Here is some garbage: &amp; &lt; .
+	/// This is just a thing. Here is some garbage: &amp; &lt; . See <see cref="SimpleApp1.Thing2">Thing #2</see> for another thing.
 	/// </summary>
 	/// <remarks>
 	///     This
@@ -20,7 +20,7 @@ namespace SimpleApp1
 	{
 
 		/// <summary>
-		/// This does nothing.
+		/// This does nothing. <see cref="SimpleApp1.Thing1"><c>This is <b >Shtuff</b ></c></see>.
 		/// </summary>
 		public static void DoNothing() { }
 

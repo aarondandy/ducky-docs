@@ -1,0 +1,42 @@
+﻿@model DandyDoc.Core.ParsedXmlTermDescriptionList
+
+@{ var listType = Model.ListType;}
+@{
+	string htmlListType = null;
+	if ("BULLET".Equals(listType, StringComparison.OrdinalIgnoreCase)){
+		htmlListType = "ul";
+	}
+	else if ("NUMBER".Equals(listType, StringComparison.OrdinalIgnoreCase)){
+		htmlListType = "ol";
+	}
+}
+
+
+
+@if (!String.IsNullOrWhiteSpace(htmlListType)){
+	Html.Raw('<' + htmlListType + '>');
+	foreach (var row in Model.AllRows){
+			var term = row.Term;
+			var description = row.Description;
+			if (null == term && null == description) {
+				continue;
+			}
+			<li>
+			@if (null != term) {
+				<b>
+				@{ Html.RenderPartial("ParsedXmlDoc", term);}
+				</b>
+			}
+
+			@if (null != description) {
+				<div>
+				@{ Html.RenderPartial("ParsedXmlDoc", description);}
+				</div>
+			}
+			</li>
+	}
+	Html.Raw("</" + htmlListType + '>');
+}
+else{
+	throw new NotImplementedException();
+}

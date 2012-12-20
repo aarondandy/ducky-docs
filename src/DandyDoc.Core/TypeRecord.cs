@@ -2,13 +2,8 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Xml;
 using DandyDoc.Core.Utility;
 using Mono.Cecil;
@@ -36,9 +31,13 @@ namespace DandyDoc.Core
 
 		public string Name { get { return CoreType.Name; } }
 
-		public ParsedXmlDoc Summary { get { return new ParsedXmlDoc(GetXmlDocText("summary"),this); } }
+		public string FullName { get { return CoreType.FullName; } }
 
-		public ParsedXmlDoc Remarks { get { return new ParsedXmlDoc(GetXmlDocText("remarks"),this); } }
+		public ParsedXmlDoc Summary { get { return new ParsedXmlDoc(GetSubNode("summary"), this); } }
+
+		public IList<ParsedXmlDoc> Remarks { get { return GetSubNodes("remarks").Select(x => new ParsedXmlDoc(x, this)).ToList(); } }
+
+		public IList<ParsedXmlDoc> Examples { get { return GetSubNodes("example").Select(x => new ParsedXmlDoc(x, this)).ToList(); } }
 
 		public IList<SeeAlsoReference> SeeAlso {
 			get {
@@ -62,7 +61,7 @@ namespace DandyDoc.Core
 						continue;
 					var entity = Parent.ResolveCref(cref);
 					if (null != entity) {
-						results.Add(new SeeAlsoReference(entity, new ParsedXmlDoc(seeAlsoNode.InnerXml,this)));
+						results.Add(new SeeAlsoReference(entity, new ParsedXmlDoc(seeAlsoNode,this)));
 					}
 				}
 				return results;
@@ -71,7 +70,6 @@ namespace DandyDoc.Core
 
 		public IEnumerable<MemberRecord> Members{
 			get{
-				//return CoreType.GetMembers().Select(ToMemberRecord);
 				var memberDefinitions = CoreType.Methods.Cast<IMemberDefinition>()
 					.Concat(CoreType.Properties.Cast<IMemberDefinition>())
 					.Concat(CoreType.Fields.Cast<IMemberDefinition>());
@@ -89,9 +87,9 @@ namespace DandyDoc.Core
 			get { return NameUtilities.SplitNamespaceParts(Namespace); }
 		}
 
-		/*private MemberRecord ToMemberRecord(MemberInfo mi) {
-			return _memberRecordCache.GetOrAdd(mi, x => new MemberRecord(this, x));
-		}*/
+		public bool IsValueType {
+			get { return CoreType.IsValueType; }
+		}
 
 		private MemberRecord ToMemberRecord(IMemberDefinition md){
 			return _memberRecordCache.GetOrAdd(md, x => new MemberRecord(this, md));
@@ -108,12 +106,28 @@ namespace DandyDoc.Core
 			return Members.FirstOrDefault(x => x.CoreMemberInfo.Name == lastNamePart);
 		}
 
-		public string GetXmlDocText(string key) {
-			var node = _typeDocNode.Value;
+		private IEnumerable<XmlNode> GetSubNodes(string query){
+			Contract.Requires(!String.IsNullOrEmpty(query));
+			var node = XmlDocNode;
+			if (null == node)
+				return Enumerable.Empty<XmlNode>();
+			var result = node.SelectNodes(query);
+			if(null == result)
+				return Enumerable.Empty<XmlNode>();
+			return result.Cast<XmlNode>();
+		}
+
+		private XmlNode GetSubNode(string query){
+			Contract.Requires(!String.IsNullOrEmpty(query));
+			var node = XmlDocNode;
 			if (null == node)
 				return null;
+			return node.SelectSingleNode(query);
+		}
 
-			var targetNode = node.SelectSingleNode(key);
+		public string GetXmlDocText(string key) {
+			Contract.Requires(!String.IsNullOrEmpty(key));
+			var targetNode = GetSubNode(key);
 			if (null == targetNode)
 				return null;
 
@@ -129,6 +143,16 @@ namespace DandyDoc.Core
 			Contract.Invariant(null != CoreType);
 			Contract.Invariant(null != Parent);
 		}
+
+		public XmlNode XmlDocNode { get { return _typeDocNode.Value; } }
+
+
+		public IDocumentableEntity ResolveCref(string cref) {
+			if (String.IsNullOrEmpty(cref)) throw new ArgumentException("Invalid cref.", "cref");
+			Contract.EndContractBlock();
+			return Parent.ResolveCref(cref);
+		}
+
 
 	}
 }

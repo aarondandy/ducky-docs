@@ -1,25 +1,19 @@
-﻿using System;
-using System.Diagnostics.Contracts;
+﻿using System.Diagnostics.Contracts;
+using System.Web;
+using System.Xml;
 
 namespace DandyDoc.Core
 {
-	public class ParsedXmlTextPart : IParsedXmlPart
+	public class ParsedXmlTextPart : ParsedXmlNodeBase
 	{
 
-		public ParsedXmlTextPart(ParsedXmlDoc parent, int start, int length){
-			if(null == parent) throw new ArgumentNullException("parent");
-			Contract.EndContractBlock();
-			StartIndex = start;
-			Length = length;
+		public ParsedXmlTextPart(XmlNode node) : base(node){
+			Contract.Requires(null != node);
 		}
 
-		public ParsedXmlDoc Parent { get; private set; }
-
-		public int StartIndex { get; private set; }
-
-		public int Length { get; private set; }
-
-		public string RawText { get { return Parent.RawText.Substring(StartIndex, Length); } }
+		public string HtmlDecoded { 
+			get { return HttpUtility.HtmlDecode(RawXml); }
+		}
 
 	}
 }

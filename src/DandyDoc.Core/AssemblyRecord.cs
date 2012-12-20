@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
@@ -15,6 +16,10 @@ namespace DandyDoc.Core
 	public class AssemblyRecord : IDocumentableEntity
 	{
 
+		private static readonly ReadOnlyCollection<ParsedXmlDoc> EmptyParsedXmlDocList = Array.AsReadOnly(new ParsedXmlDoc[0]);
+
+		private static readonly ReadOnlyCollection<SeeAlsoReference> EmptySeeAlsoReferences = Array.AsReadOnly(new SeeAlsoReference[0]);
+
 		public static AssemblyRecord CreateFromFilePath(string filePath, AssemblyGroup parentGroup = null) {
 			if(String.IsNullOrEmpty(filePath)) throw new ArgumentException("Invalid file path.","filePath");
 			Contract.EndContractBlock();
@@ -22,10 +27,12 @@ namespace DandyDoc.Core
 			var fileInfo = new FileInfo(filePath);
 
 			if(!fileInfo.Exists)
-				throw new FileNotFoundException("The given file was not found.",filePath);
+				throw new FileNotFoundException("The given file was not found.",fileInfo.FullName);
 
 
 			var assemblyDefinition = AssemblyDefinition.ReadAssembly(fileInfo.FullName);
+			if(null == assemblyDefinition)
+				throw new ArgumentException("Failed to load the given assembly from '" + fileInfo.FullName + '\'', "filePath");
 			return new AssemblyRecord(assemblyDefinition, fileInfo, parentGroup);
 		}
 
@@ -114,8 +121,14 @@ namespace DandyDoc.Core
 				String.Format("/doc/members/member[@name=\"M:{0}.{1}\"]", type.FullName, memberName));
 		}
 
-		public IDocumentableEntity ResolveCref(string cref, bool checkParent = true) {
-			if(String.IsNullOrEmpty(cref)) throw new ArgumentException("Invalid cref.","cref");
+		public IDocumentableEntity ResolveCref(string cref){
+			if (String.IsNullOrEmpty(cref)) throw new ArgumentException("Invalid cref.", "cref");
+			Contract.EndContractBlock();
+			return ResolveCref(cref, true);
+		}
+
+		internal IDocumentableEntity ResolveCref(string cref, bool canSearchUp) {
+			Contract.Requires(!String.IsNullOrEmpty(cref));
 			Contract.EndContractBlock();
 
 			char hint;
@@ -131,10 +144,9 @@ namespace DandyDoc.Core
 			if (null != result)
 				return result;
 
-			if(checkParent)
-				throw new NotImplementedException();
-
-			return null;
+			return canSearchUp ?
+				ParentGroup.ResolveCrefFromOthers(cref, this)
+				: null;
 		}
 
 		private IDocumentableEntity ResolveCref(char hint, string cref) {
@@ -163,19 +175,24 @@ namespace DandyDoc.Core
 			return typeEntity.ResolveCrefAsMember(cref);
 		}
 
-
 		public ParsedXmlDoc Summary {
 			get { throw new NotImplementedException(); }
 		}
 
-		public ParsedXmlDoc Remarks {
-			get { throw new NotImplementedException(); }
-		}
+		public IList<ParsedXmlDoc> Remarks { get { return EmptyParsedXmlDocList; } }
 
-		public IList<SeeAlsoReference> SeeAlso {
-			get { throw new NotImplementedException(); }
-		}
+		public IList<ParsedXmlDoc> Examples { get { return EmptyParsedXmlDocList; } }
 
+		public IList<SeeAlsoReference> SeeAlso { get { return EmptySeeAlsoReferences; } }
+
+		public XmlNode XmlDocNode {
+			get{
+				var entireDoc = _xmlDocument.Value;
+				if (null == entireDoc)
+					return null;
+				return entireDoc.SelectSingleNode("/doc");
+			}
+		}
 
 	}
 }

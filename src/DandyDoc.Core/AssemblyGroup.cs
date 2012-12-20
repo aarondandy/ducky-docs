@@ -66,5 +66,27 @@ namespace DandyDoc.Core
 			base.SetItem(index, item);
 		}
 
+		public IDocumentableEntity ResolveCref(string cref){
+			if(String.IsNullOrEmpty(cref)) throw new ArgumentException("Invalid cref.", "cref");
+			Contract.EndContractBlock();
+			foreach (var assemblyRecord in this){
+				var result = assemblyRecord.ResolveCref(cref, false);
+				if (null != result)
+					return result;
+			}
+			return null;
+		}
+
+		internal IDocumentableEntity ResolveCrefFromOthers(string cref, AssemblyRecord skip) {
+			Contract.Requires(!String.IsNullOrWhiteSpace(cref));
+			foreach (var assemblyRecord in this){
+				if (assemblyRecord == skip)
+					continue;
+				var result = assemblyRecord.ResolveCref(cref, false);
+				if (result != null)
+					return result;
+			}
+			return null;
+		}
 	}
 }

@@ -1,0 +1,22 @@
+﻿@using DandyDoc.Core
+@model DandyDoc.Core.ParsedXmlSeePart
+
+@{
+	var target = Model.CrefTarget;
+	string targetName = null;
+	string targetAction = null;
+	if(target is TypeRecord){
+		targetName = target.Name;
+		targetAction = Url.Action("Type", "Doc", new { cref = ((TypeRecord)target).FullName.Replace('.', ';') });
+	}
+	else if (target is MemberRecord){
+		targetName = target.Name;
+		targetAction = Url.Action("Type", "Doc", new { cref = ((MemberRecord)target).FullName.Replace('.', ';') });
+	}
+	else{
+		targetName = Model.CrefName;
+		targetAction = "#";
+	}	
+}
+
+<a href="@targetAction">@targetName</a>

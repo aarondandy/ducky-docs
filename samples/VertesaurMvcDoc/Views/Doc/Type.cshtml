@@ -1,0 +1,44 @@
+﻿@model DandyDoc.Core.TypeRecord
+
+@{
+	Layout = "DocLayout.cshtml";
+}
+
+<h2>@Model.Name @(Model.IsValueType ? "Struct" : "Class")</h2>
+<div>@Model.FullName in @Model.Parent.Name</div>
+<hr/>
+@{Html.RenderPartial("ParsedXmlDoc", Model.Summary);}
+
+<h3>Members</h3>
+<h4>Constructors</h4>
+<h4>Fields</h4>
+<h4>Properties</h4>
+<h4>Methods</h4>
+<h4>Operators</h4>
+
+
+@{ var remarks = Model.Remarks;}
+@if (null != remarks && remarks.Count > 0){
+	<h3>Remarks</h3>
+	foreach (var remark in remarks){
+		<div>@{ Html.RenderPartial("ParsedXmlDoc", remark); }</div>
+	}
+}
+
+@{ var examples = Model.Examples;}
+@if (null != examples && examples.Count > 0){
+	<h3>Examples</h3>
+	foreach (var example in examples){
+		<div>@{ Html.RenderPartial("ParsedXmlDoc", example); }</div>
+	}
+}
+
+@{ var seeAlsos = Model.SeeAlso;}
+@if (null != seeAlsos && seeAlsos.Count > 0){
+	<h3>See Also</h3>
+	<ul>
+	@foreach (var seeAlso in seeAlsos) {
+		<li>@{ Html.RenderPartial("SeeAlso", seeAlso); }</li>	
+	}
+	</ul>
+}
