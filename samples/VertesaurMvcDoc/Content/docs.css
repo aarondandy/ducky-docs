@@ -1,0 +1,14 @@
+﻿div.member-table-container {
+	margin: 1em;
+}
+table.member-table {
+	margin: 0;
+	width: 100%;
+}
+table.member-table tr th {
+	background-color: #eee;
+	text-align: left;
+}
+table.member-table tr td {
+	text-align: left;
+}

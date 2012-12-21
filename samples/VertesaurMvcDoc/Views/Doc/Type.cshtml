@@ -5,17 +5,104 @@
 }
 
 <h2>@Model.Name @(Model.IsValueType ? "Struct" : "Class")</h2>
-<div>@Model.FullName in @Model.Parent.Name</div>
+<div>@Model.FullName in @Model.Parent.CoreAssemblyFilePath.Name</div>
 <hr/>
 @{Html.RenderPartial("ParsedXmlDoc", Model.Summary);}
 
 <h3>Members</h3>
-<h4>Constructors</h4>
-<h4>Fields</h4>
-<h4>Properties</h4>
-<h4>Methods</h4>
+
+@if (Model.HasConstructors) {
+	<h4>Constructors</h4>
+	<div class="member-table-container">
+	<table class="member-table">
+		<tr><th></th><th>Name</th><th>Summary</th></tr>
+		@foreach(var constructor in Model.Constructors.OrderBy(x => x.Name)) {
+			<tr>
+				<td></td>
+				<td>@constructor.FriendlyName</td>
+				<td>@{
+					    if (null == constructor.Summary || String.IsNullOrWhiteSpace(constructor.Summary.InnerXml)) {
+						    @Html.Raw(String.Format(constructor.Parameters.Count == 0 ? "Default {0} constructor." : "{0} constructor.", Model.Name));
+					    }
+					    else {
+						    Html.RenderPartial("ParsedXmlDoc", constructor.Summary);
+					    }
+				    }</td>
+			</tr>
+		}
+	</table>
+	</div>
+}
+
+@if (Model.HasFields) {
+	<h4>Fields</h4>
+	<div class="member-table-container">
+	<table class="member-table">
+		<tr><th></th><th>Name</th><th>Type</th><th>Summary</th></tr>
+		@foreach(var field in Model.Fields.OrderBy(x => x.Name)) {
+			<tr>
+				<td></td>
+				<td><a href="@Url.Action("Member",new{cref=field.Cref})">@field.Name</a></td>
+				<td>@field.Type</td>
+				<td>@{Html.RenderPartial("ParsedXmlDoc", field.Summary);}</td>
+			</tr>
+		}
+	</table>
+	</div>
+}
+
+@if (Model.HasProperties) {
+	<h4>Properties</h4>
+	<div class="member-table-container">
+	<table class="member-table">
+		<tr><th></th><th>Name</th><th>Type</th><th>Summary</th></tr>
+		@foreach(var property in Model.Properties.OrderBy(x => x.Name)) {
+			<tr>
+				<td></td>
+				<td><a href="@Url.Action("Member",new{cref=property.Cref})">@property.Name</a></td>
+				<td>@property.Type</td>
+				<td>@{Html.RenderPartial("ParsedXmlDoc", property.Summary);}</td>
+			</tr>
+		}
+	</table>
+	</div>
+}
+
+@if (Model.HasMethods) {
+	<h4>Methods</h4>
+	<div class="member-table-container">
+	<table class="member-table">
+		<tr><th></th><th>Name</th><th>Summary</th></tr>
+		@foreach(var method in Model.Methods.OrderBy(x => x.Name)) {
+			<tr>
+				<td></td>
+				<td>
+					<a href="@Url.Action("Member",new{cref=method.Cref})">@method.Name</a>
+				</td>
+				<td>@{Html.RenderPartial("ParsedXmlDoc", method.Summary);}</td>
+			</tr>
+		}
+	</table>
+	</div>
+}
+
 <h4>Operators</h4>
 
+@if (Model.HasNestedTypes) {
+	<h3>Nested Types</h3>
+	<div class="member-table-container">
+	<table class="member-table">
+		<tr><th></th><th>Name</th><th>Summary</th></tr>
+		@foreach(var nested in Model.NestedTypeRecords.OrderBy(x => x.Name)) {
+			<tr>
+				<td></td>
+				<td><a href="@Url.Action("Type",new{cref=nested.Cref})">@nested.Name</a></td>
+				<td>@{Html.RenderPartial("ParsedXmlDoc", nested.Summary);}</td>
+			</tr>
+		}
+	</table>
+	</div>
+}
 
 @{ var remarks = Model.Remarks;}
 @if (null != remarks && remarks.Count > 0){

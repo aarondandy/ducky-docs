@@ -20,8 +20,18 @@ namespace VertesaurMvcDoc.Controllers
 			if (String.IsNullOrWhiteSpace(cref))
 				return new HttpNotFoundResult();
 
-			cref = cref.Replace(';', '.');
 			var result = DocumentationAssemblyGroup.ResolveCref(cref) as TypeRecord;
+			if(null == result)
+				return new HttpNotFoundResult();
+
+			return View(result);
+		}
+
+		public ActionResult Member(string cref) {
+			if(String.IsNullOrWhiteSpace(cref))
+				return new HttpNotFoundResult();
+
+			var result = DocumentationAssemblyGroup.ResolveCref(cref) as MemberRecord;
 			if(null == result)
 				return new HttpNotFoundResult();
 

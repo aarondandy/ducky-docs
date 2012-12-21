@@ -81,7 +81,7 @@ namespace SimpleApp1.Test
 		[Test]
 		public void method_summaries_for_Thing1() {
 			var record = GetThing1();
-			var methods = record.Members.Where(x => x.IsMethod).ToList();
+			var methods = record.Methods.ToList();
 			Assert.Greater(methods.Count, 0);
 			Assert.That(methods.Any(x => !String.IsNullOrWhiteSpace(x.Summary.NormalizedInnerXml)));
 		}
@@ -89,7 +89,7 @@ namespace SimpleApp1.Test
 		[Test]
 		public void parameter_summaries_for_Thing1_DoSomething() {
 			var record = GetThing1();
-			var method = record.Members.First(x => x.IsMethod && x.Name == "DoSomething");
+			var method = record.Methods.First(x =>x.Name == "DoSomething");
 			var param = method.Parameters.Single();
 			Assert.IsNotNull(param);
 			Assert.IsNotNullOrEmpty(param.Summary.NormalizedInnerXml);
@@ -98,7 +98,7 @@ namespace SimpleApp1.Test
 		[Test]
 		public void nested_summary_elements_for_Thing1_DoNothing(){
 			var record = GetThing1();
-			var method = record.Members.First(x => x.IsMethod && x.Name == "DoNothing");
+			var method = record.Methods.First(x => x.Name == "DoNothing");
 			var summary = method.Summary;
 			var summaryParts = summary.ParsedNormalized;
 			Assert.IsNotNull(summaryParts);

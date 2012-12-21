@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using System.Threading;
 using System.Xml;
 using Mono.Cecil;
 using System.Collections.Generic;
@@ -43,6 +44,10 @@ namespace DandyDoc.Core
 
 		public IDocumentableEntity ResolveCref(string crefName){
 			return ParentEntity.ResolveCref(crefName);
+		}
+
+		public string Cref {
+			get { return ParentEntity.Cref + ':' + Name; }
 		}
 
 	}

@@ -1,7 +1,8 @@
 ﻿	using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
+	using System.Text.RegularExpressions;
+	using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 
@@ -14,8 +15,14 @@ namespace VertesaurMvcDoc
 
 			routes.MapRoute(
 				name: "Type",
-				url: "Type/{cref}",
+				url: "Type",
 				defaults: new{controller = "Doc", action = "Type"}
+			);
+
+			routes.MapRoute(
+				name: "Member",
+				url: "Member",
+				defaults: new { controller = "Doc", action = "Type" }
 			);
 
 			routes.MapRoute(

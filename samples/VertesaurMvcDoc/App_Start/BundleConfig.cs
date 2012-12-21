@@ -12,9 +12,12 @@ namespace VertesaurMvcDoc
 				"~/Content/bootstrap-responsive.css",
 				"~/Content/bootstrap.css"
 			));
-
 			bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
 				"~/Scripts/bootstrap.js"
+			));
+
+			bundles.Add(new StyleBundle("~/css/docs").Include(
+				"~/Content/docs.css"
 			));
 
 			/*

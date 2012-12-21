@@ -27,8 +27,10 @@ namespace VertesaurMvcDoc.DependencyResolution
 			ObjectFactory.Initialize(x => {
 				x.For<AssemblyGroup>().Use(_ =>
 					AssemblyGroup.CreateFromFilePaths(
-						HostingEnvironment.MapPath("~/bin/Vertesaur.Core.dll"),
-						HostingEnvironment.MapPath("~/bin/Vertesaur.Generation.dll")
+						//HostingEnvironment.MapPath("~/bin/Vertesaur.Core.dll"),
+						//HostingEnvironment.MapPath("~/bin/Vertesaur.Generation.dll"),
+						//HostingEnvironment.MapPath("~/bin/DandyDoc.Core.dll"),
+						HostingEnvironment.MapPath("~/bin/TestLibrary1.dll")
 					)
 				);
 			});

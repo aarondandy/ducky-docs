@@ -75,12 +75,35 @@ namespace DandyDoc.Core
 
 		public string Name { get { return CoreAssemblyDefinition.Name.Name; } }
 
+		public string FullName { get { return CoreAssemblyDefinition.FullName; } }
+
 		public IEnumerable<TypeRecord> TypeRecords {
 			get {
 				Contract.Ensures(Contract.Result<IEnumerable<TypeRecord>>() != null);
-				return CoreAssemblyDefinition.Modules.SelectMany(x => x.Types).Select(ToTypeRecord);
+				return FlattenNested(
+					CoreAssemblyDefinition.Modules
+					.SelectMany(x => x.Types)
+					.Select(ToTypeRecord)
+				);
 			}
 		}
+
+		private IEnumerable<TypeRecord> FlattenNested(IEnumerable<TypeRecord> types) {
+			foreach (var type in types) {
+				foreach (var flattened in FlattenNested(type)) {
+					yield return flattened;
+				}
+			}
+		}
+
+		private IEnumerable<TypeRecord> FlattenNested(TypeRecord type) {
+			yield return type;
+			if (type.HasNestedTypes) {
+				foreach (var flattened in FlattenNested(type.NestedTypeRecords)) {
+					yield return flattened;
+				}
+			}
+		} 
 
 		private XmlDocument ReadXmlDocumentation() {
 			var location = PossibleXmlDocLocations(CoreAssemblyFilePath).FirstOrDefault(x => x.Exists);
@@ -162,7 +185,9 @@ namespace DandyDoc.Core
 
 		private TypeRecord ResolveCrefAsType(string cref) {
 			// TODO: get these from an index lookup
-			return TypeRecords.FirstOrDefault(x => x.CoreType.FullName == cref);
+
+			NameUtilities.TryConvertToStandardTypeName(ref cref);
+			return TypeRecords.FirstOrDefault(x => x.Cref == cref || x.FullName == cref);
 		}
 
 		private IDocumentableEntity ResolveCrefAsMember(string cref) {
@@ -194,5 +219,8 @@ namespace DandyDoc.Core
 			}
 		}
 
+
+
+		public string Cref { get { return CoreAssemblyDefinition.FullName; } }
 	}
 }

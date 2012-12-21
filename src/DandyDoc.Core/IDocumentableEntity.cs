@@ -13,5 +13,7 @@ namespace DandyDoc.Core
 		XmlNode XmlDocNode { get; }
 		IDocumentableEntity ResolveCref(string cref);
 
+		string Cref { get; }
+
 	}
 }

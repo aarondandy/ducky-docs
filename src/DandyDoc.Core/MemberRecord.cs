@@ -10,7 +10,7 @@ using Mono.Collections.Generic;
 
 namespace DandyDoc.Core
 {
-	public class MemberRecord : IDocumentableEntity
+	public abstract class MemberRecord : IDocumentableEntity
 	{
 
 		private readonly Lazy<XmlNode> _memberDocNode;
@@ -21,7 +21,7 @@ namespace DandyDoc.Core
 			Contract.EndContractBlock();
 
 			ParentType = parentType;
-			CoreMemberInfo = memberInfo;
+			MemberDefinition = memberInfo;
 			_memberDocNode = new Lazy<XmlNode>(GetDocNode, LazyThreadSafetyMode.ExecutionAndPublication);
 		}
 
@@ -29,19 +29,19 @@ namespace DandyDoc.Core
 			return ParentType.Parent.GetXmlNodeForMember(ParentType.CoreType, this);
 		}
 
-		public string Name { get { return CoreMemberInfo.Name; } }
+		public string Name { get { return MemberDefinition.Name; } }
 
-		public string FullName { get { return CoreMemberInfo.FullName; } }
+		public string FullName { get { return MemberDefinition.FullName; } }
 
 		public TypeRecord ParentType { get; private set; }
 
-		public IMemberDefinition CoreMemberInfo { get; private set; }
+		public IMemberDefinition MemberDefinition { get; private set; }
 
-		public bool IsMethod { get { return CoreMemberInfo is MethodDefinition && !((MethodDefinition)CoreMemberInfo).IsConstructor; } }
+		public bool IsMethod { get { return MemberDefinition is MethodDefinition && !((MethodDefinition)MemberDefinition).IsConstructor; } }
 
-		public bool IsConstructor { get { return CoreMemberInfo is MethodDefinition && ((MethodDefinition)CoreMemberInfo).IsConstructor; } }
+		public bool IsConstructor { get { return MemberDefinition is MethodDefinition && ((MethodDefinition)MemberDefinition).IsConstructor; } }
 
-		public bool IsField { get { return CoreMemberInfo is FieldDefinition; } }
+		public bool IsField { get { return MemberDefinition is FieldDefinition; } }
 
 		public ParsedXmlDoc Summary { get { return new ParsedXmlDoc(GetSubNode("summary"), this); } }
 
@@ -51,7 +51,7 @@ namespace DandyDoc.Core
 
 		private Collection<ParameterDefinition> ParameterInfos {
 			get {
-				var methodDefinition = CoreMemberInfo as MethodDefinition;
+				var methodDefinition = MemberDefinition as MethodDefinition;
 				if (null != methodDefinition)
 					return methodDefinition.Parameters;
 
@@ -109,5 +109,12 @@ namespace DandyDoc.Core
 		public IDocumentableEntity ResolveCref(string crefName){
 			return ParentType.ResolveCref(crefName);
 		}
+
+		public virtual string Cref {
+			get {
+				return ParentType.Cref + '.' + Name;
+			}
+		}
+
 	}
 }

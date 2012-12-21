@@ -4,67 +4,23 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A09F4DAC-290C-4ABE-B053-071EC966008F}</ProjectGuid>
+    <ProjectGuid>{F83F4C52-A886-4B9E-8164-E95E1F22F929}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DandyDoc.Core</RootNamespace>
-    <AssemblyName>DandyDoc.Core</AssemblyName>
+    <RootNamespace>TestLibrary1</RootNamespace>
+    <AssemblyName>TestLibrary1</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <CodeContractsAssemblyMode>0</CodeContractsAssemblyMode>
-    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
-    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\bin\Debug\</OutputPath>
+    <OutputPath>..\..\bin\Debug\samples\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\bin\Debug\DandyDoc.Core.XML</DocumentationFile>
-    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
-    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
-    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
-    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
-    <CodeContractsRuntimeSkipQuantifiers>False</CodeContractsRuntimeSkipQuantifiers>
-    <CodeContractsRunCodeAnalysis>True</CodeContractsRunCodeAnalysis>
-    <CodeContractsNonNullObligations>False</CodeContractsNonNullObligations>
-    <CodeContractsBoundsObligations>False</CodeContractsBoundsObligations>
-    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
-    <CodeContractsEnumObligations>False</CodeContractsEnumObligations>
-    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
-    <CodeContractsInferRequires>False</CodeContractsInferRequires>
-    <CodeContractsInferEnsures>False</CodeContractsInferEnsures>
-    <CodeContractsInferObjectInvariants>False</CodeContractsInferObjectInvariants>
-    <CodeContractsSuggestAssumptions>False</CodeContractsSuggestAssumptions>
-    <CodeContractsSuggestRequires>True</CodeContractsSuggestRequires>
-    <CodeContractsSuggestEnsures>False</CodeContractsSuggestEnsures>
-    <CodeContractsSuggestObjectInvariants>False</CodeContractsSuggestObjectInvariants>
-    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
-    <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
-    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
-    <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
-    <CodeContractsCustomRewriterAssembly />
-    <CodeContractsCustomRewriterClass />
-    <CodeContractsLibPaths />
-    <CodeContractsExtraRewriteOptions />
-    <CodeContractsExtraAnalysisOptions />
-    <CodeContractsBaseLineFile />
-    <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
-    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
-    <CodeContractsReferenceAssembly>DoNotBuild</CodeContractsReferenceAssembly>
-    <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\bin\Release\DandyDoc.Core.XML</DocumentationFile>
     <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
     <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
     <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
@@ -97,23 +53,52 @@
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
+    <DocumentationFile>..\..\bin\Debug\samples\TestLibrary1.XML</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\bin\Release\samples\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
+    <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
+    <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
+    <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
+    <CodeContractsRuntimeSkipQuantifiers>False</CodeContractsRuntimeSkipQuantifiers>
+    <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
+    <CodeContractsNonNullObligations>False</CodeContractsNonNullObligations>
+    <CodeContractsBoundsObligations>False</CodeContractsBoundsObligations>
+    <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
+    <CodeContractsEnumObligations>False</CodeContractsEnumObligations>
+    <CodeContractsRedundantAssumptions>False</CodeContractsRedundantAssumptions>
+    <CodeContractsInferRequires>False</CodeContractsInferRequires>
+    <CodeContractsInferEnsures>False</CodeContractsInferEnsures>
+    <CodeContractsInferObjectInvariants>False</CodeContractsInferObjectInvariants>
+    <CodeContractsSuggestAssumptions>False</CodeContractsSuggestAssumptions>
+    <CodeContractsSuggestRequires>True</CodeContractsSuggestRequires>
+    <CodeContractsSuggestEnsures>False</CodeContractsSuggestEnsures>
+    <CodeContractsSuggestObjectInvariants>False</CodeContractsSuggestObjectInvariants>
+    <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
+    <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
+    <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
+    <CodeContractsEmitXMLDocs>True</CodeContractsEmitXMLDocs>
+    <CodeContractsCustomRewriterAssembly />
+    <CodeContractsCustomRewriterClass />
+    <CodeContractsLibPaths />
+    <CodeContractsExtraRewriteOptions />
+    <CodeContractsExtraAnalysisOptions />
+    <CodeContractsBaseLineFile />
+    <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
+    <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
+    <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
+    <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
+    <DocumentationFile>..\..\bin\Release\samples\TestLibrary1.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Mono.Cecil">
-      <HintPath>..\..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Mdb">
-      <HintPath>..\..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Mdb.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Pdb">
-      <HintPath>..\..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Pdb.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Rocks">
-      <HintPath>..\..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -121,41 +106,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyGroup.cs" />
-    <Compile Include="AssemblyRecord.cs" />
-    <Compile Include="ConstructorRecord.cs" />
-    <Compile Include="FieldRecord.cs" />
-    <Compile Include="GenericTypeRecord.cs" />
-    <Compile Include="IDocumentableEntity.cs" />
-    <Compile Include="IParsedXmlPart.cs" />
-    <Compile Include="MemberRecord.cs" />
-    <Compile Include="MethodRecord.cs" />
-    <Compile Include="NestedTypeRecord.cs" />
-    <Compile Include="ParameterRecord.cs" />
-    <Compile Include="ParsedXmlCodeBase.cs" />
-    <Compile Include="ParsedXmlCodeBlock.cs" />
-    <Compile Include="ParsedXmlDoc.cs" />
-    <Compile Include="ParsedXmlElementBase.cs" />
-    <Compile Include="ParsedXmlInlineCode.cs" />
-    <Compile Include="ParsedXmlNodeBase.cs" />
-    <Compile Include="ParsedXmlParagraph.cs" />
-    <Compile Include="ParsedXmlSeePart.cs" />
-    <Compile Include="ParsedXmlBasicElementPart.cs" />
-    <Compile Include="ParsedXmlTermDescriptionList.cs" />
-    <Compile Include="ParsedXmlTextPart.cs" />
+    <Compile Include="Class1.cs" />
+    <Compile Include="Generic1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PropertyRecord.cs" />
-    <Compile Include="SeeAlsoReference.cs" />
-    <Compile Include="TypeRecord.cs" />
-    <Compile Include="Utility\CollectionUtility.cs" />
-    <Compile Include="Utility\NameUtilities.cs" />
-    <Compile Include="Utility\TextUtilities.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
