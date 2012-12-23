@@ -135,8 +135,20 @@ namespace DandyDoc.Core.Overlays.Cref
 					return false;
 			}
 			else if (!nameTest.Equals(methodDefinition.Name)) {
-				return false;
+				if (methodDefinition.HasGenericParameters && nameTest.StartsWith(methodDefinition.Name)) {
+					var methodGenericParamCount = methodDefinition.Parameters
+						.Where(x => x.ParameterType.IsGenericParameter)
+						.Select(x => x.ParameterType as GenericParameter)
+						.Count(x => x.Owner == methodDefinition);
+					if (!nameTest.Equals(methodDefinition.Name + "``" + methodGenericParamCount)) {
+						return false;
+					}
+				}
+				else{
+					return false;
+				}
 			}
+
 			if (methodDefinition.HasParameters) {
 				if (null == paramTypeTest)
 					return false;
@@ -145,7 +157,8 @@ namespace DandyDoc.Core.Overlays.Cref
 					return false;
 				for (int i = 0; i < paramTypeTest.Length; i++) {
 					var methodParamType = methodParams[i].ParameterType;
-					if (!String.Equals(paramTypeTest[i], methodParamType.FullName))
+					var methodParamCref = GetCref(methodParamType, true);
+					if (!String.Equals(paramTypeTest[i], methodParamCref))
 						return false;
 				}
 				return true;
@@ -184,13 +197,45 @@ namespace DandyDoc.Core.Overlays.Cref
 			return nameTest.Equals(eventDefinition.Name);
 		}
 
-		public string GetCref(TypeDefinition typeDef, bool hideCrefType = false) {
-			if(null == typeDef) throw new ArgumentNullException("typeDef");
-			Contract.EndContractBlock();
+		public string GetCref(TypeDefinition typeDef, bool hideCrefType = false){
+			return GetCref((TypeReference) typeDef, hideCrefType);
+		}
+
+		public string GetCref(TypeReference typeRef, bool hideCrefType = false) {
+			string cref;
+			if (typeRef.IsGenericParameter) {
+				//var cref = typeRef.Name;
+				var genericParameter = typeRef as GenericParameter;
+				if (null != genericParameter){
+					var paramIndex = genericParameter.Owner.GenericParameters.IndexOf(genericParameter);
+					cref = String.Concat(
+						genericParameter.Owner is TypeDefinition ? "`" : "``",
+						paramIndex);
+
+					if (!hideCrefType)
+						cref = "G:" + cref;
+					return cref;
+				}
+			}
+
 			var typeParts = new List<string>();
-			TypeDefinition currentType = typeDef;
-			while(null != currentType){
-				typeParts.Insert(0,currentType.Name);
+			TypeReference currentType = typeRef;
+			while (null != currentType){
+				string currentTypeName = currentType.Name;
+				if (currentType.IsGenericInstance){
+					var genericInstanceType = currentType as GenericInstanceType;
+					Contract.Assume(null != genericInstanceType);
+					var tickIndex = currentTypeName.LastIndexOf('`');
+					if (tickIndex >= 0)
+						currentTypeName = currentTypeName.Substring(0, tickIndex);
+					currentTypeName += String.Concat(
+						'{',
+						String.Join(",",genericInstanceType.GenericArguments.Select(x => GetCref(x, true))),
+						'}'
+					);
+				}
+
+				typeParts.Insert(0, currentTypeName);
 				if (currentType.IsNested) {
 					Contract.Assume(null != currentType.DeclaringType);
 					currentType = currentType.DeclaringType;
@@ -201,28 +246,14 @@ namespace DandyDoc.Core.Overlays.Cref
 			}
 
 			var ns = currentType.Namespace;
-			var cref = String.Join(".", typeParts);
-			
+			cref = String.Join(".", typeParts);
+
 			if (!String.IsNullOrEmpty(ns))
 				cref = ns + '.' + cref;
 
 			if (!hideCrefType)
 				cref = "T:" + cref;
 			return cref;
-		}
-
-		public string GetCref(TypeReference typeRef, bool hideCrefType = false) {
-			var resolved = typeRef.Resolve();
-			if (null != resolved) {
-				return GetCref(resolved, hideCrefType);
-			}
-			if (typeRef.IsGenericParameter) {
-				var cref = typeRef.Name;
-				if (!hideCrefType)
-					cref = "G:" + cref;
-				return cref;
-			}
-			throw new NotImplementedException();
 		}
 
 		private string GetCrefParamTypeName(ParameterDefinition parameterDefinition) {
@@ -248,6 +279,9 @@ namespace DandyDoc.Core.Overlays.Cref
 			if (null != methodDefinition) {
 				if (methodDefinition.IsConstructor && memberCref.Length > 1 && memberCref[0] == '.') {
 					memberCref = '#' + memberCref.Substring(1);
+				}
+				else if (methodDefinition.HasGenericParameters){
+					memberCref += String.Concat("``", methodDefinition.GenericParameters.Count);
 				}
 				if (methodDefinition.HasParameters) {
 					memberCref += '(' + String.Join(",", methodDefinition.Parameters.Select(GetCrefParamTypeName)) + ')';

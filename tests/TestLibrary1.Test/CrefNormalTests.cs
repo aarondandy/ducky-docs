@@ -9,7 +9,7 @@ namespace TestLibrary1.Test
 {
 
 	[TestFixture]
-	public class CrefTests
+	public class CrefNormalTests
 	{
 
 		private AssemblyDefinition GetAssembly() {
@@ -137,7 +137,7 @@ namespace TestLibrary1.Test
 		}
 
 		[Test]
-		public void cref_to_normal_delegae() {
+		public void cref_to_normal_delegate() {
 			var assembly = GetAssembly();
 			var crefOverlay = new CrefOverlay(new AssemblyDefinitionCollection { assembly });
 			var del = crefOverlay.GetTypeDefinition("T:TestLibrary1.Class1.MyFunc") as TypeDefinition;

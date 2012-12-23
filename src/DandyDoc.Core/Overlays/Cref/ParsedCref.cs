@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace DandyDoc.Core.Overlays.Cref
 {
@@ -57,7 +56,38 @@ namespace DandyDoc.Core.Overlays.Cref
 			get {
 				if (String.IsNullOrEmpty(ParamParts))
 					return new string[0];
-				return ParamParts.Split(',');
+
+				var results = new List<String>();
+				int depth = 0;
+				int partStartIndex = 0;
+				for (int i = 0; i < ParamParts.Length; i++){
+					var c = ParamParts[i];
+					switch (c){
+						case ',':
+							if (depth == 0){
+								results.Add(ParamParts.Substring(partStartIndex, i - partStartIndex));
+								partStartIndex = i + 1;
+							}
+							break;
+						case '[':
+						case '(':
+						case '<':
+						case '{':
+							depth++;
+							break;
+						case ']':
+						case ')':
+						case '>':
+						case '}':
+							depth--;
+							break;
+					}
+				}
+
+				if (partStartIndex < ParamParts.Length)
+					results.Add(ParamParts.Substring(partStartIndex));
+
+				return results.ToArray();
 			}
 		}
 
