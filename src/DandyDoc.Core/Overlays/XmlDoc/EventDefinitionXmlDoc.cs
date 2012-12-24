@@ -10,18 +10,18 @@ using Mono.Cecil;
 
 namespace DandyDoc.Core.Overlays.XmlDoc
 {
-	public class TypeDefinitionXmlDoc : DefinitionXmlDocBase
+	public class EventDefinitionXmlDoc : DefinitionXmlDocBase
 	{
 
-		internal TypeDefinitionXmlDoc(TypeDefinition typeDefinition, XmlNode xmlNode, CrefOverlay crefOverlay)
-			: base(typeDefinition, xmlNode, crefOverlay)
+		internal EventDefinitionXmlDoc(EventDefinition definition, XmlNode xmlNode, CrefOverlay crefOverlay)
+			: base(definition, xmlNode, crefOverlay)
 		{
-			Contract.Requires(null != typeDefinition);
+			Contract.Requires(null != definition);
 			Contract.Requires(null != xmlNode);
 			Contract.Requires(null != crefOverlay);
 		}
 
-		public TypeDefinition TypeDefinition { get { return (TypeDefinition)Definition; } }
+		new public EventDefinition Definition { get { return (EventDefinition)(base.Definition); } }
 
 	}
 }

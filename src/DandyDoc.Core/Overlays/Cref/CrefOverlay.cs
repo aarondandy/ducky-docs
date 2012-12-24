@@ -267,22 +267,26 @@ namespace DandyDoc.Core.Overlays.Cref
 			return GetCref(parameterDefinition.ParameterType, true);
 		}
 
-		public string GetCref(IMemberDefinition memberDef, bool hideCrefType = false) {
-			if(null == memberDef) throw new ArgumentNullException("memberDef");
+		public string GetCref(MemberReference memberRef, bool hideCrefType = false) {
+			if(null == memberRef) throw new ArgumentNullException("memberRef");
 			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
 
-			var type = memberDef.DeclaringType;
+			if (memberRef is TypeDefinition) {
+				return GetCref((TypeDefinition)memberRef, hideCrefType);
+			}
+
+			var type = memberRef.DeclaringType;
 			if (null == type) {
 				throw new InvalidOperationException("The given member has an invalid declaring type.");
 			}
 			var typeCref = GetCref(type, true);
-			var memberCref = memberDef.Name;
+			var memberCref = memberRef.Name;
 			if(String.IsNullOrEmpty(memberCref))
 				throw new InvalidOperationException("The given member has an invalid name.");
 
 			char crefTypePrefix;
 
-			var methodDefinition = memberDef as MethodDefinition;
+			var methodDefinition = memberRef as MethodDefinition;
 			if (null != methodDefinition) {
 				if (methodDefinition.IsConstructor && memberCref.Length > 1 && memberCref[0] == '.') {
 					memberCref = '#' + memberCref.Substring(1);
@@ -295,21 +299,21 @@ namespace DandyDoc.Core.Overlays.Cref
 				}
 				crefTypePrefix = 'M';
 			}
-			else if (memberDef is PropertyDefinition) {
-				var propertyDefinition = ((PropertyDefinition)memberDef);
+			else if (memberRef is PropertyDefinition) {
+				var propertyDefinition = ((PropertyDefinition)memberRef);
 				if (propertyDefinition.HasParameters) {
 					memberCref += '(' + String.Join(",", propertyDefinition.Parameters.Select(GetCrefParamTypeName)) + ')';
 				}
 				crefTypePrefix = 'P';
 			}
-			else if (memberDef is FieldDefinition) {
+			else if (memberRef is FieldDefinition) {
 				crefTypePrefix = 'F';
 			}
-			else if (memberDef is EventDefinition) {
+			else if (memberRef is EventDefinition) {
 				crefTypePrefix = 'E';
 			}
 			else {
-				throw new NotImplementedException();
+				throw new NotSupportedException();
 			}
 
 			var cref = typeCref + '.' + memberCref;

@@ -1,22 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
-using DandyDoc.Core.Overlays.Cref;
 
 namespace DandyDoc.Core.Overlays.XmlDoc
 {
 	public abstract class ParsedXmlElementBase : ParsedXmlNodeBase
 	{
 
-		protected ParsedXmlElementBase(XmlElement element, CrefOverlay crefOverlay)
-			: base(element, crefOverlay)
+		protected ParsedXmlElementBase(XmlElement element, DefinitionXmlDocBase xmlDocBase)
+			: base(element, xmlDocBase)
 		{
-			if(null == element) throw new ArgumentNullException("element");
-			if(null == crefOverlay) throw new ArgumentNullException("crefOverlay");
+			if (null == element) throw new ArgumentNullException("element");
+			if (null == xmlDocBase) throw new ArgumentNullException("xmlDocBase");
 			Contract.EndContractBlock();
 		}
 

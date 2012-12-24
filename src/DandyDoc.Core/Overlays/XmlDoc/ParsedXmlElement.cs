@@ -12,11 +12,11 @@ namespace DandyDoc.Core.Overlays.XmlDoc
 	public class ParsedXmlElement : ParsedXmlElementBase
 	{
 
-		public ParsedXmlElement(XmlElement element, CrefOverlay crefOverlay)
-			: base(element, crefOverlay)
+		public ParsedXmlElement(XmlElement element, DefinitionXmlDocBase docBase)
+			: base(element, docBase)
 		{
 			if(null == element) throw new ArgumentNullException("element");
-			if(null == crefOverlay) throw new ArgumentNullException("crefOverlay");
+			if (null == docBase) throw new ArgumentNullException("docBase");
 			Contract.EndContractBlock();
 		}
 

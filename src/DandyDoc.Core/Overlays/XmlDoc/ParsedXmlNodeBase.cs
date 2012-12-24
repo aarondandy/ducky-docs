@@ -13,9 +13,9 @@ namespace DandyDoc.Core.Overlays.XmlDoc
 	public abstract class ParsedXmlNodeBase
 	{
 
-		public static ParsedXmlNodeBase Parse(XmlNode node, CrefOverlay crefOverlay){
+		public static ParsedXmlNodeBase Parse(XmlNode node, DefinitionXmlDocBase docBase){
 			if(null == node) throw new ArgumentNullException("node");
-			if(null == crefOverlay) throw new ArgumentNullException("crefOverlay");
+			if (null == docBase) throw new ArgumentNullException("docBase");
 			Contract.EndContractBlock();
 
 			var element = node as XmlElement;
@@ -23,24 +23,26 @@ namespace DandyDoc.Core.Overlays.XmlDoc
 				if ("SEE".Equals(element.Name, StringComparison.OrdinalIgnoreCase)){
 					throw new NotImplementedException();
 				}
-				return new ParsedXmlElement(element, crefOverlay);
+				return new ParsedXmlElement(element, docBase);
 			}
 			else {
 				throw new NotImplementedException();
 			}
 		}
 
-		public ParsedXmlNodeBase(XmlNode node, CrefOverlay crefOverlay) {
+		public ParsedXmlNodeBase(XmlNode node, DefinitionXmlDocBase docBase) {
 			if(null == node) throw new ArgumentNullException("node");
-			if(null == crefOverlay) throw new ArgumentNullException("crefOverlay");
+			if (null == docBase) throw new ArgumentNullException("docBase");
 			Contract.EndContractBlock();
 			Node = node;
-			CrefOverlay = crefOverlay;
+			DocBase = docBase;
 		}
+
+		public DefinitionXmlDocBase DocBase { get; private set; }
 
 		public XmlNode Node { get; private set; }
 
-		public CrefOverlay CrefOverlay { get; private set; }
+		public CrefOverlay CrefOverlay { get { return DocBase.CrefOverlay; } }
 
 		public string NormalizedOuterXml{
 			get{

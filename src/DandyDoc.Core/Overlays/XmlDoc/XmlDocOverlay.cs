@@ -63,22 +63,70 @@ namespace DandyDoc.Core.Overlays.XmlDoc
 			return _xmlDocRootCache.GetOrAdd(assemblyDefinition, Load);
 		}
 
-		public IDefinitionXmlDoc GetDocumentation(TypeDefinition definition){
+		public DefinitionXmlDocBase GetDocumentation(IMemberDefinition definition) {
 			if(null == definition) throw new ArgumentNullException("definition");
 			Contract.EndContractBlock();
 
-			var cref = CrefOverlay.GetCref(definition, false);
-			var doc = GetDocumentForAssembly(definition.Module.Assembly);
-			if (null == doc)
-				return null;
+			if (definition is TypeDefinition)
+				return GetDocumentation((TypeDefinition)definition);
+			if (definition is MethodDefinition)
+				return GetDocumentation((MethodDefinition)definition);
+			if (definition is PropertyDefinition)
+				return GetDocumentation((PropertyDefinition)definition);
+			if (definition is FieldDefinition)
+				return GetDocumentation((FieldDefinition)definition);
+			if (definition is EventDefinition)
+				return GetDocumentation((EventDefinition)definition);
+			throw new NotImplementedException();
+		}
 
-			var node = doc.SelectSingleNode(String.Format("/doc/members/member[@name=\"{0}\"]", cref));
-			if (null == node)
-				return null;
+		public TypeDefinitionXmlDoc GetDocumentation(TypeDefinition definition) {
+			if (null == definition) throw new ArgumentNullException("definition");
+			Contract.EndContractBlock();
+			var node = GetNodeForDefinition(definition);
 
+			if(definition.BaseType.FullName == "System.MulticastDelegate")
+				return new DelegateTypeDefinitionXmlDoc(definition, node, CrefOverlay);
 			return new TypeDefinitionXmlDoc(definition, node, CrefOverlay);
 		}
 
+		public MethodDefinitionXmlDoc GetDocumentation(MethodDefinition definition) {
+			if (null == definition) throw new ArgumentNullException("definition");
+			Contract.EndContractBlock();
+			var node = GetNodeForDefinition(definition);
+			return null == node ? null : new MethodDefinitionXmlDoc(definition, node, CrefOverlay);
+		}
+
+		public PropertyDefinitionXmlDoc GetDocumentation(PropertyDefinition definition) {
+			if (null == definition) throw new ArgumentNullException("definition");
+			Contract.EndContractBlock();
+			var node = GetNodeForDefinition(definition);
+			return null == node ? null : new PropertyDefinitionXmlDoc(definition, node, CrefOverlay);
+		}
+
+		public FieldDefinitionXmlDoc GetDocumentation(FieldDefinition definition) {
+			if (null == definition) throw new ArgumentNullException("definition");
+			Contract.EndContractBlock();
+			var node = GetNodeForDefinition(definition);
+			return null == node ? null : new FieldDefinitionXmlDoc(definition, node, CrefOverlay);
+		}
+
+		public EventDefinitionXmlDoc GetDocumentation(EventDefinition definition) {
+			if (null == definition) throw new ArgumentNullException("definition");
+			Contract.EndContractBlock();
+			var node = GetNodeForDefinition(definition);
+			return null == node ? null : new EventDefinitionXmlDoc(definition, node, CrefOverlay);
+		}
+
+		private XmlNode GetNodeForDefinition(MemberReference definition) {
+			Contract.Requires(null != definition);
+			var doc = GetDocumentForAssembly(definition.Module.Assembly);
+			if (null == doc)
+				return null;
+			var cref = CrefOverlay.GetCref(definition, false);
+			return doc.SelectSingleNode(
+				String.Format("/doc/members/member[@name=\"{0}\"]", cref));
+		}
 
 		public CrefOverlay CrefOverlay { get; private set; }
 
