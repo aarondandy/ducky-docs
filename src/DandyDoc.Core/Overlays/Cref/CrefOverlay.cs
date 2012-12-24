@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Mono.Cecil;
 
 namespace DandyDoc.Core.Overlays.Cref
@@ -20,7 +18,9 @@ namespace DandyDoc.Core.Overlays.Cref
 		public AssemblyDefinitionCollection AssemblyDefinitionCollection { get; private set; }
 
 		public TypeDefinition GetTypeDefinition(string cref) {
-			var parsedCref = ParsedCref.Parse(cref);
+			if(String.IsNullOrEmpty(cref)) throw new ArgumentException("Invalid cref.", "cref");
+			Contract.EndContractBlock();
+			var parsedCref = new ParsedCref(cref);
 			if (!String.IsNullOrEmpty(parsedCref.TargetType) && !String.Equals("T", parsedCref.TargetType, StringComparison.OrdinalIgnoreCase))
 				return null;
 			if (!String.IsNullOrEmpty(parsedCref.ParamParts))
@@ -36,7 +36,7 @@ namespace DandyDoc.Core.Overlays.Cref
 		private TypeDefinition GetTypeDefinition(AssemblyDefinition assemblyDefinition, string typeName) {
 			Contract.Requires(null != assemblyDefinition);
 			Contract.Requires(!String.IsNullOrEmpty(typeName));
-
+			Contract.Assume(null != assemblyDefinition.Modules);
 			foreach (var type in assemblyDefinition.Modules.SelectMany(x => x.Types)) {
 				var typeNamespace = type.Namespace;
 				if(typeName.Length <= typeNamespace.Length)
@@ -80,7 +80,10 @@ namespace DandyDoc.Core.Overlays.Cref
 		}
 
 		public IMemberDefinition GetMemberDefinition(string cref) {
-			var parsedCref = ParsedCref.Parse(cref);
+			if(String.IsNullOrEmpty(cref)) throw new ArgumentException("Invalid cref.", "cref");
+			Contract.EndContractBlock();
+
+			var parsedCref = new ParsedCref(cref);
 			if (!String.IsNullOrEmpty(parsedCref.TargetType) && String.Equals("T", parsedCref.TargetType, StringComparison.OrdinalIgnoreCase))
 				return null;
 			return AssemblyDefinitionCollection.Select(x => GetMemberDefinition(x, parsedCref)).FirstOrDefault(x => null != x);
@@ -100,6 +103,7 @@ namespace DandyDoc.Core.Overlays.Cref
 				return null;
 
 			var memberName = parsedCref.CoreName.Substring(lastDotIndex+1);
+			Contract.Assume(!String.IsNullOrEmpty(memberName));
 
 			if (String.IsNullOrEmpty(parsedCref.TargetType)) {
 				var paramTypes = parsedCref.ParamPartTypes;
@@ -127,7 +131,9 @@ namespace DandyDoc.Core.Overlays.Cref
 			}
 		}
 
-		private bool MethodMatches(MethodDefinition methodDefinition, string nameTest, string[] paramTypeTest) {
+		private bool MethodMatches(MethodDefinition methodDefinition, string nameTest, string[] paramTypeTest){
+			Contract.Requires(null != methodDefinition);
+			Contract.Requires(!String.IsNullOrEmpty(nameTest));
 			if (nameTest[0] == '#' && methodDefinition.Name[0] == '.') {
 				if (nameTest.Length != methodDefinition.Name.Length)
 					return false;
@@ -149,62 +155,60 @@ namespace DandyDoc.Core.Overlays.Cref
 				}
 			}
 
-			if (methodDefinition.HasParameters) {
-				if (null == paramTypeTest)
-					return false;
-				var methodParams = methodDefinition.Parameters;
-				if (paramTypeTest.Length != methodParams.Count)
-					return false;
-				for (int i = 0; i < paramTypeTest.Length; i++) {
-					var methodParamType = methodParams[i].ParameterType;
-					var methodParamCref = GetCref(methodParamType, true);
-					if (!String.Equals(paramTypeTest[i], methodParamCref))
-						return false;
-				}
-				return true;
-			}
-			else {
-				return null == paramTypeTest || paramTypeTest.Length == 0;
-			}
+			return methodDefinition.HasParameters
+				? ParametersMatch(methodDefinition.Parameters, paramTypeTest)
+				: null == paramTypeTest || paramTypeTest.Length == 0;
 		}
 
-		private bool PropertyMatches(PropertyDefinition propertyDefinition, string nameTest, string[] paramTypeTest) {
+		private bool PropertyMatches(PropertyDefinition propertyDefinition, string nameTest, string[] paramTypeTest){
+			Contract.Requires(null != propertyDefinition);
+			Contract.Requires(!String.IsNullOrEmpty(nameTest));
 			if (!nameTest.Equals(propertyDefinition.Name))
 				return false;
-			if (propertyDefinition.HasParameters) {
-				if (null == paramTypeTest)
+
+			return propertyDefinition.HasParameters
+				? ParametersMatch(propertyDefinition.Parameters, paramTypeTest)
+				: null == paramTypeTest || paramTypeTest.Length == 0;
+		}
+
+		private bool ParametersMatch(IList<ParameterDefinition> parameters, string[] paramTypeTest){
+			Contract.Requires(null != parameters);
+			if (null == paramTypeTest)
+				return false;
+			if (paramTypeTest.Length != parameters.Count)
+				return false;
+			for (int i = 0; i < paramTypeTest.Length; i++) {
+				Contract.Assume(null != parameters[i].ParameterType);
+				if (!String.Equals(paramTypeTest[i], GetCref(parameters[i].ParameterType, true)))
 					return false;
-				var propertyParams = propertyDefinition.Parameters;
-				if (paramTypeTest.Length != propertyParams.Count)
-					return false;
-				for (int i = 0; i < paramTypeTest.Length; i++) {
-					var propertyParamType = propertyParams[i].ParameterType;
-					if (!String.Equals(paramTypeTest[i], propertyParamType.FullName))
-						return false;
-				}
-				return true;
 			}
-			else {
-				return null == paramTypeTest || paramTypeTest.Length == 0;
-			}
+			return true;
 		}
 
 		private bool FieldMatches(FieldDefinition fieldDefinition, string nameTest) {
+			Contract.Requires(null != fieldDefinition);
+			Contract.Requires(!String.IsNullOrEmpty(nameTest));
 			return nameTest.Equals(fieldDefinition.Name);
 		}
 
 		private bool EventMatches(EventDefinition eventDefinition, string nameTest) {
+			Contract.Requires(null != eventDefinition);
+			Contract.Requires(!String.IsNullOrEmpty(nameTest));
 			return nameTest.Equals(eventDefinition.Name);
 		}
 
 		public string GetCref(TypeDefinition typeDef, bool hideCrefType = false){
+			if(null == typeDef) throw new ArgumentNullException("typeDef");
+			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
 			return GetCref((TypeReference) typeDef, hideCrefType);
 		}
 
 		public string GetCref(TypeReference typeRef, bool hideCrefType = false) {
+			if(null == typeRef) throw new ArgumentNullException("typeRef");
+			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
 			string cref;
 			if (typeRef.IsGenericParameter) {
-				//var cref = typeRef.Name;
+				
 				var genericParameter = typeRef as GenericParameter;
 				if (null != genericParameter){
 					var paramIndex = genericParameter.Owner.GenericParameters.IndexOf(genericParameter);
@@ -247,6 +251,7 @@ namespace DandyDoc.Core.Overlays.Cref
 
 			var ns = currentType.Namespace;
 			cref = String.Join(".", typeParts);
+			Contract.Assume(!String.IsNullOrEmpty(cref));
 
 			if (!String.IsNullOrEmpty(ns))
 				cref = ns + '.' + cref;
@@ -258,12 +263,14 @@ namespace DandyDoc.Core.Overlays.Cref
 
 		private string GetCrefParamTypeName(ParameterDefinition parameterDefinition) {
 			Contract.Requires(null != parameterDefinition);
+			Contract.Assume(null != parameterDefinition.ParameterType);
 			return GetCref(parameterDefinition.ParameterType, true);
 		}
 
 		public string GetCref(IMemberDefinition memberDef, bool hideCrefType = false) {
 			if(null == memberDef) throw new ArgumentNullException("memberDef");
-			Contract.EndContractBlock();
+			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
+
 			var type = memberDef.DeclaringType;
 			if (null == type) {
 				throw new InvalidOperationException("The given member has an invalid declaring type.");
@@ -310,6 +317,11 @@ namespace DandyDoc.Core.Overlays.Cref
 				cref = String.Concat(crefTypePrefix, ':', cref);
 
 			return cref;
+		}
+
+		[ContractInvariantMethod]
+		private void CodeContractInvariant(){
+			Contract.Invariant(null != AssemblyDefinitionCollection);
 		}
 
 	}

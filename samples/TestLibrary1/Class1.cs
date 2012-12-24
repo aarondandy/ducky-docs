@@ -12,8 +12,15 @@ namespace TestLibrary1
     public class Class1
 	{
 
+		/// <remarks>
+		/// This is just some class.
+		/// </remarks>
 		public class Inner
 		{
+
+			/// <summary>
+			/// A name.
+			/// </summary>
 			public string Name { get; set; }
 		}
 

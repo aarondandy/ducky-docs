@@ -40,7 +40,10 @@ namespace DandyDoc.Core.Utility
 
 		private static readonly Regex GenericExpandedTypeRegex = new Regex(@"^(.+)[{](.*)[}]$", RegexOptions.Compiled);
 
-		public static bool TryConvertToStandardTypeName(ref string typeName) {
+		public static bool TryConvertToStandardTypeName(ref string typeName){
+			if (String.IsNullOrEmpty(typeName))
+				return false;
+
 			var match = GenericExpandedTypeRegex.Match(typeName);
 			if (!match.Success)
 				return false;
@@ -57,7 +60,10 @@ namespace DandyDoc.Core.Utility
 
 		private static readonly Regex GenericTypeNameRegex = new Regex(@"^(.+)[`](\d+)$", RegexOptions.Compiled);
 
-		public static string TypeNameWithoutGenericParameterCountSuffix(string typeName) {
+		public static string TypeNameWithoutGenericParameterCountSuffix(string typeName){
+			if (String.IsNullOrEmpty(typeName))
+				return typeName;
+
 			var match = GenericTypeNameRegex.Match(typeName);
 			if (!match.Success)
 				return typeName;

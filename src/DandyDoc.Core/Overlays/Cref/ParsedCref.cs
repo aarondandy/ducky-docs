@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Diagnostics.Contracts;
 using System.Text.RegularExpressions;
 
 namespace DandyDoc.Core.Overlays.Cref
@@ -9,15 +8,14 @@ namespace DandyDoc.Core.Overlays.Cref
 	public class ParsedCref
 	{
 
-		public static ParsedCref Parse(string cref) {
-			return new ParsedCref(cref);
-		}
-
 		private static readonly Regex CrefRegex = new Regex(
 			@"((?<targetType>\w)[:])?(?<coreName>[^()]+)([(](?<params>.*)[)])?",
 			RegexOptions.Compiled);
 
 		public ParsedCref(string cref) {
+			if(String.IsNullOrEmpty(cref)) throw new ArgumentException("Invalid cref.", "cref");
+			Contract.EndContractBlock();
+
 			Cref = cref;
 
 			var match = CrefRegex.Match(cref);
@@ -55,7 +53,7 @@ namespace DandyDoc.Core.Overlays.Cref
 		public string[] ParamPartTypes {
 			get {
 				if (String.IsNullOrEmpty(ParamParts))
-					return new string[0];
+					return null;
 
 				var results = new List<String>();
 				int depth = 0;
@@ -89,6 +87,11 @@ namespace DandyDoc.Core.Overlays.Cref
 
 				return results.ToArray();
 			}
+		}
+
+		[ContractInvariantMethod]
+		private void CodeContractInvariant(){
+			Contract.Invariant(!String.IsNullOrEmpty(Cref));
 		}
 
 	}

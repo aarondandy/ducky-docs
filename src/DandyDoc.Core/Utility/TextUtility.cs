@@ -13,7 +13,9 @@ namespace DandyDoc.Core.Utility
 
 		private static readonly Regex EndSpaceRegex = new Regex(@"\n([ \t]*)$", RegexOptions.Compiled);
 
-		public static string ExtractIndentedNormalizedInnerText(string rawInnerText) {
+		public static string ExtractIndentedNormalizedInnerText(string rawInnerText){
+			if (String.IsNullOrEmpty(rawInnerText))
+				return rawInnerText;
 			var match = EndSpaceRegex.Match(rawInnerText);
 			if (!match.Success)
 				return rawInnerText;
