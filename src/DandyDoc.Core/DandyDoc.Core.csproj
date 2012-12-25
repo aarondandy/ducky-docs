@@ -130,9 +130,13 @@
     <Compile Include="Overlays\XmlDoc\FieldDefinitionXmlDoc.cs" />
     <Compile Include="Overlays\XmlDoc\MethodDefinitionXmlDoc.cs" />
     <Compile Include="Overlays\XmlDoc\ParameterizedXmlDocBase.cs" />
+    <Compile Include="Overlays\XmlDoc\ParsedCrefXmlElementBase.cs" />
+    <Compile Include="Overlays\XmlDoc\ParsedXmlCode.cs" />
     <Compile Include="Overlays\XmlDoc\ParsedXmlElement.cs" />
     <Compile Include="Overlays\XmlDoc\ParsedXmlElementBase.cs" />
+    <Compile Include="Overlays\XmlDoc\ParsedXmlException.cs" />
     <Compile Include="Overlays\XmlDoc\ParsedXmlNodeBase.cs" />
+    <Compile Include="Overlays\XmlDoc\ParsedXmlTextNode.cs" />
     <Compile Include="Overlays\XmlDoc\PropertyDefinitionXmlDoc.cs" />
     <Compile Include="Overlays\XmlDoc\TypeDefinitionXmlDoc.cs" />
     <Compile Include="Overlays\XmlDoc\XmlDocOverlay.cs" />

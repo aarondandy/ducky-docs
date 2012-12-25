@@ -57,6 +57,8 @@ namespace TestLibrary1
 		/// <param name="a">The left hand parameter.</param>
 		/// <param name="b">The right hand parameter.</param>
 		/// <returns>Nope!</returns>
+		/// <exception cref="System.NotImplementedException">This is not implemented.</exception>
+		/// <exception cref="System.NotImplementedException">This is a duplicate.</exception>
 		public static Class1 operator +(Class1 a, Class1 b) {
 			throw new NotImplementedException();
 		}
@@ -109,7 +111,7 @@ namespace TestLibrary1
 		}
 
 		/// <summary>
-		/// Doubles the given value.
+		/// Doubles the given value like so: <c>result = value + value</c>.
 		/// </summary>
 		/// <param name="n">The value to double.</param>
 		/// <returns>The result of doubling the value.</returns>

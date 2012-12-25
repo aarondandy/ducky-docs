@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using DandyDoc.Core;
 using DandyDoc.Core.Overlays.Cref;
 using DandyDoc.Core.Overlays.XmlDoc;
@@ -152,6 +148,37 @@ namespace TestLibrary1.Test
 			var docs = XmlDocOverlay.GetDocumentation(e) as EventDefinitionXmlDoc;
 			Assert.IsNotNull(docs);
 			Assert.AreEqual("My event!", docs.Summary.NormalizedInnerXml);
+		}
+
+		[Test]
+		public void read_exception_from_method(){
+			var op = CrefOverlay.GetMemberDefinition("M:TestLibrary1.Class1.op_Addition(TestLibrary1.Class1,TestLibrary1.Class1)");
+			var docs = XmlDocOverlay.GetDocumentation(op) as ParameterizedXmlDocBase;
+			Assert.IsNotNull(docs);
+			Assert.AreEqual(2, docs.Exceptions.Count);
+			Assert.AreEqual("This is not implemented.", docs.Exceptions[0].NormalizedInnerXml);
+			Assert.That(docs.Exceptions.Cast<ParsedXmlException>().Select(x => x.Cref), Has.All.EqualTo("T:System.NotImplementedException"));
+		}
+
+		[Test]
+		public void read_inline_code_from_method(){
+			var method = CrefOverlay.GetMemberDefinition("M:TestLibrary1.Class1.DoubleStatic(System.Double)");
+			var docs = XmlDocOverlay.GetDocumentation(method) as ParameterizedXmlDocBase;
+			Assert.IsNotNull(docs);
+			var codeElement = docs.Summary.Children.OfType<ParsedXmlCode>().Single();
+			Assert.AreEqual(true, codeElement.Inline);
+			Assert.AreEqual("result = value + value", codeElement.NormalizedInnerXml);
+		}
+
+		[Test]
+		public void read_text_nodes_from_method(){
+			var method = CrefOverlay.GetMemberDefinition("M:TestLibrary1.Class1.DoubleStatic(System.Double)");
+			var docs = XmlDocOverlay.GetDocumentation(method) as ParameterizedXmlDocBase;
+			Assert.IsNotNull(docs);
+			var codeElement = docs.Summary.Children.OfType<ParsedXmlTextNode>().ToList();
+			Assert.AreEqual(2, codeElement.Count);
+			Assert.AreEqual("Doubles the given value like so: ", codeElement[0].NormalizedOuterXml);
+			Assert.AreEqual(".", codeElement[1].NormalizedOuterXml);
 		}
 
 	}

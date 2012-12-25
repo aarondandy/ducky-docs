@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using DandyDoc.Core.Overlays.Cref;
 using Mono.Cecil;
@@ -44,6 +42,18 @@ namespace DandyDoc.Core.Overlays.XmlDoc
 			return null == node
 				? null
 				: ParsedXmlNodeBase.Parse(node, this);
+		}
+
+		public virtual IList<ParsedXmlNodeBase> SelectParsedXmlNodes(string query) {
+			if (String.IsNullOrEmpty(query)) throw new ArgumentException("Invalid query.", "query");
+			Contract.EndContractBlock();
+			var nodes = Node.SelectNodes(query);
+			if (null == nodes)
+				return null;
+			return nodes
+				.Cast<XmlNode>()
+				.Select(n => ParsedXmlNodeBase.Parse(n, this))
+				.ToList();
 		}
 
 		[ContractInvariantMethod]

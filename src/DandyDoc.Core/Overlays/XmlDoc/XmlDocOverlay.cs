@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using DandyDoc.Core.Overlays.Cref;
+using DandyDoc.Core.Utility;
 using Mono.Cecil;
 using System.IO;
 
@@ -55,6 +56,19 @@ namespace DandyDoc.Core.Overlays.XmlDoc
 
 			var result = new XmlDocument();
 			result.Load(xmlFilePath.FullName);
+			var members = result.SelectNodes("/doc/members/member");
+			if (null == members)
+				return result;
+
+			foreach (var member in members.Cast<XmlElement>()){
+				var subElements = member.ChildNodes.OfType<XmlElement>().ToList();
+				foreach (var subElement in subElements) {
+					var replacement = result.CreateDocumentFragment();
+					replacement.InnerXml = TextUtility.NormalizeAndUnindentElement(subElement.OuterXml) + "\n";
+					Contract.Assume(null != subElement.ParentNode);
+					subElement.ParentNode.ReplaceChild(replacement, subElement);
+				}
+			}
 			return result;
 		}
 
@@ -120,6 +134,7 @@ namespace DandyDoc.Core.Overlays.XmlDoc
 
 		private XmlNode GetNodeForDefinition(MemberReference definition) {
 			Contract.Requires(null != definition);
+			Contract.Assume(null != definition.Module.Assembly);
 			var doc = GetDocumentForAssembly(definition.Module.Assembly);
 			if (null == doc)
 				return null;

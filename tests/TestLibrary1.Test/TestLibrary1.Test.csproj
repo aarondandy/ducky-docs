@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyDefinition.cs" />
+    <Compile Include="CodeContractXmlDocOverlayTest.cs" />
     <Compile Include="CrefGenericTests.cs" />
     <Compile Include="CrefNormalTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

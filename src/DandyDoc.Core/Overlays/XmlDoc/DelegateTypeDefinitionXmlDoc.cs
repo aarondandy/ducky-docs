@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using DandyDoc.Core.Overlays.Cref;
 using Mono.Cecil;
@@ -28,6 +25,8 @@ namespace DandyDoc.Core.Overlays.XmlDoc
 		}
 
 		public ParsedXmlNodeBase Returns { get { return SelectParsedXmlNode("returns"); } }
+
+		public IList<ParsedXmlNodeBase> Exceptions { get { return SelectParsedXmlNodes("exception"); } }
 
 	}
 }
