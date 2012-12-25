@@ -32,6 +32,8 @@ namespace DandyDoc.Core.Overlays.XmlDoc
 					return new ParsedXmlParagraphElement(element, docBase);
 				if ("PARAMREF".Equals(element.Name, StringComparison.OrdinalIgnoreCase))
 					return new ParsedXmlParamrefElement(element, docBase);
+				if ("TYPEPARAMREF".Equals(element.Name, StringComparison.OrdinalIgnoreCase))
+					return new ParsedXmlTypeparamrefElement(element, docBase);
 				if ("SEE".Equals(element.Name, StringComparison.OrdinalIgnoreCase) || "SEEALSO".Equals(element.Name, StringComparison.OrdinalIgnoreCase))
 					return new ParsedXmlSeeElement(element, docBase);
 				if(

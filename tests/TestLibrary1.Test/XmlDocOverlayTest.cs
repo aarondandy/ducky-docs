@@ -298,5 +298,33 @@ namespace TestLibrary1.Test
 			Assert.IsNotNull(docs.SeeAlso[1].CrefTarget);
 		}
 
+		[Test]
+		public void typeparamref_on_self_class(){
+			var c = CrefOverlay.GetTypeDefinition("T:TestLibrary1.Generic1`2");
+			var docs = XmlDocOverlay.GetDocumentation(c);
+			var typeparamref = docs.Summary.Children.OfType<ParsedXmlTypeparamrefElement>().Single();
+			Assert.AreEqual("TA", typeparamref.TypeparamName);
+			Assert.IsNotNull(typeparamref.Target);
+		}
+
+		[Test]
+		public void typeparamref_to_parent_class(){
+			var m = CrefOverlay.GetMemberDefinition(
+				"M:TestLibrary1.Generic1`2.op_Addition(TestLibrary1.Generic1{System.Int32,System.Int32[]},TestLibrary1.Generic1{`0,`1})");
+			var docs = XmlDocOverlay.GetDocumentation(m);
+			var typeparamref = docs.Summary.Children.OfType<ParsedXmlTypeparamrefElement>().Single();
+			Assert.AreEqual("TA", typeparamref.TypeparamName);
+			Assert.IsNotNull(typeparamref.Target);
+		}
+
+		[Test]
+		public void typeparamref_to_delegate_generic(){
+			var d = CrefOverlay.GetTypeDefinition("T:TestLibrary1.Generic1`2.MyFunc`1");
+			var docs = XmlDocOverlay.GetDocumentation(d);
+			var typeparamref = docs.Summary.Children.OfType<ParsedXmlTypeparamrefElement>().Single();
+			Assert.AreEqual("TX",typeparamref.TypeparamName);
+			Assert.IsNotNull(typeparamref.Target);
+		}
+
 	}
 }

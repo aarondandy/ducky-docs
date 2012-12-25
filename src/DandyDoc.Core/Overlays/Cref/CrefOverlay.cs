@@ -6,6 +6,10 @@ using Mono.Cecil;
 
 namespace DandyDoc.Core.Overlays.Cref
 {
+
+	/// <summary>
+	/// A documentation overlay which can translate between Cecil references and XML documentation cref hyperlinks.
+	/// </summary>
 	public class CrefOverlay
 	{
 
@@ -22,10 +26,9 @@ namespace DandyDoc.Core.Overlays.Cref
 			Contract.EndContractBlock();
 			if (cref.StartsWith("T:", StringComparison.OrdinalIgnoreCase))
 				return GetTypeDefinition(cref);
-			if (cref.Length > 2 && cref[1] == ':')
+			if (cref.Length >= 2 && cref[1] == ':')
 				return GetMemberDefinition(cref) as MemberReference;
 			return GetTypeDefinition(cref) ?? (GetMemberDefinition(cref) as MemberReference);
-
 		}
 
 		public TypeDefinition GetTypeDefinition(string cref) {
@@ -208,28 +211,18 @@ namespace DandyDoc.Core.Overlays.Cref
 			return nameTest.Equals(eventDefinition.Name);
 		}
 
-		public string GetCref(TypeDefinition typeDef, bool hideCrefType = false){
-			if(null == typeDef) throw new ArgumentNullException("typeDef");
-			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
-			return GetCref((TypeReference) typeDef, hideCrefType);
-		}
-
-		public string GetCref(TypeReference typeRef, bool hideCrefType = false) {
+		private string GetCref(TypeReference typeRef, bool hideCrefType = false) {
 			if(null == typeRef) throw new ArgumentNullException("typeRef");
 			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
-			string cref;
+			
 			if (typeRef.IsGenericParameter) {
-				
 				var genericParameter = typeRef as GenericParameter;
 				if (null != genericParameter){
 					var paramIndex = genericParameter.Owner.GenericParameters.IndexOf(genericParameter);
-					cref = String.Concat(
+					return String.Concat(
 						genericParameter.Owner is TypeDefinition ? "`" : "``",
-						paramIndex);
-
-					if (!hideCrefType)
-						cref = "G:" + cref;
-					return cref;
+						paramIndex
+					);
 				}
 			}
 
@@ -261,7 +254,7 @@ namespace DandyDoc.Core.Overlays.Cref
 			}
 
 			var ns = currentType.Namespace;
-			cref = String.Join(".", typeParts);
+			var cref = String.Join(".", typeParts);
 			Contract.Assume(!String.IsNullOrEmpty(cref));
 
 			if (!String.IsNullOrEmpty(ns))
@@ -278,12 +271,24 @@ namespace DandyDoc.Core.Overlays.Cref
 			return GetCref(parameterDefinition.ParameterType, true);
 		}
 
+		/// <summary>
+		/// Creates a cref hyperlink for the given member or type.
+		/// </summary>
+		/// <param name="memberRef">The member or type reference to create a cref hyperlink for.</param>
+		/// <param name="hideCrefType">When true the cref target type prefix will be omitted.</param>
+		/// <returns>A cref used for hyperlinking.</returns>
+		/// <remarks>
+		/// <para>
+		/// By default all generated cref hyperlinks will have a prefix specifying the type of target
+		/// the cref points to. Use the <paramref name="hideCrefType"/> property to control this behavior.
+		/// </para>
+		/// </remarks>
 		public string GetCref(MemberReference memberRef, bool hideCrefType = false) {
 			if(null == memberRef) throw new ArgumentNullException("memberRef");
 			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
 
-			if (memberRef is TypeDefinition) {
-				return GetCref((TypeDefinition)memberRef, hideCrefType);
+			if (memberRef is TypeReference) {
+				return GetCref((TypeReference)memberRef, hideCrefType);
 			}
 
 			var type = memberRef.DeclaringType;

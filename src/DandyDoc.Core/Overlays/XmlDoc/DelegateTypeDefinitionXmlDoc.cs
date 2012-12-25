@@ -28,7 +28,10 @@ namespace DandyDoc.Core.Overlays.XmlDoc
 		public ParsedXmlNodeBase Returns { get { return SelectParsedXmlNode("returns"); } }
 
 		public IList<ParsedXmlException> Exceptions {
-			get { return SelectParsedXmlNodes("exception").ConvertAll(n => (ParsedXmlException)n); }
+			get{
+				var nodes = SelectParsedXmlNodes("exception");
+				return null == nodes ? null : nodes.ConvertAll(n => (ParsedXmlException)n);
+			}
 		}
 
 	}

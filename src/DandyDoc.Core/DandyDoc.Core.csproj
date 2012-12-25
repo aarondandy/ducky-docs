@@ -144,6 +144,7 @@
     <Compile Include="Overlays\XmlDoc\ParsedXmlPermission.cs" />
     <Compile Include="Overlays\XmlDoc\ParsedXmlSeeElement.cs" />
     <Compile Include="Overlays\XmlDoc\ParsedXmlTextNode.cs" />
+    <Compile Include="Overlays\XmlDoc\ParsedXmlTypeparamrefElement.cs" />
     <Compile Include="Overlays\XmlDoc\PropertyDefinitionXmlDoc.cs" />
     <Compile Include="Overlays\XmlDoc\TypeDefinitionXmlDoc.cs" />
     <Compile Include="Overlays\XmlDoc\XmlDocOverlay.cs" />

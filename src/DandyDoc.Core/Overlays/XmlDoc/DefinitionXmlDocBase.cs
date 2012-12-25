@@ -37,15 +37,24 @@ namespace DandyDoc.Core.Overlays.XmlDoc
 		}
 
 		public virtual IList<ParsedXmlElementBase> Examples {
-			get { return SelectParsedXmlNodes("example").ConvertAll(n => (ParsedXmlElementBase)n); }
+			get{
+				var nodes = SelectParsedXmlNodes("example");
+				return null == nodes ? null : nodes.ConvertAll(n => (ParsedXmlElementBase)n);
+			}
 		}
 
 		public virtual IList<ParsedXmlPermission> Permissions{
-			get { return SelectParsedXmlNodes("permission").ConvertAll(n => (ParsedXmlPermission)n); }
+			get{
+				var nodes = SelectParsedXmlNodes("permission");
+				return null == nodes ? null : nodes.ConvertAll(n => (ParsedXmlPermission)n);
+			}
 		}
 
 		public virtual IList<ParsedXmlSeeElement> SeeAlso{
-			get { return SelectParsedXmlNodes("seealso").ConvertAll(n => (ParsedXmlSeeElement)n); }
+			get{
+				var nodes = SelectParsedXmlNodes("seealso");
+				return null == nodes ? null : nodes.ConvertAll(n => (ParsedXmlSeeElement)n);
+			}
 		} 
 
 		public virtual ParsedXmlNodeBase SelectParsedXmlNode(string query) {

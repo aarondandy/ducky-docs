@@ -6,13 +6,18 @@ using System.Threading.Tasks;
 
 namespace TestLibrary1
 {
+	/// <summary>
+	/// See <typeparamref name="TA"/> for details.
+	/// </summary>
+	/// <typeparam name="TA">A</typeparam>
+	/// <typeparam name="TB">B</typeparam>
 	public class Generic1<TA,TB>
 		where TA:struct
 		where TB:IEnumerable<TA>
 	{
 
 		/// <summary>
-		/// An operator
+		/// An operator. See <typeparamref name="TA"/> for details.
 		/// </summary>
 		/// <param name="a"></param>
 		/// <param name="b"></param>
@@ -108,9 +113,9 @@ namespace TestLibrary1
 		public delegate TB MyFunc(TA a);
 
 		/// <summary>
-		/// A func with its own generic
+		/// A func with its own generic. See <typeparamref name="TX"/> for details.
 		/// </summary>
-		/// <typeparam name="TX"></typeparam>
+		/// <typeparam name="TX">some type</typeparam>
 		/// <param name="a"></param>
 		/// <returns></returns>
 		public delegate TX MyFunc<TX>(TX a);

@@ -21,6 +21,12 @@ namespace DandyDoc.Core.Overlays.XmlDoc
 			Contract.Requires(null != crefOverlay);
 		}
 
+		public ParsedXmlNodeBase DocsForTypeparam(string name) {
+			if (String.IsNullOrEmpty(name)) throw new ArgumentException("Invalid parameter name.", "name");
+			Contract.EndContractBlock();
+			return ParameterizedXmlDocBase.DocsForTypeparam(name, this);
+		}
+
 		public TypeDefinition TypeDefinition { get { return (TypeDefinition)Definition; } }
 
 	}
