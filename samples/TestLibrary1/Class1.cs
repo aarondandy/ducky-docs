@@ -106,6 +106,30 @@ namespace TestLibrary1
 			throw new NotImplementedException();
 		}
 
+		/// <summary>
+		/// <list type="bullet">
+		/// <listheader>
+		/// <term>Col 1</term>
+		/// <description>Col 2</description>
+		/// </listheader>
+		/// <item>
+		/// <term>A term.</term>
+		/// <description>A description.</description>
+		/// </item>
+		/// </list>
+		/// </summary>
+		/// <param name="n"></param>
+		/// <returns></returns>
+		/// <remarks>
+		/// <code>
+		/// This
+		///  is
+		///   some
+		///    text.
+		/// </code>
+		/// </remarks>
+		/// <example>Example 1</example>
+		/// <example>Example 2</example>
 		public static int DoubleStatic(int n) {
 			return n * 2;
 		}

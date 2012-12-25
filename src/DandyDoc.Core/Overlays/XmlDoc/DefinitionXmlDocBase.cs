@@ -35,6 +35,10 @@ namespace DandyDoc.Core.Overlays.XmlDoc
 			get { return SelectParsedXmlNode("remarks"); }
 		}
 
+		public virtual IList<ParsedXmlNodeBase> Examples {
+			get { return SelectParsedXmlNodes("example"); }
+		} 
+
 		public virtual ParsedXmlNodeBase SelectParsedXmlNode(string query) {
 			if (String.IsNullOrEmpty(query)) throw new ArgumentException("Invalid query.", "query");
 			Contract.EndContractBlock();

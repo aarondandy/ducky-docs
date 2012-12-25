@@ -135,6 +135,8 @@
     <Compile Include="Overlays\XmlDoc\ParsedXmlElement.cs" />
     <Compile Include="Overlays\XmlDoc\ParsedXmlElementBase.cs" />
     <Compile Include="Overlays\XmlDoc\ParsedXmlException.cs" />
+    <Compile Include="Overlays\XmlDoc\ParsedXmlListElement.cs" />
+    <Compile Include="Overlays\XmlDoc\ParsedXmlListItemElement.cs" />
     <Compile Include="Overlays\XmlDoc\ParsedXmlNodeBase.cs" />
     <Compile Include="Overlays\XmlDoc\ParsedXmlTextNode.cs" />
     <Compile Include="Overlays\XmlDoc\PropertyDefinitionXmlDoc.cs" />

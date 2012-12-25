@@ -181,5 +181,52 @@ namespace TestLibrary1.Test
 			Assert.AreEqual(".", codeElement[1].NormalizedOuterXml);
 		}
 
+		[Test]
+		public void read_code_block_from_method() {
+			var method = CrefOverlay.GetMemberDefinition("M:TestLibrary1.Class1.DoubleStatic(System.Int32)");
+			var docs = XmlDocOverlay.GetDocumentation(method) as ParameterizedXmlDocBase;
+			Assert.IsNotNull(docs);
+			var codeBlock = docs.Remarks
+				.Children
+				.OfType<ParsedXmlCode>()
+				.FirstOrDefault();
+			Assert.IsNotNull(codeBlock);
+			Assert.IsFalse(codeBlock.Inline);
+			Assert.AreEqual("This\n is\n  some\n   text.",codeBlock.NormalizedInnerXml);
+		}
+
+		[Test]
+		public void read_examples_from_method() {
+			var method = CrefOverlay.GetMemberDefinition("M:TestLibrary1.Class1.DoubleStatic(System.Int32)");
+			var docs = XmlDocOverlay.GetDocumentation(method) as ParameterizedXmlDocBase;
+			Assert.IsNotNull(docs);
+			var examples = docs.Examples;
+			Assert.IsNotNull(examples);
+			Assert.AreEqual(2, examples.Count);
+			Assert.AreEqual("Example 1", examples[0].NormalizedInnerXml);
+			Assert.AreEqual("Example 2", examples[1].NormalizedInnerXml);
+		}
+
+		[Test]
+		public void read_list_from_method() {
+			var method = CrefOverlay.GetMemberDefinition("M:TestLibrary1.Class1.DoubleStatic(System.Int32)");
+			var docs = XmlDocOverlay.GetDocumentation(method) as ParameterizedXmlDocBase;
+			Assert.IsNotNull(docs);
+			var summary = docs.Summary;
+			Assert.IsNotNull(summary);
+			var list = summary.Children.OfType<ParsedXmlListElement>().Single();
+			Assert.IsNotNull(list);
+			Assert.AreEqual("bullet", list.ListType);
+			var items = list.Items.ToList();
+			Assert.AreEqual(2, items.Count);
+			Assert.AreEqual("Col 1", items[0].Term.NormalizedInnerXml);
+			Assert.AreEqual("Col 2", items[0].Description.NormalizedInnerXml);
+			Assert.IsTrue(items[0].IsHeader);
+			Assert.AreEqual("A term.", items[1].Term.NormalizedInnerXml);
+			Assert.AreEqual("A description.", items[1].Description.NormalizedInnerXml);
+			Assert.IsFalse(items[1].IsHeader);
+
+		}
+
 	}
 }

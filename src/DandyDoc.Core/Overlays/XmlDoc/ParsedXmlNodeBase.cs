@@ -26,6 +26,19 @@ namespace DandyDoc.Core.Overlays.XmlDoc
 					return new ParsedXmlCode(element, false, docBase);
 				if ("EXCEPTION".Equals(element.Name, StringComparison.OrdinalIgnoreCase))
 					return new ParsedXmlException(element, docBase);
+				if ("LIST".Equals(element.Name, StringComparison.OrdinalIgnoreCase))
+					return new ParsedXmlListElement(element, docBase);
+				if(
+					null != element.ParentNode
+					&& "LIST".Equals(element.ParentNode.Name, StringComparison.OrdinalIgnoreCase)
+					&& (
+						"LISTHEADER".Equals(element.Name, StringComparison.OrdinalIgnoreCase)
+						|| "ITEM".Equals(element.Name, StringComparison.OrdinalIgnoreCase)
+					)
+				)
+					return new ParsedXmlListItemElement(element, docBase);
+
+
 				return new ParsedXmlElement(element, docBase);
 			}
 			if (node is XmlText){

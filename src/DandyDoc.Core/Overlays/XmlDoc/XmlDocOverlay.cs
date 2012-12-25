@@ -37,7 +37,6 @@ namespace DandyDoc.Core.Overlays.XmlDoc
 				return null;
 
 			var xmlPath = SuggestedXmlDocPaths(assemblyFilePath);
-
 			return LoadFromFilePath(xmlPath);
 		}
 
