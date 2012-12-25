@@ -23,7 +23,7 @@ namespace DandyDoc.Core.Overlays.XmlDoc
 
 		public string HtmlDecoded{
 			get{
-				return HttpUtility.HtmlDecode(NormalizedOuterXml);
+				return HttpUtility.HtmlDecode(Node.OuterXml);
 			}
 		}
 

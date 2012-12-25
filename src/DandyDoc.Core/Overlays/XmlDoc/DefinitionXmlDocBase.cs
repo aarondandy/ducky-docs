@@ -4,6 +4,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Xml;
 using DandyDoc.Core.Overlays.Cref;
+using DandyDoc.Core.Utility;
 using Mono.Cecil;
 
 namespace DandyDoc.Core.Overlays.XmlDoc
@@ -27,16 +28,24 @@ namespace DandyDoc.Core.Overlays.XmlDoc
 
 		public CrefOverlay CrefOverlay { get; private set; }
 
-		public virtual ParsedXmlNodeBase Summary {
-			get { return SelectParsedXmlNode("summary"); }
+		public virtual ParsedXmlElementBase Summary {
+			get { return (ParsedXmlElementBase)SelectParsedXmlNode("summary"); }
 		}
 
-		public virtual ParsedXmlNodeBase Remarks {
-			get { return SelectParsedXmlNode("remarks"); }
+		public virtual ParsedXmlElementBase Remarks {
+			get { return (ParsedXmlElementBase)SelectParsedXmlNode("remarks"); }
 		}
 
-		public virtual IList<ParsedXmlNodeBase> Examples {
-			get { return SelectParsedXmlNodes("example"); }
+		public virtual IList<ParsedXmlElementBase> Examples {
+			get { return SelectParsedXmlNodes("example").ConvertAll(n => (ParsedXmlElementBase)n); }
+		}
+
+		public virtual IList<ParsedXmlPermission> Permissions{
+			get { return SelectParsedXmlNodes("permission").ConvertAll(n => (ParsedXmlPermission)n); }
+		}
+
+		public virtual IList<ParsedXmlSeeElement> SeeAlso{
+			get { return SelectParsedXmlNodes("seealso").ConvertAll(n => (ParsedXmlSeeElement)n); }
 		} 
 
 		public virtual ParsedXmlNodeBase SelectParsedXmlNode(string query) {

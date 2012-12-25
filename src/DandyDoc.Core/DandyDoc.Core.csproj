@@ -122,6 +122,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyDefinitionCollection.cs" />
+    <Compile Include="CecilExtensions.cs" />
     <Compile Include="Overlays\Cref\CrefOverlay.cs" />
     <Compile Include="Overlays\Cref\ParsedCref.cs" />
     <Compile Include="Overlays\XmlDoc\DefinitionXmlDocBase.cs" />
@@ -138,6 +139,10 @@
     <Compile Include="Overlays\XmlDoc\ParsedXmlListElement.cs" />
     <Compile Include="Overlays\XmlDoc\ParsedXmlListItemElement.cs" />
     <Compile Include="Overlays\XmlDoc\ParsedXmlNodeBase.cs" />
+    <Compile Include="Overlays\XmlDoc\ParsedXmlParagraphElement.cs" />
+    <Compile Include="Overlays\XmlDoc\ParsedXmlParamrefElement.cs" />
+    <Compile Include="Overlays\XmlDoc\ParsedXmlPermission.cs" />
+    <Compile Include="Overlays\XmlDoc\ParsedXmlSeeElement.cs" />
     <Compile Include="Overlays\XmlDoc\ParsedXmlTextNode.cs" />
     <Compile Include="Overlays\XmlDoc\PropertyDefinitionXmlDoc.cs" />
     <Compile Include="Overlays\XmlDoc\TypeDefinitionXmlDoc.cs" />

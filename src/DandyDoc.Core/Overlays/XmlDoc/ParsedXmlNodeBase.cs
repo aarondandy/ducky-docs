@@ -18,16 +18,22 @@ namespace DandyDoc.Core.Overlays.XmlDoc
 
 			var element = node as XmlElement;
 			if (null != element) {
-				if ("SEE".Equals(element.Name, StringComparison.OrdinalIgnoreCase))
-					throw new NotImplementedException();
 				if ("C".Equals(element.Name, StringComparison.OrdinalIgnoreCase))
 					return new ParsedXmlCode(element, true, docBase);
 				if ("CODE".Equals(element.Name, StringComparison.OrdinalIgnoreCase))
 					return new ParsedXmlCode(element, false, docBase);
 				if ("EXCEPTION".Equals(element.Name, StringComparison.OrdinalIgnoreCase))
 					return new ParsedXmlException(element, docBase);
+				if ("PERMISSION".Equals(element.Name, StringComparison.OrdinalIgnoreCase))
+					return new ParsedXmlPermission(element, docBase);
 				if ("LIST".Equals(element.Name, StringComparison.OrdinalIgnoreCase))
 					return new ParsedXmlListElement(element, docBase);
+				if ("PARA".Equals(element.Name, StringComparison.OrdinalIgnoreCase))
+					return new ParsedXmlParagraphElement(element, docBase);
+				if ("PARAMREF".Equals(element.Name, StringComparison.OrdinalIgnoreCase))
+					return new ParsedXmlParamrefElement(element, docBase);
+				if ("SEE".Equals(element.Name, StringComparison.OrdinalIgnoreCase) || "SEEALSO".Equals(element.Name, StringComparison.OrdinalIgnoreCase))
+					return new ParsedXmlSeeElement(element, docBase);
 				if(
 					null != element.ParentNode
 					&& "LIST".Equals(element.ParentNode.Name, StringComparison.OrdinalIgnoreCase)
@@ -63,18 +69,6 @@ namespace DandyDoc.Core.Overlays.XmlDoc
 			get {
 				Contract.Ensures(Contract.Result<CrefOverlay>() != null);
 				return DocBase.CrefOverlay;
-			}
-		}
-
-		public string NormalizedOuterXml{
-			get {
-				return TextUtility.ExtractIndentedNormalizedInnerText(Node.OuterXml);
-			}
-		}
-
-		public string NormalizedInnerXml{
-			get{
-				return TextUtility.ExtractIndentedNormalizedInnerText(Node.InnerXml);
 			}
 		}
 

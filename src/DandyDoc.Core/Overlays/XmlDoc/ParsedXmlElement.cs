@@ -12,10 +12,10 @@ namespace DandyDoc.Core.Overlays.XmlDoc
 	public class ParsedXmlElement : ParsedXmlElementBase
 	{
 
-		public ParsedXmlElement(XmlElement element, DefinitionXmlDocBase docBase)
+		internal ParsedXmlElement(XmlElement element, DefinitionXmlDocBase docBase)
 			: base(element, docBase)
 		{
-			if(null == element) throw new ArgumentNullException("element");
+			if (null == element) throw new ArgumentNullException("element");
 			if (null == docBase) throw new ArgumentNullException("docBase");
 			Contract.EndContractBlock();
 		}

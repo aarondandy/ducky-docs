@@ -47,6 +47,9 @@ namespace TestLibrary1
 		/// </summary>
 		/// <param name="crap">Crap param.</param>
 		/// <param name="dookie">Dookie param.</param>
+		/// <remarks>
+		/// <paramref name="crap"/> is a parameter.
+		/// </remarks>
 		protected Class1(string crap, string dookie) {
 			throw new NotImplementedException();
 		}
@@ -69,6 +72,7 @@ namespace TestLibrary1
 		/// <param name="n">an index</param>
 		/// <returns>a number</returns>
 		/// <value>Some number.</value>
+		/// <remarks>The <paramref name="n">index</paramref> to read from.</remarks>
 		public int this[int n] {
 			get {
 				throw new NotImplementedException();
@@ -81,6 +85,7 @@ namespace TestLibrary1
 		/// <value>
 		/// 1
 		/// </value>
+		/// <permission cref="System.Security.PermissionSet">I have no idea what this is for.</permission>
 		public const int MyConst = 1;
 
 		/// <summary>
@@ -89,11 +94,19 @@ namespace TestLibrary1
 		/// <param name="a">param a</param>
 		/// <param name="b">param b</param>
 		/// <returns>some int</returns>
+		/// <remarks>
+		/// Parameter <paramref name="a"/> is an int.
+		/// </remarks>
 		public delegate int MyFunc(int a, int b);
 
 		/// <summary>
 		/// My event!
 		/// </summary>
+		/// <seealso cref="TestLibrary1.Class1.MyFunc">The delegate.</seealso>
+		/// <seealso cref="TestLibrary1.Class1.DoubleStatic(System.Int32)"/>
+		/// <remarks>
+		/// <see cref="TestLibrary1.Class1">stuff</see>
+		/// </remarks>
 		public static event MyFunc DoStuff;
 
 		// Note leave the constructor to be default so a default summary can be generated
@@ -156,6 +169,17 @@ namespace TestLibrary1
 		/// <summary>
 		/// A finalizer that does nothing.
 		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// a paragraph
+		/// </para>
+		/// <para>
+		/// and another
+		/// </para>
+		/// <para>
+		/// a third
+		/// </para>
+		/// </remarks>
 		~Class1() {
 			throw new NotImplementedException();
 		}

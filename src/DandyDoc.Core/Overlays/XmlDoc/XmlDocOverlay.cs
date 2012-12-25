@@ -98,7 +98,7 @@ namespace DandyDoc.Core.Overlays.XmlDoc
 			Contract.EndContractBlock();
 			var node = GetNodeForDefinition(definition);
 
-			if(definition.BaseType.FullName == "System.MulticastDelegate")
+			if (definition.IsDelegateType())
 				return new DelegateTypeDefinitionXmlDoc(definition, node, CrefOverlay);
 			return new TypeDefinitionXmlDoc(definition, node, CrefOverlay);
 		}

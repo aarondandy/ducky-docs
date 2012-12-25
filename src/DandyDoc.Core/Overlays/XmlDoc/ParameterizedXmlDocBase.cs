@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Xml;
 using DandyDoc.Core.Overlays.Cref;
+using DandyDoc.Core.Utility;
 using Mono.Cecil;
 
 namespace DandyDoc.Core.Overlays.XmlDoc
@@ -34,7 +35,9 @@ namespace DandyDoc.Core.Overlays.XmlDoc
 
 		public ParsedXmlNodeBase Returns { get { return SelectParsedXmlNode("returns"); } }
 
-		public IList<ParsedXmlNodeBase> Exceptions{ get { return SelectParsedXmlNodes("exception"); } }
+		public IList<ParsedXmlException> Exceptions{
+			get { return SelectParsedXmlNodes("exception").ConvertAll(n => (ParsedXmlException)n); }
+		}
 
 	}
 }
