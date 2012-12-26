@@ -133,6 +133,7 @@
     <Compile Include="Overlays\XmlDoc\ParameterizedXmlDocBase.cs" />
     <Compile Include="Overlays\XmlDoc\ParsedCrefXmlElementBase.cs" />
     <Compile Include="Overlays\XmlDoc\ParsedXmlCode.cs" />
+    <Compile Include="Overlays\XmlDoc\ParsedXmlContractCondition.cs" />
     <Compile Include="Overlays\XmlDoc\ParsedXmlElement.cs" />
     <Compile Include="Overlays\XmlDoc\ParsedXmlElementBase.cs" />
     <Compile Include="Overlays\XmlDoc\ParsedXmlException.cs" />

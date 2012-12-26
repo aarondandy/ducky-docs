@@ -55,7 +55,11 @@ namespace DandyDoc.Core.Overlays.XmlDoc
 				var nodes = SelectParsedXmlNodes("seealso");
 				return null == nodes ? null : nodes.ConvertAll(n => (ParsedXmlSeeElement)n);
 			}
-		} 
+		}
+
+		public bool HasPureElement{
+			get { return Node.ChildNodes.OfType<XmlElement>().Any(n => "pure".Equals(n.Name, StringComparison.OrdinalIgnoreCase)); }
+		}
 
 		public virtual ParsedXmlNodeBase SelectParsedXmlNode(string query) {
 			if (String.IsNullOrEmpty(query)) throw new ArgumentException("Invalid query.", "query");

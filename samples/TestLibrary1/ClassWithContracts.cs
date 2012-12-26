@@ -37,10 +37,19 @@ namespace TestLibrary1
 			return "stuff";
 		}
 
+		public string Stuff {
+			get {
+				Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
+				return "stuff";
+			}
+		}
+
 		[ContractInvariantMethod]
 		private void CodeContractInvariant(){
 			Contract.Invariant(!String.IsNullOrEmpty(Text));
 		}
+
+		
 
 
 	}

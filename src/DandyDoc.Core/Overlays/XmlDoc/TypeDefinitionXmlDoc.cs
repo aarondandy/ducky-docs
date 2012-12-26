@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using DandyDoc.Core.Overlays.Cref;
+using DandyDoc.Core.Utility;
 using Mono.Cecil;
 
 namespace DandyDoc.Core.Overlays.XmlDoc
@@ -28,6 +26,13 @@ namespace DandyDoc.Core.Overlays.XmlDoc
 		}
 
 		public TypeDefinition TypeDefinition { get { return (TypeDefinition)Definition; } }
+
+		public IList<ParsedXmlContractCondition> Invariants{
+			get {
+				var nodes = SelectParsedXmlNodes("invariant");
+				return null == nodes ? null : nodes.ConvertAll(n => (ParsedXmlContractCondition)n);
+			}
+		}
 
 	}
 }

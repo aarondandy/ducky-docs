@@ -11,41 +11,43 @@ namespace DandyDoc.Core.Overlays.XmlDoc
 	public abstract class ParsedXmlNodeBase
 	{
 
+
 		public static ParsedXmlNodeBase Parse(XmlNode node, DefinitionXmlDocBase docBase){
 			if (null == node) throw new ArgumentNullException("node");
 			if (null == docBase) throw new ArgumentNullException("docBase");
 			Contract.EndContractBlock();
 
 			var element = node as XmlElement;
-			if (null != element) {
-				if ("C".Equals(element.Name, StringComparison.OrdinalIgnoreCase))
+			if (null != element){
+				var cmp = StringComparer.OrdinalIgnoreCase;
+				if (cmp.Equals("C", element.Name))
 					return new ParsedXmlCode(element, true, docBase);
-				if ("CODE".Equals(element.Name, StringComparison.OrdinalIgnoreCase))
+				if (cmp.Equals("CODE",element.Name))
 					return new ParsedXmlCode(element, false, docBase);
-				if ("EXCEPTION".Equals(element.Name, StringComparison.OrdinalIgnoreCase))
+				if (cmp.Equals("EXCEPTION",element.Name))
 					return new ParsedXmlException(element, docBase);
-				if ("PERMISSION".Equals(element.Name, StringComparison.OrdinalIgnoreCase))
+				if (cmp.Equals("PERMISSION", element.Name))
 					return new ParsedXmlPermission(element, docBase);
-				if ("LIST".Equals(element.Name, StringComparison.OrdinalIgnoreCase))
+				if (cmp.Equals("LIST", element.Name))
 					return new ParsedXmlListElement(element, docBase);
-				if ("PARA".Equals(element.Name, StringComparison.OrdinalIgnoreCase))
+				if (cmp.Equals("PARA", element.Name))
 					return new ParsedXmlParagraphElement(element, docBase);
-				if ("PARAMREF".Equals(element.Name, StringComparison.OrdinalIgnoreCase))
+				if (cmp.Equals("PARAMREF", element.Name))
 					return new ParsedXmlParamrefElement(element, docBase);
-				if ("TYPEPARAMREF".Equals(element.Name, StringComparison.OrdinalIgnoreCase))
+				if (cmp.Equals("TYPEPARAMREF", element.Name))
 					return new ParsedXmlTypeparamrefElement(element, docBase);
-				if ("SEE".Equals(element.Name, StringComparison.OrdinalIgnoreCase) || "SEEALSO".Equals(element.Name, StringComparison.OrdinalIgnoreCase))
+				if (cmp.Equals("SEE", element.Name) || cmp.Equals("SEEALSO", element.Name))
 					return new ParsedXmlSeeElement(element, docBase);
-				if(
-					null != element.ParentNode
-					&& "LIST".Equals(element.ParentNode.Name, StringComparison.OrdinalIgnoreCase)
-					&& (
-						"LISTHEADER".Equals(element.Name, StringComparison.OrdinalIgnoreCase)
-						|| "ITEM".Equals(element.Name, StringComparison.OrdinalIgnoreCase)
-					)
-				)
-					return new ParsedXmlListItemElement(element, docBase);
+				if (cmp.Equals("REQUIRES", element.Name) || cmp.Equals("ENSURES", element.Name) || cmp.Equals("INVARIANT", element.Name))
+					return new ParsedXmlContractCondition(element, docBase);
 
+				if (
+					null != element.ParentNode
+					&& cmp.Equals("LIST", element.ParentNode.Name)
+					&& (cmp.Equals("LISTHEADER", element.Name) || cmp.Equals("ITEM", element.Name))
+				){
+					return new ParsedXmlListItemElement(element, docBase);
+				}
 
 				return new ParsedXmlElement(element, docBase);
 			}

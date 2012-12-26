@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using DandyDoc.Core.Overlays.Cref;
+using DandyDoc.Core.Utility;
 using Mono.Cecil;
 
 namespace DandyDoc.Core.Overlays.XmlDoc
@@ -22,6 +23,20 @@ namespace DandyDoc.Core.Overlays.XmlDoc
 		}
 
 		new public MethodDefinition Definition { get { return (MethodDefinition)(base.Definition); } }
+
+		public IList<ParsedXmlContractCondition> Requires{
+			get{
+				var nodes = SelectParsedXmlNodes("requires");
+				return null == nodes ? null : nodes.ConvertAll(n => (ParsedXmlContractCondition)n);
+			}
+		}
+
+		public IList<ParsedXmlContractCondition> Ensures {
+			get {
+				var nodes = SelectParsedXmlNodes("ensures");
+				return null == nodes ? null : nodes.ConvertAll(n => (ParsedXmlContractCondition)n);
+			}
+		}
 
 	}
 }

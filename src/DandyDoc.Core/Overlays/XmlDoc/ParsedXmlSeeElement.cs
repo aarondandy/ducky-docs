@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics.Contracts;
 using System.Xml;
 
 namespace DandyDoc.Core.Overlays.XmlDoc
@@ -16,6 +11,16 @@ namespace DandyDoc.Core.Overlays.XmlDoc
 		{
 			Contract.Requires(null != element);
 			Contract.Requires(null != xmlDocBase);
+		}
+
+		/// <summary>
+		/// Get a language word that the see element is referring to.
+		/// </summary>
+		public string LanguageWord{
+			get {
+				var langwordAttribute = Element.Attributes["langword"];
+				return null == langwordAttribute ? null : langwordAttribute.Value;
+			}
 		}
 
 	}
