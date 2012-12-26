@@ -37,5 +37,63 @@ namespace DandyDoc.Core
 				: method.Parameters;
 		}
 
+		private static readonly HashSet<string> OperatorMethodNames = new HashSet<string>{
+			"op_Implicit",
+			"op_explicit",
+			"op_Addition",
+			"op_Subtraction",
+			"op_Multiply",
+			"op_Division",
+			"op_Modulus",
+			"op_ExclusiveOr",
+			"op_BitwiseAnd",
+			"op_BitwiseOr",
+			"op_LogicalAnd",
+			"op_LogicalOr",
+			"op_Assign",
+			"op_LeftShift",
+			"op_RightShift",
+			"op_SignedRightShift",
+			"op_UnsignedRightShift",
+			"op_Equality",
+			"op_GreaterThan",
+			"op_LessThan",
+			"op_Inequality",
+			"op_GreaterThanOrEqual",
+			"op_LessThanOrEqual",
+			"op_MultiplicationAssignment",
+			"op_SubtractionAssignment",
+			"op_ExclusiveOrAssignment",
+			"op_LeftShiftAssignment",
+			"op_ModulusAssignment",
+			"op_AdditionAssignment",
+			"op_BitwiseAndAssignment",
+			"op_BitwiseOrAssignment",
+			"op_Comma",
+			"op_DivisionAssignment",
+			"op_Decrement",
+			"op_Increment",
+			"op_UnaryNegation",
+			"op_UnaryPlus",
+			"op_OnesComplement"
+		};
+
+		public static bool IsOperatorOverload(this MethodDefinition methodDefinition){
+			if(null == methodDefinition) throw new ArgumentNullException("methodDefinition");
+			Contract.EndContractBlock();
+			if (!methodDefinition.IsStatic)
+				return false;
+			Contract.Assume(!String.IsNullOrEmpty(methodDefinition.Name));
+			return OperatorMethodNames.Contains(methodDefinition.Name);
+		}
+
+		public static bool IsFinalizer(this MethodDefinition methodDefinition){
+			if (null == methodDefinition) throw new ArgumentNullException("methodDefinition");
+			Contract.EndContractBlock();
+			return !methodDefinition.IsStatic
+				&& !methodDefinition.HasParameters
+				&& "Finalize".Equals(methodDefinition.Name);
+		}
+
 	}
 }

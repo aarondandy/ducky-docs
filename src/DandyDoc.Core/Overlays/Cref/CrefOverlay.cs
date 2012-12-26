@@ -21,7 +21,7 @@ namespace DandyDoc.Core.Overlays.Cref
 
 		public AssemblyDefinitionCollection AssemblyDefinitionCollection { get; private set; }
 
-		public MemberReference GetMemberReference(string cref){
+		public MemberReference GetReference(string cref){
 			if (String.IsNullOrEmpty(cref)) throw new ArgumentException("Invalid cref.", "cref");
 			Contract.EndContractBlock();
 			if (cref.StartsWith("T:", StringComparison.OrdinalIgnoreCase))

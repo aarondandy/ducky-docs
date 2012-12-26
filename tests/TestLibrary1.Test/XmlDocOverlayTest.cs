@@ -157,7 +157,7 @@ namespace TestLibrary1.Test
 			Assert.IsNotNull(docs);
 			Assert.AreEqual(2, docs.Exceptions.Count);
 			Assert.AreEqual("This is not implemented.", docs.Exceptions[0].Node.InnerXml);
-			Assert.That(docs.Exceptions.Cast<ParsedXmlException>().Select(x => x.Cref), Has.All.EqualTo("T:System.NotImplementedException"));
+			Assert.That(docs.Exceptions.Cast<ParsedXmlException>().Select(x => x.CRef), Has.All.EqualTo("T:System.NotImplementedException"));
 		}
 
 		[Test]
@@ -278,7 +278,7 @@ namespace TestLibrary1.Test
 			var f = CrefOverlay.GetMemberDefinition("F:TestLibrary1.Class1.MyConst");
 			var docs = XmlDocOverlay.GetDocumentation(f);
 			Assert.AreEqual(1, docs.Permissions.Count);
-			Assert.AreEqual("T:System.Security.PermissionSet",docs.Permissions[0].Cref);
+			Assert.AreEqual("T:System.Security.PermissionSet",docs.Permissions[0].CRef);
 			Assert.AreEqual("I have no idea what this is for.",docs.Permissions[0].Node.InnerXml);
 		}
 
@@ -287,14 +287,14 @@ namespace TestLibrary1.Test
 			var e = CrefOverlay.GetMemberDefinition("E:TestLibrary1.Class1.DoStuff");
 			var docs = XmlDocOverlay.GetDocumentation(e);
 			var see = docs.Remarks.Children.OfType<ParsedXmlSeeElement>().Single();
-			Assert.AreEqual("T:TestLibrary1.Class1", see.Cref);
+			Assert.AreEqual("T:TestLibrary1.Class1", see.CRef);
 			Assert.IsNotNull(see.CrefTarget);
 			Assert.AreEqual("Class1", see.CrefTarget.Name);
 			Assert.AreEqual(2, docs.SeeAlso.Count);
-			Assert.AreEqual("T:TestLibrary1.Class1.MyFunc", docs.SeeAlso[0].Cref);
+			Assert.AreEqual("T:TestLibrary1.Class1.MyFunc", docs.SeeAlso[0].CRef);
 			Assert.IsNotNull(docs.SeeAlso[0].CrefTarget);
 			Assert.AreEqual("The delegate.", docs.SeeAlso[0].Node.InnerXml);
-			Assert.AreEqual("M:TestLibrary1.Class1.DoubleStatic(System.Int32)", docs.SeeAlso[1].Cref);
+			Assert.AreEqual("M:TestLibrary1.Class1.DoubleStatic(System.Int32)", docs.SeeAlso[1].CRef);
 			Assert.IsNotNull(docs.SeeAlso[1].CrefTarget);
 		}
 

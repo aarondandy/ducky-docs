@@ -1,0 +1,11 @@
+﻿@model Mvc4WebDirectDocSample.Models.FieldSummaryTable
+<table>
+	<tr><th>Name</th><th>Description</th></tr>
+	@foreach (var field in Model.Fields){
+		var doc = Model.XmlDocOverlay.GetDocumentation(field);
+		<tr>
+			<td><a href="@Url.Action("Index",new{cref=Model.CrefOverlay.GetCref(field)})">@field.Name</a></td>
+			<td>@if(null != doc){Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBase", doc.Summary);}</td>
+		</tr>
+	}
+</table>

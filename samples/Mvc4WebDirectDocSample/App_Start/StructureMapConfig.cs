@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using System.Web;
 using System.Web.Hosting;
-using System.Web.Http;
 using System.Web.Http.Dependencies;
-using System.Web.Mvc;
 using DandyDoc.Core;
 using DandyDoc.Core.Overlays.Cref;
+using DandyDoc.Core.Overlays.XmlDoc;
 using Microsoft.Practices.ServiceLocation;
 using StructureMap;
 using IDependencyResolver = System.Web.Http.Dependencies.IDependencyResolver;
@@ -28,6 +26,8 @@ namespace Mvc4WebDirectDocSample.App_Start
 						HostingEnvironment.MapPath("~/bin/TestLibrary1.dll")));
 				x.For<CrefOverlay>().Use(c =>
 					new CrefOverlay(c.GetInstance<AssemblyDefinitionCollection>()));
+				x.For<XmlDocOverlay>().Use(c =>
+					new XmlDocOverlay(c.GetInstance<CrefOverlay>()));
 
 			});
 			return ObjectFactory.Container;

@@ -1,0 +1,32 @@
+﻿@using System.Web.Optimization
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>@ViewBag.Title</title>
+	@Styles.Render("~/css/bootstrap")
+	@Styles.Render("~/css/docs")
+</head>
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="span12">
+				<h1>Documentation</h1>
+				<div class="row">
+					<div class="span2">
+						Sidebar
+					</div>
+					<div class="span10">
+						@RenderBody()
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	@Scripts.Render("~/bundles/bootstrap")
+</body>
+</html>

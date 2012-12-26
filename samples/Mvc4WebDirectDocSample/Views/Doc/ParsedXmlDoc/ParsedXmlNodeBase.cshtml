@@ -1,0 +1,29 @@
+﻿@using DandyDoc.Core.Overlays.XmlDoc
+@model DandyDoc.Core.Overlays.XmlDoc.ParsedXmlNodeBase
+@functions{
+
+	public void RenderChildren(){
+		RenderChildren(Model.Children);
+	}
+
+	public void RenderChildren(IList<ParsedXmlNodeBase> children){
+		if (null != children)
+			foreach (var child in children){
+				Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBase", child);
+			}
+	}
+		
+}
+@if (null == Model){
+	return;
+}
+else if (Model is ParsedXmlTextNode){@Html.Raw(Model.Node.OuterXml);}
+else if (Model is ParsedXmlListElement) { Html.RenderPartial("ParsedXmlDoc/ParsedXmlListElement", (ParsedXmlListElement)Model);}
+else if (Model is ParsedXmlElementBase){
+	if (Model is ParsedXmlCode){
+		if (((ParsedXmlCode) Model).Inline){<code>@{RenderChildren();}</code>}
+		else{<pre>@{RenderChildren();}</pre>}
+	}
+	else if(Model is ParsedXmlParagraphElement){<p>@{RenderChildren();}</p>}
+	else{@Html.Raw(Model.PrefixXml) RenderChildren(); @Html.Raw(Model.SuffixXml)}
+}

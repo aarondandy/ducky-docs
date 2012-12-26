@@ -137,11 +137,15 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\StructureMapConfig.cs" />
     <Compile Include="Controllers\DocController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\FieldSummaryTable.cs" />
+    <Compile Include="Models\MethodSummaryTable.cs" />
+    <Compile Include="Models\TypeViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -168,7 +172,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
@@ -182,6 +185,24 @@
       <Project>{f83f4c52-a886-4b9e-8164-e95e1f22f929}</Project>
       <Name>TestLibrary1</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Doc\_Layout.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Doc\Type.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Doc\ParsedXmlDoc\ParsedXmlNodeBase.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Doc\Partials\MethodTable.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Doc\ParsedXmlDoc\ParsedXmlListElement.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Doc\Partials\FieldTable.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

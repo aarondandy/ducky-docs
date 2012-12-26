@@ -86,6 +86,29 @@ namespace DandyDoc.Core.Overlays.XmlDoc
 			}
 		}
 
+		public string PrefixXml{
+			get {
+				var outer = Node.OuterXml;
+				var innerIndex = outer.IndexOf(Node.InnerXml, StringComparison.OrdinalIgnoreCase);
+				if (innerIndex <= 0)
+					return String.Empty;
+				return outer.Substring(0, innerIndex);
+			}
+		}
+
+		public string SuffixXml{
+			get {
+				var outer = Node.OuterXml;
+				var inner = Node.InnerXml;
+				if (String.IsNullOrEmpty(inner))
+					return outer;
+				var innerIndex = outer.IndexOf(inner, StringComparison.OrdinalIgnoreCase);
+				if (innerIndex < 0)
+					return String.Empty;
+				return outer.Substring(innerIndex + inner.Length);
+			}
+		}
+
 		private ParsedXmlNodeBase Parse(XmlNode node){
 			Contract.Requires(null != node);
 			return Parse(node, DocBase);

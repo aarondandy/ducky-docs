@@ -15,17 +15,24 @@ namespace DandyDoc.Core.Overlays.XmlDoc
 			Contract.Requires(null != xmlDocBase);
 		}
 
-		public virtual string Cref {
+		public virtual string CRef {
 			get {
 				var crefAttribute = Element.Attributes["cref"];
 				return null == crefAttribute ? null : crefAttribute.Value;
 			}
 		}
 
+		public virtual string HRef{
+			get {
+				var crefAttribute = Element.Attributes["href"];
+				return null == crefAttribute ? null : crefAttribute.Value;
+			}
+		}
+
 		public MemberReference CrefTarget {
 			get {
-				var cref = Cref;
-				return String.IsNullOrEmpty(cref) ? null : CrefOverlay.GetMemberReference(cref);
+				var cref = CRef;
+				return String.IsNullOrEmpty(cref) ? null : CrefOverlay.GetReference(cref);
 			}
 		}
 

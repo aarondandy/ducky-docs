@@ -3,6 +3,10 @@ using System.Xml;
 
 namespace DandyDoc.Core.Overlays.XmlDoc
 {
+	/// <summary>
+	/// A parsed permission node referencing a permission member or type.
+	/// </summary>
+	/// <seealso href="http://msdn.microsoft.com/en-us/library/h9df2kfb.aspx"/>
 	public class ParsedXmlPermission : ParsedCrefXmlElementBase
 	{
 

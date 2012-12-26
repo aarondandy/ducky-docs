@@ -3,6 +3,9 @@ using System.Xml;
 
 namespace DandyDoc.Core.Overlays.XmlDoc
 {
+	/// <summary>
+	/// A parsed cref hyperlink element used to refer a documentation reader to another type or member.
+	/// </summary>
 	public class ParsedXmlSeeElement : ParsedCrefXmlElementBase
 	{
 

@@ -1,0 +1,41 @@
+﻿@using DandyDoc.Core.Overlays.XmlDoc
+@model DandyDoc.Core.Overlays.XmlDoc.ParsedXmlListElement
+@{
+	string listHtmlType;
+	if ("BULLET".Equals(Model.ListType, StringComparison.OrdinalIgnoreCase)){
+		listHtmlType = "ul";
+	}
+	else if ("NUMBER".Equals(Model.ListType, StringComparison.OrdinalIgnoreCase)){
+		listHtmlType = "ol";
+	}
+	else{
+		listHtmlType = null;
+	}	
+}
+@if (!String.IsNullOrEmpty(listHtmlType)){
+	@Html.Raw('<' + listHtmlType + '>');
+	foreach (var row in Model.Items){
+			var term = row.Term;
+			var description = row.Description;
+			if (null == term && null == description) {
+				continue;
+			}
+			<li>
+			@if (null != term) {
+				<b>
+				@{Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBase", term);}
+				</b>
+			}
+
+			@if (null != description) {
+				<div>
+				@{Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBase", description);}
+				</div>
+			}
+			</li>
+	}
+	@Html.Raw("</" + listHtmlType + '>');
+}
+else{
+	throw new NotSupportedException();
+}

@@ -9,7 +9,7 @@ namespace Mvc4WebDirectDocSample
 		public static void RegisterRoutes(RouteCollection routes) {
 			routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
-			routes.MapRoute(
+			/*routes.MapRoute(
 				name: "Type",
 				url: "Type",
 				defaults: new {controller = "Doc", action = "Type"}
@@ -19,6 +19,12 @@ namespace Mvc4WebDirectDocSample
 				name: "Member",
 				url: "Member",
 				defaults: new { controller = "Doc", action = "Type" }
+			);*/
+
+			routes.MapRoute(
+				name: "Docs",
+				url: "Docs",
+				defaults: new{controller = "Doc", action = "Index"}
 			);
 
 			/*routes.MapRoute(

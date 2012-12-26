@@ -9,7 +9,7 @@ namespace TestLibrary1
 	/// <summary>
 	/// This class is just for testing and has no real use outside of generating some documentation.
 	/// </summary>
-    public class Class1
+	public class Class1
 	{
 
 		/// <remarks>
