@@ -153,6 +153,7 @@
     <Compile Include="Utility\CollectionUtility.cs" />
     <Compile Include="Utility\NameUtility.cs" />
     <Compile Include="Utility\TextUtility.cs" />
+    <Compile Include="ViewModels\TypePageViewModel.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
