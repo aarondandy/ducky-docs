@@ -1,44 +1,11 @@
-﻿@model Mvc4WebDirectDocSample.Models.MethodSummaryTable
+﻿@model IEnumerable<DandyDoc.Core.ViewModels.MethodSummaryViewModel>
+<div class="doc-page-member-listing">
 <table>
 	<tr><th>Name</th><th>Description</th></tr>
-	@if (Model.MethodTableKind == Mvc4WebDirectDocSample.Models.MethodSummaryTable.Kind.Constructor){
-		foreach (var method in Model.Methods.OrderBy(x => x.Name)){
-			var doc = Model.XmlDocOverlay.GetDocumentation(method);
-			<tr>
-				<td><a href="@Url.Action("Index",new{cref=Model.CrefOverlay.GetCref(method)})">@(method.DeclaringType.Name)(@String.Join(",",method.Parameters.Select(x => x.ParameterType.Name)))</a></td>
-				<td>@if(null != doc){Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBase", doc.Summary);}</td>
-			</tr>
-		}
-	}
-	else if (Model.MethodTableKind == Mvc4WebDirectDocSample.Models.MethodSummaryTable.Kind.Operator){
-		foreach (var method in Model.Methods.OrderBy(x => x.Name)){
-			var doc = Model.XmlDocOverlay.GetDocumentation(method);
-			<tr>
-				<td><a href="@Url.Action("Index",new{cref=Model.CrefOverlay.GetCref(method)})">@(method.Name)(@String.Join(",",method.Parameters.Select(x => x.ParameterType.Name)))</a></td>
-				<td>@if(null != doc){Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBase", doc.Summary);}</td>
-			</tr>
-		}
-	} 
-	else{
-		foreach (var methodGroup in Model.Methods.GroupBy(x => x.Name).OrderBy(x => x.Key)){
-			var methods = methodGroup.ToList();
-			if (methods.Count == 1){
-				var method = methods[0];
-				var doc = Model.XmlDocOverlay.GetDocumentation(method);
-				<tr>
-					<td><a href="@Url.Action("Index",new{cref=Model.CrefOverlay.GetCref(method)})">@method.Name</a></td>
-					<td>@if(null != doc){Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBase", doc.Summary);}</td>
-				</tr>
-			}
-			else{
-				foreach (var method in methods.OrderBy(x => x.Parameters.Count)){
-					var doc = Model.XmlDocOverlay.GetDocumentation(method);
-					<tr>
-						<td><a href="@Url.Action("Index",new{cref=Model.CrefOverlay.GetCref(method)})">@(method.Name)(@String.Join(",",method.Parameters.Select(x => x.ParameterType.Name)))</a></td>
-						<td>@if(null != doc){Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBase", doc.Summary);}</td>
-					</tr>
-				}
-			}
-		}
-	}
-</table>
+@foreach (var item in Model.OrderBy(x => x.DisplayName)){
+	<tr>
+		<td><a href="@Url.Action("Index",new{cref=item.Cref})">@item.DisplayName</a></td>
+		<td>@if(null != item.Summary){Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBase", item.Summary);}</td>
+	</tr>
+}
+</table></div>

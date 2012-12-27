@@ -2,8 +2,8 @@
 using System.Web.Mvc;
 using DandyDoc.Core;
 using DandyDoc.Core.Overlays.Cref;
+using DandyDoc.Core.ViewModels;
 using Mono.Cecil;
-using Mvc4WebDirectDocSample.Models;
 using DandyDoc.Core.Overlays.XmlDoc;
 
 namespace Mvc4WebDirectDocSample.Controllers
@@ -35,12 +35,13 @@ namespace Mvc4WebDirectDocSample.Controllers
 			}
 			var typeDefinition = reference as TypeDefinition;
 			if (null != typeDefinition) {
-				return View("Type", new TypeViewModel{
+				/*return View("Type", new TypeViewModel{
 					Definition = typeDefinition,
 					XmlDocOverlay = XmlDocOverlay,
 					CrefOverlay = CrefOverlay,
 					XmlDoc = XmlDocOverlay.GetDocumentation(typeDefinition)
-				});
+				});*/
+				return View("Type", new TypePageViewModel(typeDefinition, XmlDocOverlay));
 			}
 			else if (reference is MethodDefinition){
 				return View("Method", (MethodDefinition) reference);

@@ -12,18 +12,18 @@
 	@Styles.Render("~/css/docs")
 </head>
 <body>
-	<div class="container">
-		<div class="row">
+	<div class="container-fluid">
+		<div class="row-fluid">
 			<div class="span12">
 				<h1>Documentation</h1>
-				<div class="row">
-					<div class="span2">
-						Sidebar
-					</div>
-					<div class="span10">
-						@RenderBody()
-					</div>
-				</div>
+			</div>
+		</div>
+		<div class="row-fluid">
+			<div class="span3">
+				Sidebar
+			</div>
+			<div class="span9">
+				@RenderBody()
 			</div>
 		</div>
 	</div>

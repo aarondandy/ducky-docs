@@ -1,0 +1,18 @@
+﻿body {
+	font-size: 12px;
+}
+.doc-page-member-listing table {
+	width: 100%;
+}
+.doc-page-member-listing table td, .doc-page-member-listing table th {
+	text-align: left;
+	vertical-align: top;
+	padding: 5px;
+}
+.doc-page-member-listing table, .doc-page-member-listing table td, .doc-page-member-listing table th {
+	border-collapse:collapse;
+	border: 1px solid #ddd;
+}
+.doc-page-member-listing table th {
+	background-color: #eee;
+}

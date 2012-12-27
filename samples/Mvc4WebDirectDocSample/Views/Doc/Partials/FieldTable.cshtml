@@ -1,11 +1,11 @@
-﻿@model Mvc4WebDirectDocSample.Models.FieldSummaryTable
+﻿@model IEnumerable<DandyDoc.Core.ViewModels.FieldSummaryViewModel>
+<div class="doc-page-member-listing">
 <table>
 	<tr><th>Name</th><th>Description</th></tr>
-	@foreach (var field in Model.Fields){
-		var doc = Model.XmlDocOverlay.GetDocumentation(field);
-		<tr>
-			<td><a href="@Url.Action("Index",new{cref=Model.CrefOverlay.GetCref(field)})">@field.Name</a></td>
-			<td>@if(null != doc){Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBase", doc.Summary);}</td>
-		</tr>
-	}
-</table>
+@foreach (var field in Model){
+	<tr>
+		<td><a href="@Url.Action("Index",new{cref=field.Cref})">@field.DisplayName</a></td>
+		<td>@if(null != field.Summary){Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBase", field.Summary);}</td>
+	</tr>
+}
+</table></div>

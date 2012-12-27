@@ -1,0 +1,16 @@
+﻿@model IEnumerable<DandyDoc.Core.ViewModels.PropertySummaryViewModel>
+<div class="doc-page-member-listing">
+<table>
+	<tr><th>Name</th><th>Description</th></tr>
+@foreach (var property in Model){
+	<tr>
+		<td><a href="@Url.Action("Index",new{cref=property.Cref})">@property.DisplayName</a>
+		@if (property.HasGet) {
+				if (property.HasSet) {<code>Get/Set</code>}
+				else {<code>Get</code>}
+			}
+			else if (property.HasSet) {<code>Set</code>}</td>
+		<td>@if(null != property.Summary){Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBase", property.Summary);}</td>
+	</tr>
+}
+</table></div>

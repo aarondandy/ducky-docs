@@ -1,87 +1,71 @@
-﻿@using DandyDoc.Core
-@using Mono.Cecil
-@using Mvc4WebDirectDocSample.Models
-@model Mvc4WebDirectDocSample.Models.TypeViewModel
-@{
-	var definition = Model.Definition;
+﻿@using DandyDoc.Core.Overlays.XmlDoc
+@model DandyDoc.Core.ViewModels.TypePageViewModel
+@functions {
+	public void RenderChildren(ParsedXmlNodeBase node) {
+		if (null == node)
+			return;
+		foreach (var child in node.Children) {
+			Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBase", child);
+		}
+	}
+	
+	public static bool NotNullOrEmpty<T>(IList<T> items) {
+		return null != items && items.Count > 0;
+	}
 }
 @{
-	ViewBag.Title = definition.Name + ' '
-		+ (definition.IsValueType ? "Structure" : definition.IsInterface ? "Interface" : definition.IsDelegateType() ? "Delegate" : "Class");
+	ViewBag.Title = Model.Title;
 	Layout = "_Layout.cshtml";
 }
-<h2>@ViewBag.Title</h2>
-@if (null != Model.XmlDoc){<div>@{Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBase", Model.XmlDoc.Summary);}</div>}
-@if (definition.HasMethods) {
-	var instanceConstructors = new List<MethodDefinition>();
-	var instanceMethods = new List<MethodDefinition>();
-	var staticMethods = new List<MethodDefinition>();
-	var operators = new List<MethodDefinition>();
-		foreach (var method in definition.Methods.Where(x => (x.IsPublic || x.IsFamily) && !x.IsAssembly)) {
-		if (method.IsConstructor){
-			if (!method.IsStatic){
-				instanceConstructors.Add(method);
-			}
-		}
-		else if (method.IsOperatorOverload()){
-			operators.Add(method);
-		}
-		else if(!method.IsSpecialName && !method.IsFinalizer()) {
-			(method.IsStatic ? staticMethods : instanceMethods).Add(method);
-		}
-	}
-	if (instanceConstructors.Count > 0){
-		<h3>Constructors</h3>
-		Html.RenderPartial("Partials/MethodTable", Model.CreateMethodSummaryTable(instanceConstructors, MethodSummaryTable.Kind.Constructor));
-	}
-	if (staticMethods.Count > 0){
-		<h3>Static Methods</h3>
-		Html.RenderPartial("Partials/MethodTable", Model.CreateMethodSummaryTable(staticMethods, MethodSummaryTable.Kind.Method));
-	}
-	if (operators.Count > 0){
-		<h3>Operators</h3>
-			Html.RenderPartial("Partials/MethodTable", Model.CreateMethodSummaryTable(operators, MethodSummaryTable.Kind.Operator));
-	}	
-	if (instanceMethods.Count > 0){
-		<h3>Methods</h3>
-		Html.RenderPartial("Partials/MethodTable", Model.CreateMethodSummaryTable(instanceMethods, MethodSummaryTable.Kind.Method));
-	}
+<h2>@Model.Title</h2>
+@if (null != Model.Summary) {
+	<div class="doc-page-summary">@{RenderChildren(Model.Summary);}</div>
 }
-
-@if (definition.HasFields){
-	var instanceFields = new List<FieldDefinition>();
-	var staticFields = new List<FieldDefinition>();
-	foreach (var field  in definition.Fields.Where(x => (x.IsPublic || x.IsFamily) && !x.IsAssembly)){
-		(field.IsStatic ? staticFields : instanceFields).Add(field);
-	}
-	if (staticFields.Count > 0){
-		<h3>Static Fields</h3>
-		Html.RenderPartial("Partials/FieldTable", Model.CreateFieldSummaryTable(staticFields));
-	}
-	if (instanceFields.Count > 0){
-		<h3>Fields</h3>
-		Html.RenderPartial("Partials/FieldTable", Model.CreateFieldSummaryTable(instanceFields));
-	}
+@if (Model.ExposedInstanceConstructors.Count > 0){
+	<h3>Constructors</h3>
+	Html.RenderPartial("Partials/MethodTable", Model.ToConstructorSummaries(Model.ExposedInstanceConstructors));
 }
-
-@if (definition.HasProperties){
-	var instanceProperties = new List<PropertyDefinition>();
-	var staticProperties = new List<PropertyDefinition>();
-	foreach (var property in definition.Properties){
-		((property.SetMethod ?? property.GetMethod).IsStatic ? staticProperties : instanceProperties).Add(property);
-	}
-	if (staticProperties.Count > 0){
-		 <h3>Static Properties</h3>
-	}
-	if (instanceProperties.Count > 0){
-		<h3>Properties</h3>
-	}
+@if (Model.ExposedStaticMethods.Count > 0){
+	<h3>Static Methods</h3>
+	Html.RenderPartial("Partials/MethodTable", Model.ToMethodSummaries(Model.ExposedStaticMethods));
 }
-
-@if (null != Model.XmlDoc){
-	var remarks = Model.XmlDoc.Remarks;
-	if (null != remarks){
-		<h3>Remarks</h3>
-		Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBase", remarks);
+@if (Model.ExposedOperators.Count > 0){
+	<h3>Operators</h3>
+	Html.RenderPartial("Partials/MethodTable", Model.ToOperatorSummaries(Model.ExposedOperators));
+}
+@if (Model.ExposedInstanceMethods.Count > 0){
+	<h3>Methods</h3>
+	Html.RenderPartial("Partials/MethodTable", Model.ToMethodSummaries(Model.ExposedInstanceMethods));
+}
+@if (Model.ExposedStaticFields.Count > 0) {
+	<h3>Static Fields</h3>
+	Html.RenderPartial("Partials/FieldTable", Model.ToFieldSummaries(Model.ExposedStaticFields));
+}
+@if (Model.ExposedInstanceFields.Count > 0) {
+	<h3>Fields</h3>
+	Html.RenderPartial("Partials/FieldTable", Model.ToFieldSummaries(Model.ExposedInstanceFields));
+}
+@if (Model.ExposedStaticProperties.Count > 0) {
+	<h3>Static Properties</h3>
+	Html.RenderPartial("Partials/PropertyTable", Model.ToPropertySummaries(Model.ExposedStaticProperties));
+}
+@if (Model.ExposedInstanceProperties.Count > 0) {
+	<h3>Properties</h3>
+	Html.RenderPartial("Partials/PropertyTable", Model.ToPropertySummaries(Model.ExposedInstanceProperties));
+}
+@if (Model.ExposedStaticEvents.Count > 0) {
+	<h3>Static Events</h3>
+	Html.RenderPartial("Partials/EventTable", Model.ToEventSummaries(Model.ExposedStaticEvents));
+}
+@if (Model.ExposedInstanceEvents.Count > 0) {
+	<h3>Events</h3>
+	Html.RenderPartial("Partials/EventTable", Model.ToEventSummaries(Model.ExposedInstanceEvents));
+}
+@{
+	if (null != Model.Remarks) {
+		Html.RenderPartial("Partials/RemarksSection", Model.Remarks);
+	}
+	if(null != Model.Examples){	
+		Html.RenderPartial("Partials/ExamplesSection", Model.Examples);
 	}
 }

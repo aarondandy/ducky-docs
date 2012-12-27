@@ -22,15 +22,10 @@
 			}
 			<li>
 			@if (null != term) {
-				<b>
-				@{Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBase", term);}
-				</b>
+			<b>@foreach(var child in term.Children){Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBase", child);}</b>
 			}
-
 			@if (null != description) {
-				<div>
-				@{Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBase", description);}
-				</div>
+			<div>@foreach (var child in description.Children) { Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBase", child); }</div>
 			}
 			</li>
 	}

@@ -22,6 +22,7 @@ namespace Mvc4WebDirectDocSample
 			bundles.Add(new StyleBundle("~/css/docs").Include(
 				"~/Content/docs.css"
 				));
+
 		}
 	}
 }

@@ -95,5 +95,62 @@ namespace DandyDoc.Core
 				&& "Finalize".Equals(methodDefinition.Name);
 		}
 
+		public static bool IsStatic(this PropertyDefinition definition) {
+			if(null == definition) throw new ArgumentNullException("definition");
+			Contract.EndContractBlock();
+			var method = definition.GetMethod ?? definition.SetMethod;
+			return null != method && method.IsStatic;
+		}
+
+		public static bool IsStatic(this EventDefinition definition) {
+			if (null == definition) throw new ArgumentNullException("definition");
+			Contract.EndContractBlock();
+			var method = definition.AddMethod ?? definition.InvokeMethod;
+			return null != method && method.IsStatic;
+		}
+
+		public static bool IsExternallyExposed(this MethodDefinition definition) {
+			if(null == definition) throw new ArgumentNullException("definition");
+			Contract.EndContractBlock();
+			if (definition.IsPublic)
+				return true;
+			if (definition.IsFamily)
+				return !definition.IsFamilyAndAssembly;
+			return false;
+		}
+
+		public static bool IsExternallyExposed(this FieldDefinition definition) {
+			if (null == definition) throw new ArgumentNullException("definition");
+			Contract.EndContractBlock();
+			if (definition.IsPublic)
+				return true;
+			if (definition.IsFamily)
+				return !definition.IsFamilyAndAssembly;
+			return false;
+		}
+
+		public static bool IsExternallyExposed(this PropertyDefinition definition) {
+			if (null == definition) throw new ArgumentNullException("definition");
+			Contract.EndContractBlock();
+			var getMethod = definition.GetMethod;
+			if (null != getMethod) {
+				if (getMethod.IsExternallyExposed())
+					return true;
+				var setMethod = definition.SetMethod;
+				return null != setMethod && setMethod.IsExternallyExposed();
+			}
+			else {
+				var setMethod = definition.SetMethod;
+				return null != setMethod && setMethod.IsExternallyExposed();
+			}
+		}
+
+		public static bool IsExternallyExposed(this EventDefinition definition) {
+			if (null == definition) throw new ArgumentNullException("definition");
+			Contract.EndContractBlock();
+			var method = definition.AddMethod ?? definition.InvokeMethod;
+			return null != method && method.IsExternallyExposed();
+		}
+
 	}
 }
