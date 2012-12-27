@@ -1,6 +1,12 @@
 ﻿body {
 	font-size: 12px;
 }
+h1 {
+	font-size: 2.5em;
+}
+h2 {
+	font-size: 2em;
+}
 .doc-page-member-listing table {
 	width: 100%;
 }

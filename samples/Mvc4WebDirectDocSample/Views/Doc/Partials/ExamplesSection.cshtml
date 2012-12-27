@@ -1,6 +1,6 @@
 ﻿@model IList<DandyDoc.Core.Overlays.XmlDoc.ParsedXmlElementBase>
 @if (null == Model || Model.Count == 0) {return;}
-<h3>Examples</h3>
+<h2>Examples</h2>
 @foreach (var node in Model) {
 	<div class="doc-page-section doc-page-example">
 		@foreach (var child in node.Children) {

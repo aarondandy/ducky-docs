@@ -1,6 +1,6 @@
 ﻿@model DandyDoc.Core.Overlays.XmlDoc.ParsedXmlElementBase
 @if (null == Model) {return;}
-<h3>Remarks</h3>
+<h2>Remarks</h2>
 <div class="doc-page-section doc-page-remarks">
 @foreach (var child in Model.Children) {
 	Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBase", child);

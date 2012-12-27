@@ -17,48 +17,48 @@
 	ViewBag.Title = Model.Title;
 	Layout = "_Layout.cshtml";
 }
-<h2>@Model.Title</h2>
+<h1>@Model.Title</h1>
 @if (null != Model.Summary) {
-	<div class="doc-page-summary">@{RenderChildren(Model.Summary);}</div>
+	Html.RenderPartial("Partials/SummarySection", Model.Summary);
 }
 @if (Model.ExposedInstanceConstructors.Count > 0){
-	<h3>Constructors</h3>
+	<h2>Constructors</h2>
 	Html.RenderPartial("Partials/MethodTable", Model.ToConstructorSummaries(Model.ExposedInstanceConstructors));
 }
 @if (Model.ExposedStaticMethods.Count > 0){
-	<h3>Static Methods</h3>
+	<h2>Static Methods</h2>
 	Html.RenderPartial("Partials/MethodTable", Model.ToMethodSummaries(Model.ExposedStaticMethods));
 }
 @if (Model.ExposedOperators.Count > 0){
-	<h3>Operators</h3>
+	<h2>Operators</h2>
 	Html.RenderPartial("Partials/MethodTable", Model.ToOperatorSummaries(Model.ExposedOperators));
 }
 @if (Model.ExposedInstanceMethods.Count > 0){
-	<h3>Methods</h3>
+	<h2>Methods</h2>
 	Html.RenderPartial("Partials/MethodTable", Model.ToMethodSummaries(Model.ExposedInstanceMethods));
 }
 @if (Model.ExposedStaticFields.Count > 0) {
-	<h3>Static Fields</h3>
+	<h2>Static Fields</h2>
 	Html.RenderPartial("Partials/FieldTable", Model.ToFieldSummaries(Model.ExposedStaticFields));
 }
 @if (Model.ExposedInstanceFields.Count > 0) {
-	<h3>Fields</h3>
+	<h2>Fields</h2>
 	Html.RenderPartial("Partials/FieldTable", Model.ToFieldSummaries(Model.ExposedInstanceFields));
 }
 @if (Model.ExposedStaticProperties.Count > 0) {
-	<h3>Static Properties</h3>
+	<h2>Static Properties</h2>
 	Html.RenderPartial("Partials/PropertyTable", Model.ToPropertySummaries(Model.ExposedStaticProperties));
 }
 @if (Model.ExposedInstanceProperties.Count > 0) {
-	<h3>Properties</h3>
+	<h2>Properties</h2>
 	Html.RenderPartial("Partials/PropertyTable", Model.ToPropertySummaries(Model.ExposedInstanceProperties));
 }
 @if (Model.ExposedStaticEvents.Count > 0) {
-	<h3>Static Events</h3>
+	<h2>Static Events</h2>
 	Html.RenderPartial("Partials/EventTable", Model.ToEventSummaries(Model.ExposedStaticEvents));
 }
 @if (Model.ExposedInstanceEvents.Count > 0) {
-	<h3>Events</h3>
+	<h2>Events</h2>
 	Html.RenderPartial("Partials/EventTable", Model.ToEventSummaries(Model.ExposedInstanceEvents));
 }
 @{
