@@ -1,18 +1,4 @@
-﻿@using DandyDoc.Core.Overlays.XmlDoc
-@model DandyDoc.Core.ViewModels.TypePageViewModel
-@functions {
-	public void RenderChildren(ParsedXmlNodeBase node) {
-		if (null == node)
-			return;
-		foreach (var child in node.Children) {
-			Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBase", child);
-		}
-	}
-	
-	public static bool NotNullOrEmpty<T>(IList<T> items) {
-		return null != items && items.Count > 0;
-	}
-}
+﻿@model DandyDoc.Core.ViewModels.TypePageViewModel
 @{
 	ViewBag.Title = Model.Title;
 	Layout = "_Layout.cshtml";
@@ -20,6 +6,15 @@
 <h1>@Model.Title</h1>
 @if (null != Model.Summary) {
 	Html.RenderPartial("Partials/SummarySection", Model.Summary);
+}
+@{ Html.RenderPartial("Partials/NamespaceAndAssembly", Model.AssemblyNamespace);}
+@if (Model.ExposedNestedTypes.Count > 0) {
+	<h2>Nested Types</h2>
+	Html.RenderPartial("Partials/NestedTypeTable", Model.ToTypeSummaries(Model.ExposedNestedTypes));
+}
+@if (Model.ExposedDelegateTypes.Count > 0) {
+	<h2>Delegates</h2>
+	Html.RenderPartial("Partials/DelegateTypeTable", Model.ToDelegateTypeSummaries(Model.ExposedDelegateTypes));
 }
 @if (Model.ExposedInstanceConstructors.Count > 0){
 	<h2>Constructors</h2>

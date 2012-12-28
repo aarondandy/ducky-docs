@@ -1,18 +1,9 @@
 ﻿@using DandyDoc.Core.Overlays.XmlDoc
 @model DandyDoc.Core.Overlays.XmlDoc.ParsedXmlNodeBase
 @functions{
-
 	public void RenderChildren(){
-		RenderChildren(Model.Children);
+		Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", Model);	
 	}
-
-	public void RenderChildren(IList<ParsedXmlNodeBase> children){
-		if (null != children)
-			foreach (var child in children){
-				Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBase", child);
-			}
-	}
-		
 }
 @if (null == Model){
 	return;

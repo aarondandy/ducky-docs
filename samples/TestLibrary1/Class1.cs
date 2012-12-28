@@ -37,6 +37,19 @@ namespace TestLibrary1
 			public string Name { get; set; }
 		}
 
+		public class NoDocs
+		{
+			
+		}
+
+		/// <summary>
+		/// no remarks here
+		/// </summary>
+		public class NoRemarks
+		{
+			
+		}
+
 		/// <summary>
 		/// The static constructor.
 		/// </summary>

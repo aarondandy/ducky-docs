@@ -1,0 +1,14 @@
+﻿@model IEnumerable<DandyDoc.Core.ViewModels.ParameterViewModel>
+<div class="doc-page-member-listing">
+	<dl>
+		@foreach (var p in Model) {
+			<dt>@p.DisplayName</dt>
+			<dd>
+				Type: <a href="#">@p.Definition.ParameterType.FullName</a>
+				@if (null != p.XmlDoc) {
+					<p>@{ Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", p.XmlDoc); }</p>
+				}
+			</dd>
+		}
+	</dl>
+</div>

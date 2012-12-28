@@ -1,0 +1,2 @@
+﻿@model DandyDoc.Core.Overlays.XmlDoc.ParsedXmlNodeBase
+@foreach (var child in Model.Children) {Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBase", child);}

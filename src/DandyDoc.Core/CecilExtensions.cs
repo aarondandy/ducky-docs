@@ -152,5 +152,22 @@ namespace DandyDoc.Core
 			return null != method && method.IsExternallyExposed();
 		}
 
+		public static bool IsExternallyExposed(this TypeDefinition definition) {
+			if (null == definition) throw new ArgumentNullException("definition");
+			Contract.EndContractBlock();
+			if (definition.IsNested) {
+				Contract.Assume(null != definition.DeclaringType);
+				return definition.DeclaringType.IsExternallyExposed() && (
+					definition.IsPublic
+					|| definition.IsNestedPublic
+					|| (
+						definition.IsNestedFamily
+						&& !definition.IsNestedFamilyAndAssembly
+					)
+				);
+			}
+			return definition.IsPublic;
+		}
+
 	}
 }

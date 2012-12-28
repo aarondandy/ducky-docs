@@ -20,14 +20,16 @@
 			if (null == term && null == description) {
 				continue;
 			}
-			<li>
+		<li>
+			<dl>
 			@if (null != term) {
-			<b>@foreach(var child in term.Children){Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBase", child);}</b>
+				<dt>@foreach(var child in term.Children){Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBase", child);}</dt>
 			}
 			@if (null != description) {
-			<div>@foreach (var child in description.Children) { Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBase", child); }</div>
+				<dd>@foreach (var child in description.Children) { Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBase", child); }</dd>
 			}
-			</li>
+			</dl>
+		</li>
 	}
 	@Html.Raw("</" + listHtmlType + '>');
 }

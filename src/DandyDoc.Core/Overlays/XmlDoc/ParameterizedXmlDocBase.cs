@@ -11,20 +11,20 @@ namespace DandyDoc.Core.Overlays.XmlDoc
 	public class ParameterizedXmlDocBase : DefinitionXmlDocBase
 	{
 
-		internal static ParsedXmlNodeBase DocsForParameter(string name, DefinitionXmlDocBase xmlDoc) {
+		internal static ParsedXmlElementBase DocsForParameter(string name, DefinitionXmlDocBase xmlDoc) {
 			Contract.Requires(!String.IsNullOrEmpty(name));
 			Contract.Requires(null != xmlDoc);
 			var query = String.Format("param[@name=\"{0}\"]", name);
 			Contract.Assume(!String.IsNullOrEmpty(query));
-			return xmlDoc.SelectParsedXmlNode(query);
+			return xmlDoc.SelectParsedXmlNode(query) as ParsedXmlElementBase;
 		}
 
-		internal static ParsedXmlNodeBase DocsForTypeparam(string name, DefinitionXmlDocBase xmlDoc){
+		internal static ParsedXmlElementBase DocsForTypeparam(string name, DefinitionXmlDocBase xmlDoc) {
 			Contract.Requires(!String.IsNullOrEmpty(name));
 			Contract.Requires(null != xmlDoc);
 			var query = String.Format("typeparam[@name=\"{0}\"]", name);
 			Contract.Assume(!String.IsNullOrEmpty(query));
-			return xmlDoc.SelectParsedXmlNode(query);
+			return xmlDoc.SelectParsedXmlNode(query) as ParsedXmlElementBase;
 		}
 
 		internal ParameterizedXmlDocBase(IMemberDefinition definition, XmlNode xmlNode, CrefOverlay crefOverlay)
@@ -35,19 +35,19 @@ namespace DandyDoc.Core.Overlays.XmlDoc
 			Contract.Requires(null != crefOverlay);
 		}
 
-		public ParsedXmlNodeBase DocsForParameter(string name) {
+		public ParsedXmlElementBase DocsForParameter(string name) {
 			if(String.IsNullOrEmpty(name)) throw new ArgumentException("Invalid parameter name.", "name");
 			Contract.EndContractBlock();
 			return DocsForParameter(name, this);
 		}
 
-		public ParsedXmlNodeBase DocsForTypeparam(string name){
+		public ParsedXmlElementBase DocsForTypeparam(string name) {
 			if (String.IsNullOrEmpty(name)) throw new ArgumentException("Invalid parameter name.", "name");
 			Contract.EndContractBlock();
 			return DocsForTypeparam(name, this);
 		}
 
-		public ParsedXmlNodeBase Returns { get { return SelectParsedXmlNode("returns"); } }
+		public ParsedXmlElementBase Returns { get { return SelectParsedXmlNode("returns") as ParsedXmlElementBase; } }
 
 		public IList<ParsedXmlException> Exceptions{
 			get{

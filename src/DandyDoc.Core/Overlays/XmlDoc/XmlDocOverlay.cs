@@ -76,7 +76,7 @@ namespace DandyDoc.Core.Overlays.XmlDoc
 			return _xmlDocRootCache.GetOrAdd(assemblyDefinition, Load);
 		}
 
-		public DefinitionXmlDocBase GetDocumentation(IMemberDefinition definition) {
+		public DefinitionXmlDocBase GetDocumentation(MemberReference definition) {
 			if(null == definition) throw new ArgumentNullException("definition");
 			Contract.EndContractBlock();
 
@@ -90,13 +90,15 @@ namespace DandyDoc.Core.Overlays.XmlDoc
 				return GetDocumentation((FieldDefinition)definition);
 			if (definition is EventDefinition)
 				return GetDocumentation((EventDefinition)definition);
-			throw new NotImplementedException();
+			throw new NotSupportedException();
 		}
 
 		public TypeDefinitionXmlDoc GetDocumentation(TypeDefinition definition) {
 			if (null == definition) throw new ArgumentNullException("definition");
 			Contract.EndContractBlock();
 			var node = GetNodeForDefinition(definition);
+			if (null == node)
+				return null;
 
 			if (definition.IsDelegateType())
 				return new DelegateTypeDefinitionXmlDoc(definition, node, CrefOverlay);

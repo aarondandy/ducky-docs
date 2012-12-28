@@ -62,9 +62,17 @@ namespace TestLibrary1.Test
 
 		[Test]
 		public void read_blank_remarks_from_class() {
-			var type = CrefOverlay.GetTypeDefinition("T:TestLibrary1.Class1");
+			var type = CrefOverlay.GetTypeDefinition("T:TestLibrary1.Class1.NoRemarks");
 			var docs = XmlDocOverlay.GetDocumentation(type);
+			Assert.IsNotNull(docs);
 			Assert.IsNull(docs.Remarks);
+		}
+
+		[Test]
+		public void read_no_docs_from_class() {
+			var type = CrefOverlay.GetTypeDefinition("T:TestLibrary1.Class1.NoDocs");
+			var docs = XmlDocOverlay.GetDocumentation(type);
+			Assert.IsNull(docs);
 		}
 
 		[Test]

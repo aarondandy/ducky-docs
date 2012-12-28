@@ -153,10 +153,17 @@
     <Compile Include="Utility\CollectionUtility.cs" />
     <Compile Include="Utility\NameUtility.cs" />
     <Compile Include="Utility\TextUtility.cs" />
+    <Compile Include="ViewModels\DefinitionPageViewModelBase.cs" />
     <Compile Include="ViewModels\EventSummaryViewModel.cs" />
+    <Compile Include="ViewModels\FieldPageViewModel.cs" />
     <Compile Include="ViewModels\FieldSummaryViewModel.cs" />
     <Compile Include="ViewModels\MemberSummaryViewModel.cs" />
+    <Compile Include="ViewModels\MethodPageViewModel.cs" />
     <Compile Include="ViewModels\MethodSummaryViewModel.cs" />
+    <Compile Include="ViewModels\AssemblyNamespaceViewModel.cs" />
+    <Compile Include="ViewModels\ParameterViewModel.cs" />
+    <Compile Include="ViewModels\ReturnViewModel.cs" />
+    <Compile Include="ViewModels\TypeSummaryViewModel.cs" />
     <Compile Include="ViewModels\PropertySummaryViewModel.cs" />
     <Compile Include="ViewModels\TypePageViewModel.cs" />
   </ItemGroup>

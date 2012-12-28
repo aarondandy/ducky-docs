@@ -28,28 +28,26 @@ namespace Mvc4WebDirectDocSample.Controllers
 		public XmlDocOverlay XmlDocOverlay { get; private set; }
 
 		public ActionResult Index(string cref) {
-			if(String.IsNullOrEmpty(cref)) return new HttpNotFoundResult();
-			var reference = CrefOverlay.GetReference(cref);
-			if (null == reference){
+			if(String.IsNullOrEmpty(cref))
 				return new HttpNotFoundResult();
-			}
+			var reference = CrefOverlay.GetReference(cref);
+			if (null == reference)
+				return new HttpNotFoundResult();
+
 			var typeDefinition = reference as TypeDefinition;
 			if (null != typeDefinition) {
-				/*return View("Type", new TypeViewModel{
-					Definition = typeDefinition,
-					XmlDocOverlay = XmlDocOverlay,
-					CrefOverlay = CrefOverlay,
-					XmlDoc = XmlDocOverlay.GetDocumentation(typeDefinition)
-				});*/
 				return View("Type", new TypePageViewModel(typeDefinition, XmlDocOverlay));
 			}
-			else if (reference is MethodDefinition){
-				return View("Method", (MethodDefinition) reference);
+			var methodDefinition = reference as MethodDefinition;
+			if (null != methodDefinition){
+				return View("Method", new MethodPageViewModel(methodDefinition, XmlDocOverlay));
 			}
-			else{
-				throw new NotSupportedException();
+			var fieldDefinition = reference as FieldDefinition;
+			if (null != fieldDefinition) {
+				return View("Field", new FieldPageViewModel(fieldDefinition, XmlDocOverlay));
 			}
 
+			throw new NotSupportedException();
 		}
 
 	}

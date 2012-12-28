@@ -168,7 +168,9 @@ namespace DandyDoc.Core.ViewModels
 		private readonly Lazy<CategorizedMethods> _categorizedExposedMethods;
 		private readonly Lazy<CategorizedFields> _categorizedExposedFields;
 		private readonly Lazy<CategorizedProperties> _categorizedExposedProperties;
-		private readonly Lazy<CategorizedEvents> _categorizedExposedEvents; 
+		private readonly Lazy<CategorizedEvents> _categorizedExposedEvents;
+		private readonly Lazy<ReadOnlyCollection<TypeDefinition>> _nestedExposedTypes;
+		private readonly Lazy<ReadOnlyCollection<TypeDefinition>> _delegateExposedTypes;
 
 		public TypePageViewModel(TypeDefinition typeDefinition, XmlDocOverlay xmlDocOverlay, CrefOverlay crefOverlay = null){
 			if(null == typeDefinition) throw new ArgumentNullException("typeDefinition");
@@ -182,6 +184,8 @@ namespace DandyDoc.Core.ViewModels
 			_categorizedExposedFields = new Lazy<CategorizedFields>(() => new CategorizedFields(Definition.Fields.Where(x => x.IsExternallyExposed())));
 			_categorizedExposedProperties = new Lazy<CategorizedProperties>(() => new CategorizedProperties(Definition.Properties.Where(x => x.IsExternallyExposed())));
 			_categorizedExposedEvents = new Lazy<CategorizedEvents>(() => new CategorizedEvents(Definition.Events.Where(x => x.IsExternallyExposed())));
+			_nestedExposedTypes = new Lazy<ReadOnlyCollection<TypeDefinition>>(() => Array.AsReadOnly(Definition.NestedTypes.Where(x => x.IsExternallyExposed() && !x.IsDelegateType()).ToArray()));
+			_delegateExposedTypes = new Lazy<ReadOnlyCollection<TypeDefinition>>(() => Array.AsReadOnly(Definition.NestedTypes.Where(x => x.IsExternallyExposed() && x.IsDelegateType()).ToArray()));
 		}
 
 		public string Title {
@@ -219,7 +223,19 @@ namespace DandyDoc.Core.ViewModels
 
 		public IList<ParsedXmlElementBase> Examples {
 			get { return null == XmlDoc ? null : XmlDoc.Examples; }
-		} 
+		}
+
+		public AssemblyNamespaceViewModel AssemblyNamespace{ get {return new AssemblyNamespaceViewModel(Definition);}}
+
+		public ReadOnlyCollection<TypeDefinition> ExposedNestedTypes { get {
+			Contract.Ensures(Contract.Result<ReadOnlyCollection<TypeDefinition>>() != null);
+			return _nestedExposedTypes.Value;
+		} }
+
+		public ReadOnlyCollection<TypeDefinition> ExposedDelegateTypes { get {
+			Contract.Ensures(Contract.Result<ReadOnlyCollection<TypeDefinition>>() != null);
+			return _delegateExposedTypes.Value;
+		} }
 
 		public ReadOnlyCollection<MethodDefinition> ExposedInstanceConstructors { get {
 			Contract.Ensures(Contract.Result<ReadOnlyCollection<MethodDefinition>>() != null);
@@ -291,6 +307,23 @@ namespace DandyDoc.Core.ViewModels
 			return _categorizedExposedEvents.Value.GetOrDefault(CategorizedEvents.Category.Other);
 		} }
 
+		public IEnumerable<TypeSummaryViewModel> ToTypeSummaries(IEnumerable<TypeDefinition> definitions) {
+			return definitions.Select(item => {
+				var doc = XmlDocOverlay.GetDocumentation(item);
+				var summary = null == doc ? null : doc.Summary;
+				return new TypeSummaryViewModel(item, item.Name, CrefOverlay.GetCref(item), summary);
+			});
+		}
+
+		public IEnumerable<TypeSummaryViewModel> ToDelegateTypeSummaries(IEnumerable<TypeDefinition> definitions) {
+			return definitions.Select(item => {
+				var doc = XmlDocOverlay.GetDocumentation(item);
+				var summary = null == doc ? null : doc.Summary;
+				var name = String.Concat(item.Name,'(',String.Join(", ",item.GetDelegateTypeParameters().Select(x => x.ParameterType.Name)),')');
+				return new TypeSummaryViewModel(item, name, CrefOverlay.GetCref(item), summary);
+			});
+		} 
+
 		public IEnumerable<PropertySummaryViewModel> ToPropertySummaries(IEnumerable<PropertyDefinition> definitions) {
 			return definitions.Select(item => {
 				var doc = XmlDocOverlay.GetDocumentation(item);
@@ -330,11 +363,7 @@ namespace DandyDoc.Core.ViewModels
 						var summary = null == doc ? null : doc.Summary;
 						var name = item.Name;
 						if (item.HasParameters) {
-							name = String.Concat(
-								name,
-								'(',
-								String.Join(",", item.Parameters.Select(x => x.ParameterType.Name)),
-								')');
+							name = String.Concat(name,'(',String.Join(", ", item.Parameters.Select(x => x.ParameterType.Name)),')');
 						}
 						yield return new MethodSummaryViewModel(item, name, CrefOverlay.GetCref(item), summary);
 					}
@@ -346,11 +375,7 @@ namespace DandyDoc.Core.ViewModels
 			return definitions.Select(item => {
 				var name = item.DeclaringType.Name;
 				if (item.HasParameters) {
-					name = String.Concat(
-						name,
-						'(',
-						String.Join(",", item.Parameters.Select(x => x.ParameterType.Name)),
-						')');
+					name = String.Concat(name,'(',String.Join(", ", item.Parameters.Select(x => x.ParameterType.Name)),')');
 				}
 				var doc = XmlDocOverlay.GetDocumentation(item);
 				var summary = null == doc ? null : doc.Summary;
@@ -376,11 +401,7 @@ namespace DandyDoc.Core.ViewModels
 						var summary = null == doc ? null : doc.Summary;
 						var name = item.Name;
 						if (item.HasParameters) {
-							name = String.Concat(
-								name,
-								'(',
-								String.Join(",", item.Parameters.Select(x => x.ParameterType.Name)),
-								')');
+							name = String.Concat(name,'(',String.Join(", ", item.Parameters.Select(x => x.ParameterType.Name)),')');
 						}
 						if (name.StartsWith("op_"))
 							name = name.Substring(3);
