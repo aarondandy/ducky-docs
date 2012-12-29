@@ -34,7 +34,11 @@ namespace DandyDoc.Core.Overlays.Cref
 		public TypeDefinition GetTypeDefinition(string cref) {
 			if(String.IsNullOrEmpty(cref)) throw new ArgumentException("Invalid cref.", "cref");
 			Contract.EndContractBlock();
-			var parsedCref = new ParsedCref(cref);
+			return GetTypeDefinition(new ParsedCref(cref));
+		}
+
+		private TypeDefinition GetTypeDefinition(ParsedCref parsedCref) {
+			Contract.Requires(null != parsedCref);
 			if (!String.IsNullOrEmpty(parsedCref.TargetType) && !String.Equals("T", parsedCref.TargetType, StringComparison.OrdinalIgnoreCase))
 				return null;
 			if (!String.IsNullOrEmpty(parsedCref.ParamParts))
@@ -98,8 +102,8 @@ namespace DandyDoc.Core.Overlays.Cref
 			Contract.EndContractBlock();
 
 			var parsedCref = new ParsedCref(cref);
-			if (!String.IsNullOrEmpty(parsedCref.TargetType) && String.Equals("T", parsedCref.TargetType, StringComparison.OrdinalIgnoreCase))
-				return null;
+			if (String.Equals("T", parsedCref.TargetType, StringComparison.OrdinalIgnoreCase))
+				return GetTypeDefinition(parsedCref);
 			return AssemblyDefinitionCollection.Select(x => GetMemberDefinition(x, parsedCref)).FirstOrDefault(x => null != x);
 		}
 
@@ -211,7 +215,13 @@ namespace DandyDoc.Core.Overlays.Cref
 			return nameTest.Equals(eventDefinition.Name);
 		}
 
-		private string GetCref(TypeReference typeRef, bool hideCrefType = false) {
+		public string GetCref(TypeDefinition definition, bool hideCrefType = false) {
+			if(null == definition) throw new ArgumentNullException("definition");
+			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
+			return GetCref((TypeReference)definition, hideCrefType);
+		}
+
+		public string GetCref(TypeReference typeRef, bool hideCrefType = false) {
 			if(null == typeRef) throw new ArgumentNullException("typeRef");
 			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
 			
@@ -271,6 +281,13 @@ namespace DandyDoc.Core.Overlays.Cref
 			return GetCref(parameterDefinition.ParameterType, true);
 		}
 
+		public string GetCref(IMemberDefinition definition, bool hideCrefType = false) {
+			if(null == definition) throw new ArgumentNullException("definition");
+			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
+			Contract.Assume(null != (definition as MemberReference));
+			return GetCref(definition as MemberReference);
+		}
+
 		/// <summary>
 		/// Creates a cref hyperlink for the given member or type.
 		/// </summary>
@@ -287,9 +304,8 @@ namespace DandyDoc.Core.Overlays.Cref
 			if(null == memberRef) throw new ArgumentNullException("memberRef");
 			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
 
-			if (memberRef is TypeReference) {
+			if (memberRef is TypeReference)
 				return GetCref((TypeReference)memberRef, hideCrefType);
-			}
 
 			var type = memberRef.DeclaringType;
 			if (null == type) {
@@ -337,6 +353,30 @@ namespace DandyDoc.Core.Overlays.Cref
 				cref = String.Concat(crefTypePrefix, ':', cref);
 
 			return cref;
+		}
+
+		public string GetCref(MethodDefinition definition, bool hideCrefType = false) {
+			if (null == definition) throw new ArgumentNullException("definition");
+			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
+			return GetCref((MemberReference)definition, hideCrefType);
+		}
+
+		public string GetCref(PropertyDefinition definition, bool hideCrefType = false) {
+			if (null == definition) throw new ArgumentNullException("definition");
+			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
+			return GetCref((MemberReference)definition, hideCrefType);
+		}
+
+		public string GetCref(FieldDefinition definition, bool hideCrefType = false) {
+			if (null == definition) throw new ArgumentNullException("definition");
+			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
+			return GetCref((MemberReference)definition, hideCrefType);
+		}
+
+		public string GetCref(EventDefinition definition, bool hideCrefType = false) {
+			if (null == definition) throw new ArgumentNullException("definition");
+			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
+			return GetCref((MemberReference)definition, hideCrefType);
 		}
 
 		[ContractInvariantMethod]

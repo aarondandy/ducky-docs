@@ -76,20 +76,27 @@ namespace DandyDoc.Core.Overlays.XmlDoc
 			return _xmlDocRootCache.GetOrAdd(assemblyDefinition, Load);
 		}
 
-		public DefinitionXmlDocBase GetDocumentation(MemberReference definition) {
+		public DefinitionXmlDocBase GetDocumentation(IMemberDefinition definition) {
 			if(null == definition) throw new ArgumentNullException("definition");
 			Contract.EndContractBlock();
+			var memberReference = definition as MemberReference;
+			return null == memberReference ? null : GetDocumentation(memberReference);
+		}
 
-			if (definition is TypeDefinition)
-				return GetDocumentation((TypeDefinition)definition);
-			if (definition is MethodDefinition)
-				return GetDocumentation((MethodDefinition)definition);
-			if (definition is PropertyDefinition)
-				return GetDocumentation((PropertyDefinition)definition);
-			if (definition is FieldDefinition)
-				return GetDocumentation((FieldDefinition)definition);
-			if (definition is EventDefinition)
-				return GetDocumentation((EventDefinition)definition);
+		public DefinitionXmlDocBase GetDocumentation(MemberReference memberReference) {
+			if(null == memberReference) throw new ArgumentNullException("memberReference");
+			Contract.EndContractBlock();
+
+			if (memberReference is TypeDefinition)
+				return GetDocumentation((TypeDefinition)memberReference);
+			if (memberReference is MethodDefinition)
+				return GetDocumentation((MethodDefinition)memberReference);
+			if (memberReference is PropertyDefinition)
+				return GetDocumentation((PropertyDefinition)memberReference);
+			if (memberReference is FieldDefinition)
+				return GetDocumentation((FieldDefinition)memberReference);
+			if (memberReference is EventDefinition)
+				return GetDocumentation((EventDefinition)memberReference);
 			throw new NotSupportedException();
 		}
 

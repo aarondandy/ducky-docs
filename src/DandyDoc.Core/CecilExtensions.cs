@@ -109,64 +109,26 @@ namespace DandyDoc.Core
 			return null != method && method.IsStatic;
 		}
 
-		public static bool IsExternallyExposed(this MethodDefinition definition) {
-			if(null == definition) throw new ArgumentNullException("definition");
-			Contract.EndContractBlock();
-			if (definition.IsPublic)
-				return true;
-			if (definition.IsFamily)
-				return !definition.IsFamilyAndAssembly;
-			return false;
-		}
-
-		public static bool IsExternallyExposed(this FieldDefinition definition) {
+		public static bool IsStatic(this TypeDefinition definition) {
 			if (null == definition) throw new ArgumentNullException("definition");
 			Contract.EndContractBlock();
-			if (definition.IsPublic)
-				return true;
-			if (definition.IsFamily)
-				return !definition.IsFamilyAndAssembly;
-			return false;
+			return definition.IsAbstract && definition.IsSealed;
 		}
 
-		public static bool IsExternallyExposed(this PropertyDefinition definition) {
+		public static bool IsStatic(this IMemberDefinition definition) {
 			if (null == definition) throw new ArgumentNullException("definition");
 			Contract.EndContractBlock();
-			var getMethod = definition.GetMethod;
-			if (null != getMethod) {
-				if (getMethod.IsExternallyExposed())
-					return true;
-				var setMethod = definition.SetMethod;
-				return null != setMethod && setMethod.IsExternallyExposed();
-			}
-			else {
-				var setMethod = definition.SetMethod;
-				return null != setMethod && setMethod.IsExternallyExposed();
-			}
-		}
-
-		public static bool IsExternallyExposed(this EventDefinition definition) {
-			if (null == definition) throw new ArgumentNullException("definition");
-			Contract.EndContractBlock();
-			var method = definition.AddMethod ?? definition.InvokeMethod;
-			return null != method && method.IsExternallyExposed();
-		}
-
-		public static bool IsExternallyExposed(this TypeDefinition definition) {
-			if (null == definition) throw new ArgumentNullException("definition");
-			Contract.EndContractBlock();
-			if (definition.IsNested) {
-				Contract.Assume(null != definition.DeclaringType);
-				return definition.DeclaringType.IsExternallyExposed() && (
-					definition.IsPublic
-					|| definition.IsNestedPublic
-					|| (
-						definition.IsNestedFamily
-						&& !definition.IsNestedFamilyAndAssembly
-					)
-				);
-			}
-			return definition.IsPublic;
+			if (definition is MethodDefinition)
+				return ((MethodDefinition)definition).IsStatic;
+			if (definition is FieldDefinition)
+				return ((FieldDefinition)definition).IsStatic;
+			if (definition is TypeDefinition)
+				return IsStatic((TypeDefinition)definition);
+			if (definition is PropertyDefinition)
+				return IsStatic((PropertyDefinition)definition);
+			if (definition is EventDefinition)
+				return IsStatic((EventDefinition)definition);
+			throw new NotSupportedException();
 		}
 
 	}

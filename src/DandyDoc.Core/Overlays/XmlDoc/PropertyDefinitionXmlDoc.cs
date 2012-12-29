@@ -23,7 +23,7 @@ namespace DandyDoc.Core.Overlays.XmlDoc
 
 		public new PropertyDefinition Definition { get { return (PropertyDefinition)(base.Definition); } }
 
-		public ParsedXmlNodeBase ValueDoc { get { return SelectParsedXmlNode("value"); } }
+		public ParsedXmlElementBase ValueDoc { get { return SelectParsedXmlNode("value") as ParsedXmlElementBase; } }
 
 		public MethodDefinitionXmlDoc SetterDocs {
 			get {

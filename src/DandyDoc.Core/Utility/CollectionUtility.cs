@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
 
@@ -7,6 +8,8 @@ namespace DandyDoc.Core.Utility
 {
 	internal static class CollectionUtility
 	{
+
+		internal static readonly ReadOnlyCollection<string> EmptyStringCollection = Array.AsReadOnly(new string[0]);
 
 		public static List<TTo> ConvertAll<TFrom, TTo>(this IList<TFrom> from, Func<TFrom,TTo> conversion) {
 			if(null == from) throw new ArgumentNullException("from");

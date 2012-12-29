@@ -1,4 +1,4 @@
-﻿@model DandyDoc.Core.ViewModels.FieldViewModel
+﻿@model DandyDoc.Core.ViewModels.PropertyViewModel
 @{
 	ViewBag.Title = Model.Title;
 	Layout = "_Layout.cshtml";
@@ -7,7 +7,8 @@
 @if (null != Model.Summary) {
 	Html.RenderPartial("Partials/SummarySection", Model.Summary);
 }
-<div>Type: <a href="#">@Model.Definition.FieldType.FullName</a></div>
+<h2>Signature</h2>
+<div>Type: <a href="#">@Model.Definition.PropertyType.FullName</a></div>
 @if (null != Model.ValueDoc) {
 	<h2>Value</h2>
 	<div class="doc-page-section">@{ Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", Model.ValueDoc); }</div>

@@ -1,0 +1,12 @@
+﻿@model IEnumerable<DandyDoc.Core.ViewModels.IDefinitionViewModel>
+<div class="doc-page-member-listing">
+<table>
+	<tr><th>Flair</th><th>Name</th><th>Description</th></tr>
+@foreach (var member in Model.OrderBy(x => x.ShortName)){
+	<tr>
+		<td>@String.Join(", ", member.Flair)</td>
+		<td><a href="@Url.Action("Index",new{cref=member.Cref})">@member.ShortName</a></td>
+		<td>@if (null != member.Summary) { Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", member.Summary); }</td>
+	</tr>
+}
+</table></div>

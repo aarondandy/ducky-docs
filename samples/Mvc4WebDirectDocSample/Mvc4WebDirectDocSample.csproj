@@ -195,19 +195,7 @@
     <Content Include="Views\Doc\ParsedXmlDoc\ParsedXmlNodeBase.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Doc\Partials\MethodTable.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\Doc\ParsedXmlDoc\ParsedXmlListElement.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Doc\Partials\FieldTable.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Doc\Partials\PropertyTable.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Doc\Partials\EventTable.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Doc\Partials\RemarksSection.cshtml" />
@@ -217,12 +205,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Doc\Partials\SummarySection.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Doc\Partials\NestedTypeTable.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Doc\Partials\DelegateTypeTable.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Doc\Method.cshtml" />
@@ -241,6 +223,21 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Doc\Field.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Doc\Property.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Doc\Event.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Doc\Partials\SimpleMemberTable.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Doc\Partials\DefinitionPageCommonSections.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Doc\Partials\SeeAlsoSection.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

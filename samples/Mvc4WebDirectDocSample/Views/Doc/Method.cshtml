@@ -1,4 +1,4 @@
-﻿@model DandyDoc.Core.ViewModels.MethodPageViewModel
+﻿@model DandyDoc.Core.ViewModels.MethodViewModel
 @{
 	ViewBag.Title = Model.Title;
 	Layout = "_Layout.cshtml";
@@ -11,17 +11,10 @@
 <h2>Signature</h2>
 @if (Model.Definition.Parameters.Count > 0) {
 	<h2>Parameters</h2>
-	Html.RenderPartial("Partials/ParameterList",Model.CreateViewModels(Model.Definition.Parameters));
+	Html.RenderPartial("Partials/ParameterList",Model.CreateParameterViewModels(Model.Definition.Parameters));
 }
 @if (Model.HasReturn) {
 	<h2>Returns</h2>
 	Html.RenderPartial("Partials/ReturnSection", Model.CreateReturnViewModel());
 }
-@{
-	if (null != Model.Remarks) {
-		Html.RenderPartial("Partials/RemarksSection", Model.Remarks);
-	}
-	if(null != Model.Examples){	
-		Html.RenderPartial("Partials/ExamplesSection", Model.Examples);
-	}
-}
+@{Html.RenderPartial("Partials/DefinitionPageCommonSections", Model);}

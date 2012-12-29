@@ -1,0 +1,12 @@
+﻿@model DandyDoc.Core.ViewModels.IDefinitionViewModel
+@{
+	if (null != Model.Remarks) {
+		Html.RenderPartial("Partials/RemarksSection", Model.Remarks);
+	}
+	if (null != Model.Examples && Model.Examples.Count > 0) {
+		Html.RenderPartial("Partials/ExamplesSection", Model.Examples);
+	}
+	if (null != Model.SeeAlso && Model.SeeAlso.Count > 0) {
+		Html.RenderPartial("Partials/SeeAlsoSection", Model.SeeAlso);	
+	}
+}

@@ -8,22 +8,18 @@ using Mono.Cecil;
 
 namespace DandyDoc.Core.ViewModels
 {
-	public class MethodPageViewModel
+	public class MethodViewModel : DefinitionViewModelBase<MethodDefinition>
 	{
 
-		private readonly Lazy<MethodDefinitionXmlDoc> _xmlDoc;
-
-		public MethodPageViewModel(MethodDefinition definition, XmlDocOverlay xmlDocOverlay, CrefOverlay crefOverlay = null) {
-			if (null == definition) throw new ArgumentNullException("definition");
-			if (null == xmlDocOverlay) throw new ArgumentNullException("xmlDocOverlay");
+		public MethodViewModel(MethodDefinition definition, XmlDocOverlay xmlDocOverlay, CrefOverlay crefOverlay = null)
+			: base(definition, xmlDocOverlay, crefOverlay)
+		{
+			Contract.Requires(null != definition);
+			Contract.Requires(null != xmlDocOverlay);
 			Contract.EndContractBlock();
-			Definition = definition;
-			XmlDocOverlay = xmlDocOverlay;
-			CrefOverlay = crefOverlay ?? xmlDocOverlay.CrefOverlay;
-			_xmlDoc = new Lazy<MethodDefinitionXmlDoc>(() => XmlDocOverlay.GetDocumentation(Definition));
 		}
 
-		public string Title {
+		public override string Title {
 			get {
 				string name;
 				string kind;
@@ -50,6 +46,26 @@ namespace DandyDoc.Core.ViewModels
 			}
 		}
 
+		public override string ShortName {
+			get {
+				if (Definition.IsOperatorOverload()) {
+					var name = Definition.Name;
+					if (name.StartsWith("op_"))
+						name = name.Substring(3);
+					return name;
+				}
+				if (Definition.IsConstructor) {
+					return String.Concat(Definition.DeclaringType.Name, '(', String.Join(", ", Definition.Parameters.Select(p => p.ParameterType.Name)), ')');
+				}
+
+				var isOverloaded = Definition.DeclaringType.Methods.Count(m => m.Name == Definition.Name) > 1;
+				if (!isOverloaded)
+					return Definition.Name;
+
+				return String.Concat(Definition.Name, '(', String.Join(", ", Definition.Parameters.Select(p => p.ParameterType.Name)), ')');
+			}
+		}
+
 		public string InvokeName {
 			get {
 				if (Definition.IsConstructor)
@@ -60,39 +76,22 @@ namespace DandyDoc.Core.ViewModels
 			}
 		}
 
-		public MethodDefinition Definition { get; private set; }
-
-		public XmlDocOverlay XmlDocOverlay { get; private set; }
-
-		public CrefOverlay CrefOverlay { get; private set; }
-
-		public MethodDefinitionXmlDoc XmlDoc { get { return _xmlDoc.Value; } }
-
-		public bool HasXmlDoc { get { return XmlDoc != null; } }
-
-		public ParsedXmlElementBase Summary {
-			get { return null == XmlDoc ? null : XmlDoc.Summary; }
-		}
-
-		public ParsedXmlElementBase Remarks {
-			get { return null == XmlDoc ? null : XmlDoc.Remarks; }
-		}
-
-		public IList<ParsedXmlElementBase> Examples {
-			get { return null == XmlDoc ? null : XmlDoc.Examples; }
-		}
-
-		public AssemblyNamespaceViewModel AssemblyNamespace { get { return new AssemblyNamespaceViewModel(Definition); } }
+		new public MethodDefinitionXmlDoc XmlDoc { get { return (MethodDefinitionXmlDoc)(base.XmlDoc); } }
 
 		public bool HasReturn { get { return Definition.ReturnType != null && Definition.ReturnType.FullName != "System.Void"; } }
 
 		public ReturnViewModel CreateReturnViewModel() {
+			if(!HasReturn) throw new InvalidOperationException("Method does not return a value.");
+			Contract.EndContractBlock();
 			var methodXmlDocs = XmlDoc;
 			var docs = null == methodXmlDocs ? null : methodXmlDocs.Returns;
+			Contract.Assume(null != Definition.ReturnType);
 			return new ReturnViewModel(Definition.ReturnType, docs);
 		}
 
-		public IEnumerable<ParameterViewModel> CreateViewModels(IEnumerable<ParameterDefinition> definitions) {
+		public IEnumerable<ParameterViewModel> CreateParameterViewModels(IEnumerable<ParameterDefinition> definitions) {
+			if(null == definitions) throw new ArgumentNullException("definitions");
+			Contract.Ensures(Contract.Result<IEnumerable<ParameterViewModel>>() != null);
 			var methodXmlDocs = XmlDoc;
 			return definitions.Select(item => {
 				var docs = null == methodXmlDocs ? null : methodXmlDocs.DocsForParameter(item.Name);

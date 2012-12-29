@@ -1,0 +1,4 @@
+﻿@model IList<DandyDoc.Core.Overlays.XmlDoc.ParsedXmlSeeElement>
+@if (null == Model || Model.Count == 0) {return;}
+<h2>See Also</h2>
+@foreach (var node in Model) {<div class="doc-page-section doc-page-see-also">@{ Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBase", node); }</div>}

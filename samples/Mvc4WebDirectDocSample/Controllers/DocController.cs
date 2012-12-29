@@ -36,15 +36,23 @@ namespace Mvc4WebDirectDocSample.Controllers
 
 			var typeDefinition = reference as TypeDefinition;
 			if (null != typeDefinition) {
-				return View("Type", new TypePageViewModel(typeDefinition, XmlDocOverlay));
+				return View("Type", new TypeViewModel(typeDefinition, XmlDocOverlay));
 			}
 			var methodDefinition = reference as MethodDefinition;
 			if (null != methodDefinition){
-				return View("Method", new MethodPageViewModel(methodDefinition, XmlDocOverlay));
+				return View("Method", new MethodViewModel(methodDefinition, XmlDocOverlay));
 			}
 			var fieldDefinition = reference as FieldDefinition;
 			if (null != fieldDefinition) {
-				return View("Field", new FieldPageViewModel(fieldDefinition, XmlDocOverlay));
+				return View("Field", new FieldViewModel(fieldDefinition, XmlDocOverlay));
+			}
+			var propertyDefinition = reference as PropertyDefinition;
+			if (null != propertyDefinition) {
+				return View("Property", new PropertyViewModel(propertyDefinition, XmlDocOverlay));
+			}
+			var eventDefinition = reference as EventDefinition;
+			if (null != eventDefinition) {
+				return View("Event", new EventViewModel(eventDefinition, XmlDocOverlay));
 			}
 
 			throw new NotSupportedException();

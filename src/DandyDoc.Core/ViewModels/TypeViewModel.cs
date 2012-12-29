@@ -4,12 +4,13 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using DandyDoc.Core.Overlays.Cref;
+using DandyDoc.Core.Overlays.ExternalVisibility;
 using Mono.Cecil;
 using DandyDoc.Core.Overlays.XmlDoc;
 
 namespace DandyDoc.Core.ViewModels
 {
-	public class TypePageViewModel
+	public class TypeViewModel : DefinitionViewModelBase<TypeDefinition>
 	{
 
 		private class CategorizedFields
@@ -164,7 +165,6 @@ namespace DandyDoc.Core.ViewModels
 
 		}
 
-		private readonly Lazy<TypeDefinitionXmlDoc> _xmlDoc;
 		private readonly Lazy<CategorizedMethods> _categorizedExposedMethods;
 		private readonly Lazy<CategorizedFields> _categorizedExposedFields;
 		private readonly Lazy<CategorizedProperties> _categorizedExposedProperties;
@@ -172,23 +172,20 @@ namespace DandyDoc.Core.ViewModels
 		private readonly Lazy<ReadOnlyCollection<TypeDefinition>> _nestedExposedTypes;
 		private readonly Lazy<ReadOnlyCollection<TypeDefinition>> _delegateExposedTypes;
 
-		public TypePageViewModel(TypeDefinition typeDefinition, XmlDocOverlay xmlDocOverlay, CrefOverlay crefOverlay = null){
-			if(null == typeDefinition) throw new ArgumentNullException("typeDefinition");
-			if(null == xmlDocOverlay) throw new ArgumentNullException("xmlDocOverlay");
-			Contract.EndContractBlock();
-			Definition = typeDefinition;
-			XmlDocOverlay = xmlDocOverlay;
-			CrefOverlay = crefOverlay ?? xmlDocOverlay.CrefOverlay;
-			_xmlDoc = new Lazy<TypeDefinitionXmlDoc>(() => XmlDocOverlay.GetDocumentation(Definition));
-			_categorizedExposedMethods = new Lazy<CategorizedMethods>(() => new CategorizedMethods(Definition.Methods.Where(x => x.IsExternallyExposed())));
-			_categorizedExposedFields = new Lazy<CategorizedFields>(() => new CategorizedFields(Definition.Fields.Where(x => x.IsExternallyExposed())));
-			_categorizedExposedProperties = new Lazy<CategorizedProperties>(() => new CategorizedProperties(Definition.Properties.Where(x => x.IsExternallyExposed())));
-			_categorizedExposedEvents = new Lazy<CategorizedEvents>(() => new CategorizedEvents(Definition.Events.Where(x => x.IsExternallyExposed())));
-			_nestedExposedTypes = new Lazy<ReadOnlyCollection<TypeDefinition>>(() => Array.AsReadOnly(Definition.NestedTypes.Where(x => x.IsExternallyExposed() && !x.IsDelegateType()).ToArray()));
-			_delegateExposedTypes = new Lazy<ReadOnlyCollection<TypeDefinition>>(() => Array.AsReadOnly(Definition.NestedTypes.Where(x => x.IsExternallyExposed() && x.IsDelegateType()).ToArray()));
+		public TypeViewModel(TypeDefinition definition, XmlDocOverlay xmlDocOverlay, CrefOverlay crefOverlay = null)
+			: base(definition, xmlDocOverlay, crefOverlay)
+		{
+			Contract.Requires(null != definition);
+			Contract.Requires(null != xmlDocOverlay);
+			_categorizedExposedMethods = new Lazy<CategorizedMethods>(() => new CategorizedMethods(Definition.Methods.Where(x => x.IsExternallyVisible())));
+			_categorizedExposedFields = new Lazy<CategorizedFields>(() => new CategorizedFields(Definition.Fields.Where(x => x.IsExternallyVisible())));
+			_categorizedExposedProperties = new Lazy<CategorizedProperties>(() => new CategorizedProperties(Definition.Properties.Where(x => x.IsExternallyVisible())));
+			_categorizedExposedEvents = new Lazy<CategorizedEvents>(() => new CategorizedEvents(Definition.Events.Where(x => x.IsExternallyVisible())));
+			_nestedExposedTypes = new Lazy<ReadOnlyCollection<TypeDefinition>>(() => Array.AsReadOnly(Definition.NestedTypes.Where(x => x.IsExternallyVisible() && !x.IsDelegateType()).ToArray()));
+			_delegateExposedTypes = new Lazy<ReadOnlyCollection<TypeDefinition>>(() => Array.AsReadOnly(Definition.NestedTypes.Where(x => x.IsExternallyVisible() && x.IsDelegateType()).ToArray()));
 		}
 
-		public string Title {
+		public override string Title {
 			get {
 				var name = Definition.Name;
 				return name + ' ' + (
@@ -203,29 +200,9 @@ namespace DandyDoc.Core.ViewModels
 			}
 		}
 
-		public TypeDefinition Definition { get; private set; }
+		public override string ShortName { get { return Definition.Name; } }
 
-		public XmlDocOverlay XmlDocOverlay { get; private set; }
-
-		public CrefOverlay CrefOverlay { get; private set; }
-
-		public TypeDefinitionXmlDoc XmlDoc { get { return _xmlDoc.Value; } }
-
-		public bool HasXmlDoc { get { return XmlDoc != null; } }
-
-		public ParsedXmlElementBase Summary {
-			get { return null == XmlDoc ? null : XmlDoc.Summary; }
-		}
-
-		public ParsedXmlElementBase Remarks {
-			get { return null == XmlDoc ? null : XmlDoc.Remarks; }
-		}
-
-		public IList<ParsedXmlElementBase> Examples {
-			get { return null == XmlDoc ? null : XmlDoc.Examples; }
-		}
-
-		public AssemblyNamespaceViewModel AssemblyNamespace{ get {return new AssemblyNamespaceViewModel(Definition);}}
+		new public TypeDefinitionXmlDoc XmlDoc { get { return (TypeDefinitionXmlDoc)(base.XmlDoc); } }
 
 		public ReadOnlyCollection<TypeDefinition> ExposedNestedTypes { get {
 			Contract.Ensures(Contract.Result<ReadOnlyCollection<TypeDefinition>>() != null);
@@ -307,114 +284,34 @@ namespace DandyDoc.Core.ViewModels
 			return _categorizedExposedEvents.Value.GetOrDefault(CategorizedEvents.Category.Other);
 		} }
 
-		public IEnumerable<TypeSummaryViewModel> ToTypeSummaries(IEnumerable<TypeDefinition> definitions) {
-			return definitions.Select(item => {
-				var doc = XmlDocOverlay.GetDocumentation(item);
-				var summary = null == doc ? null : doc.Summary;
-				return new TypeSummaryViewModel(item, item.Name, CrefOverlay.GetCref(item), summary);
-			});
+		public IEnumerable<FieldViewModel> ToFieldViewModels(IEnumerable<FieldDefinition> definitions) {
+			if(null == definitions) throw new ArgumentNullException("definitions");
+			Contract.Ensures(Contract.Result<IEnumerable<FieldViewModel>>() != null);
+			return definitions.Select(d => new FieldViewModel(d, XmlDocOverlay, CrefOverlay));
 		}
 
-		public IEnumerable<TypeSummaryViewModel> ToDelegateTypeSummaries(IEnumerable<TypeDefinition> definitions) {
-			return definitions.Select(item => {
-				var doc = XmlDocOverlay.GetDocumentation(item);
-				var summary = null == doc ? null : doc.Summary;
-				var name = String.Concat(item.Name,'(',String.Join(", ",item.GetDelegateTypeParameters().Select(x => x.ParameterType.Name)),')');
-				return new TypeSummaryViewModel(item, name, CrefOverlay.GetCref(item), summary);
-			});
-		} 
-
-		public IEnumerable<PropertySummaryViewModel> ToPropertySummaries(IEnumerable<PropertyDefinition> definitions) {
-			return definitions.Select(item => {
-				var doc = XmlDocOverlay.GetDocumentation(item);
-				var summary = null == doc ? null : doc.Summary;
-				return new PropertySummaryViewModel(item, item.Name, CrefOverlay.GetCref(item), summary);
-			});
-		} 
-
-		public IEnumerable<FieldSummaryViewModel> ToFieldSummaries(IEnumerable<FieldDefinition> definitions) {
-			return definitions.Select(item => {
-				var doc = XmlDocOverlay.GetDocumentation(item);
-				var summary = null == doc ? null : doc.Summary;
-				return new FieldSummaryViewModel(item, item.Name, CrefOverlay.GetCref(item), summary);
-			});
+		public IEnumerable<EventViewModel> ToEventViewModels(IEnumerable<EventDefinition> definitions) {
+			if (null == definitions) throw new ArgumentNullException("definitions");
+			Contract.Ensures(Contract.Result<IEnumerable<EventViewModel>>() != null);
+			return definitions.Select(d => new EventViewModel(d, XmlDocOverlay, CrefOverlay));
 		}
 
-		public IEnumerable<EventSummaryViewModel> ToEventSummaries(IEnumerable<EventDefinition> definitions) {
-			return definitions.Select(item => {
-				var doc = XmlDocOverlay.GetDocumentation(item);
-				var summary = null == doc ? null : doc.Summary;
-				return new EventSummaryViewModel(item, item.Name, CrefOverlay.GetCref(item), summary);
-			});
+		public IEnumerable<MethodViewModel> ToMethodViewModels(IEnumerable<MethodDefinition> definitions) {
+			if (null == definitions) throw new ArgumentNullException("definitions");
+			Contract.Ensures(Contract.Result<IEnumerable<MethodViewModel>>() != null);
+			return definitions.Select(d => new MethodViewModel(d, XmlDocOverlay, CrefOverlay));
 		}
 
-		public IEnumerable<MethodSummaryViewModel> ToMethodSummaries(IEnumerable<MethodDefinition> definitions) {
-			foreach (var methodGroup in definitions.GroupBy(x => x.Name)) {
-				var items = methodGroup.ToList();
-				if (items.Count == 1) {
-					var item = items[0];
-					var doc = XmlDocOverlay.GetDocumentation(item);
-					var summary = null == doc ? null : doc.Summary;
-					yield return new MethodSummaryViewModel(item, item.Name, CrefOverlay.GetCref(item), summary);
-				}
-				else {
-					foreach (var item in items) {
-						var doc = XmlDocOverlay.GetDocumentation(item);
-						var summary = null == doc ? null : doc.Summary;
-						var name = item.Name;
-						if (item.HasParameters) {
-							name = String.Concat(name,'(',String.Join(", ", item.Parameters.Select(x => x.ParameterType.Name)),')');
-						}
-						yield return new MethodSummaryViewModel(item, name, CrefOverlay.GetCref(item), summary);
-					}
-				}
-			}
+		public IEnumerable<PropertyViewModel> ToPropertyViewModels(IEnumerable<PropertyDefinition> definitions) {
+			if (null == definitions) throw new ArgumentNullException("definitions");
+			Contract.Ensures(Contract.Result<IEnumerable<PropertyViewModel>>() != null);
+			return definitions.Select(d => new PropertyViewModel(d, XmlDocOverlay, CrefOverlay));
 		}
 
-		public IEnumerable<MethodSummaryViewModel> ToConstructorSummaries(IEnumerable<MethodDefinition> definitions) {
-			return definitions.Select(item => {
-				var name = item.DeclaringType.Name;
-				if (item.HasParameters) {
-					name = String.Concat(name,'(',String.Join(", ", item.Parameters.Select(x => x.ParameterType.Name)),')');
-				}
-				var doc = XmlDocOverlay.GetDocumentation(item);
-				var summary = null == doc ? null : doc.Summary;
-				return new MethodSummaryViewModel(item, name, CrefOverlay.GetCref(item), summary);
-			});
-		}
-
-		public IEnumerable<MethodSummaryViewModel> ToOperatorSummaries(IEnumerable<MethodDefinition> definitions) {
-			foreach (var methodGroup in definitions.GroupBy(x => x.Name)) {
-				var items = methodGroup.ToList();
-				if (items.Count == 1) {
-					var item = items[0];
-					var doc = XmlDocOverlay.GetDocumentation(item);
-					var summary = null == doc ? null : doc.Summary;
-					var name = item.Name;
-					if (name.StartsWith("op_"))
-						name = name.Substring(3);
-					yield return new MethodSummaryViewModel(item, name, CrefOverlay.GetCref(item), summary);
-				}
-				else {
-					foreach (var item in items) {
-						var doc = XmlDocOverlay.GetDocumentation(item);
-						var summary = null == doc ? null : doc.Summary;
-						var name = item.Name;
-						if (item.HasParameters) {
-							name = String.Concat(name,'(',String.Join(", ", item.Parameters.Select(x => x.ParameterType.Name)),')');
-						}
-						if (name.StartsWith("op_"))
-							name = name.Substring(3);
-						yield return new MethodSummaryViewModel(item, name, CrefOverlay.GetCref(item), summary);
-					}
-				}
-			}
-		}
-		
-		[ContractInvariantMethod]
-		private void CodeContractInvariant(){
-			Contract.Invariant(null != Definition);
-			Contract.Invariant(null != XmlDocOverlay);
+		public IEnumerable<TypeViewModel> ToTypeViewModels(IEnumerable<TypeDefinition> definitions) {
+			if (null == definitions) throw new ArgumentNullException("definitions");
+			Contract.Ensures(Contract.Result<IEnumerable<TypeViewModel>>() != null);
+			return definitions.Select(d => new TypeViewModel(d, XmlDocOverlay, CrefOverlay));
 		}
 
 	}
