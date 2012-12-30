@@ -4,9 +4,11 @@
 		Html.RenderPartial("Partials/RemarksSection", Model.Remarks);
 	}
 	if (null != Model.Examples && Model.Examples.Count > 0) {
-		Html.RenderPartial("Partials/ExamplesSection", Model.Examples);
+		<h2>Examples</h2>
+		foreach (var node in Model.Examples) {<div class="doc-page-section doc-page-example">@{ Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", node); }</div>}
 	}
 	if (null != Model.SeeAlso && Model.SeeAlso.Count > 0) {
-		Html.RenderPartial("Partials/SeeAlsoSection", Model.SeeAlso);	
+		<h2>See Also</h2>
+		foreach (var node in Model.SeeAlso) {<div class="doc-page-section doc-page-see-also">@{ Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBase", node); }</div>}	
 	}
 }

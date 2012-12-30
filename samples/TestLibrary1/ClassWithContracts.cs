@@ -39,7 +39,14 @@ namespace TestLibrary1
 
 		public string Stuff {
 			get {
-				Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
+				Contract.Ensures(Contract.Result<string>() != null);
+				return "stuff";
+			}
+		}
+
+		public string SameStuff{
+			get{
+				Contract.Ensures(null != Contract.Result<string>());
 				return "stuff";
 			}
 		}

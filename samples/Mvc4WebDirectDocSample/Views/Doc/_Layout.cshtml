@@ -1,4 +1,5 @@
 ﻿@using System.Web.Optimization
+@using DandyDoc.Core.ViewModels
 @{
 	Layout = null;
 }
@@ -19,7 +20,12 @@
 		</div>
 		<div class="row-fluid">
 			<div class="span3">
-				Sidebar
+				@if (ViewBag.TypeNavigationViewModel == null){
+					<div>Navigation not available.</div>
+				}
+				else{
+					Html.RenderPartial("Partials/TypeNavigationSideMenu", ViewBag.TypeNavigationViewModel as TypeNavigationViewModel);
+				}
 			</div>
 			<div class="span9">
 				@RenderBody()

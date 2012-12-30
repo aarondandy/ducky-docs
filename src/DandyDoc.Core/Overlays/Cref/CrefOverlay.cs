@@ -297,7 +297,7 @@ namespace DandyDoc.Core.Overlays.Cref
 		/// <remarks>
 		/// <para>
 		/// By default all generated cref hyperlinks will have a prefix specifying the type of target
-		/// the cref points to. Use the <paramref name="hideCrefType"/> property to control this behavior.
+		/// the cref points to. Use the <paramref name="hideCrefType"/> parameter to control this behavior.
 		/// </para>
 		/// </remarks>
 		public string GetCref(MemberReference memberRef, bool hideCrefType = false) {

@@ -129,6 +129,12 @@
       <Private>True</Private>
       <HintPath>..\..\packages\Microsoft.AspNet.WebPages.2.0.20710.0\lib\net40\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
+    <Reference Include="Vertesaur.Core">
+      <HintPath>..\..\packages\Vertesaur.Core.0.8.5\lib\net40-client\Vertesaur.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Vertesaur.Generation">
+      <HintPath>..\..\packages\Vertesaur.Generation.0.8.5\lib\net40-client\Vertesaur.Generation.dll</HintPath>
+    </Reference>
     <Reference Include="WebActivator">
       <HintPath>..\..\packages\WebActivator.1.5.3\lib\net40\WebActivator.dll</HintPath>
     </Reference>
@@ -201,9 +207,6 @@
     <Content Include="Views\Doc\Partials\RemarksSection.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Doc\Partials\ExamplesSection.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\Doc\Partials\SummarySection.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -211,12 +214,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Doc\Partials\NamespaceAndAssembly.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Doc\Partials\ParameterList.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Doc\Partials\ReturnSection.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Doc\ParsedXmlDoc\ParsedXmlNodeBaseChildren.cshtml" />
@@ -237,7 +234,10 @@
     <Content Include="Views\Doc\Partials\DefinitionPageCommonSections.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Doc\Partials\SeeAlsoSection.cshtml" />
+    <Content Include="Views\Doc\Partials\TypeNavigationSideMenu.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Doc\Partials\FlairList.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

@@ -8,10 +8,12 @@ namespace DandyDoc.Core.ViewModels
 	public class ParameterViewModel
 	{
 
-		public ParameterViewModel(ParameterDefinition definition, ParsedXmlElementBase xmlDoc) {
+		internal ParameterViewModel(ParameterDefinition definition, MethodViewModel parent, ParsedXmlElementBase xmlDoc) {
 			if(null == definition) throw new ArgumentNullException("definition");
+			if(null == parent) throw new ArgumentNullException("parent");
 			Contract.EndContractBlock();
 			Definition = definition;
+			Parent = parent;
 			XmlDoc = xmlDoc;
 		}
 
@@ -19,7 +21,23 @@ namespace DandyDoc.Core.ViewModels
 
 		public ParsedXmlElementBase XmlDoc { get; private set; }
 
+		public bool HasXmlDoc { get { return XmlDoc != null; } }
+
 		public ParameterDefinition Definition { get; private set; }
+
+		public MethodViewModel Parent { get; private set; }
+
+		public string RequiresQuickSummary{
+			get{
+				var name = Definition.Name;
+				Contract.Assume(!String.IsNullOrEmpty(name));
+				if (Parent.RequiresParameterNotNullOrEmpty(name))
+					return "not null and not empty";
+				if (Parent.RequiresParameterNotNull(name))
+					return "not null";
+				return null;
+			}
+		}
 
 	}
 }

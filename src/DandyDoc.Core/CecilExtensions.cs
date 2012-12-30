@@ -131,5 +131,14 @@ namespace DandyDoc.Core
 			throw new NotSupportedException();
 		}
 
+		public static bool IsExtensionMethod(this MethodDefinition definition){
+			if (null == definition) throw new ArgumentNullException("definition");
+			Contract.EndContractBlock();
+			if (!definition.HasParameters || definition.Parameters.Count == 0 || !definition.HasCustomAttributes)
+				return false;
+
+			return definition.CustomAttributes.Any(x => x.AttributeType.FullName == "System.Runtime.CompilerServices.ExtensionAttribute");
+		}
+
 	}
 }

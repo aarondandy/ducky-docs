@@ -1,0 +1,13 @@
+﻿@model DandyDoc.Core.ViewModels.TypeNavigationViewModel
+<ul class="nav nav-list">
+@foreach (var ns in Model.ExposedNamespaceViewModels) {
+	<li>
+		<i class="icon-gift"></i>@ns.FullName
+		<ul class="nav nav-list">
+		@foreach (var type in ns.ExposedTypeViewModels) {
+			<li><a href="@Url.Action("Index","Doc",new{cref=@type.Cref})"><i class="icon-cog"></i>@type.ShortName</a></li> 
+		}
+		</ul>
+	</li>
+}
+</ul>

@@ -1,7 +1,0 @@
-﻿@model DandyDoc.Core.ViewModels.ReturnViewModel
-<div class="doc-page-member-listing">
-	Type: <a href="#">@Model.Type.FullName</a>
-	@if (null != Model.XmlDoc) {
-		<p>@{ Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", Model.XmlDoc); }</p>
-	}
-</div>

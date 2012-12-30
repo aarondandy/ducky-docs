@@ -73,6 +73,8 @@ namespace DandyDoc.Core.ViewModels
 			get { return null == XmlDoc ? null : XmlDoc.Summary; }
 		}
 
+		public bool HasSummary { get { return Summary != null; } }
+
 		public ParsedXmlElementBase Remarks {
 			get { return null == XmlDoc ? null : XmlDoc.Remarks; }
 		}

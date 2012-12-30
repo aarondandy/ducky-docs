@@ -41,5 +41,98 @@ namespace DandyDoc.Core.Overlays.XmlDoc
 			}
 		}
 
+		public bool EnsuresResultNotNull{
+			get{
+				if (!IsEnsures)
+					return false;
+
+				var cSharp = CSharp;
+				if (!String.IsNullOrEmpty(cSharp) && ("result != null".Equals(cSharp) || "null != result".Equals(cSharp)))
+					return true;
+
+				var vb = VisualBasic;
+				if (!String.IsNullOrEmpty(vb) && ("result <> Nothing".Equals(vb) || "Nothing <> result".Equals(vb)))
+					return true;
+
+				return false;
+			}
+		}
+
+		public bool EnsuresResultNotNullOrEmpty{
+			get{
+				if (!IsEnsures)
+					return false;
+				var cSharp = CSharp;
+				if (!String.IsNullOrEmpty(cSharp) && "!IsNullOrEmpty(result)".Equals(cSharp))
+					return true;
+
+				var vb = VisualBasic;
+				if (!String.IsNullOrEmpty(vb) && "Not IsNullOrEmpty(result)".Equals(vb))
+					return true;
+
+				return false;
+			}
+		}
+
+		public bool RequiresParameterNotNull(string parameterName){
+			if(String.IsNullOrEmpty(parameterName)) throw new ArgumentException("Invalid parameter name.", "parameterName");
+			Contract.EndContractBlock();
+			if (!IsRequires)
+				return false;
+
+			var cSharp = CSharp;
+			if(!String.IsNullOrEmpty(cSharp)
+				&& parameterName.Length + 8 == cSharp.Length
+				&& (
+					(cSharp.StartsWith(parameterName, StringComparison.Ordinal) && cSharp.EndsWith(" != null", StringComparison.Ordinal))
+					|| (cSharp.EndsWith(parameterName, StringComparison.Ordinal) && cSharp.StartsWith("null != ", StringComparison.Ordinal))
+				)
+			){
+				return true;
+			}
+
+			var vb = VisualBasic;
+			if (!String.IsNullOrEmpty(vb)
+				&& parameterName.Length + 11 == vb.Length
+				&& (
+					(vb.StartsWith(parameterName, StringComparison.Ordinal) && vb.EndsWith(" <> Nothing", StringComparison.Ordinal))
+					|| (vb.EndsWith(parameterName, StringComparison.Ordinal) && vb.StartsWith("Nothing <> ", StringComparison.Ordinal))
+				)
+			) {
+				return true;
+			}
+
+			return false;
+		}
+
+		public bool RequiresParameterNotNullOrEmpty(string parameterName) {
+			if (String.IsNullOrEmpty(parameterName)) throw new ArgumentException("Invalid parameter name.", "parameterName");
+			Contract.EndContractBlock();
+			if (!IsRequires)
+				return false;
+
+			var cSharp = CSharp;
+			if (!String.IsNullOrEmpty(cSharp)
+				&& parameterName.Length + 16 == cSharp.Length
+				&& cSharp.StartsWith("!IsNullOrEmpty(", StringComparison.Ordinal)
+				&& cSharp[cSharp.Length - 1] == ')'
+				&& cSharp.IndexOf(parameterName, StringComparison.Ordinal) == 15
+				){
+				return true;
+			}
+
+			var vb = VisualBasic;
+			if (!String.IsNullOrEmpty(cSharp)
+				&& parameterName.Length + 19 == vb.Length
+				&& vb.StartsWith("Not IsNullOrEmpty(", StringComparison.Ordinal)
+				&& vb[vb.Length - 1] == ')'
+				&& vb.IndexOf(parameterName, StringComparison.Ordinal) == 15
+			) {
+				return true;
+			}
+
+			return false;
+		}
+
 	}
 }

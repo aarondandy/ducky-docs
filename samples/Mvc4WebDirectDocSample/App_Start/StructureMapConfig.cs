@@ -6,7 +6,9 @@ using System.Web.Hosting;
 using System.Web.Http.Dependencies;
 using DandyDoc.Core;
 using DandyDoc.Core.Overlays.Cref;
+using DandyDoc.Core.Overlays.Navigation;
 using DandyDoc.Core.Overlays.XmlDoc;
+using DandyDoc.Core.ViewModels;
 using Microsoft.Practices.ServiceLocation;
 using StructureMap;
 using IDependencyResolver = System.Web.Http.Dependencies.IDependencyResolver;
@@ -20,17 +22,29 @@ namespace Mvc4WebDirectDocSample.App_Start
 	{
 
 		public static IContainer Init() {
-			ObjectFactory.Initialize(x => {
-				x.For<AssemblyDefinitionCollection>().Use(_ =>
-					new AssemblyDefinitionCollection(
-						HostingEnvironment.MapPath("~/bin/TestLibrary1.dll")));
-				x.For<CrefOverlay>().Use(c =>
-					new CrefOverlay(c.GetInstance<AssemblyDefinitionCollection>()));
-				x.For<XmlDocOverlay>().Use(c =>
-					new XmlDocOverlay(c.GetInstance<CrefOverlay>()));
-
-			});
+			ObjectFactory.Initialize(Init);
 			return ObjectFactory.Container;
+		}
+
+		private static void Init(IInitializationExpression x){
+			x.For<AssemblyDefinitionCollection>().Use(_ =>
+				new AssemblyDefinitionCollection(
+					HostingEnvironment.MapPath("~/bin/TestLibrary1.dll"),
+					HostingEnvironment.MapPath("~/bin/DandyDoc.Core.dll"),
+					HostingEnvironment.MapPath("~/bin/Vertesaur.Core.dll"),
+					HostingEnvironment.MapPath("~/bin/Vertesaur.Generation.dll")
+				)
+			);
+			x.For<CrefOverlay>().Use(c => new CrefOverlay(c.GetInstance<AssemblyDefinitionCollection>()));
+			x.For<XmlDocOverlay>().Use(c => new XmlDocOverlay(c.GetInstance<CrefOverlay>()));
+			x.For<NavigationOverlay>().Use(c => new NavigationOverlay(c.GetInstance<AssemblyDefinitionCollection>()));
+			x.For<TypeNavigationViewModel>().Use(c =>
+				new TypeNavigationViewModel(
+					c.GetInstance<NavigationOverlay>(),
+					c.GetInstance<XmlDocOverlay>(),
+					c.GetInstance<CrefOverlay>()
+				)
+			);
 		}
 
 		public class Scope : ServiceLocatorImplBase, IDependencyScope

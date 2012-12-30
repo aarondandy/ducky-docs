@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using System.Web.Mvc;
 using DandyDoc.Core;
 using DandyDoc.Core.Overlays.Cref;
@@ -14,11 +15,13 @@ namespace Mvc4WebDirectDocSample.Controllers
 		public DocController(
 			AssemblyDefinitionCollection assemblyDefinitionCollection,
 			CrefOverlay crefOverlay,
-			XmlDocOverlay xmlDocOverlay
+			XmlDocOverlay xmlDocOverlay,
+			TypeNavigationViewModel typeNavigationViewModel
 		) {
 			AssemblyDefinitionCollection = assemblyDefinitionCollection;
 			CrefOverlay = crefOverlay;
 			XmlDocOverlay = xmlDocOverlay;
+			TypeNavigationViewModel = typeNavigationViewModel;
 		}
 
 		public AssemblyDefinitionCollection AssemblyDefinitionCollection { get; private set; }
@@ -27,6 +30,8 @@ namespace Mvc4WebDirectDocSample.Controllers
 
 		public XmlDocOverlay XmlDocOverlay { get; private set; }
 
+		public TypeNavigationViewModel TypeNavigationViewModel { get; private set; }
+
 		public ActionResult Index(string cref) {
 			if(String.IsNullOrEmpty(cref))
 				return new HttpNotFoundResult();
@@ -34,28 +39,28 @@ namespace Mvc4WebDirectDocSample.Controllers
 			if (null == reference)
 				return new HttpNotFoundResult();
 
-			var typeDefinition = reference as TypeDefinition;
-			if (null != typeDefinition) {
-				return View("Type", new TypeViewModel(typeDefinition, XmlDocOverlay));
+			ViewResult viewResult;
+			if (reference is TypeDefinition) {
+				viewResult = View("Type", new TypeViewModel((TypeDefinition)reference, XmlDocOverlay));
 			}
-			var methodDefinition = reference as MethodDefinition;
-			if (null != methodDefinition){
-				return View("Method", new MethodViewModel(methodDefinition, XmlDocOverlay));
+			else if (reference is MethodDefinition) {
+				viewResult = View("Method", new MethodViewModel((MethodDefinition)reference, XmlDocOverlay));
 			}
-			var fieldDefinition = reference as FieldDefinition;
-			if (null != fieldDefinition) {
-				return View("Field", new FieldViewModel(fieldDefinition, XmlDocOverlay));
+			else if (reference is FieldDefinition) {
+				viewResult = View("Field", new FieldViewModel((FieldDefinition)reference, XmlDocOverlay));
 			}
-			var propertyDefinition = reference as PropertyDefinition;
-			if (null != propertyDefinition) {
-				return View("Property", new PropertyViewModel(propertyDefinition, XmlDocOverlay));
+			else if (reference is PropertyDefinition) {
+				viewResult = View("Property", new PropertyViewModel((PropertyDefinition)reference, XmlDocOverlay));
 			}
-			var eventDefinition = reference as EventDefinition;
-			if (null != eventDefinition) {
-				return View("Event", new EventViewModel(eventDefinition, XmlDocOverlay));
+			else if (reference is EventDefinition){
+				viewResult = View("Event", new EventViewModel((EventDefinition) reference, XmlDocOverlay));
 			}
-
-			throw new NotSupportedException();
+			else{
+				throw new NotSupportedException();
+			}
+			Contract.Assume(null != viewResult);
+			viewResult.ViewBag.TypeNavigationViewModel = TypeNavigationViewModel;
+			return viewResult;
 		}
 
 	}

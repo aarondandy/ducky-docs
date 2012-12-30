@@ -13,6 +13,20 @@ namespace DandyDoc.Core.ViewModels
 	public class TypeViewModel : DefinitionViewModelBase<TypeDefinition>
 	{
 
+		public class MemberSection
+		{
+
+			internal MemberSection(string title, IEnumerable<IDefinitionViewModel> items){
+				Contract.Requires(!String.IsNullOrEmpty(title));
+				Contract.Requires(null != items);
+				Title = title;
+				Items = items;
+			}
+
+			public string Title { get; private set; }
+			public IEnumerable<IDefinitionViewModel> Items { get; private set; }
+		}
+
 		private class CategorizedFields
 		{
 			public enum Category
@@ -203,6 +217,55 @@ namespace DandyDoc.Core.ViewModels
 		public override string ShortName { get { return Definition.Name; } }
 
 		new public TypeDefinitionXmlDoc XmlDoc { get { return (TypeDefinitionXmlDoc)(base.XmlDoc); } }
+
+		public IList<MemberSection> GetDefaultMemberListingSections() {
+			Contract.Ensures(Contract.Result<IList<MemberSection>>() != null);
+			var results = new List<MemberSection>();
+
+			if(ExposedNestedTypes.Count > 0)
+				results.Add(new MemberSection("Nested Types", ToTypeViewModels(ExposedNestedTypes)));
+			if (ExposedDelegateTypes.Count > 0)
+				results.Add(new MemberSection("Delegates", ToTypeViewModels(ExposedDelegateTypes)));
+			if (ExposedInstanceConstructors.Count > 0)
+				results.Add(new MemberSection("Constructors", ToMethodViewModels(ExposedInstanceConstructors)));
+
+			var propertyDefinitions = new List<PropertyDefinition>();
+			if (ExposedInstanceProperties.Count > 0)
+				propertyDefinitions.AddRange(ExposedInstanceProperties);
+			if (ExposedStaticProperties.Count > 0)
+				propertyDefinitions.AddRange(ExposedStaticProperties);
+			if (propertyDefinitions.Count > 0)
+				results.Add(new MemberSection("Properties", ToPropertyViewModels(propertyDefinitions)));
+
+			var fieldDefinitions = new List<FieldDefinition>();
+			if (ExposedInstanceFields.Count > 0)
+				fieldDefinitions.AddRange(ExposedInstanceFields);
+			if (ExposedStaticFields.Count > 0)
+				fieldDefinitions.AddRange(ExposedStaticFields);
+			if (fieldDefinitions.Count > 0)
+				results.Add(new MemberSection("Fields", ToFieldViewModels(fieldDefinitions)));
+
+			var methodDefinitions = new List<MethodDefinition>();
+			if (ExposedInstanceMethods.Count > 0)
+				methodDefinitions.AddRange(ExposedInstanceMethods);
+			if (ExposedStaticMethods.Count > 0)
+				methodDefinitions.AddRange(ExposedStaticMethods);
+			if (methodDefinitions.Count > 0)
+				results.Add(new MemberSection("Methods", ToMethodViewModels(methodDefinitions)));
+
+			var eventDefinitions = new List<EventDefinition>();
+			if (ExposedInstanceEvents.Count > 0)
+				eventDefinitions.AddRange(ExposedInstanceEvents);
+			if (ExposedStaticEvents.Count > 0)
+				eventDefinitions.AddRange(ExposedStaticEvents);
+			if (eventDefinitions.Count > 0)
+				results.Add(new MemberSection("Events", ToEventViewModels(eventDefinitions)));
+			
+			if(ExposedOperators.Count > 0)
+				results.Add(new MemberSection("Operators", ToMethodViewModels(ExposedOperators)));
+
+			return results;
+		}
 
 		public ReadOnlyCollection<TypeDefinition> ExposedNestedTypes { get {
 			Contract.Ensures(Contract.Result<ReadOnlyCollection<TypeDefinition>>() != null);

@@ -1,59 +1,14 @@
-﻿@model DandyDoc.Core.ViewModels.TypeViewModel
+﻿@using DandyDoc.Core.ViewModels
+@model TypeViewModel
 @{
 	ViewBag.Title = Model.Title;
 	Layout = "_Layout.cshtml";
 }
 <h1>@Model.Title</h1>
-@if (null != Model.Summary) {
-	Html.RenderPartial("Partials/SummarySection", Model.Summary);
-}
+@if (Model.HasSummary) {Html.RenderPartial("Partials/SummarySection", Model.Summary);}
 @{ Html.RenderPartial("Partials/NamespaceAndAssembly", Model.AssemblyNamespace);}
-@if (Model.ExposedNestedTypes.Count > 0) {
-	<h2>Nested Types</h2>
-	Html.RenderPartial("Partials/SimpleMemberTable", Model.ToTypeViewModels(Model.ExposedNestedTypes));
-}
-@if (Model.ExposedDelegateTypes.Count > 0) {
-	<h2>Delegates</h2>
-	Html.RenderPartial("Partials/SimpleMemberTable", Model.ToTypeViewModels(Model.ExposedDelegateTypes));
-}
-@if (Model.ExposedInstanceConstructors.Count > 0){
-	<h2>Constructors</h2>
-	Html.RenderPartial("Partials/SimpleMemberTable", Model.ToMethodViewModels(Model.ExposedInstanceConstructors));
-}
-@if (Model.ExposedStaticMethods.Count > 0){
-	<h2>Static Methods</h2>
-	Html.RenderPartial("Partials/SimpleMemberTable", Model.ToMethodViewModels(Model.ExposedStaticMethods));
-}
-@if (Model.ExposedOperators.Count > 0){
-	<h2>Operators</h2>
-	Html.RenderPartial("Partials/SimpleMemberTable", Model.ToMethodViewModels(Model.ExposedOperators));
-}
-@if (Model.ExposedInstanceMethods.Count > 0){
-	<h2>Methods</h2>
-	Html.RenderPartial("Partials/SimpleMemberTable", Model.ToMethodViewModels(Model.ExposedInstanceMethods));
-}
-@if (Model.ExposedStaticFields.Count > 0) {
-	<h2>Static Fields</h2>
-	Html.RenderPartial("Partials/SimpleMemberTable", Model.ToFieldViewModels(Model.ExposedStaticFields));
-}
-@if (Model.ExposedInstanceFields.Count > 0) {
-	<h2>Fields</h2>
-	Html.RenderPartial("Partials/SimpleMemberTable", Model.ToFieldViewModels(Model.ExposedInstanceFields));
-}
-@if (Model.ExposedStaticProperties.Count > 0) {
-	<h2>Static Properties</h2>
-	Html.RenderPartial("Partials/SimpleMemberTable", Model.ToPropertyViewModels(Model.ExposedStaticProperties));
-}
-@if (Model.ExposedInstanceProperties.Count > 0) {
-	<h2>Properties</h2>
-	Html.RenderPartial("Partials/SimpleMemberTable", Model.ToPropertyViewModels(Model.ExposedInstanceProperties));
-}
-@if (Model.ExposedStaticEvents.Count > 0) {
-	<h2>Static Events</h2>
-	Html.RenderPartial("Partials/SimpleMemberTable", Model.ToEventViewModels(Model.ExposedStaticEvents));
-}
-@if (Model.ExposedInstanceEvents.Count > 0) {
-	<h2>Events</h2>
-	Html.RenderPartial("Partials/SimpleMemberTable", Model.ToEventViewModels(Model.ExposedInstanceEvents));
+@foreach (var section in Model.GetDefaultMemberListingSections()){
+	<h2>@(section.Title)</h2>
+	Html.RenderPartial("Partials/SimpleMemberTable", section.Items);
 }
 @{Html.RenderPartial("Partials/DefinitionPageCommonSections", Model);}

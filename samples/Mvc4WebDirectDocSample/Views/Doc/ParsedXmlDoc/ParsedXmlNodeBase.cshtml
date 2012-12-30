@@ -1,5 +1,5 @@
 ﻿@using DandyDoc.Core.Overlays.XmlDoc
-@model DandyDoc.Core.Overlays.XmlDoc.ParsedXmlNodeBase
+@model ParsedXmlNodeBase
 @functions{
 	public void RenderChildren(){
 		Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", Model);	
@@ -16,5 +16,34 @@ else if (Model is ParsedXmlElementBase){
 		else{<pre>@{RenderChildren();}</pre>}
 	}
 	else if(Model is ParsedXmlParagraphElement){<p>@{RenderChildren();}</p>}
+	else if(Model is ParsedXmlParamrefElement){<code>@{
+		var paramrefElm = (ParsedXmlParamrefElement)Model;
+		if (paramrefElm.Children.Count > 0){
+			RenderChildren();
+		}
+		else{
+			@paramrefElm.ParameterName
+		}
+	}</code>}
+	else if (Model is ParsedXmlSeeElement){
+		var seeElm = (ParsedXmlSeeElement) Model;
+		var link = String.IsNullOrEmpty(seeElm.HRef)
+			? Url.Action("Index","Doc",new {cref = seeElm.CRef})
+			: seeElm.HRef;
+		<a href="@link">
+			@if (seeElm.Children.Count > 0){
+				RenderChildren();
+			}
+			else{
+				if (null == seeElm.CrefTarget){
+					@link
+				}
+				else{
+					// TODO: short name from view model?
+					@seeElm.CrefTarget.Name
+				}
+			}
+		</a>
+	}
 	else{@Html.Raw(Model.PrefixXml) RenderChildren(); @Html.Raw(Model.SuffixXml)}
 }

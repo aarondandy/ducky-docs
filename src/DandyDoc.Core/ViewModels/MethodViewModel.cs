@@ -78,7 +78,82 @@ namespace DandyDoc.Core.ViewModels
 
 		new public MethodDefinitionXmlDoc XmlDoc { get { return (MethodDefinitionXmlDoc)(base.XmlDoc); } }
 
+		protected override IEnumerable<string> GetFlairTags(){
+			foreach (var item in base.GetFlairTags())
+				yield return item;
+
+			if (Definition.IsExtensionMethod()){
+				yield return "extension";
+			}
+
+			if (AllResultsAndParamsNotNull){
+				yield return "nonulls";
+			}
+		}
+
+		public bool AllResultsAndParamsNotNull{
+			get{
+
+				List<ParameterDefinition> refParams = Definition.HasParameters
+					? Definition.Parameters.Where(p => !p.ParameterType.IsValueType).ToList()
+					: null;
+
+				var hasReferenceParams = refParams != null && refParams.Count > 0;
+				var hasReferenceReturn = HasReturn && !Definition.ReturnType.IsValueType;
+
+				if (!hasReferenceParams && !hasReferenceReturn)
+					return false;
+
+				if (hasReferenceReturn){
+					if (!EnsuresResultNotNull && !EnsuresResultNotNullOrEmpty){
+						return false;
+					}
+				}
+
+				if (hasReferenceParams){
+					foreach (var paramName in refParams.Select(p => p.Name)){
+						if (!RequiresParameterNotNull(paramName) && !RequiresParameterNotNullOrEmpty(paramName))
+							return false;
+					}
+				}
+
+				return true;
+			}
+		}
+
 		public bool HasReturn { get { return Definition.ReturnType != null && Definition.ReturnType.FullName != "System.Void"; } }
+
+		public bool EnsuresResultNotNull{
+			get{
+				if (!HasReturn || !HasXmlDoc || XmlDoc.Ensures.Count == 0)
+					return false;
+				return XmlDoc.Ensures.Any(x => x.EnsuresResultNotNull);
+			}
+		}
+
+		public bool EnsuresResultNotNullOrEmpty {
+			get {
+				if (!HasReturn || !HasXmlDoc || XmlDoc.Ensures.Count == 0)
+					return false;
+				return XmlDoc.Ensures.Any(x => x.EnsuresResultNotNullOrEmpty);
+			}
+		}
+
+		public bool RequiresParameterNotNull(string parameterName){
+			if (String.IsNullOrEmpty(parameterName)) throw new ArgumentException("Invalid parameter name.", "parameterName");
+			Contract.EndContractBlock();
+			if (!HasXmlDoc || XmlDoc.Requires.Count == 0)
+				return false;
+			return XmlDoc.Requires.Any(x => x.RequiresParameterNotNull(parameterName));
+		}
+
+		public bool RequiresParameterNotNullOrEmpty(string parameterName){
+			if (String.IsNullOrEmpty(parameterName)) throw new ArgumentException("Invalid parameter name.", "parameterName");
+			Contract.EndContractBlock();
+			if (!HasXmlDoc || XmlDoc.Requires.Count == 0)
+				return false;
+			return XmlDoc.Requires.Any(x => x.RequiresParameterNotNullOrEmpty(parameterName));
+		}
 
 		public ReturnViewModel CreateReturnViewModel() {
 			if(!HasReturn) throw new InvalidOperationException("Method does not return a value.");
@@ -86,7 +161,7 @@ namespace DandyDoc.Core.ViewModels
 			var methodXmlDocs = XmlDoc;
 			var docs = null == methodXmlDocs ? null : methodXmlDocs.Returns;
 			Contract.Assume(null != Definition.ReturnType);
-			return new ReturnViewModel(Definition.ReturnType, docs);
+			return new ReturnViewModel(Definition.ReturnType, this, docs);
 		}
 
 		public IEnumerable<ParameterViewModel> CreateParameterViewModels(IEnumerable<ParameterDefinition> definitions) {
@@ -95,7 +170,7 @@ namespace DandyDoc.Core.ViewModels
 			var methodXmlDocs = XmlDoc;
 			return definitions.Select(item => {
 				var docs = null == methodXmlDocs ? null : methodXmlDocs.DocsForParameter(item.Name);
-				return new ParameterViewModel(item, docs);
+				return new ParameterViewModel(item, this, docs);
 			});
 		}
 	}

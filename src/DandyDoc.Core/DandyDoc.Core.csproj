@@ -45,7 +45,7 @@
     <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
     <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
     <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
-    <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
+    <CodeContractsEmitXMLDocs>True</CodeContractsEmitXMLDocs>
     <CodeContractsCustomRewriterAssembly />
     <CodeContractsCustomRewriterClass />
     <CodeContractsLibPaths />
@@ -54,7 +54,7 @@
     <CodeContractsBaseLineFile />
     <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
-    <CodeContractsReferenceAssembly>DoNotBuild</CodeContractsReferenceAssembly>
+    <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -127,6 +127,9 @@
     <Compile Include="Overlays\Cref\ParsedCref.cs" />
     <Compile Include="Overlays\ExternalVisibility\ExternalVisibilityKind.cs" />
     <Compile Include="Overlays\ExternalVisibility\ExternalVisibilityOverlay.cs" />
+    <Compile Include="Overlays\Navigation\NavigationOverlay.cs" />
+    <Compile Include="Overlays\Navigation\NavigationOverlayCompositeNamespace.cs" />
+    <Compile Include="Overlays\Navigation\NavigationOverlayNamespace.cs" />
     <Compile Include="Overlays\XmlDoc\DefinitionXmlDocBase.cs" />
     <Compile Include="Overlays\XmlDoc\DelegateTypeDefinitionXmlDoc.cs" />
     <Compile Include="Overlays\XmlDoc\EventDefinitionXmlDoc.cs" />
@@ -164,6 +167,8 @@
     <Compile Include="ViewModels\ParameterViewModel.cs" />
     <Compile Include="ViewModels\PropertyViewModel.cs" />
     <Compile Include="ViewModels\ReturnViewModel.cs" />
+    <Compile Include="ViewModels\TypeNavigationNamespaceViewModelcs.cs" />
+    <Compile Include="ViewModels\TypeNavigationViewModel.cs" />
     <Compile Include="ViewModels\TypeViewModel.cs" />
   </ItemGroup>
   <ItemGroup />

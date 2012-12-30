@@ -11,10 +11,32 @@
 <h2>Signature</h2>
 @if (Model.Definition.Parameters.Count > 0) {
 	<h2>Parameters</h2>
-	Html.RenderPartial("Partials/ParameterList",Model.CreateParameterViewModels(Model.Definition.Parameters));
+	<div class="doc-page-member-listing">
+	<dl>
+		@foreach (var p in Model.CreateParameterViewModels(Model.Definition.Parameters)) {
+			<dt>@p.DisplayName</dt>
+			<dd>
+				@if (p.HasXmlDoc) {<p>@{ Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", p.XmlDoc); }</p>}
+				<div>Type: <a href="#">@p.Definition.ParameterType.FullName</a></div>
+				@{
+					var requiresQuickSummary = p.RequiresQuickSummary;
+					if (!String.IsNullOrEmpty(requiresQuickSummary)){<div>Required: @(requiresQuickSummary).</div>}
+				}
+			</dd>
+		}
+	</dl>
+</div>	
 }
 @if (Model.HasReturn) {
 	<h2>Returns</h2>
-	Html.RenderPartial("Partials/ReturnSection", Model.CreateReturnViewModel());
+	var returnViewModel = Model.CreateReturnViewModel();
+	<div class="doc-page-member-listing">
+		@if (returnViewModel.HasXmlDoc) {<p>@{ Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", returnViewModel.XmlDoc); }</p>}
+		<div>Type: <a href="#">@returnViewModel.Type.FullName</a></div>
+		@{
+			var ensuresQuickSummary = returnViewModel.EnsuresQuickSummary;
+			if (!String.IsNullOrEmpty(ensuresQuickSummary)){<div>Guaranteed: @(ensuresQuickSummary).</div>}
+		}
+	</div>
 }
 @{Html.RenderPartial("Partials/DefinitionPageCommonSections", Model);}
