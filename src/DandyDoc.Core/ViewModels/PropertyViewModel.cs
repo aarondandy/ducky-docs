@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using DandyDoc.Core.Overlays.Cref;
 using DandyDoc.Core.Overlays.ExternalVisibility;
 using DandyDoc.Core.Overlays.XmlDoc;
@@ -34,6 +35,12 @@ namespace DandyDoc.Core.ViewModels
 			var propertyVisibility = ExternalVisibilityOverlay.Get(Definition);
 
 			var getMethod = Definition.GetMethod;
+			var setMethod = Definition.SetMethod;
+
+			if (IsPure) {
+				yield return "pure";
+			}
+
 			if (null != getMethod) {
 				var methodVisibility = ExternalVisibilityOverlay.Get(getMethod);
 				if (methodVisibility == propertyVisibility || methodVisibility == ExternalVisibilityKind.Public) {
@@ -44,7 +51,6 @@ namespace DandyDoc.Core.ViewModels
 				}
 			}
 
-			var setMethod = Definition.SetMethod;
 			if (null != setMethod) {
 				var methodVisibility = ExternalVisibilityOverlay.Get(setMethod);
 				if (methodVisibility == propertyVisibility || methodVisibility == ExternalVisibilityKind.Public) {
@@ -56,15 +62,56 @@ namespace DandyDoc.Core.ViewModels
 			}
 		}
 
-		public bool HasExposedGet {
+		public bool IsPure {
 			get {
-				return Definition.GetMethod != null && Definition.GetMethod.IsExternallyVisible();
+				if (Definition.HasPureAttribute()) {
+					return true;
+				}
+				if (HasExposedGet) {
+					if (IsGetterPure)
+						return true;
+				}
+				return false;
 			}
 		}
 
-		public bool HasExposedSet {
+		public bool IsGetterPure {
 			get {
-				return Definition.SetMethod != null && Definition.SetMethod.IsExternallyVisible();
+				if (HasXmlDoc && null != XmlDoc.GetterDocs && XmlDoc.GetterDocs.HasPureElement)
+					return true;
+				if (null != Definition.GetMethod) {
+					if (Definition.GetMethod.HasPureAttribute())
+						return true;
+				}
+				return false;
+			}
+		}
+
+		public bool HasExposedGet {
+			get { return Definition.GetMethod != null && Definition.GetMethod.IsExternallyVisible(); }
+		}
+
+		public bool HasProtectedGet {
+			get { return Definition.GetMethod != null && Definition.GetMethod.IsExternallyProtected(); }
+		}
+
+		public bool HasExposedSet {
+			get { return Definition.SetMethod != null && Definition.SetMethod.IsExternallyVisible(); }
+		}
+
+		public bool HasProtectedSet {
+			get { return Definition.SetMethod != null && Definition.SetMethod.IsExternallyProtected(); }
+		}
+
+		public MethodViewModel GetViewModel {
+			get {
+				return new MethodViewModel(Definition.GetMethod, XmlDocOverlay, CrefOverlay);
+			}
+		}
+
+		public MethodViewModel SetViewModel {
+			get {
+				return new MethodViewModel(Definition.SetMethod, XmlDocOverlay, CrefOverlay);
 			}
 		}
 

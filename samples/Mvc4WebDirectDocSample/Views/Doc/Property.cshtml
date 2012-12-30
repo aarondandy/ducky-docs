@@ -13,4 +13,13 @@
 	<h2>Value</h2>
 	<div class="doc-page-section">@{ Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", Model.ValueDoc); }</div>
 }
+@if (Model.HasExposedGet) {
+	<h2>Getter</h2>
+	if(Model.IsPure){<div><i class="icon-leaf" title="pure"></i> Purity: Requesting a value does not have side effects.</div>}
+	if(Model.HasProtectedGet){<div><i class="icon-eye-close"></i> Visibility: This getter is accessible only through inheritance.</div>}
+}
+@if (Model.HasExposedSet) {
+	<h2>Setter</h2>
+	if(Model.HasProtectedSet){<div><i class="icon-eye-close"></i> Visibility: This setter is accessible only through inheritance.</div>}
+}
 @{Html.RenderPartial("Partials/DefinitionPageCommonSections", Model);}

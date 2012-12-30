@@ -140,5 +140,13 @@ namespace DandyDoc.Core
 			return definition.CustomAttributes.Any(x => x.AttributeType.FullName == "System.Runtime.CompilerServices.ExtensionAttribute");
 		}
 
+		public static bool HasPureAttribute(this ICustomAttributeProvider definition) {
+			if (null == definition)
+				return false;
+			if (!definition.HasCustomAttributes)
+				return false;
+			return definition.CustomAttributes.Any(a => a.AttributeType.Name == "Pure");
+		}
+
 	}
 }

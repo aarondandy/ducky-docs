@@ -26,7 +26,7 @@ namespace TestLibrary1
 		/// <summary>
 		/// Auto-property with an invariant.
 		/// </summary>
-		public string Text { get; private set; }
+		[Pure] public string Text { get; private set; }
 
 		/// <summary>
 		/// A pure method that ensures on return.
@@ -45,7 +45,7 @@ namespace TestLibrary1
 		}
 
 		public string SameStuff{
-			get{
+			[Pure] get{
 				Contract.Ensures(null != Contract.Result<string>());
 				return "stuff";
 			}

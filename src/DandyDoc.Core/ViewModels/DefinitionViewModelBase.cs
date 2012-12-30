@@ -50,11 +50,7 @@ namespace DandyDoc.Core.ViewModels
 		public bool HasXmlDoc { get { return XmlDoc != null; } }
 
 		protected virtual IEnumerable<string> GetFlairTags() {
-			var xmlDoc = XmlDoc;
-
 			yield return ExternalVisibilityOverlay.Get(Definition).ToString().ToLowerInvariant();
-			if (null != xmlDoc && XmlDoc.HasPureElement) // TODO: ... or has a pure attribute
-				yield return "pure";
 
 			if (Definition.IsStatic())
 				yield return "static";

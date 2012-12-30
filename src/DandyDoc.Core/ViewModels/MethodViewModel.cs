@@ -89,6 +89,20 @@ namespace DandyDoc.Core.ViewModels
 			if (AllResultsAndParamsNotNull){
 				yield return "nonulls";
 			}
+
+			if (IsPure) 
+				yield return "pure";
+
+		}
+
+		public bool IsPure {
+			get {
+				if (HasXmlDoc && XmlDoc.HasPureElement)
+					return true;
+				if (Definition.HasPureAttribute())
+					return true;
+				return false;
+			}
 		}
 
 		public bool AllResultsAndParamsNotNull{
