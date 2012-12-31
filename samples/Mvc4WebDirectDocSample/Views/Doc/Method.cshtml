@@ -1,4 +1,4 @@
-﻿@model DandyDoc.Core.ViewModels.MethodViewModel
+﻿@model DandyDoc.ViewModels.MethodViewModel
 @{
 	ViewBag.Title = Model.Title;
 	Layout = "_Layout.cshtml";
@@ -20,7 +20,7 @@
 				<div>Type: <a href="#">@p.Definition.ParameterType.FullName</a></div>
 				@{
 					var requiresQuickSummary = p.RequiresQuickSummary;
-					if (!String.IsNullOrEmpty(requiresQuickSummary)){<div>Required: @(requiresQuickSummary).</div>}
+					if (!String.IsNullOrEmpty(requiresQuickSummary)){<div><i class="icon-ok-sign"></i> Required: @(requiresQuickSummary).</div>}
 				}
 			</dd>
 		}
@@ -35,8 +35,12 @@
 		<div>Type: <a href="#">@returnViewModel.Type.FullName</a></div>
 		@{
 			var ensuresQuickSummary = returnViewModel.EnsuresQuickSummary;
-			if (!String.IsNullOrEmpty(ensuresQuickSummary)){<div>Guaranteed: @(ensuresQuickSummary).</div>}
+			if (!String.IsNullOrEmpty(ensuresQuickSummary)){<div><i class="icon-ok-sign"></i> Guaranteed: @(ensuresQuickSummary).</div>}
 		}
 	</div>
+}
+@if (Model.HasExceptions){
+	<h2>Exceptions</h2>
+	Html.RenderPartial("Partials/ExceptionTable", Model.Exceptions);
 }
 @{Html.RenderPartial("Partials/DefinitionPageCommonSections", Model);}

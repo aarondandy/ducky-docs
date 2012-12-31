@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using DandyDoc.Core.Overlays.Cref;
-using DandyDoc.Core.Overlays.XmlDoc;
+using DandyDoc.Overlays.Cref;
+using DandyDoc.Overlays.XmlDoc;
 using Mono.Cecil;
 
-namespace DandyDoc.Core.ViewModels
+namespace DandyDoc.ViewModels
 {
 	public class MethodViewModel : DefinitionViewModelBase<MethodDefinition>
 	{
@@ -20,49 +20,26 @@ namespace DandyDoc.Core.ViewModels
 		}
 
 		public override string Title {
-			get {
+			get{
 				string name;
 				string kind;
 				if (Definition.IsConstructor) {
 					kind = "Constructor";
-					name = Definition.DeclaringType.Name;
+					name = ShortName;
 				}
 				else {
-					name = Definition.Name;
 					if (Definition.IsOperatorOverload()) {
 						kind = "Operator";
-						if (name.StartsWith("op_"))
-							name = name.Substring(3);
 					}
 					else {
 						kind = "Method";
 					}
-					name = String.Concat(Definition.DeclaringType.Name, '.', name);
+					Contract.Assume(null != Definition.DeclaringType);
+					name = base.Title;
 				}
-				if (Definition.HasParameters) {
-					name = String.Concat(name, '(', String.Join(", ", Definition.Parameters.Select(x => x.ParameterType.Name)), ')');
-				}
-				return String.Concat(name, ' ', kind);
-			}
-		}
-
-		public override string ShortName {
-			get {
-				if (Definition.IsOperatorOverload()) {
-					var name = Definition.Name;
-					if (name.StartsWith("op_"))
-						name = name.Substring(3);
+				if (String.IsNullOrEmpty(kind))
 					return name;
-				}
-				if (Definition.IsConstructor) {
-					return String.Concat(Definition.DeclaringType.Name, '(', String.Join(", ", Definition.Parameters.Select(p => p.ParameterType.Name)), ')');
-				}
-
-				var isOverloaded = Definition.DeclaringType.Methods.Count(m => m.Name == Definition.Name) > 1;
-				if (!isOverloaded)
-					return Definition.Name;
-
-				return String.Concat(Definition.Name, '(', String.Join(", ", Definition.Parameters.Select(p => p.ParameterType.Name)), ')');
+				return String.Concat(name, ' ', kind);
 			}
 		}
 
@@ -108,24 +85,25 @@ namespace DandyDoc.Core.ViewModels
 		public bool AllResultsAndParamsNotNull{
 			get{
 
-				List<ParameterDefinition> refParams = Definition.HasParameters
-					? Definition.Parameters.Where(p => !p.ParameterType.IsValueType).ToList()
-					: null;
-
-				var hasReferenceParams = refParams != null && refParams.Count > 0;
 				var hasReferenceReturn = HasReturn && !Definition.ReturnType.IsValueType;
-
-				if (!hasReferenceParams && !hasReferenceReturn)
-					return false;
-
 				if (hasReferenceReturn){
 					if (!EnsuresResultNotNull && !EnsuresResultNotNullOrEmpty){
 						return false;
 					}
 				}
+				else{
+					if (!Definition.HasParameters)
+						return false;
+				}
 
-				if (hasReferenceParams){
-					foreach (var paramName in refParams.Select(p => p.Name)){
+				var refParams = Definition.Parameters.Where(p => !p.ParameterType.IsValueType).ToList();
+				if (0 == refParams.Count){
+					if (!hasReferenceReturn)
+						return false;
+				}
+				else{
+					foreach (var paramName in refParams.Select(p => p.Name)) {
+						Contract.Assume(!String.IsNullOrEmpty(paramName));
 						if (!RequiresParameterNotNull(paramName) && !RequiresParameterNotNullOrEmpty(paramName))
 							return false;
 					}
@@ -135,21 +113,34 @@ namespace DandyDoc.Core.ViewModels
 			}
 		}
 
+		public IList<ParsedXmlException> Exceptions {
+			get { return null == XmlDoc ? null : XmlDoc.Exceptions; }
+		}
+
+		public bool HasExceptions{
+			get{
+				var exceptions = Exceptions;
+				return null != exceptions && exceptions.Count > 0;
+			}
+		}
+
 		public bool HasReturn { get { return Definition.ReturnType != null && Definition.ReturnType.FullName != "System.Void"; } }
 
 		public bool EnsuresResultNotNull{
 			get{
-				if (!HasReturn || !HasXmlDoc || XmlDoc.Ensures.Count == 0)
-					return false;
-				return XmlDoc.Ensures.Any(x => x.EnsuresResultNotNull);
+				return HasReturn
+					&& HasXmlDoc
+					&& XmlDoc.Ensures.Count > 0
+					&& XmlDoc.Ensures.Any(x => x.EnsuresResultNotNull);
 			}
 		}
 
 		public bool EnsuresResultNotNullOrEmpty {
-			get {
-				if (!HasReturn || !HasXmlDoc || XmlDoc.Ensures.Count == 0)
-					return false;
-				return XmlDoc.Ensures.Any(x => x.EnsuresResultNotNullOrEmpty);
+			get{
+				return HasReturn
+					&& HasXmlDoc
+					&& XmlDoc.Ensures.Count > 0
+					&& XmlDoc.Ensures.Any(x => x.EnsuresResultNotNullOrEmpty);
 			}
 		}
 

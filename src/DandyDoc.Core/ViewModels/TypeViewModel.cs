@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using DandyDoc.Core.Overlays.Cref;
-using DandyDoc.Core.Overlays.ExternalVisibility;
+using DandyDoc.Overlays.Cref;
+using DandyDoc.Overlays.ExternalVisibility;
 using Mono.Cecil;
-using DandyDoc.Core.Overlays.XmlDoc;
+using DandyDoc.Overlays.XmlDoc;
 
-namespace DandyDoc.Core.ViewModels
+namespace DandyDoc.ViewModels
 {
 	public class TypeViewModel : DefinitionViewModelBase<TypeDefinition>
 	{
@@ -201,7 +201,7 @@ namespace DandyDoc.Core.ViewModels
 
 		public override string Title {
 			get {
-				var name = Definition.Name;
+				var name = Definition.IsNested ? base.Title : ShortName;
 				return name + ' ' + (
 					Definition.IsValueType
 					? "Structure"
@@ -209,12 +209,21 @@ namespace DandyDoc.Core.ViewModels
 					? "Interface"
 					: Definition.IsDelegateType()
 					? "Delegate"
+					: Definition.IsEnum
+					? "Enumeration"
 					: "Class"
 				);
 			}
 		}
 
-		public override string ShortName { get { return Definition.Name; } }
+		protected override IEnumerable<string> GetFlairTags(){
+			foreach (var tag in base.GetFlairTags())
+				yield return tag;
+
+			if (Definition.IsEnum && Definition.HasFlagsAttribute()){
+				yield return "flags";
+			}
+		}
 
 		new public TypeDefinitionXmlDoc XmlDoc { get { return (TypeDefinitionXmlDoc)(base.XmlDoc); } }
 
@@ -375,6 +384,12 @@ namespace DandyDoc.Core.ViewModels
 			if (null == definitions) throw new ArgumentNullException("definitions");
 			Contract.Ensures(Contract.Result<IEnumerable<TypeViewModel>>() != null);
 			return definitions.Select(d => new TypeViewModel(d, XmlDocOverlay, CrefOverlay));
+		}
+
+		public IEnumerable<EnumValueViewModel> ToEnumValueViewModels(IEnumerable<FieldDefinition> definitions){
+			if (null == definitions) throw new ArgumentNullException("definitions");
+			Contract.Ensures(Contract.Result<IEnumerable<FieldViewModel>>() != null);
+			return definitions.Select(d => new EnumValueViewModel(d, XmlDocOverlay, CrefOverlay));
 		}
 
 	}

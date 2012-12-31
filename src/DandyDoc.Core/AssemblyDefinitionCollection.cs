@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using Mono.Cecil;
 
-namespace DandyDoc.Core
+namespace DandyDoc
 {
 	public class AssemblyDefinitionCollection : Collection<AssemblyDefinition>
 	{

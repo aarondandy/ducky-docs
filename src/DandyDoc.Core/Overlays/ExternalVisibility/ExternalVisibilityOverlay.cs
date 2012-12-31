@@ -2,7 +2,7 @@
 using System.Diagnostics.Contracts;
 using Mono.Cecil;
 
-namespace DandyDoc.Core.Overlays.ExternalVisibility
+namespace DandyDoc.Overlays.ExternalVisibility
 {
 	public static class ExternalVisibilityOverlay
 	{

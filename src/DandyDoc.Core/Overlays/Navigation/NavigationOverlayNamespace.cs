@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 using Mono.Cecil;
 
-namespace DandyDoc.Core.Overlays.Navigation
+namespace DandyDoc.Overlays.Navigation
 {
 	public class NavigationOverlayNamespace
 	{

@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Mono.Cecil;
 
-namespace DandyDoc.Core.Utility
+namespace DandyDoc.Utility
 {
 	internal static class NameUtility
 	{

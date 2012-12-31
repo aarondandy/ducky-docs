@@ -53,6 +53,7 @@
     <Compile Include="CodeContractXmlDocOverlayTest.cs" />
     <Compile Include="CrefGenericTests.cs" />
     <Compile Include="CrefNormalTests.cs" />
+    <Compile Include="DisplayNameTests.cs" />
     <Compile Include="ExternalVisibilityTest.cs" />
     <Compile Include="NavigationOverlayTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

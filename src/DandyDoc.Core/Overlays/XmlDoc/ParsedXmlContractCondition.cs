@@ -2,7 +2,7 @@
 using System.Diagnostics.Contracts;
 using System.Xml;
 
-namespace DandyDoc.Core.Overlays.XmlDoc
+namespace DandyDoc.Overlays.XmlDoc
 {
 	public class ParsedXmlContractCondition : ParsedXmlElementBase
 	{

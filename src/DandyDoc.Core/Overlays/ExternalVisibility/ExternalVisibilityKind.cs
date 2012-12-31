@@ -1,7 +1,4 @@
-﻿
-using System;
-
-namespace DandyDoc.Core.Overlays.ExternalVisibility
+﻿namespace DandyDoc.Overlays.ExternalVisibility
 {
 	public enum ExternalVisibilityKind
 	{

@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
 
-namespace DandyDoc.Core.Utility
+namespace DandyDoc.Utility
 {
 	internal static class CollectionUtility
 	{

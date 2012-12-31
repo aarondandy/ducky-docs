@@ -5,10 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace DandyDoc.Core.Overlays.Navigation
+namespace DandyDoc.Overlays.Navigation
 {
 	public class NavigationOverlay
 	{
@@ -27,11 +25,15 @@ namespace DandyDoc.Core.Overlays.Navigation
 		}
 
 		private Dictionary<AssemblyDefinition, ReadOnlyCollection<NavigationOverlayNamespace>> GenerateAssemblyNamespaceLookup(){
+			Contract.Ensures(Contract.Result<Dictionary<AssemblyDefinition, ReadOnlyCollection<NavigationOverlayNamespace>>>() != null);
 			return Assemblies.ToDictionary(a => a, GenerateNamespaces);
 		}
 
 		private ReadOnlyCollection<NavigationOverlayNamespace> GenerateNamespaces(AssemblyDefinition assembly){
+			Contract.Requires(null != assembly);
+			Contract.Ensures(Contract.Result<ReadOnlyCollection<NavigationOverlayNamespace>>() != null);
 			var resultBuilder = new Dictionary<string, List<TypeDefinition>>();
+			Contract.Assume(null != assembly.Modules);
 			foreach (var type in assembly.Modules.SelectMany(m => m.Types)){
 				var ns = type.Namespace;
 				List<TypeDefinition> tdList;
@@ -49,6 +51,7 @@ namespace DandyDoc.Core.Overlays.Navigation
 		}
 
 		private ReadOnlyCollection<NavigationOverlayCompositeNamespace> GenerateMergedNamespaces() {
+			Contract.Ensures(Contract.Result<ReadOnlyCollection<NavigationOverlayCompositeNamespace>>() != null);
 			var resultBuilder = new Dictionary<string, List<NavigationOverlayNamespace>>();
 			foreach (var assemblyGroup in _assemblyNamespaces.Value){
 				foreach (var ns in assemblyGroup.Value){
@@ -72,7 +75,8 @@ namespace DandyDoc.Core.Overlays.Navigation
 		public AssemblyDefinitionCollection Assemblies { get; private set; }
 
 		public IDictionary<AssemblyDefinition, IList<NavigationOverlayNamespace>> AssemblyNamespaces {
-			get{
+			get {
+				Contract.Ensures(Contract.Result<IDictionary<AssemblyDefinition, IList<NavigationOverlayNamespace>>>() != null);
 				// TODO: better to return/store as a list?
 				return _assemblyNamespaces.Value
 					.ToDictionary(x => x.Key, x => (IList<NavigationOverlayNamespace>)x.Value);
@@ -80,10 +84,16 @@ namespace DandyDoc.Core.Overlays.Navigation
 		}
 
 		public IList<NavigationOverlayCompositeNamespace> Namespaces {
-			get { return _mergedNamespaces.Value; }
+			get {
+				Contract.Ensures(Contract.Result<IList<NavigationOverlayCompositeNamespace>>() != null);
+				return _mergedNamespaces.Value;
+			}
 		} 
 
-
+		[ContractInvariantMethod]
+		private void CodeContractInvariant(){
+			Contract.Invariant(null != Assemblies);
+		}
 
 	}
 }

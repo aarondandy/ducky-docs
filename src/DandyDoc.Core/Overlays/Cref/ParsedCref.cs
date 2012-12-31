@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Text.RegularExpressions;
 
-namespace DandyDoc.Core.Overlays.Cref
+namespace DandyDoc.Overlays.Cref
 {
 	public class ParsedCref
 	{

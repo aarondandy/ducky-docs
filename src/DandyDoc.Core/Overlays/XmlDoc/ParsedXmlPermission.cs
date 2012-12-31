@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics.Contracts;
 using System.Xml;
 
-namespace DandyDoc.Core.Overlays.XmlDoc
+namespace DandyDoc.Overlays.XmlDoc
 {
 	/// <summary>
 	/// A parsed permission node referencing a permission member or type.

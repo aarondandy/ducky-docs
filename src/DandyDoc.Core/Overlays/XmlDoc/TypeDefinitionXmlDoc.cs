@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Xml;
-using DandyDoc.Core.Overlays.Cref;
-using DandyDoc.Core.Utility;
+using DandyDoc.Overlays.Cref;
+using DandyDoc.Utility;
 using Mono.Cecil;
 
-namespace DandyDoc.Core.Overlays.XmlDoc
+namespace DandyDoc.Overlays.XmlDoc
 {
 	public class TypeDefinitionXmlDoc : DefinitionXmlDocBase
 	{

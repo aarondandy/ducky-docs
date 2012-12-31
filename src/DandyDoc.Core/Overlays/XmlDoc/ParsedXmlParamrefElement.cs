@@ -3,7 +3,7 @@ using System.Linq;
 using System.Xml;
 using Mono.Cecil;
 
-namespace DandyDoc.Core.Overlays.XmlDoc
+namespace DandyDoc.Overlays.XmlDoc
 {
 	public class ParsedXmlParamrefElement : ParsedXmlElementBase
 	{

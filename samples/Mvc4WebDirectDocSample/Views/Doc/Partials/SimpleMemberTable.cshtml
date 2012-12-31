@@ -1,12 +1,16 @@
-﻿@using DandyDoc.Core
-@model IEnumerable<DandyDoc.Core.ViewModels.IDefinitionViewModel>
+﻿@model IEnumerable<DandyDoc.ViewModels.IDefinitionViewModel>
 <div class="doc-page-member-listing">
 <table>
 	<tr><th></th><th>Name</th><th>Description</th></tr>
 @foreach (var member in Model.OrderBy(x => x.ShortName)){
 	<tr>
 		<td>@{Html.RenderPartial("Partials/FlairList", member.Flair);}</td>
-		<td><a href="@Url.Action("Index",new{cref=member.Cref})">@member.ShortName</a></td>
+		<td>
+			@if (String.IsNullOrEmpty(member.Cref)){@member.ShortName}
+			else{<a href="@Url.Action("Index",new{cref=member.Cref})">
+				@member.ShortName
+			</a>}
+		</td>
 		<td>@if (null != member.Summary) { Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", member.Summary); }</td>
 	</tr>
 }

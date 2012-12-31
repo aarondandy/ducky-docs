@@ -7,8 +7,5 @@
 <h1>@Model.Title</h1>
 @if (Model.HasSummary) {Html.RenderPartial("Partials/SummarySection", Model.Summary);}
 @{ Html.RenderPartial("Partials/NamespaceAndAssembly", Model.AssemblyNamespace);}
-@foreach (var section in Model.GetDefaultMemberListingSections()){
-	<h2>@(section.Title)</h2>
-	Html.RenderPartial("Partials/SimpleMemberTable", section.Items);
-}
+@{Html.RenderPartial("Partials/SimpleMemberTable", Model.ToEnumValueViewModels(Model.ExposedStaticFields));}
 @{Html.RenderPartial("Partials/DefinitionPageCommonSections", Model);}

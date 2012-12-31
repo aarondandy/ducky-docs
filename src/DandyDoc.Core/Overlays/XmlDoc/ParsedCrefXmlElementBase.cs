@@ -3,7 +3,7 @@ using System.Diagnostics.Contracts;
 using System.Xml;
 using Mono.Cecil;
 
-namespace DandyDoc.Core.Overlays.XmlDoc
+namespace DandyDoc.Overlays.XmlDoc
 {
 	public abstract class ParsedCrefXmlElementBase : ParsedXmlElementBase
 	{

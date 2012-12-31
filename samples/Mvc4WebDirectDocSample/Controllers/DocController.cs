@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using System.Web.Mvc;
-using DandyDoc.Core;
-using DandyDoc.Core.Overlays.Cref;
-using DandyDoc.Core.ViewModels;
+using DandyDoc;
+using DandyDoc.Overlays.Cref;
+using DandyDoc.ViewModels;
 using Mono.Cecil;
-using DandyDoc.Core.Overlays.XmlDoc;
+using DandyDoc.Overlays.XmlDoc;
 
 namespace Mvc4WebDirectDocSample.Controllers
 {
@@ -40,8 +40,12 @@ namespace Mvc4WebDirectDocSample.Controllers
 				return new HttpNotFoundResult();
 
 			ViewResult viewResult;
-			if (reference is TypeDefinition) {
-				viewResult = View("Type", new TypeViewModel((TypeDefinition)reference, XmlDocOverlay));
+			if (reference is TypeDefinition){
+				var typeDefinition = (TypeDefinition) reference;
+				if(typeDefinition.IsEnum)
+					viewResult = View("Enum", new TypeViewModel(typeDefinition, XmlDocOverlay));
+				else
+					viewResult = View("Type", new TypeViewModel(typeDefinition, XmlDocOverlay));
 			}
 			else if (reference is MethodDefinition) {
 				viewResult = View("Method", new MethodViewModel((MethodDefinition)reference, XmlDocOverlay));

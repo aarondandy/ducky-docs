@@ -1,13 +1,13 @@
-﻿@model DandyDoc.Core.ViewModels.IDefinitionViewModel
+﻿@model DandyDoc.ViewModels.IDefinitionViewModel
 @{
-	if (null != Model.Remarks) {
+	if (Model.HasRemarks) {
 		Html.RenderPartial("Partials/RemarksSection", Model.Remarks);
 	}
-	if (null != Model.Examples && Model.Examples.Count > 0) {
+	if (Model.HasExamples ) {
 		<h2>Examples</h2>
 		foreach (var node in Model.Examples) {<div class="doc-page-section doc-page-example">@{ Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", node); }</div>}
 	}
-	if (null != Model.SeeAlso && Model.SeeAlso.Count > 0) {
+	if (Model.HasSeeAlso) {
 		<h2>See Also</h2>
 		foreach (var node in Model.SeeAlso) {<div class="doc-page-section doc-page-see-also">@{ Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBase", node); }</div>}	
 	}

@@ -4,12 +4,12 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Threading;
-using DandyDoc.Core.Overlays.Cref;
-using DandyDoc.Core.Overlays.ExternalVisibility;
-using DandyDoc.Core.Overlays.Navigation;
-using DandyDoc.Core.Overlays.XmlDoc;
+using DandyDoc.Overlays.Cref;
+using DandyDoc.Overlays.ExternalVisibility;
+using DandyDoc.Overlays.Navigation;
+using DandyDoc.Overlays.XmlDoc;
 
-namespace DandyDoc.Core.ViewModels
+namespace DandyDoc.ViewModels
 {
 	public class TypeNavigationNamespaceViewModelcs
 	{

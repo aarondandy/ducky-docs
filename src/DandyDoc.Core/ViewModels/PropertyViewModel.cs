@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using DandyDoc.Core.Overlays.Cref;
-using DandyDoc.Core.Overlays.ExternalVisibility;
-using DandyDoc.Core.Overlays.XmlDoc;
+using DandyDoc.Overlays.Cref;
+using DandyDoc.Overlays.ExternalVisibility;
+using DandyDoc.Overlays.XmlDoc;
 using Mono.Cecil;
 
-namespace DandyDoc.Core.ViewModels
+namespace DandyDoc.ViewModels
 {
 	public class PropertyViewModel : DefinitionViewModelBase<PropertyDefinition>
 	{
@@ -20,9 +21,7 @@ namespace DandyDoc.Core.ViewModels
 
 		new public PropertyDefinitionXmlDoc XmlDoc { get { return (PropertyDefinitionXmlDoc)(base.XmlDoc); } }
 
-		public override string Title { get { return Definition.Name + " Property"; } }
-
-		public override string ShortName { get { return Definition.Name; } }
+		public override string Title { get { return base.Title + " Property"; } }
 
 		public ParsedXmlElementBase ValueDoc {
 			get { return null == XmlDoc ? null : XmlDoc.ValueDoc; }
@@ -75,6 +74,17 @@ namespace DandyDoc.Core.ViewModels
 			}
 		}
 
+		public IList<ParsedXmlException> Exceptions {
+			get { return null == XmlDoc ? null : XmlDoc.Exceptions; }
+		}
+
+		public bool HasExceptions {
+			get {
+				var exceptions = Exceptions;
+				return null != exceptions && exceptions.Count > 0;
+			}
+		}
+
 		public bool IsGetterPure {
 			get {
 				if (HasXmlDoc && null != XmlDoc.GetterDocs && XmlDoc.GetterDocs.HasPureElement)
@@ -105,12 +115,16 @@ namespace DandyDoc.Core.ViewModels
 
 		public MethodViewModel GetViewModel {
 			get {
+				if(null == Definition.GetMethod) throw new InvalidOperationException("Property has no getter.");
+				Contract.EndContractBlock();
 				return new MethodViewModel(Definition.GetMethod, XmlDocOverlay, CrefOverlay);
 			}
 		}
 
 		public MethodViewModel SetViewModel {
 			get {
+				if (null == Definition.SetMethod) throw new InvalidOperationException("Property has no setter.");
+				Contract.EndContractBlock();
 				return new MethodViewModel(Definition.SetMethod, XmlDocOverlay, CrefOverlay);
 			}
 		}

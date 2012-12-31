@@ -6,12 +6,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using DandyDoc.Core.Overlays.Cref;
-using DandyDoc.Core.Utility;
+using DandyDoc.Overlays.Cref;
+using DandyDoc.Utility;
 using Mono.Cecil;
 using System.IO;
 
-namespace DandyDoc.Core.Overlays.XmlDoc
+namespace DandyDoc.Overlays.XmlDoc
 {
 	public class XmlDocOverlay
 	{

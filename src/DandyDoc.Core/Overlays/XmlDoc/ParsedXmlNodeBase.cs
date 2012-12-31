@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Xml;
-using DandyDoc.Core.Overlays.Cref;
-using DandyDoc.Core.Utility;
+using DandyDoc.Overlays.Cref;
+using DandyDoc.Utility;
 
-namespace DandyDoc.Core.Overlays.XmlDoc
+namespace DandyDoc.Overlays.XmlDoc
 {
 	public abstract class ParsedXmlNodeBase
 	{

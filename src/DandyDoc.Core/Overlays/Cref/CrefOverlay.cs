@@ -4,7 +4,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using Mono.Cecil;
 
-namespace DandyDoc.Core.Overlays.Cref
+namespace DandyDoc.Overlays.Cref
 {
 
 	/// <summary>
@@ -221,32 +221,31 @@ namespace DandyDoc.Core.Overlays.Cref
 			return GetCref((TypeReference)definition, hideCrefType);
 		}
 
-		public string GetCref(TypeReference typeRef, bool hideCrefType = false) {
-			if(null == typeRef) throw new ArgumentNullException("typeRef");
+		public string GetCref(TypeReference reference, bool hideCrefType = false) {
+			if(null == reference) throw new ArgumentNullException("reference");
 			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
 			
-			if (typeRef.IsGenericParameter) {
-				var genericParameter = typeRef as GenericParameter;
-				if (null != genericParameter){
-					var paramIndex = genericParameter.Owner.GenericParameters.IndexOf(genericParameter);
-					return String.Concat(
-						genericParameter.Owner is TypeDefinition ? "`" : "``",
-						paramIndex
-					);
-				}
+			if (reference.IsGenericParameter) {
+				var genericParameter = (GenericParameter)reference;
+				var paramIndex = genericParameter.Owner.GenericParameters.IndexOf(genericParameter);
+				return String.Concat(
+					genericParameter.Owner is TypeDefinition ? "`" : "``",
+					paramIndex
+				);
 			}
 
 			var typeParts = new List<string>();
-			TypeReference currentType = typeRef;
+			var currentType = reference;
 			while (null != currentType){
-				string currentTypeName = currentType.Name;
+				var currentTypeName = currentType.Name;
 				if (currentType.IsGenericInstance){
 					var genericInstanceType = currentType as GenericInstanceType;
 					Contract.Assume(null != genericInstanceType);
 					var tickIndex = currentTypeName.LastIndexOf('`');
 					if (tickIndex >= 0)
 						currentTypeName = currentTypeName.Substring(0, tickIndex);
-					currentTypeName += String.Concat(
+					currentTypeName = String.Concat(
+						currentTypeName,
 						'{',
 						String.Join(",",genericInstanceType.GenericArguments.Select(x => GetCref(x, true))),
 						'}'
@@ -254,17 +253,17 @@ namespace DandyDoc.Core.Overlays.Cref
 				}
 
 				typeParts.Insert(0, currentTypeName);
-				if (currentType.IsNested) {
-					Contract.Assume(null != currentType.DeclaringType);
-					currentType = currentType.DeclaringType;
-				}
-				else {
+				if (!currentType.IsNested)
 					break;
-				}
+
+				Contract.Assume(null != currentType.DeclaringType);
+				currentType = currentType.DeclaringType;
 			}
 
 			var ns = currentType.Namespace;
-			var cref = String.Join(".", typeParts);
+			var cref = typeParts.Count == 1
+				? typeParts[0]
+				: String.Join(".", typeParts);
 			Contract.Assume(!String.IsNullOrEmpty(cref));
 
 			if (!String.IsNullOrEmpty(ns))

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
-using DandyDoc.Core.Overlays.XmlDoc;
+using DandyDoc.Overlays.XmlDoc;
 using Mono.Cecil;
 
-namespace DandyDoc.Core.ViewModels
+namespace DandyDoc.ViewModels
 {
 	public class ParameterViewModel
 	{

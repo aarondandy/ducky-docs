@@ -1,7 +1,7 @@
 ﻿using System.Linq;
-using DandyDoc.Core;
-using DandyDoc.Core.Overlays.Cref;
-using DandyDoc.Core.Overlays.XmlDoc;
+using DandyDoc;
+using DandyDoc.Overlays.Cref;
+using DandyDoc.Overlays.XmlDoc;
 using Mono.Cecil;
 using NUnit.Framework;
 

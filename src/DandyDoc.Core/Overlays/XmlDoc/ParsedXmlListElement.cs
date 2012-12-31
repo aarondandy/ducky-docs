@@ -3,7 +3,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Xml;
 
-namespace DandyDoc.Core.Overlays.XmlDoc
+namespace DandyDoc.Overlays.XmlDoc
 {
 	public class ParsedXmlListElement : ParsedXmlElementBase
 	{

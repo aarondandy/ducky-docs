@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using Mono.Cecil;
 
-namespace DandyDoc.Core.Overlays.XmlDoc
+namespace DandyDoc.Overlays.XmlDoc
 {
 	public class ParsedXmlTypeparamrefElement : ParsedXmlElementBase
 	{

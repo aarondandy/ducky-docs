@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using DandyDoc.Core.Overlays.Cref;
+using DandyDoc.Overlays.Cref;
 
-namespace DandyDoc.Core.Overlays.XmlDoc
+namespace DandyDoc.Overlays.XmlDoc
 {
 	public class ParsedXmlElement : ParsedXmlElementBase
 	{

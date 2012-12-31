@@ -5,7 +5,7 @@ using System.Linq;
 using Mono.Cecil;
 using System.Collections.ObjectModel;
 
-namespace DandyDoc.Core
+namespace DandyDoc
 {
 	public static class CecilExtensions
 	{
@@ -141,11 +141,37 @@ namespace DandyDoc.Core
 		}
 
 		public static bool HasPureAttribute(this ICustomAttributeProvider definition) {
-			if (null == definition)
-				return false;
-			if (!definition.HasCustomAttributes)
-				return false;
-			return definition.CustomAttributes.Any(a => a.AttributeType.Name == "Pure");
+			Contract.Requires(null != definition);
+			return HasAttributeMatchingShortName(definition, "PureAttribute");
+		}
+
+		public static bool HasFlagsAttribute(this ICustomAttributeProvider definition){
+			Contract.Requires(null != definition);
+			return HasAttributeMatchingFullName(definition, "System.FlagsAttribute");
+		}
+
+		public static bool HasAttributeMatchingName(this ICustomAttributeProvider definition, string name) {
+			if (null == definition) throw new ArgumentNullException("definition");
+			Contract.EndContractBlock();
+			Contract.Assume(null != definition.CustomAttributes);
+			return definition.HasCustomAttributes
+				&& definition.CustomAttributes.Select(a => a.AttributeType).Any(t => t.FullName == name || t.Name == name);
+		}
+
+		public static bool HasAttributeMatchingShortName(this ICustomAttributeProvider definition, string name){
+			if (null == definition) throw new ArgumentNullException("definition");
+			Contract.EndContractBlock();
+			Contract.Assume(null != definition.CustomAttributes);
+			return definition.HasCustomAttributes
+				&& definition.CustomAttributes.Any(a => a.AttributeType.Name == name);
+		}
+
+		public static bool HasAttributeMatchingFullName(this ICustomAttributeProvider definition, string name) {
+			if (null == definition) throw new ArgumentNullException("definition");
+			Contract.EndContractBlock();
+			Contract.Assume(null != definition.CustomAttributes);
+			return definition.HasCustomAttributes
+				&& definition.CustomAttributes.Any(a => a.AttributeType.FullName == name);
 		}
 
 	}

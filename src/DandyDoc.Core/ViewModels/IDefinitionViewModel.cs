@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using DandyDoc.Core.Overlays.XmlDoc;
+using DandyDoc.Overlays.XmlDoc;
 using Mono.Cecil;
 
-namespace DandyDoc.Core.ViewModels
+namespace DandyDoc.ViewModels
 {
 	public interface IDefinitionViewModel
 	{
@@ -11,11 +11,19 @@ namespace DandyDoc.Core.ViewModels
 
 		ParsedXmlElementBase Summary { get; }
 
+		bool HasSummary { get; }
+
 		ParsedXmlElementBase Remarks { get; }
+
+		bool HasRemarks { get; }
 
 		IList<ParsedXmlElementBase> Examples { get; }
 
+		bool HasExamples { get; }
+
 		IList<ParsedXmlSeeElement> SeeAlso { get; }
+
+		bool HasSeeAlso { get; }
 
 		string Title { get; }
 

@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using DandyDoc.Core.Overlays.Cref;
-using DandyDoc.Core.Overlays.ExternalVisibility;
-using DandyDoc.Core.Overlays.XmlDoc;
+using DandyDoc.Overlays.Cref;
+using DandyDoc.Overlays.ExternalVisibility;
+using DandyDoc.Overlays.XmlDoc;
 using Mono.Cecil;
 
-namespace DandyDoc.Core.ViewModels
+namespace DandyDoc.ViewModels
 {
 	public class EventViewModel : DefinitionViewModelBase<EventDefinition>
 	{
@@ -19,9 +19,7 @@ namespace DandyDoc.Core.ViewModels
 
 		new public EventDefinitionXmlDoc XmlDoc { get { return (EventDefinitionXmlDoc)(base.XmlDoc); } }
 
-		public override string Title { get { return Definition.Name + " Event"; } }
-
-		public override string ShortName { get { return Definition.Name; } }
+		public override string Title { get { return base.Title + " Event"; } }
 
 		protected override IEnumerable<string> GetFlairTags() {
 			foreach (var item in base.GetFlairTags())

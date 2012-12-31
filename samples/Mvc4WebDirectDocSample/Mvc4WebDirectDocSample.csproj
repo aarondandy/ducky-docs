@@ -239,6 +239,12 @@
   <ItemGroup>
     <Content Include="Views\Doc\Partials\FlairList.cshtml" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Doc\Partials\ExceptionTable.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Doc\Enum.cshtml" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

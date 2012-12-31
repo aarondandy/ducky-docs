@@ -3,18 +3,27 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using DandyDoc.Core.Overlays.Cref;
-using DandyDoc.Core.Overlays.ExternalVisibility;
-using DandyDoc.Core.Overlays.XmlDoc;
-using DandyDoc.Core.Utility;
+using DandyDoc.Overlays.Cref;
+using DandyDoc.Overlays.DisplayName;
+using DandyDoc.Overlays.ExternalVisibility;
+using DandyDoc.Overlays.XmlDoc;
+using DandyDoc.Utility;
 using Mono.Cecil;
 
-namespace DandyDoc.Core.ViewModels
+namespace DandyDoc.ViewModels
 {
 
 	public abstract class DefinitionViewModelBase<TDefinition> : IDefinitionViewModel
 		where TDefinition : IMemberDefinition
 	{
+
+		private static readonly DisplayNameOverlay ShortNameOverlay = new DisplayNameOverlay();
+
+		protected static string GetShortName(IMemberDefinition definition){
+			if(null == definition) throw new ArgumentNullException("definition");
+			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
+			return ShortNameOverlay.GetDisplayName(definition);
+		}
 
 		private readonly Lazy<DefinitionXmlDocBase> _xmlDoc;
 		private readonly Lazy<ReadOnlyCollection<string>> _flair; 
@@ -43,7 +52,7 @@ namespace DandyDoc.Core.ViewModels
 
 		public CrefOverlay CrefOverlay { get; private set; }
 
-		public string Cref { get { return CrefOverlay.GetCref(Definition); } }
+		public virtual string Cref { get { return CrefOverlay.GetCref(Definition); } }
 
 		public DefinitionXmlDocBase XmlDoc { get { return _xmlDoc.Value; } }
 
@@ -75,12 +84,28 @@ namespace DandyDoc.Core.ViewModels
 			get { return null == XmlDoc ? null : XmlDoc.Remarks; }
 		}
 
+		public bool HasRemarks { get { return Remarks != null; } }
+
 		public IList<ParsedXmlElementBase> Examples {
 			get { return null == XmlDoc ? null : XmlDoc.Examples; }
 		}
 
+		public bool HasExamples{
+			get{
+				var examples = Examples;
+				return null != examples && examples.Count > 0;
+			}
+		}
+
 		public IList<ParsedXmlSeeElement> SeeAlso {
 			get { return null == XmlDoc ? null : XmlDoc.SeeAlso; }
+		}
+
+		public bool HasSeeAlso{
+			get {
+				var seeAlso = SeeAlso;
+				return null != seeAlso && seeAlso.Count > 0;
+			}
 		}
 
 		public AssemblyNamespaceViewModel AssemblyNamespace {
@@ -90,9 +115,17 @@ namespace DandyDoc.Core.ViewModels
 			}
 		}
 
-		public abstract string Title { get; }
+		public virtual string Title {
+			get{
+				var name = ShortName;
+				if (null != Definition.DeclaringType){
+					name = String.Concat(GetShortName(Definition.DeclaringType), '.', name);
+				}
+				return name;
+			}
+		}
 
-		public abstract string ShortName { get; }
+		public virtual string ShortName { get { return ShortNameOverlay.GetDisplayName(Definition); } }
 
 		[ContractInvariantMethod]
 		private void CodeContractInvariant() {

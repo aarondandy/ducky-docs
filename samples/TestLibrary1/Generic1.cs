@@ -125,6 +125,21 @@ namespace TestLibrary1
 		/// </summary>
 		public event MyFunc<TB> E;
 
+		/// <summary>
+		/// A crazy constructor.
+		/// </summary>
+		/// <param name="a"></param>
+		/// <param name="b"></param>
+		/// <param name="stuff"></param>
+		/// <param name="text"></param>
+		public Generic1(TA a, TB b, IEnumerable<TA> stuff,  string text){
+			throw new NotImplementedException();
+		}
+
+		public TB AMix<TOther>(TA a, TOther other){
+			throw new NotImplementedException();
+		}
+
 	}
 
 	public class NotGeneric

@@ -1,6 +1,6 @@
 ﻿using System.Linq;
-using DandyDoc.Core;
-using DandyDoc.Core.Overlays.Navigation;
+using DandyDoc;
+using DandyDoc.Overlays.Navigation;
 using NUnit.Framework;
 
 namespace TestLibrary1.Test

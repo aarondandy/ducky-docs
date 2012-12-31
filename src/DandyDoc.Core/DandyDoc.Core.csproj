@@ -7,7 +7,7 @@
     <ProjectGuid>{A09F4DAC-290C-4ABE-B053-071EC966008F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DandyDoc.Core</RootNamespace>
+    <RootNamespace>DandyDoc</RootNamespace>
     <AssemblyName>DandyDoc.Core</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -125,6 +125,7 @@
     <Compile Include="CecilExtensions.cs" />
     <Compile Include="Overlays\Cref\CrefOverlay.cs" />
     <Compile Include="Overlays\Cref\ParsedCref.cs" />
+    <Compile Include="Overlays\DisplayName\DisplayNameOverlay.cs" />
     <Compile Include="Overlays\ExternalVisibility\ExternalVisibilityKind.cs" />
     <Compile Include="Overlays\ExternalVisibility\ExternalVisibilityOverlay.cs" />
     <Compile Include="Overlays\Navigation\NavigationOverlay.cs" />
@@ -159,6 +160,7 @@
     <Compile Include="Utility\NameUtility.cs" />
     <Compile Include="Utility\TextUtility.cs" />
     <Compile Include="ViewModels\DefinitionViewModelBase.cs" />
+    <Compile Include="ViewModels\EnumValueViewModel.cs" />
     <Compile Include="ViewModels\EventViewModel.cs" />
     <Compile Include="ViewModels\FieldViewModel.cs" />
     <Compile Include="ViewModels\IDefinitionViewModel.cs" />

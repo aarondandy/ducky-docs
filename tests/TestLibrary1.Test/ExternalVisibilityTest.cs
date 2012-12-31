@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using DandyDoc.Core;
-using DandyDoc.Core.Overlays.Cref;
-using DandyDoc.Core.Overlays.ExternalVisibility;
+using DandyDoc;
+using DandyDoc.Overlays.Cref;
+using DandyDoc.Overlays.ExternalVisibility;
 using Mono.Cecil;
 using NUnit.Framework;
 

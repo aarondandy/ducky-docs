@@ -1,0 +1,18 @@
+﻿@model IEnumerable<DandyDoc.Overlays.XmlDoc.ParsedXmlException>
+<div class="doc-page-member-listing">
+<table>
+	<tr><th>Exception</th><th>Condition</th></tr>
+	@foreach (var exception in Model){
+	<tr>
+		<td>@exception.CRef</td>
+		<td>@{
+				  if (exception.Children.Count > 0){
+					  Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", exception);
+				  }
+				  else{
+					  ; // TODO: create a default condition
+				  }
+			  }</td>
+	</tr>
+	}
+</table></div>

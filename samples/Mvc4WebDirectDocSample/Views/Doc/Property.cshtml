@@ -1,4 +1,4 @@
-﻿@model DandyDoc.Core.ViewModels.PropertyViewModel
+﻿@model DandyDoc.ViewModels.PropertyViewModel
 @{
 	ViewBag.Title = Model.Title;
 	Layout = "_Layout.cshtml";
@@ -9,17 +9,31 @@
 }
 <h2>Signature</h2>
 <div>Type: <a href="#">@Model.Definition.PropertyType.FullName</a></div>
+@if (Model.HasExposedGet){
+	var getViewModel = Model.GetViewModel;
+	<h3>Getter</h3>
+	if(Model.IsPure){<div><i class="icon-leaf" title="pure"></i> Purity: Requesting a value does not have side effects.</div>}
+	if(Model.HasProtectedGet){<div><i class="icon-eye-close"></i> Visibility: This getter is accessible only through inheritance.</div>}
+  else{<div><i class="icon-eye-open"></i> Visibility: This getter is publicly accessible.</div>}
+	if (getViewModel.HasExceptions) {
+		Html.RenderPartial("Partials/ExceptionTable", getViewModel.Exceptions);
+	}
+}
+@if (Model.HasExposedSet){
+	var setViewModel = Model.SetViewModel;
+	<h3>Setter</h3>
+	if(Model.HasProtectedSet){<div><i class="icon-eye-close"></i> Visibility: This setter is accessible only through inheritance.</div>}
+	else{<div><i class="icon-eye-open"></i> Visibility: This setter is publicly accessible.</div>}
+	if (setViewModel.HasExceptions) {
+		Html.RenderPartial("Partials/ExceptionTable", setViewModel.Exceptions);
+	}
+}
 @if (null != Model.ValueDoc) {
 	<h2>Value</h2>
 	<div class="doc-page-section">@{ Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", Model.ValueDoc); }</div>
 }
-@if (Model.HasExposedGet) {
-	<h2>Getter</h2>
-	if(Model.IsPure){<div><i class="icon-leaf" title="pure"></i> Purity: Requesting a value does not have side effects.</div>}
-	if(Model.HasProtectedGet){<div><i class="icon-eye-close"></i> Visibility: This getter is accessible only through inheritance.</div>}
-}
-@if (Model.HasExposedSet) {
-	<h2>Setter</h2>
-	if(Model.HasProtectedSet){<div><i class="icon-eye-close"></i> Visibility: This setter is accessible only through inheritance.</div>}
+@if (Model.HasExceptions){
+	<h2>Exceptions</h2>
+	Html.RenderPartial("Partials/ExceptionTable", Model.Exceptions);
 }
 @{Html.RenderPartial("Partials/DefinitionPageCommonSections", Model);}

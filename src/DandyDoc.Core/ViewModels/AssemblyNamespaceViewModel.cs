@@ -2,7 +2,7 @@
 using System.Diagnostics.Contracts;
 using Mono.Cecil;
 
-namespace DandyDoc.Core.ViewModels
+namespace DandyDoc.ViewModels
 {
 	public class AssemblyNamespaceViewModel
 	{
