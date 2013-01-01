@@ -4,26 +4,27 @@
 	Layout = "_Layout.cshtml";
 }
 <h1>@Model.Title</h1>
-@if (null != Model.Summary) {
-	Html.RenderPartial("Partials/SummarySection", Model.Summary);
+@{
+	if (null != Model.Summary) { Html.RenderPartial("Partials/SummarySection", Model.Summary);}
+	if (Model.Flair.Count > 0) {Html.RenderPartial("Partials/FlairTable", Model.Flair);}
+	Html.RenderPartial("Partials/NamespaceAndAssembly", Model.AssemblyNamespace);
 }
 <h2>Signature</h2>
 <div>Type: <a href="#">@Model.Definition.PropertyType.FullName</a></div>
 @if (Model.HasExposedGet){
 	var getViewModel = Model.GetViewModel;
+	var getFlair = getViewModel.Flair.Where(f => Model.Flair.All(x => x.Id != f.Id)).ToList();
 	<h3>Getter</h3>
-	if(Model.IsPure){<div><i class="icon-leaf" title="pure"></i> Purity: Requesting a value does not have side effects.</div>}
-	if(Model.HasProtectedGet){<div><i class="icon-eye-close"></i> Visibility: This getter is accessible only through inheritance.</div>}
-  else{<div><i class="icon-eye-open"></i> Visibility: This getter is publicly accessible.</div>}
+	if (getFlair.Count > 0) { Html.RenderPartial("Partials/FlairTable", getFlair); }
 	if (getViewModel.HasExceptions) {
 		Html.RenderPartial("Partials/ExceptionTable", getViewModel.Exceptions);
 	}
 }
 @if (Model.HasExposedSet){
 	var setViewModel = Model.SetViewModel;
+	var setFlair = setViewModel.Flair.Where(f => Model.Flair.All(x => x.Id != f.Id)).ToList();
 	<h3>Setter</h3>
-	if(Model.HasProtectedSet){<div><i class="icon-eye-close"></i> Visibility: This setter is accessible only through inheritance.</div>}
-	else{<div><i class="icon-eye-open"></i> Visibility: This setter is publicly accessible.</div>}
+	if (setFlair.Count > 0) { Html.RenderPartial("Partials/FlairTable", setFlair); }
 	if (setViewModel.HasExceptions) {
 		Html.RenderPartial("Partials/ExceptionTable", setViewModel.Exceptions);
 	}

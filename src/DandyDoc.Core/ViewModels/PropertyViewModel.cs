@@ -27,7 +27,7 @@ namespace DandyDoc.ViewModels
 			get { return null == XmlDoc ? null : XmlDoc.ValueDoc; }
 		}
 
-		protected override IEnumerable<string> GetFlairTags() {
+		protected override IEnumerable<MemberFlair> GetFlairTags() {
 			foreach (var tag in base.GetFlairTags())
 				yield return tag;
 
@@ -37,28 +37,36 @@ namespace DandyDoc.ViewModels
 			var setMethod = Definition.SetMethod;
 
 			if (IsPure) {
-				yield return "pure";
+				yield return new MemberFlair("pure", "Purity", "Does not have side effects");
 			}
 
 			if (null != getMethod) {
 				var methodVisibility = ExternalVisibilityOverlay.Get(getMethod);
 				if (methodVisibility == propertyVisibility || methodVisibility == ExternalVisibilityKind.Public) {
-					yield return "get";
+					yield return new MemberFlair("get", "Property", "Value can be read externally.");
 				}
 				else if(methodVisibility == ExternalVisibilityKind.Protected) {
-					yield return "proget";
+					yield return new MemberFlair("proget", "Property", "Value can be read through inheritance.");
 				}
 			}
 
 			if (null != setMethod) {
 				var methodVisibility = ExternalVisibilityOverlay.Get(setMethod);
 				if (methodVisibility == propertyVisibility || methodVisibility == ExternalVisibilityKind.Public) {
-					yield return "set";
+					yield return new MemberFlair("set", "Property", "Value can be assigned externally.");
 				}
 				else if (methodVisibility == ExternalVisibilityKind.Protected) {
-					yield return "proset";
+					yield return new MemberFlair("proset", "Property", "Value can be assigned through inheritance.");
 				}
 			}
+
+			if(Definition.HasParameters && "Item".Equals(Definition.Name))
+				yield return new MemberFlair("indexer", "Operator", "This property is invoked through a language index operator.");
+
+			var getSealed = null != getMethod && getMethod.IsFinal;
+			var setSealed = null != setMethod && setMethod.IsFinal;
+			if (getSealed || setSealed)
+				yield return new MemberFlair("sealed", "Inheritance", " This property is sealed, preventing inheritance.");
 		}
 
 		public bool IsPure {

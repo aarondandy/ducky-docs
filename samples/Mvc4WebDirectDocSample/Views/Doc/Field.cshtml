@@ -4,12 +4,16 @@
 	Layout = "_Layout.cshtml";
 }
 <h1>@Model.Title</h1>
-@if (null != Model.Summary) {
-	Html.RenderPartial("Partials/SummarySection", Model.Summary);
+@{
+	if (null != Model.Summary) {
+		Html.RenderPartial("Partials/SummarySection", Model.Summary);
+		if (Model.Flair.Count > 0) {Html.RenderPartial("Partials/FlairTable", Model.Flair);}
+		Html.RenderPartial("Partials/NamespaceAndAssembly", Model.AssemblyNamespace);
+	}
+	<div>Type: <a href="#">@Model.Definition.FieldType.FullName</a></div>
+	if (null != Model.ValueDoc) {
+		<h2>Value</h2>
+		<div class="doc-page-section">@{ Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", Model.ValueDoc); }</div>
+	}
+	Html.RenderPartial("Partials/DefinitionPageCommonSections", Model);
 }
-<div>Type: <a href="#">@Model.Definition.FieldType.FullName</a></div>
-@if (null != Model.ValueDoc) {
-	<h2>Value</h2>
-	<div class="doc-page-section">@{ Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", Model.ValueDoc); }</div>
-}
-@{Html.RenderPartial("Partials/DefinitionPageCommonSections", Model);}

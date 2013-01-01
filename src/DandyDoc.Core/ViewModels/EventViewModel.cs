@@ -21,10 +21,6 @@ namespace DandyDoc.ViewModels
 
 		public override string Title { get { return base.Title + " Event"; } }
 
-		protected override IEnumerable<string> GetFlairTags() {
-			foreach (var item in base.GetFlairTags())
-				yield return item;
-		}
 
 	}
 }

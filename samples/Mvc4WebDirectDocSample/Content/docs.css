@@ -13,20 +13,30 @@ h3 {
 .doc-page-member-listing table {
 	width: 100%;
 }
-.doc-page-member-listing table td, .doc-page-member-listing table th {
+.doc-page-member-listing table td, .doc-page-member-listing table th, .doc-page-flair-table td, .doc-page-flair-table th {
 	text-align: left;
 	vertical-align: top;
 	padding: 5px;
 }
-.doc-page-member-listing table, .doc-page-member-listing table td, .doc-page-member-listing table th {
+.doc-page-member-listing table, .doc-page-member-listing table td, .doc-page-member-listing table th, .doc-page-flair-table, .doc-page-flair-table td, .doc-page-flair-table th {
 	border-collapse:collapse;
 	border: 1px solid #ddd;
 }
-.doc-page-member-listing table th {
+.doc-page-member-listing table th, .doc-page-flair-table th {
 	background-color: #eee;
 }
 
 .doc-page-summary {
 	padding-top: 1em;
 	padding-bottom: 1em;
+}
+.namespace-nav, .namespace-nav div, .namespace-nav li {
+	white-space: nowrap;
+}
+.namespace-nav {
+	
+}
+.navigation-span {
+	border-right: 1px solid #ccc;
+	overflow: auto;
 }

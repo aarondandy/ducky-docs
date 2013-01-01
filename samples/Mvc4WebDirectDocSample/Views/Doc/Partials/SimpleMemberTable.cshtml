@@ -1,10 +1,24 @@
-﻿@model IEnumerable<DandyDoc.ViewModels.IDefinitionViewModel>
+﻿@using DandyDoc.ViewModels
+@model IEnumerable<DandyDoc.ViewModels.IDefinitionViewModel>
+@functions{
+
+	public static bool IsForSummary(MemberFlair flair) {
+		if (null == flair)
+			return false;
+		if ("public".Equals(flair.Id, StringComparison.OrdinalIgnoreCase))
+			return false;
+		if ("operator".Equals(flair.Id, StringComparison.OrdinalIgnoreCase))
+			return false;
+		return true;
+	}
+
+}
 <div class="doc-page-member-listing">
 <table>
 	<tr><th></th><th>Name</th><th>Description</th></tr>
 @foreach (var member in Model.OrderBy(x => x.ShortName)){
 	<tr>
-		<td>@{Html.RenderPartial("Partials/FlairList", member.Flair);}</td>
+		<td>@{foreach (var flair in member.Flair.Where(IsForSummary)) { Html.RenderPartial("Partials/FlairIcon", flair); }}</td>
 		<td>
 			@if (String.IsNullOrEmpty(member.Cref)){@member.ShortName}
 			else{<a href="@Url.Action("Index",new{cref=member.Cref})">

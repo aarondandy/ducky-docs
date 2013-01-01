@@ -1,0 +1,10 @@
+﻿@model IEnumerable<DandyDoc.ViewModels.MemberFlair>
+<table class="doc-page-flair-table">
+@foreach (var flair in Model){
+	<tr>
+		<th>@{Html.RenderPartial("Partials/FlairIcon", flair);}</th>
+		<td>@flair.CategoryName</td>
+		<td>@flair.Description</td>
+	</tr>
+}
+</table>

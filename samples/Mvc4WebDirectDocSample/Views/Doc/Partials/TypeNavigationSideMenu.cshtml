@@ -1,9 +1,10 @@
 ﻿@model DandyDoc.ViewModels.TypeNavigationViewModel
-<ul class="nav nav-list">
+<ul class="nav nav-list namespace-nav">
 @foreach (var ns in Model.ExposedNamespaceViewModels) {
+	var varTypeListId = "typelist-" + ns.FullName.Replace(".","-");
 	<li>
-		<i class="icon-gift"></i>@ns.FullName
-		<ul class="nav nav-list">
+		<a href="#" data-toggle="collapse" data-target="#@varTypeListId"><i class="icon-gift"></i>@ns.FullName</a>
+		<ul class="nav nav-list collapse" id="@varTypeListId">
 		@foreach (var type in ns.ExposedTypeViewModels) {
 			<li><a href="@Url.Action("Index","Doc",new{cref=@type.Cref})"><i class="icon-cog"></i>@type.ShortName</a></li> 
 		}

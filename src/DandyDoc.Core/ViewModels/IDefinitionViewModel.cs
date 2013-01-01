@@ -31,7 +31,7 @@ namespace DandyDoc.ViewModels
 
 		string Cref { get; }
 
-		IList<string> Flair { get; }
+		IList<MemberFlair> Flair { get; }
 
 	}
 }

@@ -1,0 +1,22 @@
+﻿@model DandyDoc.ViewModels.MemberFlair
+@functions{
+	protected static Dictionary<string,string> SimpleIconClasses = new Dictionary<string, string> {
+		{"protected", "icon-eye-close"},
+		{"public","icon-eye-open"},
+		{"hidden","icon-ban-circle"},
+		{"pure","icon-leaf"},
+		{"static","icon-globe"},
+		{"extension","icon-resize-full"},
+		{"nonulls","icon-ok-sign"},
+		{"flags","icon-flag"},
+		{"operator","icon-plus"},
+		{"sealed","icon-lock"}
+	};
+}
+@if (SimpleIconClasses.ContainsKey(Model.Id)) {<i class="@SimpleIconClasses[Model.Id]" title="@Model.Id"></i>}
+else if("GET".Equals(Model.Id, StringComparison.OrdinalIgnoreCase)){<code>get</code>}
+else if ("SET".Equals(Model.Id, StringComparison.OrdinalIgnoreCase)) {<code>set</code>}
+else if("PROGET".Equals(Model.Id, StringComparison.OrdinalIgnoreCase)){<code><i class="icon-eye-close" title="protected"></i>get</code>}
+else if ("PROSET".Equals(Model.Id, StringComparison.OrdinalIgnoreCase)) {<code><i class="icon-eye-close" title="protected"></i>set</code>}
+else if ("INDEXER".Equals(Model.Id, StringComparison.OrdinalIgnoreCase)){<code title="indexer">[]</code>}
+else {@(Model.Id)}

@@ -164,6 +164,7 @@
     <Compile Include="ViewModels\EventViewModel.cs" />
     <Compile Include="ViewModels\FieldViewModel.cs" />
     <Compile Include="ViewModels\IDefinitionViewModel.cs" />
+    <Compile Include="ViewModels\MemberFlair.cs" />
     <Compile Include="ViewModels\MethodViewModel.cs" />
     <Compile Include="ViewModels\AssemblyNamespaceViewModel.cs" />
     <Compile Include="ViewModels\ParameterViewModel.cs" />

@@ -162,9 +162,65 @@
     <Content Include="Content\docs.css" />
     <Content Include="Content\images\glyphicons-halflings-white.png" />
     <Content Include="Content\images\glyphicons-halflings.png" />
+    <Content Include="Content\sh\scrollbarHack.css" />
+    <Content Include="Content\sh\shCore.css" />
+    <Content Include="Content\sh\shCoreDefault.css" />
+    <Content Include="Content\sh\shCoreDjango.css" />
+    <Content Include="Content\sh\shCoreEclipse.css" />
+    <Content Include="Content\sh\shCoreEmacs.css" />
+    <Content Include="Content\sh\shCoreFadeToGrey.css" />
+    <Content Include="Content\sh\shCoreMDUltra.css" />
+    <Content Include="Content\sh\shCoreMidnight.css" />
+    <Content Include="Content\sh\shCoreRDark.css" />
+    <Content Include="Content\sh\shThemeDefault.css" />
+    <Content Include="Content\sh\shThemeDjango.css" />
+    <Content Include="Content\sh\shThemeEclipse.css" />
+    <Content Include="Content\sh\shThemeEmacs.css" />
+    <Content Include="Content\sh\shThemeFadeToGrey.css" />
+    <Content Include="Content\sh\shThemeMDUltra.css" />
+    <Content Include="Content\sh\shThemeMidnight.css" />
+    <Content Include="Content\sh\shThemeRDark.css" />
+    <Content Include="Content\sh\shThemeVS2012Dark.css" />
+    <Content Include="Content\sh\shThemeVS2012Light.css" />
     <Content Include="Global.asax" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <None Include="Scripts\jquery-1.8.2.intellisense.js" />
+    <Content Include="Scripts\d3\d3.v2.js" />
+    <Content Include="Scripts\d3\d3.v2.min.js" />
+    <Content Include="Scripts\docs.js" />
+    <Content Include="Scripts\jquery-1.8.2.js" />
+    <Content Include="Scripts\jquery-1.8.2.min.js" />
+    <Content Include="Scripts\jquery.color-2.1.0.js" />
+    <Content Include="Scripts\jquery.color-2.1.0.min.js" />
+    <Content Include="Scripts\sh\shAutoloader.js" />
+    <Content Include="Scripts\sh\shBrushAppleScript.js" />
+    <Content Include="Scripts\sh\shBrushAS3.js" />
+    <Content Include="Scripts\sh\shBrushBash.js" />
+    <Content Include="Scripts\sh\shBrushColdFusion.js" />
+    <Content Include="Scripts\sh\shBrushCpp.js" />
+    <Content Include="Scripts\sh\shBrushCSharp.js" />
+    <Content Include="Scripts\sh\shBrushCss.js" />
+    <Content Include="Scripts\sh\shBrushDelphi.js" />
+    <Content Include="Scripts\sh\shBrushDiff.js" />
+    <Content Include="Scripts\sh\shBrushErlang.js" />
+    <Content Include="Scripts\sh\shBrushGroovy.js" />
+    <Content Include="Scripts\sh\shBrushJava.js" />
+    <Content Include="Scripts\sh\shBrushJavaFX.js" />
+    <Content Include="Scripts\sh\shBrushJScript.js" />
+    <Content Include="Scripts\sh\shBrushPerl.js" />
+    <Content Include="Scripts\sh\shBrushPhp.js" />
+    <Content Include="Scripts\sh\shBrushPlain.js" />
+    <Content Include="Scripts\sh\shBrushPowerShell.js" />
+    <Content Include="Scripts\sh\shBrushPython.js" />
+    <Content Include="Scripts\sh\shBrushRuby.js" />
+    <Content Include="Scripts\sh\shBrushSass.js" />
+    <Content Include="Scripts\sh\shBrushScala.js" />
+    <Content Include="Scripts\sh\shBrushSql.js" />
+    <Content Include="Scripts\sh\shBrushVb.js" />
+    <Content Include="Scripts\sh\shBrushXml.js" />
+    <Content Include="Scripts\sh\shCore.js" />
+    <Content Include="Scripts\sh\shLegacy.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -237,13 +293,16 @@
     <Content Include="Views\Doc\Partials\TypeNavigationSideMenu.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Doc\Partials\FlairList.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\Doc\Partials\ExceptionTable.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Doc\Enum.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Doc\Partials\FlairIcon.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Doc\Partials\FlairTable.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

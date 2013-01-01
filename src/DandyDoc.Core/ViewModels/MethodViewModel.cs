@@ -55,21 +55,30 @@ namespace DandyDoc.ViewModels
 
 		new public MethodDefinitionXmlDoc XmlDoc { get { return (MethodDefinitionXmlDoc)(base.XmlDoc); } }
 
-		protected override IEnumerable<string> GetFlairTags(){
+		protected override IEnumerable<MemberFlair> GetFlairTags(){
 			foreach (var item in base.GetFlairTags())
 				yield return item;
 
-			if (Definition.IsExtensionMethod()){
-				yield return "extension";
+			if (Definition.IsExtensionMethod())
+				yield return new MemberFlair("extension", "Extension", "This method is an extension method.");
+
+			if (AllResultsAndParamsNotNull)
+				yield return new MemberFlair("nonulls", "Null Values", "This method does not return or accept null values for reference types.");
+
+			if (IsPure)
+				yield return new MemberFlair("pure", "Purity", "Does not have side effects");
+
+			if(Definition.IsOperatorOverload())
+				yield return new MemberFlair("operator", "Operator", "This method is invoked through a language operator.");
+
+			if (Definition.IsVirtual && Definition.IsFinal) {
+				var subject = Definition.IsGetter
+					? "getter"
+					: Definition.IsSetter
+					? "setter"
+					: "method";
+				yield return new MemberFlair("sealed", "Inheritance", String.Format("This {0} is sealed, preventing inheritance.", subject));
 			}
-
-			if (AllResultsAndParamsNotNull){
-				yield return "nonulls";
-			}
-
-			if (IsPure) 
-				yield return "pure";
-
 		}
 
 		public bool IsPure {

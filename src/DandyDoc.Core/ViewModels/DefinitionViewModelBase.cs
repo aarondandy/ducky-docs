@@ -26,7 +26,7 @@ namespace DandyDoc.ViewModels
 		}
 
 		private readonly Lazy<DefinitionXmlDocBase> _xmlDoc;
-		private readonly Lazy<ReadOnlyCollection<string>> _flair; 
+		private readonly Lazy<ReadOnlyCollection<MemberFlair>> _flair; 
 
 		protected DefinitionViewModelBase(TDefinition definition, XmlDocOverlay xmlDocOverlay, CrefOverlay crefOverlay = null) {
 			if (null == definition) throw new ArgumentNullException("definition");
@@ -36,11 +36,9 @@ namespace DandyDoc.ViewModels
 			XmlDocOverlay = xmlDocOverlay;
 			CrefOverlay = crefOverlay ?? xmlDocOverlay.CrefOverlay;
 			_xmlDoc = new Lazy<DefinitionXmlDocBase>(() => XmlDocOverlay.GetDocumentation(Definition));
-			_flair = new Lazy<ReadOnlyCollection<string>>(() => {
+			_flair = new Lazy<ReadOnlyCollection<MemberFlair>>(() => {
 				var results = GetFlairTags();
-				return null == results
-					? CollectionUtility.EmptyStringCollection
-					: Array.AsReadOnly(results.ToArray());
+				return null == results ? MemberFlair.EmptyList : Array.AsReadOnly(results.ToArray());
 			});
 		}
 
@@ -58,21 +56,31 @@ namespace DandyDoc.ViewModels
 
 		public bool HasXmlDoc { get { return XmlDoc != null; } }
 
-		protected virtual IEnumerable<string> GetFlairTags() {
-			yield return ExternalVisibilityOverlay.Get(Definition).ToString().ToLowerInvariant();
-
-			if (Definition.IsStatic())
-				yield return "static";
-		}
-
-		public ReadOnlyCollection<string> Flair {
+		protected virtual MemberFlair VisibilityFlair {
 			get {
-				Contract.Ensures(Contract.Result<ReadOnlyCollection<string>>() != null);
-				return _flair.Value;
+				Contract.Ensures(Contract.Result<MemberFlair>() != null);
+				switch (ExternalVisibilityOverlay.Get(Definition)) {
+				case ExternalVisibilityKind.Hidden: return new MemberFlair("hidden","Visibility","Not externally visible.");
+				case ExternalVisibilityKind.Protected: return new MemberFlair("protected","Visibility", "Externally visible only through inheritance.");
+				case ExternalVisibilityKind.Public: return new MemberFlair("public","Visibility", "Externally visible.");
+				default: throw new InvalidOperationException("This visibility level is not supported.");
+				}
 			}
 		}
 
-		IList<string> IDefinitionViewModel.Flair { get { return Flair; } } 
+		protected virtual IEnumerable<MemberFlair> GetFlairTags() {
+			yield return VisibilityFlair;
+
+			if (Definition.IsStatic())
+				yield return new MemberFlair("static", "Static", "Accessible relative to a type rather than an object instance.");
+		}
+
+		public IList<MemberFlair> Flair {
+			get {
+				Contract.Ensures(Contract.Result<IList<string>>() != null);
+				return _flair.Value;
+			}
+		} 
 
 		public ParsedXmlElementBase Summary {
 			get { return null == XmlDoc ? null : XmlDoc.Summary; }
@@ -118,8 +126,9 @@ namespace DandyDoc.ViewModels
 		public virtual string Title {
 			get{
 				var name = ShortName;
-				if (null != Definition.DeclaringType){
-					name = String.Concat(GetShortName(Definition.DeclaringType), '.', name);
+				var declaringType = Definition.DeclaringType;
+				if (null != declaringType) {
+					name = String.Concat(GetShortName(declaringType), '.', name);
 				}
 				return name;
 			}

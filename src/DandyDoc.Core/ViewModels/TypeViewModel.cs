@@ -29,6 +29,11 @@ namespace DandyDoc.ViewModels
 
 		private class CategorizedFields
 		{
+
+			private static readonly HashSet<string> SpecialFieldNames = new HashSet<string> {
+				"$evaluatingInvariant$"
+			};
+
 			public enum Category
 			{
 				Other,
@@ -40,7 +45,7 @@ namespace DandyDoc.ViewModels
 
 			private static Category Categorize(FieldDefinition fieldDefinition) {
 				Contract.Requires(null != fieldDefinition);
-				if(fieldDefinition.IsSpecialName)
+				if(fieldDefinition.IsSpecialName || SpecialFieldNames.Contains(fieldDefinition.Name))
 					return Category.Other;
 				return fieldDefinition.IsStatic ? Category.Static : Category.Instance;
 			}
@@ -148,6 +153,10 @@ namespace DandyDoc.ViewModels
 				Operator
 			}
 
+			private static readonly HashSet<string> SpecialMethodNames = new HashSet<string> {
+				"$InvariantMethod$"
+			};
+
 			private static readonly ReadOnlyCollection<MethodDefinition> EmptyMethodDefinitionCollection = Array.AsReadOnly(new MethodDefinition[0]);
 
 			private static Category Categorize(MethodDefinition methodDefinition) {
@@ -156,7 +165,7 @@ namespace DandyDoc.ViewModels
 					return methodDefinition.IsStatic ? Category.StaticConstructor : Category.InstanceConstructor;
 				if (methodDefinition.IsOperatorOverload())
 					return Category.Operator;
-				if (methodDefinition.IsSpecialName || methodDefinition.IsFinalizer())
+				if (methodDefinition.IsSpecialName || methodDefinition.IsFinalizer() || SpecialMethodNames.Contains(methodDefinition.Name))
 					return Category.Other;
 				return methodDefinition.IsStatic ? Category.StaticMethod : Category.InstanceMethod;
 			}
@@ -216,15 +225,17 @@ namespace DandyDoc.ViewModels
 			}
 		}
 
-		protected override IEnumerable<string> GetFlairTags(){
+		protected override IEnumerable<MemberFlair> GetFlairTags(){
 			foreach (var tag in base.GetFlairTags())
 				yield return tag;
 
-			if (Definition.IsEnum && Definition.HasFlagsAttribute()){
-				yield return "flags";
-			}
-		}
+			if (Definition.IsEnum && Definition.HasFlagsAttribute())
+				yield return new MemberFlair("flags", "Flags", "Bitwise combination is allowed.");
 
+			if (!Definition.IsValueType && Definition.IsSealed && !Definition.IsDelegateType())
+				yield return new MemberFlair("sealed","Inheritance","This type is sealed, preventing inheritance.");
+		}
+		
 		new public TypeDefinitionXmlDoc XmlDoc { get { return (TypeDefinitionXmlDoc)(base.XmlDoc); } }
 
 		public IList<MemberSection> GetDefaultMemberListingSections() {

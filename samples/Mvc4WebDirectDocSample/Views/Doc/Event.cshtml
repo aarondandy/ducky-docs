@@ -6,5 +6,7 @@
 <h1>@Model.Title</h1>
 @{
 	if (null != Model.Summary) {Html.RenderPartial("Partials/SummarySection", Model.Summary);}
+	if (Model.Flair.Count > 0) {Html.RenderPartial("Partials/FlairTable", Model.Flair);}
+	Html.RenderPartial("Partials/NamespaceAndAssembly", Model.AssemblyNamespace);
 	Html.RenderPartial("Partials/DefinitionPageCommonSections", Model);	
 }

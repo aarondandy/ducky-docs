@@ -6,6 +6,7 @@
 }
 <h1>@Model.Title</h1>
 @if (Model.HasSummary) {Html.RenderPartial("Partials/SummarySection", Model.Summary);}
-@{ Html.RenderPartial("Partials/NamespaceAndAssembly", Model.AssemblyNamespace);}
+@if (Model.Flair.Count > 0) {Html.RenderPartial("Partials/FlairTable", Model.Flair);}
+@{Html.RenderPartial("Partials/NamespaceAndAssembly", Model.AssemblyNamespace);}
 @{Html.RenderPartial("Partials/SimpleMemberTable", Model.ToEnumValueViewModels(Model.ExposedStaticFields));}
 @{Html.RenderPartial("Partials/DefinitionPageCommonSections", Model);}
