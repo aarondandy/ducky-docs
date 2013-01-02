@@ -141,12 +141,14 @@ namespace DandyDoc
 		}
 
 		public static bool HasPureAttribute(this ICustomAttributeProvider definition) {
-			Contract.Requires(null != definition);
+			if (null == definition) throw new ArgumentNullException("definition");
+			Contract.EndContractBlock();
 			return HasAttributeMatchingShortName(definition, "PureAttribute");
 		}
 
 		public static bool HasFlagsAttribute(this ICustomAttributeProvider definition){
-			Contract.Requires(null != definition);
+			if (null == definition) throw new ArgumentNullException("definition");
+			Contract.EndContractBlock();
 			return HasAttributeMatchingFullName(definition, "System.FlagsAttribute");
 		}
 
@@ -160,6 +162,7 @@ namespace DandyDoc
 
 		public static bool HasAttributeMatchingShortName(this ICustomAttributeProvider definition, string name){
 			if (null == definition) throw new ArgumentNullException("definition");
+			if (String.IsNullOrEmpty(name)) throw new ArgumentException("Valid name is required.", name);
 			Contract.EndContractBlock();
 			Contract.Assume(null != definition.CustomAttributes);
 			return definition.HasCustomAttributes
@@ -168,6 +171,7 @@ namespace DandyDoc
 
 		public static bool HasAttributeMatchingFullName(this ICustomAttributeProvider definition, string name) {
 			if (null == definition) throw new ArgumentNullException("definition");
+			if (String.IsNullOrEmpty(name)) throw new ArgumentException("Valid name is required.", name);
 			Contract.EndContractBlock();
 			Contract.Assume(null != definition.CustomAttributes);
 			return definition.HasCustomAttributes

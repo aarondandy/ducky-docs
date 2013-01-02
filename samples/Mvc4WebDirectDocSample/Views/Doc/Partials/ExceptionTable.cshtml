@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<DandyDoc.Overlays.XmlDoc.ParsedXmlException>
-<div class="doc-page-member-listing">
-<table>
-	<tr><th>Exception</th><th>Condition</th></tr>
+<table class="table table-bordered table-condensed">
+	<thead><tr><th>Exception</th><th>Condition</th></tr></thead>
+	<tbody>
 	@foreach (var exception in Model){
 	<tr>
 		<td>@exception.CRef</td>
@@ -15,4 +15,4 @@
 			  }</td>
 	</tr>
 	}
-</table></div>
+</tbody></table>

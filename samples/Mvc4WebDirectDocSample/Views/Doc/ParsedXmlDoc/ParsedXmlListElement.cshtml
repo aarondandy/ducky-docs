@@ -1,8 +1,7 @@
-﻿@using DandyDoc.Overlays.XmlDoc
-@model DandyDoc.Overlays.XmlDoc.ParsedXmlListElement
+﻿@model DandyDoc.Overlays.XmlDoc.ParsedXmlListElement
 @{
 	string listHtmlType;
-	if ("BULLET".Equals(Model.ListType, StringComparison.OrdinalIgnoreCase)){
+	if (String.IsNullOrEmpty(Model.ListType) || "BULLET".Equals(Model.ListType, StringComparison.OrdinalIgnoreCase)){
 		listHtmlType = "ul";
 	}
 	else if ("NUMBER".Equals(Model.ListType, StringComparison.OrdinalIgnoreCase)){
@@ -10,7 +9,7 @@
 	}
 	else{
 		listHtmlType = null;
-	}	
+	}
 }
 @if (!String.IsNullOrEmpty(listHtmlType)){
 	@Html.Raw('<' + listHtmlType + '>');
@@ -23,15 +22,37 @@
 		<li>
 			<dl>
 			@if (null != term) {
-				<dt>@foreach(var child in term.Children){Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBase", child);}</dt>
+				<dt>@{Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", term);}</dt>
 			}
 			@if (null != description) {
-				<dd>@foreach (var child in description.Children) { Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBase", child); }</dd>
+				<dd>@{Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", description);}</dd>
 			}
 			</dl>
 		</li>
 	}
 	@Html.Raw("</" + listHtmlType + '>');
+}
+else if ("TABLE".Equals(Model.ListType, StringComparison.OrdinalIgnoreCase)){
+	<table class="table table-bordered table-condensed">
+		@foreach (var row in Model.Items){
+			var term = row.Term;
+			var description = row.Description;
+			if (null == term && null == description){
+				continue;
+			}
+			var cellTag = row.IsHeader ? "th" : "td";
+			var cellStartTag = String.Concat('<', cellTag, '>');
+			var cellEndTag = String.Concat("</", cellTag, '>');
+			var rowStart = row.IsHeader ? "<thead><tr>" : "<tr>";
+			var rowEnd = row.IsHeader ? "</tr></thead>" : "</tr>";
+		
+			@Html.Raw(rowStart + cellStartTag)
+			if (null != term) { Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", term); }
+			@Html.Raw(cellEndTag + cellStartTag)
+			if (null != description) { Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", description); }
+			@Html.Raw(cellEndTag + rowEnd)
+		}
+	</table>
 }
 else{
 	throw new NotSupportedException();

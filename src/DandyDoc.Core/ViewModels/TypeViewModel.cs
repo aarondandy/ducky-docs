@@ -208,11 +208,15 @@ namespace DandyDoc.ViewModels
 			_delegateExposedTypes = new Lazy<ReadOnlyCollection<TypeDefinition>>(() => Array.AsReadOnly(Definition.NestedTypes.Where(x => x.IsExternallyVisible() && x.IsDelegateType()).ToArray()));
 		}
 
-		public override string Title {
-			get {
-				var name = Definition.IsNested ? base.Title : ShortName;
-				return name + ' ' + (
-					Definition.IsValueType
+		public override string Title{
+			get{
+				return Definition.IsNested ? base.Title : ShortName;
+			}
+		}
+
+		public override string SubTitle {
+			get{
+				return Definition.IsValueType
 					? "Structure"
 					: Definition.IsInterface
 					? "Interface"
@@ -220,8 +224,7 @@ namespace DandyDoc.ViewModels
 					? "Delegate"
 					: Definition.IsEnum
 					? "Enumeration"
-					: "Class"
-				);
+					: "Class";
 			}
 		}
 

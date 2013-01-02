@@ -3,7 +3,7 @@
 	ViewBag.Title = Model.Title;
 	Layout = "_Layout.cshtml";
 }
-<h1>@Model.Title</h1>
+@{Html.RenderPartial("Partials/DefinitionTitle", Model);}
 @{
 	if (null != Model.Summary) { Html.RenderPartial("Partials/SummarySection", Model.Summary);}
 	if (Model.Flair.Count > 0) {Html.RenderPartial("Partials/FlairTable", Model.Flair);}
@@ -14,7 +14,7 @@
 @if (Model.HasExposedGet){
 	var getViewModel = Model.GetViewModel;
 	var getFlair = getViewModel.Flair.Where(f => Model.Flair.All(x => x.Id != f.Id)).ToList();
-	<h3>Getter</h3>
+	<h2>Getter</h2>
 	if (getFlair.Count > 0) { Html.RenderPartial("Partials/FlairTable", getFlair); }
 	if (getViewModel.HasExceptions) {
 		Html.RenderPartial("Partials/ExceptionTable", getViewModel.Exceptions);
@@ -23,7 +23,7 @@
 @if (Model.HasExposedSet){
 	var setViewModel = Model.SetViewModel;
 	var setFlair = setViewModel.Flair.Where(f => Model.Flair.All(x => x.Id != f.Id)).ToList();
-	<h3>Setter</h3>
+	<h2>Setter</h2>
 	if (setFlair.Count > 0) { Html.RenderPartial("Partials/FlairTable", setFlair); }
 	if (setViewModel.HasExceptions) {
 		Html.RenderPartial("Partials/ExceptionTable", setViewModel.Exceptions);

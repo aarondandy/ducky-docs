@@ -13,9 +13,9 @@
 	}
 
 }
-<div class="doc-page-member-listing">
-<table>
-	<tr><th></th><th>Name</th><th>Description</th></tr>
+<table class="table table-bordered">
+	<thead><tr><th><i class="icon-info-sign"></i></th><th>Name</th><th>Description</th></tr></thead>
+	<tbody>
 @foreach (var member in Model.OrderBy(x => x.ShortName)){
 	<tr>
 		<td>@{foreach (var flair in member.Flair.Where(IsForSummary)) { Html.RenderPartial("Partials/FlairIcon", flair); }}</td>
@@ -28,4 +28,4 @@
 		<td>@if (null != member.Summary) { Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", member.Summary); }</td>
 	</tr>
 }
-</table></div>
+</tbody></table>

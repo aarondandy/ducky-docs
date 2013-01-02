@@ -19,8 +19,7 @@ namespace DandyDoc.ViewModels
 
 		new public EventDefinitionXmlDoc XmlDoc { get { return (EventDefinitionXmlDoc)(base.XmlDoc); } }
 
-		public override string Title { get { return base.Title + " Event"; } }
-
+		public override string SubTitle { get { return "Event"; } }
 
 	}
 }

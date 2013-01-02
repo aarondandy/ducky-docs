@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Linq;
 using DandyDoc.Overlays.Cref;
 using DandyDoc.Overlays.ExternalVisibility;
 using DandyDoc.Overlays.XmlDoc;
@@ -21,7 +20,7 @@ namespace DandyDoc.ViewModels
 
 		new public PropertyDefinitionXmlDoc XmlDoc { get { return (PropertyDefinitionXmlDoc)(base.XmlDoc); } }
 
-		public override string Title { get { return base.Title + " Property"; } }
+		public override string SubTitle { get { return "Property"; } }
 
 		public ParsedXmlElementBase ValueDoc {
 			get { return null == XmlDoc ? null : XmlDoc.ValueDoc; }
@@ -31,14 +30,12 @@ namespace DandyDoc.ViewModels
 			foreach (var tag in base.GetFlairTags())
 				yield return tag;
 
-			var propertyVisibility = ExternalVisibilityOverlay.Get(Definition);
+			if (IsPure)
+				yield return new MemberFlair("pure", "Purity", "Does not have side effects");
 
 			var getMethod = Definition.GetMethod;
 			var setMethod = Definition.SetMethod;
-
-			if (IsPure) {
-				yield return new MemberFlair("pure", "Purity", "Does not have side effects");
-			}
+			var propertyVisibility = ExternalVisibilityOverlay.Get(Definition);
 
 			if (null != getMethod) {
 				var methodVisibility = ExternalVisibilityOverlay.Get(getMethod);

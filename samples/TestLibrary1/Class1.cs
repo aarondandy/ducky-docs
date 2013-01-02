@@ -190,6 +190,24 @@ namespace TestLibrary1
 		/// <value>A double value.</value>
 		public static double SomeField;
 
+
+		/// <summary>
+		/// This has a table in the remarks section.
+		/// </summary>
+		/// <remarks>
+		/// <list type="table">
+		/// <listheader>
+		/// <term>Col 1</term>
+		/// <description>Col 2</description>
+		/// </listheader>
+		/// <item>
+		/// <term>A term.</term>
+		/// <description>A description.</description>
+		/// </item>
+		/// </list>
+		/// </remarks>
+		public bool HasTableInRemarks { private get; set; }
+
 		/// <summary>
 		/// A finalizer that does nothing.
 		/// </summary>

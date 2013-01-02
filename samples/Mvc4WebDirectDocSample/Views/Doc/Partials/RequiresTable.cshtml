@@ -1,0 +1,27 @@
+﻿@model IEnumerable<DandyDoc.ViewModels.RequiresViewModel>
+<table class="table table-bordered table-condensed">
+	<thead><tr><th>Requirement</th><th>Violation Consequence</th></tr></thead>
+	<tbody>
+	@{
+		foreach (var contractCondition in Model){
+			<tr>
+				<td>@{
+					    var paramName = contractCondition.RequiresParameterNotNullOrEmpty();
+					    if (!String.IsNullOrEmpty(paramName)){
+						    <text><code>@paramName</code> must not be <code>null</code> or empty.</text>
+					    }
+					    else{
+						    paramName = contractCondition.RequiresParameterNotNull();
+						    if (!String.IsNullOrEmpty(paramName)){
+							    <text><code>@paramName</code> must not be equal to <code>null</code>.</text>
+						    }
+						    else{
+							    Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", contractCondition.Xml);
+						    }
+					    }
+				    }</td>
+				<td>@(contractCondition.ExceptionCref ?? "Exception")</td>
+			</tr>
+		}
+	}
+</tbody></table>

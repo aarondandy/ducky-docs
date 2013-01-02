@@ -3,7 +3,7 @@
 	ViewBag.Title = Model.Title;
 	Layout = "_Layout.cshtml";
 }
-<h1>@Model.Title</h1>
+@{Html.RenderPartial("Partials/DefinitionTitle", Model);}
 @{
 	if (null != Model.Summary) { Html.RenderPartial("Partials/SummarySection", Model.Summary);}
 	if (Model.Flair.Count > 0) {Html.RenderPartial("Partials/FlairTable", Model.Flair);}
@@ -43,5 +43,13 @@
 @if (Model.HasExceptions){
 	<h2>Exceptions</h2>
 	Html.RenderPartial("Partials/ExceptionTable", Model.Exceptions);
+}
+@if (Model.HasRequires){
+	<h2>Requires</h2>
+	Html.RenderPartial("Partials/RequiresTable", Model.ToRequiresViewModels(Model.Requires));
+}
+@if (Model.HasEnsures){
+	<h2>Ensures</h2>
+	//Html.RenderPartial("Partials/ContractConditionTable", Model.Ensures);
 }
 @{Html.RenderPartial("Partials/DefinitionPageCommonSections", Model);}

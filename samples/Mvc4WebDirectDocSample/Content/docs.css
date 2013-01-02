@@ -1,40 +1,26 @@
-﻿body {
-	font-size: 12px;
-}
-h1 {
-	font-size: 2em;
-}
-h2 {
-	font-size: 1.5em;
-}
-h3 {
-	font-size: 1em;
-}
-.doc-page-member-listing table {
+﻿.doc-page-member-listing table {
 	width: 100%;
 }
-.doc-page-member-listing table td, .doc-page-member-listing table th, .doc-page-flair-table td, .doc-page-flair-table th {
-	text-align: left;
-	vertical-align: top;
-	padding: 5px;
+h1 {
+	font-size: 35px;
 }
-.doc-page-member-listing table, .doc-page-member-listing table td, .doc-page-member-listing table th, .doc-page-flair-table, .doc-page-flair-table td, .doc-page-flair-table th {
-	border-collapse:collapse;
-	border: 1px solid #ddd;
+h1 span {
+	display: inline-block;
 }
-.doc-page-member-listing table th, .doc-page-flair-table th {
+header {
+	border-bottom: 1px solid #aaa;
+}
+footer {
+	border-top: 1px solid #aaa;
+}
+table th {
 	background-color: #eee;
-}
-
-.doc-page-summary {
-	padding-top: 1em;
-	padding-bottom: 1em;
 }
 .namespace-nav, .namespace-nav div, .namespace-nav li {
 	white-space: nowrap;
 }
 .namespace-nav {
-	
+	padding-left: 0;
 }
 .navigation-span {
 	border-right: 1px solid #ccc;

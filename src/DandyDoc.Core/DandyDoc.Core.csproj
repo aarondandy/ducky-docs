@@ -169,6 +169,7 @@
     <Compile Include="ViewModels\AssemblyNamespaceViewModel.cs" />
     <Compile Include="ViewModels\ParameterViewModel.cs" />
     <Compile Include="ViewModels\PropertyViewModel.cs" />
+    <Compile Include="ViewModels\RequiresViewModel.cs" />
     <Compile Include="ViewModels\ReturnViewModel.cs" />
     <Compile Include="ViewModels\TypeNavigationNamespaceViewModelcs.cs" />
     <Compile Include="ViewModels\TypeNavigationViewModel.cs" />

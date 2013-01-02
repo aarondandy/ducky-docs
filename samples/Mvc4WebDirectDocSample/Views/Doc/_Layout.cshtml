@@ -11,27 +11,42 @@
 	@Styles.Render("~/css/bootstrap")
 	@Styles.Render("~/css/docs")
 </head>
-<body>
-	<div class="container-fluid">
-		<div class="row">
-			<div class="span12">
-				Documentation
+	<body>
+		<header>
+			<div class="container">
+				<h1>Sample &amp; Testing Documentation</h1>
+			</div>
+		</header>
+		<div class="container-fluid">
+			<div class="row-fluid">
+				<div class="span4 navigation-span">
+					@if (ViewBag.TypeNavigationViewModel == null){
+						<div>Navigation not available.</div>
+					}
+					else{
+						Html.RenderPartial("Partials/TypeNavigationSideMenu", ViewBag.TypeNavigationViewModel as TypeNavigationViewModel);
+					}
+				</div>
+				<div class="span8">
+					@RenderBody()
+				</div>
 			</div>
 		</div>
-		<div class="row-fluid">
-			<div class="span3 navigation-span">
-				@if (ViewBag.TypeNavigationViewModel == null){
-					<div>Navigation not available.</div>
-				}
-				else{
-					Html.RenderPartial("Partials/TypeNavigationSideMenu", ViewBag.TypeNavigationViewModel as TypeNavigationViewModel);
-				}
+		<footer>
+			<div class="container">
+				<div class="row">
+					<div class="span4">
+						Docs built with <a href="http://github.com/aarondandy/dandy-doc">Dandy Doc</a>
+					</div>
+					<div class="span4">
+						ASP.NET MVC4 Documentation Sample
+					</div>
+					<div class="span4">
+						<div>Icons from <a href="http://glyphicons.com/">Glyphicons</a></div>
+					</div>
+				</div>
 			</div>
-			<div class="span9">
-				@RenderBody()
-			</div>
-		</div>
-	</div>
-	@Scripts.Render("~/bundles/jquery","~/bundles/bootstrap","~/bundles/docs")
-</body>
+		</footer>
+		@Scripts.Render("~/bundles/jquery","~/bundles/bootstrap","~/bundles/docs")
+	</body>
 </html>

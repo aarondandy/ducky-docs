@@ -134,6 +134,8 @@ namespace DandyDoc.ViewModels
 			}
 		}
 
+		public abstract string SubTitle { get; }
+
 		public virtual string ShortName { get { return ShortNameOverlay.GetDisplayName(Definition); } }
 
 		[ContractInvariantMethod]

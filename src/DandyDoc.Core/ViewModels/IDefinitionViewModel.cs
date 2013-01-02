@@ -27,6 +27,8 @@ namespace DandyDoc.ViewModels
 
 		string Title { get; }
 
+		string SubTitle { get; }
+
 		string ShortName { get; }
 
 		string Cref { get; }

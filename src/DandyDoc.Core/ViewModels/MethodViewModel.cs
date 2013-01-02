@@ -21,25 +21,20 @@ namespace DandyDoc.ViewModels
 
 		public override string Title {
 			get{
-				string name;
-				string kind;
-				if (Definition.IsConstructor) {
-					kind = "Constructor";
-					name = ShortName;
-				}
-				else {
-					if (Definition.IsOperatorOverload()) {
-						kind = "Operator";
-					}
-					else {
-						kind = "Method";
-					}
-					Contract.Assume(null != Definition.DeclaringType);
-					name = base.Title;
-				}
-				if (String.IsNullOrEmpty(kind))
-					return name;
-				return String.Concat(name, ' ', kind);
+				if (Definition.IsConstructor)
+					return ShortName;
+
+				return base.Title;
+			}
+		}
+
+		public override string SubTitle {
+			get{
+				if (Definition.IsConstructor)
+					return "Constructor";
+				if (Definition.IsOperatorOverload())
+					return "Operator";
+				return "Method";
 			}
 		}
 
@@ -63,7 +58,7 @@ namespace DandyDoc.ViewModels
 				yield return new MemberFlair("extension", "Extension", "This method is an extension method.");
 
 			if (AllResultsAndParamsNotNull)
-				yield return new MemberFlair("nonulls", "Null Values", "This method does not return or accept null values for reference types.");
+				yield return new MemberFlair("no nulls", "Null Values", "This method does not return or accept null values for reference types.");
 
 			if (IsPure)
 				yield return new MemberFlair("pure", "Purity", "Does not have side effects");
@@ -133,6 +128,28 @@ namespace DandyDoc.ViewModels
 			}
 		}
 
+		public IList<ParsedXmlContractCondition> Requires {
+			get { return null == XmlDoc ? null : XmlDoc.Requires; }
+		}
+
+		public bool HasRequires{
+			get {
+				var requires = Requires;
+				return null != requires && requires.Count > 0;
+			}
+		}
+
+		public IList<ParsedXmlContractCondition> Ensures{
+			get{ return null == XmlDoc ? null : XmlDoc.Ensures; }
+		}
+
+		public bool HasEnsures {
+			get {
+				var ensures = Ensures;
+				return null != ensures && ensures.Count > 0;
+			}
+		}
+
 		public bool HasReturn { get { return Definition.ReturnType != null && Definition.ReturnType.FullName != "System.Void"; } }
 
 		public bool EnsuresResultNotNull{
@@ -187,5 +204,12 @@ namespace DandyDoc.ViewModels
 				return new ParameterViewModel(item, this, docs);
 			});
 		}
+
+		public IEnumerable<RequiresViewModel> ToRequiresViewModels(IEnumerable<ParsedXmlContractCondition> contracts){
+			if(null == contracts) throw new ArgumentNullException("contracts");
+			Contract.Ensures(Contract.Result<IEnumerable<RequiresViewModel>>() != null);
+			return contracts.Select(c => new RequiresViewModel(this, c));
+		}
+
 	}
 }
