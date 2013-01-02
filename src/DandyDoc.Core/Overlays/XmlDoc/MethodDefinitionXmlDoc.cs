@@ -33,7 +33,7 @@ namespace DandyDoc.Overlays.XmlDoc
 
 		public IList<ParsedXmlContractCondition> Ensures {
 			get {
-				var nodes = SelectParsedXmlNodes("ensures");
+				var nodes = SelectParsedXmlNodes("ensures|ensuresOnThrow");
 				return null == nodes ? null : nodes.ConvertAll(n => (ParsedXmlContractCondition)n);
 			}
 		}

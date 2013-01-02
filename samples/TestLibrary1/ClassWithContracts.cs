@@ -17,6 +17,7 @@ namespace TestLibrary1
 		/// <param name="text"></param>
 		public ClassWithContracts(string text){
 			if(String.IsNullOrEmpty(text)) throw new ArgumentException("Nope!","text");
+			Contract.EnsuresOnThrow<ArgumentException>(Text == null);
 			Contract.EndContractBlock();
 			Text = text;
 		}
@@ -40,12 +41,24 @@ namespace TestLibrary1
 				Contract.Ensures(Contract.Result<string>() != null);
 				return "stuff";
 			}
+			set {
+				Contract.Requires(value != null);
+				throw new NotImplementedException();
+			}
 		}
 
 		public string SameStuff{
 			[Pure] get{
 				Contract.Ensures(null != Contract.Result<string>());
 				return "stuff";
+			}
+		}
+
+		public string OneButNotTheOther {
+			get { throw new NotImplementedException(); }
+			set {
+				Contract.Requires(value != null);
+				throw new NotImplementedException();
 			}
 		}
 

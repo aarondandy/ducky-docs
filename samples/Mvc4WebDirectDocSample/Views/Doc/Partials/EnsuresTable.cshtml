@@ -1,0 +1,28 @@
+﻿@model IEnumerable<DandyDoc.ViewModels.EnsuresViewModel>
+<table class="table table-bordered table-condensed">
+	<thead>
+		<tr>
+			<th>Ensures</th>
+			<th>Condition</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var contractCondition in Model) {
+			<tr>
+				<td>@if (contractCondition.Xml.EnsuresResultNotNullOrEmpty) {
+					<text>Result will not be <code>null</code> or empty.</text>
+				}
+				else if (contractCondition.Xml.EnsuresResultNotNull) {
+					<text>Result will not be equal to <code>null</code>.</text>
+				}
+				else {
+					Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", contractCondition.Xml);
+				}</td>
+				<td>@if (contractCondition.Xml.IsEnsuresOnThrow) {
+					<text>Thrown: @(contractCondition.Xml.ExceptionCref ?? "Exception")</text>
+				}
+				else {<text>Successful execution.</text>}</td>
+			</tr>
+		}
+	</tbody>
+</table>

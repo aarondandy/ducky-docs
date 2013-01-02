@@ -160,6 +160,7 @@
     <Compile Include="Utility\NameUtility.cs" />
     <Compile Include="Utility\TextUtility.cs" />
     <Compile Include="ViewModels\DefinitionViewModelBase.cs" />
+    <Compile Include="ViewModels\EnsuresViewModel.cs" />
     <Compile Include="ViewModels\EnumValueViewModel.cs" />
     <Compile Include="ViewModels\EventViewModel.cs" />
     <Compile Include="ViewModels\FieldViewModel.cs" />

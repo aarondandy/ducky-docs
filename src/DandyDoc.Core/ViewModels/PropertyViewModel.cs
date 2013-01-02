@@ -64,6 +64,22 @@ namespace DandyDoc.ViewModels
 			var setSealed = null != setMethod && setMethod.IsFinal;
 			if (getSealed || setSealed)
 				yield return new MemberFlair("sealed", "Inheritance", " This property is sealed, preventing inheritance.");
+
+			var getExposed = null != getMethod && getMethod.IsExternallyVisible();
+			var setExposed = null != setMethod && setMethod.IsExternallyVisible();
+			if (getExposed && setExposed) {
+				if(GetViewModel.AllResultsAndParamsNotNull && SetViewModel.AllResultsAndParamsNotNull)
+					yield return new MemberFlair("no nulls", "Null Values", "This property does not return or accept null.");
+			}
+			else if (getExposed) {
+				if(GetViewModel.AllResultsAndParamsNotNull)
+					yield return new MemberFlair("no nulls", "Null Values", "This property does not return null.");
+			}
+			else if (setExposed) {
+				if(SetViewModel.AllResultsAndParamsNotNull)
+					yield return new MemberFlair("no nulls", "Null Values", "This property does not accept null.");
+			}
+
 		}
 
 		public bool IsPure {
@@ -118,11 +134,19 @@ namespace DandyDoc.ViewModels
 			get { return Definition.SetMethod != null && Definition.SetMethod.IsExternallyProtected(); }
 		}
 
+		public MethodDefinitionXmlDoc GetterDocs {
+			get { return null == XmlDoc ? null : XmlDoc.GetterDocs; }
+		}
+
+		public MethodDefinitionXmlDoc SetterDocs {
+			get { return null == XmlDoc ? null : XmlDoc.SetterDocs; }
+		}
+
 		public MethodViewModel GetViewModel {
 			get {
 				if(null == Definition.GetMethod) throw new InvalidOperationException("Property has no getter.");
 				Contract.EndContractBlock();
-				return new MethodViewModel(Definition.GetMethod, XmlDocOverlay, CrefOverlay);
+				return new MethodViewModel(Definition.GetMethod, XmlDocOverlay, CrefOverlay, GetterDocs);
 			}
 		}
 
@@ -130,7 +154,7 @@ namespace DandyDoc.ViewModels
 			get {
 				if (null == Definition.SetMethod) throw new InvalidOperationException("Property has no setter.");
 				Contract.EndContractBlock();
-				return new MethodViewModel(Definition.SetMethod, XmlDocOverlay, CrefOverlay);
+				return new MethodViewModel(Definition.SetMethod, XmlDocOverlay, CrefOverlay, SetterDocs);
 			}
 		}
 

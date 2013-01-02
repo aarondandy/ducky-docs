@@ -52,9 +52,9 @@ namespace DandyDoc.ViewModels
 
 		public virtual string Cref { get { return CrefOverlay.GetCref(Definition); } }
 
-		public DefinitionXmlDocBase XmlDoc { get { return _xmlDoc.Value; } }
+		public virtual DefinitionXmlDocBase XmlDoc { get { return _xmlDoc.Value; } }
 
-		public bool HasXmlDoc { get { return XmlDoc != null; } }
+		public virtual bool HasXmlDoc { get { return XmlDoc != null; } }
 
 		protected virtual MemberFlair VisibilityFlair {
 			get {

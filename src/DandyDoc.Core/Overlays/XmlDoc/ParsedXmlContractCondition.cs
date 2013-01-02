@@ -16,7 +16,13 @@ namespace DandyDoc.Overlays.XmlDoc
 
 		public bool IsRequires { get { return "requires".Equals(Element.Name, StringComparison.OrdinalIgnoreCase); } }
 
-		public bool IsEnsures { get { return "ensures".Equals(Element.Name, StringComparison.OrdinalIgnoreCase); } }
+		public bool IsEnsures {
+			get { return Element.Name.StartsWith("ensures", StringComparison.OrdinalIgnoreCase); }
+		}
+
+		public bool IsEnsuresOnThrow {
+			get { return "ensuresOnThrow".Equals(Element.Name, StringComparison.OrdinalIgnoreCase); }
+		}
 
 		public bool IsInvariant { get { return "invariant".Equals(Element.Name, StringComparison.OrdinalIgnoreCase); } }
 

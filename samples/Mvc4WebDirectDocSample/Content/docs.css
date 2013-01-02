@@ -12,6 +12,7 @@ header {
 }
 footer {
 	border-top: 1px solid #aaa;
+	text-align: center;
 }
 table th {
 	background-color: #eee;

@@ -38,7 +38,7 @@ namespace DandyDoc.Overlays.XmlDoc
 					return new ParsedXmlTypeparamrefElement(element, docBase);
 				if (cmp.Equals("SEE", element.Name) || cmp.Equals("SEEALSO", element.Name))
 					return new ParsedXmlSeeElement(element, docBase);
-				if (cmp.Equals("REQUIRES", element.Name) || cmp.Equals("ENSURES", element.Name) || cmp.Equals("INVARIANT", element.Name))
+				if (cmp.Equals("REQUIRES", element.Name) || cmp.Equals("ENSURES", element.Name) || cmp.Equals("INVARIANT", element.Name) || cmp.Equals("ENSURESONTHROW", element.Name))
 					return new ParsedXmlContractCondition(element, docBase);
 
 				if (

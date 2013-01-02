@@ -32,10 +32,6 @@ namespace DandyDoc.ViewModels
 				.FirstOrDefault(n => Parent.RequiresParameterNotNull(n));
 		}
 
-		public string ExceptionCref{
-			get { return Xml.ExceptionCref; }
-		}
-
 		[ContractInvariantMethod]
 		private void CodeContractInvariant() {
 			Contract.Invariant(null != Parent);

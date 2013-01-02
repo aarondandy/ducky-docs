@@ -11,12 +11,15 @@ namespace DandyDoc.ViewModels
 	public class MethodViewModel : DefinitionViewModelBase<MethodDefinition>
 	{
 
-		public MethodViewModel(MethodDefinition definition, XmlDocOverlay xmlDocOverlay, CrefOverlay crefOverlay = null)
+		private readonly MethodDefinitionXmlDoc _xmlDocsOverride;
+
+		public MethodViewModel(MethodDefinition definition, XmlDocOverlay xmlDocOverlay, CrefOverlay crefOverlay = null, MethodDefinitionXmlDoc xmlDocsOverride = null)
 			: base(definition, xmlDocOverlay, crefOverlay)
 		{
 			Contract.Requires(null != definition);
 			Contract.Requires(null != xmlDocOverlay);
 			Contract.EndContractBlock();
+			_xmlDocsOverride = xmlDocsOverride;
 		}
 
 		public override string Title {
@@ -48,7 +51,9 @@ namespace DandyDoc.ViewModels
 			}
 		}
 
-		new public MethodDefinitionXmlDoc XmlDoc { get { return (MethodDefinitionXmlDoc)(base.XmlDoc); } }
+		public override DefinitionXmlDocBase XmlDoc { get { return _xmlDocsOverride ?? base.XmlDoc; } }
+
+		public virtual MethodDefinitionXmlDoc MethodXmlDoc { get { return _xmlDocsOverride ?? (MethodDefinitionXmlDoc)XmlDoc; } }
 
 		protected override IEnumerable<MemberFlair> GetFlairTags(){
 			foreach (var item in base.GetFlairTags())
@@ -118,7 +123,7 @@ namespace DandyDoc.ViewModels
 		}
 
 		public IList<ParsedXmlException> Exceptions {
-			get { return null == XmlDoc ? null : XmlDoc.Exceptions; }
+			get { return null == XmlDoc ? null : MethodXmlDoc.Exceptions; }
 		}
 
 		public bool HasExceptions{
@@ -129,7 +134,7 @@ namespace DandyDoc.ViewModels
 		}
 
 		public IList<ParsedXmlContractCondition> Requires {
-			get { return null == XmlDoc ? null : XmlDoc.Requires; }
+			get { return null == XmlDoc ? null : MethodXmlDoc.Requires; }
 		}
 
 		public bool HasRequires{
@@ -140,7 +145,7 @@ namespace DandyDoc.ViewModels
 		}
 
 		public IList<ParsedXmlContractCondition> Ensures{
-			get{ return null == XmlDoc ? null : XmlDoc.Ensures; }
+			get { return null == XmlDoc ? null : MethodXmlDoc.Ensures; }
 		}
 
 		public bool HasEnsures {
@@ -156,8 +161,8 @@ namespace DandyDoc.ViewModels
 			get{
 				return HasReturn
 					&& HasXmlDoc
-					&& XmlDoc.Ensures.Count > 0
-					&& XmlDoc.Ensures.Any(x => x.EnsuresResultNotNull);
+					&& MethodXmlDoc.Ensures.Count > 0
+					&& MethodXmlDoc.Ensures.Any(x => x.EnsuresResultNotNull);
 			}
 		}
 
@@ -165,31 +170,31 @@ namespace DandyDoc.ViewModels
 			get{
 				return HasReturn
 					&& HasXmlDoc
-					&& XmlDoc.Ensures.Count > 0
-					&& XmlDoc.Ensures.Any(x => x.EnsuresResultNotNullOrEmpty);
+					&& MethodXmlDoc.Ensures.Count > 0
+					&& MethodXmlDoc.Ensures.Any(x => x.EnsuresResultNotNullOrEmpty);
 			}
 		}
 
 		public bool RequiresParameterNotNull(string parameterName){
 			if (String.IsNullOrEmpty(parameterName)) throw new ArgumentException("Invalid parameter name.", "parameterName");
 			Contract.EndContractBlock();
-			if (!HasXmlDoc || XmlDoc.Requires.Count == 0)
+			if (!HasXmlDoc || MethodXmlDoc.Requires.Count == 0)
 				return false;
-			return XmlDoc.Requires.Any(x => x.RequiresParameterNotNull(parameterName));
+			return MethodXmlDoc.Requires.Any(x => x.RequiresParameterNotNull(parameterName));
 		}
 
 		public bool RequiresParameterNotNullOrEmpty(string parameterName){
 			if (String.IsNullOrEmpty(parameterName)) throw new ArgumentException("Invalid parameter name.", "parameterName");
 			Contract.EndContractBlock();
-			if (!HasXmlDoc || XmlDoc.Requires.Count == 0)
+			if (!HasXmlDoc || MethodXmlDoc.Requires.Count == 0)
 				return false;
-			return XmlDoc.Requires.Any(x => x.RequiresParameterNotNullOrEmpty(parameterName));
+			return MethodXmlDoc.Requires.Any(x => x.RequiresParameterNotNullOrEmpty(parameterName));
 		}
 
 		public ReturnViewModel CreateReturnViewModel() {
 			if(!HasReturn) throw new InvalidOperationException("Method does not return a value.");
 			Contract.EndContractBlock();
-			var methodXmlDocs = XmlDoc;
+			var methodXmlDocs = MethodXmlDoc;
 			var docs = null == methodXmlDocs ? null : methodXmlDocs.Returns;
 			Contract.Assume(null != Definition.ReturnType);
 			return new ReturnViewModel(Definition.ReturnType, this, docs);
@@ -198,7 +203,7 @@ namespace DandyDoc.ViewModels
 		public IEnumerable<ParameterViewModel> CreateParameterViewModels(IEnumerable<ParameterDefinition> definitions) {
 			if(null == definitions) throw new ArgumentNullException("definitions");
 			Contract.Ensures(Contract.Result<IEnumerable<ParameterViewModel>>() != null);
-			var methodXmlDocs = XmlDoc;
+			var methodXmlDocs = MethodXmlDoc;
 			return definitions.Select(item => {
 				var docs = null == methodXmlDocs ? null : methodXmlDocs.DocsForParameter(item.Name);
 				return new ParameterViewModel(item, this, docs);
@@ -209,6 +214,12 @@ namespace DandyDoc.ViewModels
 			if(null == contracts) throw new ArgumentNullException("contracts");
 			Contract.Ensures(Contract.Result<IEnumerable<RequiresViewModel>>() != null);
 			return contracts.Select(c => new RequiresViewModel(this, c));
+		}
+
+		public IEnumerable<EnsuresViewModel> ToEnsuresViewModels(IEnumerable<ParsedXmlContractCondition> contracts) {
+			if (null == contracts) throw new ArgumentNullException("contracts");
+			Contract.Ensures(Contract.Result<IEnumerable<RequiresViewModel>>() != null);
+			return contracts.Select(c => new EnsuresViewModel(this, c));
 		}
 
 	}

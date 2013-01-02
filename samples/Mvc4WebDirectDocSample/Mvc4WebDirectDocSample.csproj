@@ -231,6 +231,7 @@
     <Content Include="Views\Web.config" />
     <Content Include="Views\Doc\Partials\RequiresTable.cshtml" />
     <Content Include="Views\Doc\Partials\DefinitionTitle.cshtml" />
+    <Content Include="Views\Doc\Partials\EnsuresTable.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -50,6 +50,6 @@
 }
 @if (Model.HasEnsures){
 	<h2>Ensures</h2>
-	//Html.RenderPartial("Partials/ContractConditionTable", Model.Ensures);
+	Html.RenderPartial("Partials/EnsuresTable", Model.ToEnsuresViewModels(Model.Ensures));
 }
 @{Html.RenderPartial("Partials/DefinitionPageCommonSections", Model);}

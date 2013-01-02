@@ -19,6 +19,12 @@
 	if (getViewModel.HasExceptions) {
 		Html.RenderPartial("Partials/ExceptionTable", getViewModel.Exceptions);
 	}
+	if (getViewModel.HasRequires) {
+		Html.RenderPartial("Partials/RequiresTable", getViewModel.ToRequiresViewModels(getViewModel.Requires));
+	}
+	if (getViewModel.HasEnsures) {
+		Html.RenderPartial("Partials/EnsuresTable", getViewModel.ToEnsuresViewModels(getViewModel.Ensures));
+	}
 }
 @if (Model.HasExposedSet){
 	var setViewModel = Model.SetViewModel;
@@ -28,6 +34,12 @@
 	if (setViewModel.HasExceptions) {
 		Html.RenderPartial("Partials/ExceptionTable", setViewModel.Exceptions);
 	}
+	if (setViewModel.HasRequires) {
+		Html.RenderPartial("Partials/RequiresTable", setViewModel.ToRequiresViewModels(setViewModel.Requires));
+	}
+	if (setViewModel.HasEnsures) {
+		Html.RenderPartial("Partials/EnsuresTable", setViewModel.ToEnsuresViewModels(setViewModel.Ensures));
+	}	
 }
 @if (null != Model.ValueDoc) {
 	<h2>Value</h2>
