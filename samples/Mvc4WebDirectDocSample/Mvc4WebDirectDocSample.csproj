@@ -146,7 +146,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\StructureMapConfig.cs" />
     <Compile Include="Controllers\DocController.cs" />
-    <Compile Include="Global.asax.cs">
+    <Compile Include="Views\Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -182,7 +182,7 @@
     <Content Include="Content\sh\shThemeRDark.css" />
     <Content Include="Content\sh\shThemeVS2012Dark.css" />
     <Content Include="Content\sh\shThemeVS2012Light.css" />
-    <Content Include="Global.asax" />
+    <Content Include="Views\Global.asax" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <None Include="Scripts\jquery-1.8.2.intellisense.js" />

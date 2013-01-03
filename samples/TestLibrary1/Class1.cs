@@ -43,7 +43,14 @@ namespace TestLibrary1
 		/// <summary>
 		/// no remarks here
 		/// </summary>
-		public class NoRemarks
+		public class NoRemarks : NoDocs
+		{
+			
+		}
+
+		public interface IThing { }
+
+		protected struct ProtectedStruct : IThing
 		{
 			
 		}
@@ -133,6 +140,8 @@ namespace TestLibrary1
 		/// </remarks>
 		public static event MyFunc DoStuff;
 
+		protected event MyFunc DoStuffInstance;
+
 		// Note leave the constructor to be default so a default summary can be generated
 
 		/// <summary>
@@ -190,6 +199,7 @@ namespace TestLibrary1
 		/// <value>A double value.</value>
 		public static double SomeField;
 
+		protected readonly int ReadonlyField;
 
 		/// <summary>
 		/// This has a table in the remarks section.
@@ -207,6 +217,10 @@ namespace TestLibrary1
 		/// </list>
 		/// </remarks>
 		public bool HasTableInRemarks { private get; set; }
+
+		public virtual string VirtualInstanceMethod(string stuff) {
+			throw new NotImplementedException();
+		}
 
 		/// <summary>
 		/// A finalizer that does nothing.

@@ -37,6 +37,17 @@ namespace DandyDoc
 				: method.Parameters;
 		}
 
+		public static TypeReference GetDelegateReturnType(this TypeDefinition definition) {
+			if(null == definition) throw new ArgumentNullException("definition");
+			if(!definition.IsDelegateType()) throw new ArgumentException("Definition must be a delegate type.", "delegate");
+			Contract.Ensures(Contract.Result<TypeReference>() != null);
+			var method = definition.Methods.FirstOrDefault(x => "Invoke".Equals(x.Name));
+			if(null == method)
+				throw new ArgumentException("Definition does not have an Invoke method.");
+
+			return method.ReturnType;
+		}
+
 		private static readonly HashSet<string> OperatorMethodNames = new HashSet<string>{
 			"op_Implicit",
 			"op_explicit",
@@ -129,6 +140,34 @@ namespace DandyDoc
 			if (definition is EventDefinition)
 				return IsStatic((EventDefinition)definition);
 			throw new NotSupportedException();
+		}
+
+		public static bool IsFinal(this PropertyDefinition definition) {
+			if (null == definition) throw new ArgumentNullException("definition");
+			Contract.EndContractBlock();
+			return (null != definition.GetMethod && definition.GetMethod.IsFinal)
+				|| (null != definition.SetMethod && definition.SetMethod.IsFinal);
+		}
+
+		public static bool IsAbstract(this PropertyDefinition definition) {
+			if (null == definition) throw new ArgumentNullException("definition");
+			Contract.EndContractBlock();
+			return (null != definition.GetMethod && definition.GetMethod.IsAbstract)
+				|| (null != definition.SetMethod && definition.SetMethod.IsAbstract);
+		}
+
+		public static bool IsVirtual(this PropertyDefinition definition) {
+			if (null == definition) throw new ArgumentNullException("definition");
+			Contract.EndContractBlock();
+			return (null != definition.GetMethod && definition.GetMethod.IsVirtual)
+				|| (null != definition.SetMethod && definition.SetMethod.IsVirtual);
+		}
+
+		public static bool HasOverrides(this PropertyDefinition definition) {
+			if (null == definition) throw new ArgumentNullException("definition");
+			Contract.EndContractBlock();
+			return (null != definition.GetMethod && definition.GetMethod.HasOverrides)
+				|| (null != definition.SetMethod && definition.SetMethod.HasOverrides);
 		}
 
 		public static bool IsExtensionMethod(this MethodDefinition definition){

@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="AssemblyDefinition.cs" />
     <Compile Include="CodeContractXmlDocOverlayTest.cs" />
+    <Compile Include="CodeSignatureCsharpTests.cs" />
     <Compile Include="CrefGenericTests.cs" />
     <Compile Include="CrefNormalTests.cs" />
     <Compile Include="DisplayNameTests.cs" />

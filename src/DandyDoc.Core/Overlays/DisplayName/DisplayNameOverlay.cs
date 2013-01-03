@@ -72,6 +72,8 @@ namespace DandyDoc.Overlays.DisplayName
 			IncludeNamespaceForTypes = false;
 			ShowGenericParametersOnDefinition = true;
 			ShowTypeNameForMembers = false;
+			IncludeParameterNames = false;
+			ReplaceItemWithThis = false;
 			ListSeperator = ", ";
 			ParameterTypeDisplayNameOverlay = null;
 		}
@@ -81,6 +83,10 @@ namespace DandyDoc.Overlays.DisplayName
 		public bool IncludeNamespaceForTypes { get; set; }
 
 		public bool ShowTypeNameForMembers { get; set; }
+
+		public bool IncludeParameterNames { get; set; }
+
+		public bool ReplaceItemWithThis { get; set; }
 
 		public string ListSeperator { get; set; }
 
@@ -146,7 +152,7 @@ namespace DandyDoc.Overlays.DisplayName
 				: String.Join(".", typeParts);
 		}
 
-		public string GetDisplayName(TypeReference reference){
+		public string GetDisplayName(TypeReference reference, bool hideParams = false){
 			if (null == reference) throw new ArgumentNullException("reference");
 			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
 
@@ -159,6 +165,13 @@ namespace DandyDoc.Overlays.DisplayName
 
 			if (IncludeNamespaceForTypes && !String.IsNullOrEmpty(reference.Namespace))
 				fullTypeName = String.Concat(reference.Namespace, '.', fullTypeName);
+
+			var definition = reference as TypeDefinition;
+			if (null != definition) {
+				if (definition.IsDelegateType() && !hideParams) {
+					fullTypeName = String.Concat(fullTypeName, '(', GetParameterText(definition.GetDelegateTypeParameters()), ')');
+				}
+			}
 
 			return fullTypeName;
 		}
@@ -201,12 +214,7 @@ namespace DandyDoc.Overlays.DisplayName
 				}
 			}
 
-			var paramNameGenerator = ParameterTypeDisplayNameOverlay ?? DefaultParamDisplayNameOverlay;
-			name = String.Concat(
-				name,
-				'(',
-				String.Join(ListSeperator, definition.Parameters.Select(p => paramNameGenerator.GetDisplayName(p.ParameterType))),
-				')');
+			name = String.Concat(name, '(', GetParameterText(definition.Parameters), ')');
 
 			if (ShowTypeNameForMembers){
 				Contract.Assume(null != definition.DeclaringType);
@@ -216,26 +224,42 @@ namespace DandyDoc.Overlays.DisplayName
 			return name;
 		}
 
+		protected virtual string GetParameterText(IEnumerable<ParameterDefinition> definitions) {
+			var paramNameGenerator = ParameterTypeDisplayNameOverlay ?? DefaultParamDisplayNameOverlay;
+			return String.Join(ListSeperator, definitions.Select(paramNameGenerator.GetParameterText));
+		}
+
+		protected virtual string GetParameterText(ParameterDefinition definition) {
+			Contract.Requires(null != definition);
+			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
+			var result = GetDisplayName(definition.ParameterType);
+			if (IncludeParameterNames)
+				result = String.Concat(result, ' ', definition.Name);
+
+			return result;
+		}
+
 		public string GetDisplayName(PropertyDefinition definition){
 			if (null == definition) throw new ArgumentNullException("definition");
 			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
 			var name = definition.Name;
 			if (definition.HasParameters){
-				var paramNameGenerator = ParameterTypeDisplayNameOverlay ?? DefaultParamDisplayNameOverlay;
 				char openParen, closeParen;
 				if ("Item".Equals(name)){
 					openParen = '[';
 					closeParen = ']';
+					if (ReplaceItemWithThis) {
+						name = "this";
+					}
 				}
 				else{
 					openParen = '(';
 					closeParen = ')';
 				}
-
 				name = String.Concat(
 					name,
 					openParen,
-					String.Join(ListSeperator, definition.Parameters.Select(p => paramNameGenerator.GetDisplayName(p.ParameterType))),
+					GetParameterText(definition.Parameters),
 					closeParen);
 			}
 			if (ShowTypeNameForMembers){

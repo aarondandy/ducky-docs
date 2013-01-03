@@ -123,6 +123,8 @@
   <ItemGroup>
     <Compile Include="AssemblyDefinitionCollection.cs" />
     <Compile Include="CecilExtensions.cs" />
+    <Compile Include="Overlays\CodeSignature\CodeSignatureGeneratorBase.cs" />
+    <Compile Include="Overlays\CodeSignature\CodeSignatureGeneratorCSharp.cs" />
     <Compile Include="Overlays\Cref\CrefOverlay.cs" />
     <Compile Include="Overlays\Cref\ParsedCref.cs" />
     <Compile Include="Overlays\DisplayName\DisplayNameOverlay.cs" />
@@ -131,6 +133,8 @@
     <Compile Include="Overlays\Navigation\NavigationOverlay.cs" />
     <Compile Include="Overlays\Navigation\NavigationOverlayCompositeNamespace.cs" />
     <Compile Include="Overlays\Navigation\NavigationOverlayNamespace.cs" />
+    <Compile Include="Overlays\CodeSignature\CodeSignature.cs" />
+    <Compile Include="Overlays\CodeSignature\CodeSignatureOverlay.cs" />
     <Compile Include="Overlays\XmlDoc\DefinitionXmlDocBase.cs" />
     <Compile Include="Overlays\XmlDoc\DelegateTypeDefinitionXmlDoc.cs" />
     <Compile Include="Overlays\XmlDoc\EventDefinitionXmlDoc.cs" />
