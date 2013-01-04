@@ -26,13 +26,19 @@ namespace TestLibrary1
 		/// <remarks>
 		/// This is just some class.
 		/// </remarks>
+		[Obsolete]
 		public class Inner
 		{
 
 			/// <summary>
 			/// A name.
 			/// </summary>
+			[Obsolete]
 			public string Name { get; set; }
+
+			[Obsolete]
+			public string GetAName(){ throw new NotImplementedException();}
+
 		}
 
 		public class NoDocs

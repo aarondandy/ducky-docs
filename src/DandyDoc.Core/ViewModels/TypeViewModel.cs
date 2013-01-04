@@ -237,6 +237,7 @@ namespace DandyDoc.ViewModels
 
 			if (!Definition.IsValueType && Definition.IsSealed && !Definition.IsDelegateType())
 				yield return new MemberFlair("sealed","Inheritance","This type is sealed, preventing inheritance.");
+
 		}
 		
 		new public TypeDefinitionXmlDoc XmlDoc { get { return (TypeDefinitionXmlDoc)(base.XmlDoc); } }

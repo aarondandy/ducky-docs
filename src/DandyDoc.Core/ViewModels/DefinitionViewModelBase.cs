@@ -85,6 +85,9 @@ namespace DandyDoc.ViewModels
 
 			if (Definition.IsStatic())
 				yield return new MemberFlair("static", "Static", "Accessible relative to a type rather than an object instance.");
+
+			if (Definition.HasObsoleteAttribute())
+				yield return new MemberFlair("obsolete", "Warning", "This is deprecated.");
 		}
 
 		public IList<MemberFlair> Flair {

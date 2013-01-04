@@ -219,6 +219,12 @@ namespace DandyDoc
 			return HasAttributeMatchingFullName(definition, "System.FlagsAttribute");
 		}
 
+		public static bool HasObsoleteAttribute(this ICustomAttributeProvider definition) {
+			if(null == definition) throw new ArgumentNullException("definition");
+			Contract.EndContractBlock();
+			return HasAttributeMatchingFullName(definition, "System.ObsoleteAttribute");
+		}
+
 		public static bool HasAttributeMatchingName(this ICustomAttributeProvider definition, string name) {
 			if (null == definition) throw new ArgumentNullException("definition");
 			Contract.EndContractBlock();
