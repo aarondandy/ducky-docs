@@ -15,6 +15,30 @@ namespace TestLibrary1
 		where TB:IEnumerable<TA>
 	{
 
+		public interface Variance<in TIn, out TOut>
+		{
+			TOut Get();
+
+			void Set(TIn a);
+		}
+
+		public class Constraints<TConstraints>
+			where TConstraints: IEnumerable<int>, IDisposable, new()
+		{
+			/// <summary>
+			/// 
+			/// </summary>
+			/// <typeparam name="TStuff">some stuff</typeparam>
+			/// <param name="a"></param>
+			/// <param name="b"></param>
+			/// <returns></returns>
+			public TStuff GetStuff<TStuff>(TConstraints a, TStuff b)
+				where TStuff : IConvertible
+			{
+				throw new NotImplementedException();
+			}
+		}
+
 		/// <summary>
 		/// An operator. See <typeparamref name="TA"/> for details.
 		/// </summary>

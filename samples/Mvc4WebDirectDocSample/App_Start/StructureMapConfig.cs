@@ -70,7 +70,7 @@ namespace Mvc4WebDirectDocSample.App_Start
 				return GetServices(serviceType);
 			}
 
-			public object GetService(Type serviceType) {
+			public override object GetService(Type serviceType) {
 				if (null == serviceType)
 					return null;
 				try {

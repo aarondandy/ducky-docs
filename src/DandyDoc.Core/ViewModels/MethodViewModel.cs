@@ -80,10 +80,12 @@ namespace DandyDoc.ViewModels
 				yield return new MemberFlair("sealed", "Inheritance", String.Format("This {0} is sealed, preventing inheritance.", subject));
 			}
 
-			if (Definition.IsAbstract)
-				yield return new MemberFlair("abstract", "Inheritance", "This method is abstract and must be implemented by inheriting types.");
-			else if(Definition.IsVirtual && Definition.IsNewSlot && !Definition.IsFinal)
-				yield return new MemberFlair("virtual", "Inheritance", "This method is virtual and can be overridden by inheriting types.");
+			if (!Definition.DeclaringType.IsInterface) {
+				if (Definition.IsAbstract && !Definition.DeclaringType.IsInterface)
+					yield return new MemberFlair("abstract", "Inheritance", "This method is abstract and must be implemented by inheriting types.");
+				else if (Definition.IsVirtual && Definition.IsNewSlot && !Definition.IsFinal)
+					yield return new MemberFlair("virtual", "Inheritance", "This method is virtual and can be overridden by inheriting types.");
+			}
 		}
 
 		public bool IsPure {
@@ -225,6 +227,12 @@ namespace DandyDoc.ViewModels
 			if (null == contracts) throw new ArgumentNullException("contracts");
 			Contract.Ensures(Contract.Result<IEnumerable<RequiresViewModel>>() != null);
 			return contracts.Select(c => new EnsuresViewModel(this, c));
+		}
+
+		public IEnumerable<GenericParameterMethodViewModel> ToGenericParameterViewModels(IEnumerable<GenericParameter> parameters) {
+			if (null == parameters) throw new ArgumentNullException("parameters");
+			Contract.Ensures(Contract.Result<IEnumerable<GenericTypeParameterViewModel>>() != null);
+			return parameters.Select(p => new GenericParameterMethodViewModel(p, this));
 		}
 
 	}

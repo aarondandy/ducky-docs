@@ -168,6 +168,9 @@
     <Compile Include="ViewModels\EnumValueViewModel.cs" />
     <Compile Include="ViewModels\EventViewModel.cs" />
     <Compile Include="ViewModels\FieldViewModel.cs" />
+    <Compile Include="ViewModels\GenericParameterMethodViewModel.cs" />
+    <Compile Include="ViewModels\GenericParameterTypeViewModel.cs" />
+    <Compile Include="ViewModels\GenericParameterViewModelBase.cs" />
     <Compile Include="ViewModels\IDefinitionViewModel.cs" />
     <Compile Include="ViewModels\MemberFlair.cs" />
     <Compile Include="ViewModels\MethodViewModel.cs" />

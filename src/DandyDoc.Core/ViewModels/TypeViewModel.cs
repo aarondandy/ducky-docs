@@ -216,15 +216,15 @@ namespace DandyDoc.ViewModels
 
 		public override string SubTitle {
 			get{
-				return Definition.IsValueType
-					? "Structure"
-					: Definition.IsInterface
-					? "Interface"
-					: Definition.IsDelegateType()
-					? "Delegate"
-					: Definition.IsEnum
-					? "Enumeration"
-					: "Class";
+				if (Definition.IsEnum)
+					return "Enumeration";
+				if (Definition.IsValueType)
+					return "Structure";
+				if (Definition.IsInterface)
+					return "Interface";
+				if (Definition.IsDelegateType())
+					return "Delegate";
+				return "Class";
 			}
 		}
 
@@ -404,6 +404,12 @@ namespace DandyDoc.ViewModels
 			if (null == definitions) throw new ArgumentNullException("definitions");
 			Contract.Ensures(Contract.Result<IEnumerable<FieldViewModel>>() != null);
 			return definitions.Select(d => new EnumValueViewModel(d, XmlDocOverlay, CrefOverlay));
+		}
+
+		public IEnumerable<GenericTypeParameterViewModel> ToGenericParameterViewModels( IEnumerable<GenericParameter> parameters){
+			if(null == parameters) throw new ArgumentNullException("parameters");
+			Contract.Ensures(Contract.Result<IEnumerable<GenericTypeParameterViewModel>>() != null);
+			return parameters.Select(p => new GenericTypeParameterViewModel(p, this));
 		}
 
 	}

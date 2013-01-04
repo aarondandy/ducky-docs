@@ -21,15 +21,21 @@ namespace DandyDoc.ViewModels
 		public ParsedXmlContractCondition Xml { get; private set; }
 
 		public string RequiresParameterNotNullOrEmpty() {
+			if (!Parent.Definition.HasParameters)
+				return null;
+			Contract.Assume(Parent.Definition.Parameters != null);
 			return Parent.Definition.Parameters
 				.Select(p => p.Name)
-				.FirstOrDefault(n => Parent.RequiresParameterNotNullOrEmpty(n));
+				.FirstOrDefault(n => Xml.RequiresParameterNotNullOrEmpty(n));
 		}
 
 		public string RequiresParameterNotNull(){
+			if (!Parent.Definition.HasParameters)
+				return null;
+			Contract.Assume(Parent.Definition.Parameters != null);
 			return Parent.Definition.Parameters
 				.Select(p => p.Name)
-				.FirstOrDefault(n => Parent.RequiresParameterNotNull(n));
+				.FirstOrDefault(n => Xml.RequiresParameterNotNull(n));
 		}
 
 		[ContractInvariantMethod]

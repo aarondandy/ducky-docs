@@ -10,6 +10,9 @@
 	Html.RenderPartial("Partials/NamespaceAndAssembly", Model.AssemblyNamespace);
 	if (Model.HasSignatures) { Html.RenderPartial("Partials/DefinitionSignatures", Model.Signatures); }	
 }
+@if (Model.Definition.HasGenericParameters){
+	Html.RenderPartial("Partials/GenericParameterListing", Model.ToGenericParameterViewModels(Model.Definition.GenericParameters));
+}
 @if (Model.Definition.Parameters.Count > 0) {
 	<h2>Parameters</h2>
 	<div class="doc-page-member-listing">

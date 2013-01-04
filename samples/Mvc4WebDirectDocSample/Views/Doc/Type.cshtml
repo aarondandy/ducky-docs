@@ -11,6 +11,9 @@
 	Html.RenderPartial("Partials/NamespaceAndAssembly", Model.AssemblyNamespace);
 	if(Model.HasSignatures){Html.RenderPartial("Partials/DefinitionSignatures", Model.Signatures);}
 }
+@if (Model.Definition.HasGenericParameters){
+	Html.RenderPartial("Partials/GenericParameterListing", Model.ToGenericParameterViewModels(Model.Definition.GenericParameters));
+}
 @foreach (var section in Model.GetDefaultMemberListingSections()){
 	<h2>@(section.Title)</h2>
 	Html.RenderPartial("Partials/SimpleMemberTable", section.Items);

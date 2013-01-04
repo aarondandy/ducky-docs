@@ -214,6 +214,7 @@ namespace DandyDoc.Overlays.DisplayName
 				}
 			}
 
+			Contract.Assume(definition.Parameters != null);
 			name = String.Concat(name, '(', GetParameterText(definition.Parameters), ')');
 
 			if (ShowTypeNameForMembers){
@@ -225,6 +226,8 @@ namespace DandyDoc.Overlays.DisplayName
 		}
 
 		protected virtual string GetParameterText(IEnumerable<ParameterDefinition> definitions) {
+			if(null == definitions) throw new ArgumentNullException("definitions");
+			Contract.EndContractBlock();
 			var paramNameGenerator = ParameterTypeDisplayNameOverlay ?? DefaultParamDisplayNameOverlay;
 			return String.Join(ListSeperator, definitions.Select(paramNameGenerator.GetParameterText));
 		}
@@ -232,6 +235,7 @@ namespace DandyDoc.Overlays.DisplayName
 		protected virtual string GetParameterText(ParameterDefinition definition) {
 			Contract.Requires(null != definition);
 			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
+			Contract.Assume(definition.ParameterType != null);
 			var result = GetDisplayName(definition.ParameterType);
 			if (IncludeParameterNames)
 				result = String.Concat(result, ' ', definition.Name);
@@ -256,6 +260,7 @@ namespace DandyDoc.Overlays.DisplayName
 					openParen = '(';
 					closeParen = ')';
 				}
+				Contract.Assume(definition.Parameters != null);
 				name = String.Concat(
 					name,
 					openParen,

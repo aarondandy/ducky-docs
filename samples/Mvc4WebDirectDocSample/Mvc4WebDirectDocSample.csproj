@@ -233,6 +233,7 @@
     <Content Include="Views\Doc\Partials\DefinitionTitle.cshtml" />
     <Content Include="Views\Doc\Partials\EnsuresTable.cshtml" />
     <Content Include="Views\Doc\Partials\DefinitionSignatures.cshtml" />
+    <Content Include="Views\Doc\Partials\GenericParameterListing.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -178,6 +178,7 @@ namespace DandyDoc.Overlays.CodeSignature
 				codeBuilder.Append(' ');
 
 			if (!definition.IsConstructor) {
+				Contract.Assume(definition.ReturnType != null);
 				codeBuilder.Append(ShortDisplayNameOverlay.GetDisplayName(definition.ReturnType));
 				codeBuilder.Append(' ');
 			}
@@ -248,6 +249,7 @@ namespace DandyDoc.Overlays.CodeSignature
 			if (!String.IsNullOrEmpty(modifiers))
 				codeBuilder.Append(' ');
 
+			Contract.Assume(definition.FieldType != null);
 			codeBuilder.Append(ShortDisplayNameOverlay.GetDisplayName(definition.FieldType));
 			codeBuilder.Append(' ');
 			codeBuilder.Append(ShortDisplayNameOverlay.GetDisplayName((IMemberDefinition)definition));
@@ -266,6 +268,8 @@ namespace DandyDoc.Overlays.CodeSignature
 				codeBuilder.Append(' ');
 
 			codeBuilder.Append("event ");
+
+			Contract.Assume(definition.EventType != null);
 			codeBuilder.Append(ShortDisplayNameOverlay.GetDisplayName(definition.EventType, true));
 			codeBuilder.Append(' ');
 			codeBuilder.Append(ShortDisplayNameOverlay.GetDisplayName((IMemberDefinition)definition));
@@ -314,6 +318,7 @@ namespace DandyDoc.Overlays.CodeSignature
 			if (codeBuilder.Length != 0)
 				codeBuilder.Append(' ');
 
+			Contract.Assume(definition.PropertyType != null);
 			codeBuilder.Append(ShortDisplayNameOverlay.GetDisplayName(definition.PropertyType));
 			codeBuilder.Append(' ');
 			codeBuilder.Append(ShortDisplayNameOverlay.GetDisplayName(definition));
@@ -340,6 +345,7 @@ namespace DandyDoc.Overlays.CodeSignature
 				codeBuilder.Append(" }");
 			}
 
+			Contract.Assume(!String.IsNullOrEmpty(codeBuilder.ToString()));
 			return new CodeSignature(Language, codeBuilder.ToString());
 		}
 

@@ -30,19 +30,48 @@ namespace DandyDoc.ViewModels
 			foreach (var tag in base.GetFlairTags())
 				yield return tag;
 
+			var getMethod = Definition.GetMethod;
+			var setMethod = Definition.SetMethod;
+
+			var getExposed = null != getMethod && getMethod.IsExternallyVisible();
+			var setExposed = null != setMethod && setMethod.IsExternallyVisible();
+			if (getExposed && setExposed) {
+				if (GetViewModel.AllResultsAndParamsNotNull && SetViewModel.AllResultsAndParamsNotNull)
+					yield return new MemberFlair("no nulls", "Null Values", "This property does not return or accept null.");
+			}
+			else if (getExposed) {
+				if (GetViewModel.AllResultsAndParamsNotNull)
+					yield return new MemberFlair("no nulls", "Null Values", "This property does not return null.");
+			}
+			else if (setExposed){
+				if (SetViewModel.AllResultsAndParamsNotNull)
+					yield return new MemberFlair("no nulls", "Null Values", "This property does not accept null.");
+			}
+
 			if (IsPure)
 				yield return new MemberFlair("pure", "Purity", "Does not have side effects");
 
-			var getMethod = Definition.GetMethod;
-			var setMethod = Definition.SetMethod;
-			var propertyVisibility = ExternalVisibilityOverlay.Get(Definition);
+			if (Definition.IsSealed())
+				yield return new MemberFlair("sealed", "Inheritance", "This property is sealed, preventing inheritance.");
 
+			if (!Definition.DeclaringType.IsInterface){
+				if (Definition.IsAbstract())
+					yield return new MemberFlair("abstract", "Inheritance", "This property is abstract and must be implemented by inheriting types.");
+				else if (Definition.IsVirtual() && Definition.IsNewSlot() && !Definition.IsFinal())
+					yield return new MemberFlair("virtual", "Inheritance", "This method is virtual and can be overridden by inheriting types.");
+			}
+
+			if(Definition.HasParameters && "Item".Equals(Definition.Name))
+				yield return new MemberFlair("indexer", "Operator", "This property is invoked through a language index operator.");
+
+
+			var propertyVisibility = ExternalVisibilityOverlay.Get(Definition);
 			if (null != getMethod) {
 				var methodVisibility = ExternalVisibilityOverlay.Get(getMethod);
 				if (methodVisibility == propertyVisibility || methodVisibility == ExternalVisibilityKind.Public) {
 					yield return new MemberFlair("get", "Property", "Value can be read externally.");
 				}
-				else if(methodVisibility == ExternalVisibilityKind.Protected) {
+				else if (methodVisibility == ExternalVisibilityKind.Protected) {
 					yield return new MemberFlair("proget", "Property", "Value can be read through inheritance.");
 				}
 			}
@@ -55,32 +84,6 @@ namespace DandyDoc.ViewModels
 				else if (methodVisibility == ExternalVisibilityKind.Protected) {
 					yield return new MemberFlair("proset", "Property", "Value can be assigned through inheritance.");
 				}
-			}
-
-			if(Definition.HasParameters && "Item".Equals(Definition.Name))
-				yield return new MemberFlair("indexer", "Operator", "This property is invoked through a language index operator.");
-
-			if (Definition.IsSealed())
-				yield return new MemberFlair("sealed", "Inheritance", "This property is sealed, preventing inheritance.");
-
-			if(Definition.IsAbstract())
-				yield return new MemberFlair("abstract", "Inheritance", "This property is abstract and must be implemented by inheriting types.");
-			else if (Definition.IsVirtual() && Definition.IsNewSlot() && !Definition.IsFinal())
-				yield return new MemberFlair("virtual", "Inheritance", "This method is virtual and can be overridden by inheriting types.");
-
-			var getExposed = null != getMethod && getMethod.IsExternallyVisible();
-			var setExposed = null != setMethod && setMethod.IsExternallyVisible();
-			if (getExposed && setExposed) {
-				if(GetViewModel.AllResultsAndParamsNotNull && SetViewModel.AllResultsAndParamsNotNull)
-					yield return new MemberFlair("no nulls", "Null Values", "This property does not return or accept null.");
-			}
-			else if (getExposed) {
-				if(GetViewModel.AllResultsAndParamsNotNull)
-					yield return new MemberFlair("no nulls", "Null Values", "This property does not return null.");
-			}
-			else if (setExposed) {
-				if(SetViewModel.AllResultsAndParamsNotNull)
-					yield return new MemberFlair("no nulls", "Null Values", "This property does not accept null.");
 			}
 
 		}

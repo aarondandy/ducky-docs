@@ -10,7 +10,7 @@ namespace DandyDoc
 	public static class CecilExtensions
 	{
 
-		public static bool IsDelegateType(this TypeDefinition typeDefinition){
+		[Pure] public static bool IsDelegateType(this TypeDefinition typeDefinition){
 			if (null == typeDefinition)
 				return false;
 
@@ -31,6 +31,7 @@ namespace DandyDoc
 			if (!IsDelegateType(typeDefinition))
 				return EmptyParameterDefinitionCollection;
 
+			Contract.Assume(typeDefinition.Methods != null);
 			var method = typeDefinition.Methods.FirstOrDefault(x => "Invoke".Equals(x.Name));
 			return null == method || !method.HasParameters
 				? (IList<ParameterDefinition>)EmptyParameterDefinitionCollection
@@ -41,6 +42,7 @@ namespace DandyDoc
 			if(null == definition) throw new ArgumentNullException("definition");
 			if(!definition.IsDelegateType()) throw new ArgumentException("Definition must be a delegate type.", "delegate");
 			Contract.Ensures(Contract.Result<TypeReference>() != null);
+			Contract.Assume(definition.Methods != null);
 			var method = definition.Methods.FirstOrDefault(x => "Invoke".Equals(x.Name));
 			if(null == method)
 				throw new ArgumentException("Definition does not have an Invoke method.");

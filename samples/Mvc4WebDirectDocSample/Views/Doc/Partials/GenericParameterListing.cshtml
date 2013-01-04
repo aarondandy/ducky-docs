@@ -1,0 +1,30 @@
+﻿@model IEnumerable<DandyDoc.ViewModels.GenericParameterViewModelBase>
+<h2>Generic Parameters</h2>
+	<div class="doc-page-member-listing">
+		<dl>
+			@foreach (var p in Model){
+				<dt>@p.DisplayName</dt>
+				<dd>
+					@if (p.HasXmlDoc){
+						<p>@{Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", p.XmlDoc);}</p>
+					}
+					@if (p.Parameter.IsContravariant){
+						<div><i class="icon-random"></i> Contravariant: Type is used for input and can be used with a more specific type.</div>
+					}
+					@if (p.Parameter.IsCovariant){
+						<div><i class="icon-random"></i> Covariant: Type is used for output and can be used as a more general type.</div>
+					}
+					@if (p.HasConstraints){
+						<div>
+							Constraints:
+							<ul>
+								@foreach (var c in p.Constraints) {
+									<li>@c.DisplayName</li>
+								}
+							</ul>
+						</div>
+					}
+				</dd>
+			}
+		</dl>
+	</div>
