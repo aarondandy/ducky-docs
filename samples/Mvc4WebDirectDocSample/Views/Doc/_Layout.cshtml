@@ -10,6 +10,7 @@
 	<title>@ViewBag.Title</title>
 	@Styles.Render("~/css/bootstrap")
 	@Styles.Render("~/css/docs")
+	@Styles.Render("~/css/sh")
 </head>
 	<body>
 		<header>
@@ -48,5 +49,11 @@
 			</div>
 		</footer>
 		@Scripts.Render("~/bundles/jquery","~/bundles/bootstrap","~/bundles/docs")
+		@Scripts.Render("~/bundles/sh")
+		<script type="text/javascript">
+			SyntaxHighlighter.defaults['toolbar'] = false;
+			SyntaxHighlighter.defaults['gutter'] = false;
+			SyntaxHighlighter.all();
+		</script>
 	</body>
 </html>

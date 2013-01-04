@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using DandyDoc.Overlays.CodeSignature;
 using DandyDoc.Overlays.Cref;
 using DandyDoc.Overlays.DisplayName;
 using DandyDoc.Overlays.ExternalVisibility;
@@ -26,7 +27,8 @@ namespace DandyDoc.ViewModels
 		}
 
 		private readonly Lazy<DefinitionXmlDocBase> _xmlDoc;
-		private readonly Lazy<ReadOnlyCollection<MemberFlair>> _flair; 
+		private readonly Lazy<ReadOnlyCollection<MemberFlair>> _flair;
+		private readonly Lazy<ReadOnlyCollection<CodeSignature>> _signatures;
 
 		protected DefinitionViewModelBase(TDefinition definition, XmlDocOverlay xmlDocOverlay, CrefOverlay crefOverlay = null) {
 			if (null == definition) throw new ArgumentNullException("definition");
@@ -40,6 +42,7 @@ namespace DandyDoc.ViewModels
 				var results = GetFlairTags();
 				return null == results ? MemberFlair.EmptyList : Array.AsReadOnly(results.ToArray());
 			});
+			_signatures = new Lazy<ReadOnlyCollection<CodeSignature>>(() => new ReadOnlyCollection<CodeSignature>(new CodeSignatureOverlay().GenerateSignatures(Definition)));
 		}
 
 		public TDefinition Definition { get; private set; }
@@ -55,6 +58,15 @@ namespace DandyDoc.ViewModels
 		public virtual DefinitionXmlDocBase XmlDoc { get { return _xmlDoc.Value; } }
 
 		public virtual bool HasXmlDoc { get { return XmlDoc != null; } }
+
+		public virtual IList<CodeSignature> Signatures { get { return _signatures.Value; } }
+
+		public virtual bool HasSignatures {
+			get {
+				var signatures = Signatures;
+				return null != signatures && signatures.Count > 0;
+			}
+		}
 
 		protected virtual MemberFlair VisibilityFlair {
 			get {

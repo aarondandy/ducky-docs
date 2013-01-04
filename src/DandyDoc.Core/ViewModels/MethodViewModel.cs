@@ -71,7 +71,7 @@ namespace DandyDoc.ViewModels
 			if(Definition.IsOperatorOverload())
 				yield return new MemberFlair("operator", "Operator", "This method is invoked through a language operator.");
 
-			if (Definition.IsVirtual && Definition.IsFinal) {
+			if (Definition.IsSealed()) {
 				var subject = Definition.IsGetter
 					? "getter"
 					: Definition.IsSetter
@@ -79,6 +79,11 @@ namespace DandyDoc.ViewModels
 					: "method";
 				yield return new MemberFlair("sealed", "Inheritance", String.Format("This {0} is sealed, preventing inheritance.", subject));
 			}
+
+			if (Definition.IsAbstract)
+				yield return new MemberFlair("abstract", "Inheritance", "This method is abstract and must be implemented by inheriting types.");
+			else if(Definition.IsVirtual && Definition.IsNewSlot && !Definition.IsFinal)
+				yield return new MemberFlair("virtual", "Inheritance", "This method is virtual and can be overridden by inheriting types.");
 		}
 
 		public bool IsPure {

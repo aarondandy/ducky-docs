@@ -2,7 +2,21 @@
 
 namespace TestLibrary1.Seal
 {
-	public sealed class SealedClass
+
+	public interface ISeal
+	{
+		int Stuff(int a);
+	}
+
+	public class NotSealed : ISeal
+	{
+
+		public int Stuff(int a) {
+			throw new NotImplementedException();
+		}
+	}
+
+	public sealed class SealedClass : ISeal
 	{
 		public int Stuff(int a) {
 			throw new NotImplementedException();
@@ -18,11 +32,9 @@ namespace TestLibrary1.Seal
 		public abstract string Prop { get; set; }
 	}
 
-	public class KickSealingCan : BaseClassToSeal
+	public abstract class KickSealingCan : BaseClassToSeal
 	{
-		public override int SealMe(int a) {
-			throw new NotImplementedException();
-		}
+		public abstract override int SealMe(int a);
 
 		public override string Prop {
 			get {

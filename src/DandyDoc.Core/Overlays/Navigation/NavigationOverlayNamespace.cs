@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 using Mono.Cecil;
@@ -10,9 +9,9 @@ namespace DandyDoc.Overlays.Navigation
 	{
 
 		internal NavigationOverlayNamespace(string ns, IList<TypeDefinition> types){
-			if (null == ns) throw new ArgumentNullException("ns");
-			if (null == types) throw new ArgumentNullException("types");
-			Contract.EndContractBlock();
+			Contract.Requires(null != ns);
+			Contract.Requires(null != types);
+			Contract.Requires(Contract.ForAll(types, type => null != type));
 			Namespace = ns;
 			Types = new ReadOnlyCollection<TypeDefinition>(types);
 		}
@@ -25,6 +24,7 @@ namespace DandyDoc.Overlays.Navigation
 		private void CodeContractInvariant(){
 			Contract.Invariant(null != Namespace);
 			Contract.Invariant(null != Types);
+			Contract.Invariant(Contract.ForAll(Types, type => null != type));
 		}
 
 	}

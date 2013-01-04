@@ -60,10 +60,13 @@ namespace DandyDoc.ViewModels
 			if(Definition.HasParameters && "Item".Equals(Definition.Name))
 				yield return new MemberFlair("indexer", "Operator", "This property is invoked through a language index operator.");
 
-			var getSealed = null != getMethod && getMethod.IsFinal;
-			var setSealed = null != setMethod && setMethod.IsFinal;
-			if (getSealed || setSealed)
-				yield return new MemberFlair("sealed", "Inheritance", " This property is sealed, preventing inheritance.");
+			if (Definition.IsSealed())
+				yield return new MemberFlair("sealed", "Inheritance", "This property is sealed, preventing inheritance.");
+
+			if(Definition.IsAbstract())
+				yield return new MemberFlair("abstract", "Inheritance", "This property is abstract and must be implemented by inheriting types.");
+			else if (Definition.IsVirtual() && Definition.IsNewSlot() && !Definition.IsFinal())
+				yield return new MemberFlair("virtual", "Inheritance", "This method is virtual and can be overridden by inheriting types.");
 
 			var getExposed = null != getMethod && getMethod.IsExternallyVisible();
 			var setExposed = null != setMethod && setMethod.IsExternallyVisible();

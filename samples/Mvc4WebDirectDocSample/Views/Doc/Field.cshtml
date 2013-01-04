@@ -5,11 +5,11 @@
 }
 @{Html.RenderPartial("Partials/DefinitionTitle", Model);}
 @{
-	if (null != Model.Summary) {
-		Html.RenderPartial("Partials/SummarySection", Model.Summary);
-		if (Model.Flair.Count > 0) {Html.RenderPartial("Partials/FlairTable", Model.Flair);}
-		Html.RenderPartial("Partials/NamespaceAndAssembly", Model.AssemblyNamespace);
-	}
+	if (null != Model.Summary) {Html.RenderPartial("Partials/SummarySection", Model.Summary);}
+	if (Model.Flair.Count > 0) {Html.RenderPartial("Partials/FlairTable", Model.Flair);}
+	Html.RenderPartial("Partials/NamespaceAndAssembly", Model.AssemblyNamespace);
+	if (Model.HasSignatures) { Html.RenderPartial("Partials/DefinitionSignatures", Model.Signatures); }	
+	
 	<div>Type: <a href="#">@Model.Definition.FieldType.FullName</a></div>
 	if (null != Model.ValueDoc) {
 		<h2>Value</h2>

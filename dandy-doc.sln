@@ -3,15 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DandyDoc.Core", "src\DandyDoc.Core\DandyDoc.Core.csproj", "{A09F4DAC-290C-4ABE-B053-071EC966008F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleApp1", "samples\SimpleApp1\SimpleApp1.csproj", "{DD5DC725-069A-4950-92F0-6453A594DEE8}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleApp1.Test", "test\SimpleApp1.Test\SimpleApp1.Test.csproj", "{5ABE5AE7-CC3D-4E7B-ABF3-1ABDE25A86FD}"
-	ProjectSection(ProjectDependencies) = postProject
-		{DD5DC725-069A-4950-92F0-6453A594DEE8} = {DD5DC725-069A-4950-92F0-6453A594DEE8}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleVertesaurHtml", "samples\SimpleVertesaurHtml\SimpleVertesaurHtml.csproj", "{56C59A8E-DB80-4408-BF19-4C7FA8B60CDB}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{B0018CBB-A5E8-4F65-96D8-6F6AEC669C50}"
 	ProjectSection(SolutionItems) = preProject
 		.nuget\NuGet.Config = .nuget\NuGet.Config
@@ -19,15 +10,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{B0018C
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VertesaurMvcDoc", "samples\VertesaurMvcDoc\VertesaurMvcDoc.csproj", "{10BC3EEA-F557-4C6C-BE25-B62518AE1599}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestLibrary1", "samples\TestLibrary1\TestLibrary1.csproj", "{F83F4C52-A886-4B9E-8164-E95E1F22F929}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mvc4WebDirectDocSample", "samples\Mvc4WebDirectDocSample\Mvc4WebDirectDocSample.csproj", "{986D2B93-D1AA-4D2F-87DD-CA3CC647746A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{2297D4FC-AB34-4999-8936-FC636EDAADC9}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "lib", "lib", "{8B7A42CE-D0A8-4E32-AAD0-260E6398A06A}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8B7A42CE-D0A8-4E32-AAD0-260E6398A06A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{4D0172D3-2623-4DD8-BAF8-D8B385D299C2}"
 EndProject
@@ -43,22 +32,6 @@ Global
 		{A09F4DAC-290C-4ABE-B053-071EC966008F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A09F4DAC-290C-4ABE-B053-071EC966008F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A09F4DAC-290C-4ABE-B053-071EC966008F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DD5DC725-069A-4950-92F0-6453A594DEE8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DD5DC725-069A-4950-92F0-6453A594DEE8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DD5DC725-069A-4950-92F0-6453A594DEE8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DD5DC725-069A-4950-92F0-6453A594DEE8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5ABE5AE7-CC3D-4E7B-ABF3-1ABDE25A86FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5ABE5AE7-CC3D-4E7B-ABF3-1ABDE25A86FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5ABE5AE7-CC3D-4E7B-ABF3-1ABDE25A86FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5ABE5AE7-CC3D-4E7B-ABF3-1ABDE25A86FD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{56C59A8E-DB80-4408-BF19-4C7FA8B60CDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{56C59A8E-DB80-4408-BF19-4C7FA8B60CDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{56C59A8E-DB80-4408-BF19-4C7FA8B60CDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{56C59A8E-DB80-4408-BF19-4C7FA8B60CDB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{10BC3EEA-F557-4C6C-BE25-B62518AE1599}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{10BC3EEA-F557-4C6C-BE25-B62518AE1599}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{10BC3EEA-F557-4C6C-BE25-B62518AE1599}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{10BC3EEA-F557-4C6C-BE25-B62518AE1599}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F83F4C52-A886-4B9E-8164-E95E1F22F929}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F83F4C52-A886-4B9E-8164-E95E1F22F929}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F83F4C52-A886-4B9E-8164-E95E1F22F929}.Release|Any CPU.ActiveCfg = Release|Any CPU

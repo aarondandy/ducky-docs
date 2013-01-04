@@ -74,15 +74,6 @@ namespace DandyDoc.Overlays.Navigation
 
 		public AssemblyDefinitionCollection Assemblies { get; private set; }
 
-		public IDictionary<AssemblyDefinition, IList<NavigationOverlayNamespace>> AssemblyNamespaces {
-			get {
-				Contract.Ensures(Contract.Result<IDictionary<AssemblyDefinition, IList<NavigationOverlayNamespace>>>() != null);
-				// TODO: better to return/store as a list?
-				return _assemblyNamespaces.Value
-					.ToDictionary(x => x.Key, x => (IList<NavigationOverlayNamespace>)x.Value);
-			}
-		}
-
 		public IList<NavigationOverlayCompositeNamespace> Namespaces {
 			get {
 				Contract.Ensures(Contract.Result<IList<NavigationOverlayCompositeNamespace>>() != null);

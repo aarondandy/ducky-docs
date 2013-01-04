@@ -163,11 +163,37 @@ namespace DandyDoc
 				|| (null != definition.SetMethod && definition.SetMethod.IsVirtual);
 		}
 
-		public static bool HasOverrides(this PropertyDefinition definition) {
+		public static bool IsOverride(this PropertyDefinition definition) {
 			if (null == definition) throw new ArgumentNullException("definition");
 			Contract.EndContractBlock();
-			return (null != definition.GetMethod && definition.GetMethod.HasOverrides)
-				|| (null != definition.SetMethod && definition.SetMethod.HasOverrides);
+			return (null != definition.GetMethod && definition.GetMethod.IsOverride())
+				|| (null != definition.SetMethod && definition.SetMethod.IsOverride());
+		}
+
+		public static bool IsSealed(this PropertyDefinition definition) {
+			if (null == definition) throw new ArgumentNullException("definition");
+			Contract.EndContractBlock();
+			return (null != definition.GetMethod && definition.GetMethod.IsSealed())
+				|| (null != definition.SetMethod && definition.SetMethod.IsSealed());
+		}
+
+		public static bool IsNewSlot(this PropertyDefinition definition) {
+			if (null == definition) throw new ArgumentNullException("definition");
+			Contract.EndContractBlock();
+			return (null != definition.GetMethod && definition.GetMethod.IsNewSlot)
+				|| (null != definition.SetMethod && definition.SetMethod.IsNewSlot);
+		}
+
+		public static bool IsOverride(this MethodDefinition definition) {
+			if(null == definition) throw new ArgumentNullException("definition");
+			Contract.EndContractBlock();
+			return definition.IsVirtual && definition.IsReuseSlot;
+		}
+
+		public static bool IsSealed(this MethodDefinition definition) {
+			if (null == definition) throw new ArgumentNullException("definition");
+			Contract.EndContractBlock();
+			return definition.IsFinal && definition.IsOverride();
 		}
 
 		public static bool IsExtensionMethod(this MethodDefinition definition){

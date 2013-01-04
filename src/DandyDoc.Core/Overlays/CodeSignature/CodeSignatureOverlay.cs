@@ -10,7 +10,8 @@ namespace DandyDoc.Overlays.CodeSignature
 	public class CodeSignatureOverlay
 	{
 
-
+		public CodeSignatureOverlay()
+			: this(new[] {new CodeSignatureGeneratorCSharp()}) { }
 
 		public CodeSignatureOverlay(IEnumerable<CodeSignatureGeneratorBase> generators) {
 			if(null == generators) throw new ArgumentNullException("generators");
@@ -20,14 +21,14 @@ namespace DandyDoc.Overlays.CodeSignature
 
 		public ReadOnlyCollection<CodeSignatureGeneratorBase> Generators { get; private set; } 
 
-		public CodeSignature GenerateSignature(string language, MethodDefinition definition) {
-			if(String.IsNullOrEmpty(language)) throw new ArgumentException("Invalid language.", "language");
+		public IList<CodeSignature> GenerateSignatures(IMemberDefinition definition) {
 			if(null == definition) throw new ArgumentNullException("definition");
-			Contract.EndContractBlock();
+			Contract.Ensures(Contract.Result<IList<CodeSignature>>() != null);
+			Contract.Ensures(Contract.ForAll(Contract.Result<IList<CodeSignature>>(), codeSignature => null != codeSignature), "Null code signatures will not be returned.");
 			return Generators
-				.Where(g => g.Language == language)
-				.Select(g => g.GenerateSignature(definition))
-				.FirstOrDefault(s => s != null);
+				.Select(x => x.GenerateSignature(definition))
+				.Where(x => null != x)
+				.ToList();
 		}
 
 		[ContractInvariantMethod]

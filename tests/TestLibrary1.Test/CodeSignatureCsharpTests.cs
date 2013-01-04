@@ -165,5 +165,59 @@ namespace TestLibrary1.Test
 			Assert.AreEqual("public static event MyFunc DoStuff", result.Code);
 		}
 
+		[Test]
+		public void csharp_implicit_impl() {
+			var result = Generator.GenerateSignature(GetMethod("M:TestLibrary1.Seal.NotSealed.Stuff(System.Int32)"));
+			Assert.AreEqual("public Int32 Stuff(Int32 a)", result.Code);
+		}
+
+		[Test]
+		public void csharp_abstract() {
+			var result = Generator.GenerateSignature(GetMethod("M:TestLibrary1.Seal.BaseClassToSeal.SealMe(System.Int32)"));
+			Assert.AreEqual("public abstract Int32 SealMe(Int32 a)", result.Code);
+		}
+
+		[Test]
+		public void csharp_abstract_override() {
+			var result = Generator.GenerateSignature(GetMethod("M:TestLibrary1.Seal.KickSealingCan.SealMe(System.Int32)"));
+			Assert.AreEqual("public abstract override Int32 SealMe(Int32 a)", result.Code);
+		}
+
+		[Test]
+		public void csharp_override_prop() {
+			var result = Generator.GenerateSignature(GetProperty("P:TestLibrary1.Seal.KickSealingCan.Prop"));
+			Assert.AreEqual("public override String Prop { get; set; }", result.Code);
+		}
+
+		[Test]
+		public void csharp_sealed_method() {
+			var result = Generator.GenerateSignature(GetMethod("M:TestLibrary1.Seal.SealIt.SealMe(System.Int32)"));
+			Assert.AreEqual("public sealed override Int32 SealMe(Int32 a)", result.Code);
+		}
+
+		[Test]
+		public void csharp_sealed_prop() {
+			var result = Generator.GenerateSignature(GetProperty("P:TestLibrary1.Seal.SealIt.Prop"));
+			Assert.AreEqual("public sealed override String Prop { get; set; }", result.Code);
+		}
+
+		[Test]
+		public void csharp_private_field() {
+			var result = Generator.GenerateSignature(GetField("F:TestLibrary1.PublicExposedTestClass.PrivateField"));
+			Assert.AreEqual("private Int32 PrivateField", result.Code);
+		}
+
+		[Test]
+		public void csharp_internal_field() {
+			var result = Generator.GenerateSignature(GetField("F:TestLibrary1.PublicExposedTestClass.InternalField"));
+			Assert.AreEqual("internal Int32 InternalField", result.Code);
+		}
+
+		[Test]
+		public void csharp_protected_internal_field() {
+			var result = Generator.GenerateSignature(GetField("F:TestLibrary1.PublicExposedTestClass.ProtectedInternalField"));
+			Assert.AreEqual("protected internal Int32 ProtectedInternalField", result.Code);
+		}
+
 	}
 }

@@ -33,33 +33,39 @@ namespace DandyDoc.Overlays.CodeSignature
 
 			if (definition.IsStatic)
 				yield return "static";
-			if (definition.IsFinal)
+			if (definition.IsSealed())
 				yield return "sealed";
 
 			if (definition.IsAbstract)
 				yield return "abstract";
-			else if (definition.IsVirtual)
+			else if (!definition.IsFinal && definition.IsVirtual && definition.IsNewSlot)
 				yield return "virtual";
 			
-			if (definition.HasOverrides)
+			if (definition.IsOverride())
 				yield return "override";
 			
+		}
+
+		private string GetAccessModifier(FieldDefinition definition) {
+			Contract.Requires(null != definition);
+			if (definition.IsPublic)
+				return "public";
+			if (definition.IsPrivate)
+				return "private";
+			if (definition.IsFamily)
+				return "protected";
+			if (definition.IsFamilyOrAssembly)
+				return "protected internal";
+			return "internal";
 		}
 
 		private IEnumerable<string> GetModifiers(FieldDefinition definition) {
 			Contract.Requires(definition != null);
 			Contract.Ensures(Contract.Result<IEnumerable<string>>() != null);
 
-			if (definition.IsPublic)
-				yield return "public";
-			else if (definition.IsPrivate)
-				yield return "private";
-			else if (definition.IsFamily)
-				yield return "protected";
-			else if (definition.IsFamilyOrAssembly)
-				yield return "protected internal";
-			else if (definition.IsAssembly)
-				yield return "internal";
+			var accessModifier = GetAccessModifier(definition);
+			if (!String.IsNullOrEmpty(accessModifier))
+				yield return accessModifier;
 
 			if (definition.HasConstant) {
 				yield return "const";
@@ -87,20 +93,26 @@ namespace DandyDoc.Overlays.CodeSignature
 			}
 		}
 
+		private string GetAccessModifier(TypeDefinition definition) {
+			Contract.Requires(definition != null);
+			if (definition.IsPublic || definition.IsNestedPublic)
+				return "public";
+			if (definition.IsNestedPrivate)
+				return "private";
+			if (definition.IsNestedFamily)
+				return "protected";
+			if (definition.IsNestedFamilyOrAssembly)
+				return "protected internal";
+			return "internal";
+		}
+
 		private IEnumerable<string> GetModifiers(TypeDefinition definition) {
 			Contract.Requires(definition != null);
 			Contract.Ensures(Contract.Result<IEnumerable<string>>() != null);
 
-			if (definition.IsPublic || definition.IsNestedPublic)
-				yield return "public";
-			else if (definition.IsNestedPrivate)
-				yield return "private";
-			else if (definition.IsNestedFamily)
-				yield return "protected";
-			else if (definition.IsNestedFamilyOrAssembly)
-				yield return "protected internal";
-			else
-				yield return "internal";
+			var accessModifier = GetAccessModifier(definition);
+			if(!String.IsNullOrEmpty(accessModifier))
+				yield return accessModifier;
 
 			if (!definition.IsEnum && definition.IsStatic())
 				yield return "static";
@@ -287,16 +299,16 @@ namespace DandyDoc.Overlays.CodeSignature
 
 			if (definition.IsStatic())
 				modifiers.Add("static");
-			if (definition.IsFinal())
+			if (definition.IsSealed())
 				modifiers.Add("sealed");
 
 			if (definition.IsAbstract())
 				modifiers.Add("abstract");
-			else if (definition.IsVirtual())
-				modifiers.Add("virtual");
-
-			if (definition.HasOverrides())
+			
+			if (definition.IsOverride())
 				modifiers.Add("override");
+			else if (definition.IsVirtual() && definition.IsNewSlot() && !definition.IsFinal())
+				modifiers.Add("virtual");
 
 			var codeBuilder = new StringBuilder(String.Join(" ", modifiers));
 			if (codeBuilder.Length != 0)

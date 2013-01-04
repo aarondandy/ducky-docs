@@ -17,8 +17,6 @@ namespace TestLibrary1.Test
 		}
 
 		private TypeDefinition GetType(AssemblyDefinition assemblyDefinition, string typeName) {
-			if (null == assemblyDefinition)
-				assemblyDefinition = GetAssembly();
 			var type = assemblyDefinition.Modules.SelectMany(x => x.Types).FirstOrDefault(t => t.Name == typeName);
 			Assert.IsNotNull(type);
 			return type;

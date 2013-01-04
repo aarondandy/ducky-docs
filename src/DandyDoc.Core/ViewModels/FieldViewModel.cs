@@ -36,6 +36,8 @@ namespace DandyDoc.ViewModels
 
 			if(Definition.HasConstant)
 				yield return new MemberFlair("constant", "Value", "This field is a constant.");
+			if(Definition.IsInitOnly)
+				yield return new MemberFlair("readonly", "Value", "This field is only assignable on initialization.");
 		}
 
 	}

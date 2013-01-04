@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -11,13 +10,9 @@ namespace DandyDoc.Overlays.Navigation
 	{
 
 		internal NavigationOverlayCompositeNamespace(string ns, IList<NavigationOverlayNamespace> components) {
-			if (null == ns) throw new ArgumentNullException("ns");
-			if (null == components) throw new ArgumentNullException("components");
-			Contract.EndContractBlock();
-			foreach(var component in components)
-				if(component.Namespace != ns)
-					throw new ArgumentException("Component namespace does not match the given namespace.");
-
+			Contract.Requires(null != ns);
+			Contract.Requires(null != components);
+			Contract.Requires(Contract.ForAll(components, component => component.Namespace == ns));
 			Namespace = ns;
 			Components = new ReadOnlyCollection<NavigationOverlayNamespace>(components);
 			Types = new ReadOnlyCollection<TypeDefinition>(components.SelectMany(x => x.Types).ToArray());
@@ -33,6 +28,8 @@ namespace DandyDoc.Overlays.Navigation
 		private void CodeContractInvariant(){
 			Contract.Invariant(null != Namespace);
 			Contract.Invariant(null != Types);
+			Contract.Invariant(null != Components);
+			Contract.Invariant(Contract.ForAll(Components, component => component.Namespace == Namespace));
 		}
 
 

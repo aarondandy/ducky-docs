@@ -36,7 +36,7 @@ namespace Mvc4WebDirectDocSample
 			));
 			bundles.Add(new StyleBundle("~/css/sh").Include(
 				"~/Content/sh/shCore.css",
-				"~/Content/sh/shThemeVS2012Dark.css",
+				"~/Content/sh/shThemeVS2012Light.css",
 				"~/Content/sh/scrollbarHack.css"
 			));
 

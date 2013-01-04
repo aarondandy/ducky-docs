@@ -10,7 +10,8 @@
 		{"no nulls","icon-ok-sign"},
 		{"flags","icon-flag"},
 		{"operator","icon-plus"},
-		{"sealed","icon-lock"}
+		{"sealed","icon-lock"},
+		{"virtual","icon-circle-arrow-down"}		
 	};
 }
 @if (SimpleIconClasses.ContainsKey(Model.Id)) {<i class="@SimpleIconClasses[Model.Id] flair-icon" title="@Model.Id"></i>}
@@ -20,4 +21,5 @@ else if("PROGET".Equals(Model.Id, StringComparison.OrdinalIgnoreCase)){<code cla
 else if ("PROSET".Equals(Model.Id, StringComparison.OrdinalIgnoreCase)) {<code class="flair-icon" title="protected setter"><i class="icon-eye-close flair-icon" title="protected"></i>set</code>}
 else if ("INDEXER".Equals(Model.Id, StringComparison.OrdinalIgnoreCase)){<code class="flair-icon" title="indexer">[]</code>}
 else if ("CONSTANT".Equals(Model.Id, StringComparison.OrdinalIgnoreCase)){<code class="flair-icon" title="constant">42</code>}
+else if ("READONLY".Equals(Model.Id, StringComparison.OrdinalIgnoreCase)){<code class="flair-icon" title="readonly">get</code>}
 else {@(Model.Id)}
