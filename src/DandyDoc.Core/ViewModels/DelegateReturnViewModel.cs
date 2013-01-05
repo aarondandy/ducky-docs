@@ -1,14 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using DandyDoc.Overlays.XmlDoc;
 using Mono.Cecil;
 
 namespace DandyDoc.ViewModels
 {
-	public class ReturnViewModel : IReturnViewModel
+	public class DelegateReturnViewModel : IReturnViewModel
 	{
 
-		internal ReturnViewModel(TypeReference type, MethodViewModel parent, ParsedXmlElementBase xmlDoc) {
+		internal DelegateReturnViewModel(TypeReference type, DelegateViewModel parent, ParsedXmlElementBase xmlDoc) {
 			if(null == type) throw new ArgumentNullException("type");
 			if(null == parent) throw new ArgumentNullException("parent");
 			Contract.EndContractBlock();
@@ -25,16 +29,10 @@ namespace DandyDoc.ViewModels
 
 		IDefinitionViewModel IReturnViewModel.Parent { get { return Parent; } }
 
-		public MethodViewModel Parent { get; private set; }
+		public DelegateViewModel Parent { get; private set; }
 
 		public string EnsuresQuickSummary{
-			get {
-				if (Parent.EnsuresResultNotNullOrEmpty)
-					return "not null and not empty";
-				if (Parent.EnsuresResultNotNull)
-					return "not null";
-				return null;
-			}
+			get { return null; }
 		}
 
 	}

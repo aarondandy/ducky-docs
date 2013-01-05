@@ -194,6 +194,8 @@ namespace DandyDoc.ViewModels
 		private readonly Lazy<CategorizedEvents> _categorizedExposedEvents;
 		private readonly Lazy<ReadOnlyCollection<TypeDefinition>> _nestedExposedTypes;
 		private readonly Lazy<ReadOnlyCollection<TypeDefinition>> _delegateExposedTypes;
+		private readonly Lazy<ReadOnlyCollection<TypeReference>> _baseChain;
+		private readonly Lazy<ReadOnlyCollection<TypeReference>> _interfaces;
 
 		public TypeViewModel(TypeDefinition definition, XmlDocOverlay xmlDocOverlay, CrefOverlay crefOverlay = null)
 			: base(definition, xmlDocOverlay, crefOverlay)
@@ -206,6 +208,31 @@ namespace DandyDoc.ViewModels
 			_categorizedExposedEvents = new Lazy<CategorizedEvents>(() => new CategorizedEvents(Definition.Events.Where(x => x.IsExternallyVisible())));
 			_nestedExposedTypes = new Lazy<ReadOnlyCollection<TypeDefinition>>(() => Array.AsReadOnly(Definition.NestedTypes.Where(x => x.IsExternallyVisible() && !x.IsDelegateType()).ToArray()));
 			_delegateExposedTypes = new Lazy<ReadOnlyCollection<TypeDefinition>>(() => Array.AsReadOnly(Definition.NestedTypes.Where(x => x.IsExternallyVisible() && x.IsDelegateType()).ToArray()));
+			_baseChain = new Lazy<ReadOnlyCollection<TypeReference>>(BuildBaseChain);
+			_interfaces = new Lazy<ReadOnlyCollection<TypeReference>>(BuildDirectInterfaceList);
+		}
+
+		private ReadOnlyCollection<TypeReference> BuildDirectInterfaceList() {
+			var results = new List<TypeReference>();
+			if (Definition.HasInterfaces) {
+				results.AddRange(Definition.Interfaces);
+			}
+			return new ReadOnlyCollection<TypeReference>(results);
+		}
+
+		private ReadOnlyCollection<TypeReference> BuildBaseChain() {
+			var results = new List<TypeReference>();
+			if (!Definition.IsInterface) {
+				var currentReference = Definition.BaseType;
+				while (null != currentReference) {
+					var currentDefinition = currentReference.Resolve();
+					if (null == currentDefinition)
+						break;
+					results.Add(currentReference);
+					currentReference = currentDefinition.BaseType;
+				}
+			}
+			return new ReadOnlyCollection<TypeReference>(results);
 		}
 
 		public override string Title{
@@ -291,6 +318,27 @@ namespace DandyDoc.ViewModels
 			return results;
 		}
 
+		public bool HasBaseChain {
+			get {
+				var baseChain = _baseChain.Value;
+				return null != baseChain && baseChain.Count > 0;
+			}
+		}
+
+		public IList<TypeReference> BaseChain {
+			get { return _baseChain.Value; }
+		}
+
+		public bool HasImplementedInterfaces {
+			get {
+				var interfaces = _interfaces.Value;
+				return null != interfaces && interfaces.Count > 0;
+			}
+		}
+
+		public IList<TypeReference> ImplementedInterfaces {
+			get { return _interfaces.Value; }
+		}
 		public ReadOnlyCollection<TypeDefinition> ExposedNestedTypes { get {
 			Contract.Ensures(Contract.Result<ReadOnlyCollection<TypeDefinition>>() != null);
 			return _nestedExposedTypes.Value;
@@ -399,6 +447,12 @@ namespace DandyDoc.ViewModels
 			if (null == definitions) throw new ArgumentNullException("definitions");
 			Contract.Ensures(Contract.Result<IEnumerable<TypeViewModel>>() != null);
 			return definitions.Select(d => new TypeViewModel(d, XmlDocOverlay, CrefOverlay));
+		}
+
+		public IEnumerable<TypeReferenceViewModel> ToTypeReferenceViewModels(IEnumerable<TypeReference> references) {
+			if (null == references) throw new ArgumentNullException("references");
+			Contract.Ensures(Contract.Result<IEnumerable<TypeReferenceViewModel>>() != null);
+			return references.Select(r => new TypeReferenceViewModel(r));
 		}
 
 		public IEnumerable<EnumValueViewModel> ToEnumValueViewModels(IEnumerable<FieldDefinition> definitions){

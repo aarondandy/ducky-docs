@@ -110,6 +110,8 @@
     <Compile Include="ClassWithContracts.cs" />
     <Compile Include="FlagsEnum.cs" />
     <Compile Include="Generic1.cs" />
+    <Compile Include="GenericDelegate.cs" />
+    <Compile Include="InGlobal.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ExposedVisibilityTestClasses.cs" />
     <Compile Include="Seal\SealedStuff.cs" />

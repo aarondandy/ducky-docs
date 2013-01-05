@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using DandyDoc.Overlays.Cref;
 using DandyDoc.Overlays.ExternalVisibility;
 using DandyDoc.Overlays.XmlDoc;
@@ -10,6 +12,49 @@ namespace DandyDoc.ViewModels
 {
 	public class PropertyViewModel : DefinitionViewModelBase<PropertyDefinition>
 	{
+
+		public class AccessorViewModel
+		{
+
+			private readonly Lazy<ReadOnlyCollection<MemberFlair>> _flair;
+
+			internal AccessorViewModel(MethodViewModel accessor, PropertyViewModel parent) {
+				Contract.Requires(null != accessor);
+				Contract.Requires(null != parent);
+				Accessor = accessor;
+				Parent = parent;
+				_flair = new Lazy<ReadOnlyCollection<MemberFlair>>(
+					() => new ReadOnlyCollection<MemberFlair>(
+						new ReadOnlyCollection<MemberFlair>(Accessor.Flair
+							.Where(f => Parent.Flair.All(x => x.Id != f.Id))
+							.ToList()
+						)
+					)
+				);
+			}
+
+			public MethodViewModel Accessor { get; private set; }
+
+			public PropertyViewModel Parent { get; private set; }
+
+			public IList<MemberFlair> Flair {
+				get { return _flair.Value; }
+			}
+
+			public bool HasFlair {
+				get { return Flair.Count > 0; }
+			}
+
+			public bool WorthDisplaying {
+				get {
+					return HasFlair
+						|| Accessor.HasExceptions
+						|| Accessor.HasRequires
+						|| Accessor.HasEnsures;
+				}
+			}
+
+		}
 
 		public PropertyViewModel(PropertyDefinition definition, XmlDocOverlay xmlDocOverlay, CrefOverlay crefOverlay = null)
 			: base(definition, xmlDocOverlay, crefOverlay)
@@ -35,16 +80,17 @@ namespace DandyDoc.ViewModels
 
 			var getExposed = null != getMethod && getMethod.IsExternallyVisible();
 			var setExposed = null != setMethod && setMethod.IsExternallyVisible();
+
 			if (getExposed && setExposed) {
-				if (GetViewModel.AllResultsAndParamsNotNull && SetViewModel.AllResultsAndParamsNotNull)
+				if (GetAccessorViewModel().Accessor.AllResultsAndParamsNotNull && SetAccessorViewModel().Accessor.AllResultsAndParamsNotNull)
 					yield return new MemberFlair("no nulls", "Null Values", "This property does not return or accept null.");
 			}
 			else if (getExposed) {
-				if (GetViewModel.AllResultsAndParamsNotNull)
+				if (GetAccessorViewModel().Accessor.AllResultsAndParamsNotNull)
 					yield return new MemberFlair("no nulls", "Null Values", "This property does not return null.");
 			}
 			else if (setExposed){
-				if (SetViewModel.AllResultsAndParamsNotNull)
+				if (SetAccessorViewModel().Accessor.AllResultsAndParamsNotNull)
 					yield return new MemberFlair("no nulls", "Null Values", "This property does not accept null.");
 			}
 
@@ -148,20 +194,20 @@ namespace DandyDoc.ViewModels
 			get { return null == XmlDoc ? null : XmlDoc.SetterDocs; }
 		}
 
-		public MethodViewModel GetViewModel {
-			get {
-				if(null == Definition.GetMethod) throw new InvalidOperationException("Property has no getter.");
-				Contract.EndContractBlock();
-				return new MethodViewModel(Definition.GetMethod, XmlDocOverlay, CrefOverlay, GetterDocs);
-			}
+		public AccessorViewModel GetAccessorViewModel() {
+			if(null == Definition.GetMethod) throw new InvalidOperationException("Property has no getter.");
+			Contract.EndContractBlock();
+			return new AccessorViewModel(
+				new MethodViewModel(Definition.GetMethod, XmlDocOverlay, CrefOverlay, GetterDocs),
+				this);
 		}
 
-		public MethodViewModel SetViewModel {
-			get {
-				if (null == Definition.SetMethod) throw new InvalidOperationException("Property has no setter.");
-				Contract.EndContractBlock();
-				return new MethodViewModel(Definition.SetMethod, XmlDocOverlay, CrefOverlay, SetterDocs);
-			}
+		public AccessorViewModel SetAccessorViewModel() {
+			if (null == Definition.SetMethod) throw new InvalidOperationException("Property has no setter.");
+			Contract.EndContractBlock();
+			return new AccessorViewModel(
+				new MethodViewModel(Definition.SetMethod, XmlDocOverlay, CrefOverlay, SetterDocs),
+				this);
 		}
 
 	}

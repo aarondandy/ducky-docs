@@ -40,13 +40,13 @@ namespace DandyDoc.Overlays.Cref
 		private TypeDefinition GetTypeDefinition(ParsedCref parsedCref) {
 			Contract.Requires(null != parsedCref);
 			if (!String.IsNullOrEmpty(parsedCref.TargetType) && !String.Equals("T", parsedCref.TargetType, StringComparison.OrdinalIgnoreCase))
-				return null;
+				throw new NotSupportedException("The given CRef type is not supported: " + parsedCref.TargetType);
 			if (!String.IsNullOrEmpty(parsedCref.ParamParts))
 				return null;
 			var typeName = parsedCref.CoreName;
-			if (String.IsNullOrEmpty(typeName))
-				return null;
-			return AssemblyDefinitionCollection
+			return String.IsNullOrEmpty(typeName)
+				? null
+				: AssemblyDefinitionCollection
 				.Select(x => GetTypeDefinition(x, typeName))
 				.FirstOrDefault(x => null != x);
 		}
@@ -59,11 +59,19 @@ namespace DandyDoc.Overlays.Cref
 				var typeNamespace = type.Namespace;
 				if(typeName.Length <= typeNamespace.Length)
 					continue;
-				if (!typeName.StartsWith(typeNamespace))
-					continue;
-				if(typeName[typeNamespace.Length] != '.')
-					continue;
-				var typeOnly = typeName.Substring(typeNamespace.Length + 1);
+
+				string typeOnly;
+				if (!String.IsNullOrEmpty(typeNamespace)) {
+					if (!typeName.StartsWith(typeNamespace))
+						continue;
+					Contract.Assume(typeName[typeNamespace.Length] == '.');
+					typeOnly = typeName.Substring(typeNamespace.Length + 1);
+					if (String.IsNullOrEmpty(typeOnly))
+						continue;
+				}
+				else {
+					typeOnly = typeName;
+				}
 				Contract.Assume(!String.IsNullOrEmpty(typeOnly));
 				var result = ResolveTypeByName(type, typeOnly);
 				if (null != result)
@@ -87,6 +95,7 @@ namespace DandyDoc.Overlays.Cref
 			var offset = firstDotIndex + 1;
 			if (offset >= typeName.Length)
 				return null;
+
 			var otherNamePart = typeName.Substring(offset);
 
 			foreach (var nestedType in type.NestedTypes) {
@@ -104,15 +113,16 @@ namespace DandyDoc.Overlays.Cref
 			var parsedCref = new ParsedCref(cref);
 			if (String.Equals("T", parsedCref.TargetType, StringComparison.OrdinalIgnoreCase))
 				return GetTypeDefinition(parsedCref);
-			return AssemblyDefinitionCollection.Select(x => GetMemberDefinition(x, parsedCref)).FirstOrDefault(x => null != x);
+			return AssemblyDefinitionCollection.Select(x => GetMemberDefinitionExcludingTypes(x, parsedCref)).FirstOrDefault(x => null != x)
+				?? GetTypeDefinition(parsedCref);
 		}
 
-		private IMemberDefinition GetMemberDefinition(AssemblyDefinition assemblyDefinition, ParsedCref parsedCref) {
+		private IMemberDefinition GetMemberDefinitionExcludingTypes(AssemblyDefinition assemblyDefinition, ParsedCref parsedCref) {
 			Contract.Requires(null != assemblyDefinition);
 			Contract.Requires(null != parsedCref);
 
 			var lastDotIndex = parsedCref.CoreName.LastIndexOf('.');
-			if (lastDotIndex <= 0)
+			if (lastDotIndex <= 0 || (parsedCref.CoreName.Length-1) == lastDotIndex)
 				return null;
 
 			var typeName = parsedCref.CoreName.Substring(0, lastDotIndex);
@@ -127,8 +137,8 @@ namespace DandyDoc.Overlays.Cref
 				var paramTypes = parsedCref.ParamPartTypes;
 				return type.Methods.FirstOrDefault(m => MethodMatches(m, memberName, paramTypes))
 					?? type.Properties.FirstOrDefault(p => PropertyMatches(p, memberName, paramTypes))
-					?? type.Fields.FirstOrDefault(f => FieldMatches(f, memberName))
-					?? (type.Events.FirstOrDefault(e => EventMatches(e, memberName)) as IMemberDefinition);
+					?? type.Events.FirstOrDefault(e => EventMatches(e, memberName))
+					?? (type.Fields.FirstOrDefault(f => FieldMatches(f, memberName)) as IMemberDefinition);
 			}
 			else if ("M".Equals(parsedCref.TargetType, StringComparison.OrdinalIgnoreCase)) {
 				var paramTypes = parsedCref.ParamPartTypes;
@@ -145,7 +155,7 @@ namespace DandyDoc.Overlays.Cref
 				return type.Events.FirstOrDefault(e => EventMatches(e, memberName));
 			}
 			else {
-				throw new NotSupportedException();
+				throw new NotSupportedException("The given CRef type is not supported: " + parsedCref.TargetType);
 			}
 		}
 
@@ -307,16 +317,12 @@ namespace DandyDoc.Overlays.Cref
 				return GetCref((TypeReference)memberRef, hideCrefType);
 
 			var type = memberRef.DeclaringType;
-			if (null == type) {
-				throw new InvalidOperationException("The given member has an invalid declaring type.");
-			}
+			Contract.Assume(null != type);
 			var typeCref = GetCref(type, true);
 			var memberCref = memberRef.Name;
-			if(String.IsNullOrEmpty(memberCref))
-				throw new InvalidOperationException("The given member has an invalid name.");
+			Contract.Assume(!String.IsNullOrEmpty(memberCref));
 
-			char crefTypePrefix;
-
+			char crefTypePrefix = '\0';
 			var methodDefinition = memberRef as MethodDefinition;
 			if (null != methodDefinition) {
 				if (methodDefinition.IsConstructor && memberCref.Length > 1 && memberCref[0] == '.') {
@@ -343,12 +349,9 @@ namespace DandyDoc.Overlays.Cref
 			else if (memberRef is EventDefinition) {
 				crefTypePrefix = 'E';
 			}
-			else {
-				throw new NotSupportedException();
-			}
 
 			var cref = typeCref + '.' + memberCref;
-			if (!hideCrefType)
+			if (!hideCrefType && crefTypePrefix != '\0')
 				cref = String.Concat(crefTypePrefix, ':', cref);
 
 			return cref;

@@ -234,6 +234,9 @@
     <Content Include="Views\Doc\Partials\EnsuresTable.cshtml" />
     <Content Include="Views\Doc\Partials\DefinitionSignatures.cshtml" />
     <Content Include="Views\Doc\Partials\GenericParameterListing.cshtml" />
+    <Content Include="Views\Doc\Partials\TypeReferenceList.cshtml" />
+    <Content Include="Views\Doc\Delegate.cshtml" />
+    <Content Include="Views\Doc\Partials\Accessor.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

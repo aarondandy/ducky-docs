@@ -1,14 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using DandyDoc.Overlays.XmlDoc;
 using Mono.Cecil;
 
 namespace DandyDoc.ViewModels
 {
-	public class ParameterViewModel : IParameterViewModel
+	public class DelegateParameterViewModel : IParameterViewModel
 	{
 
-		internal ParameterViewModel(ParameterDefinition definition, MethodViewModel parent, ParsedXmlElementBase xmlDoc) {
+		internal DelegateParameterViewModel(ParameterDefinition definition, TypeViewModel parent, ParsedXmlElementBase xmlDoc) {
 			if(null == definition) throw new ArgumentNullException("definition");
 			if(null == parent) throw new ArgumentNullException("parent");
 			Contract.EndContractBlock();
@@ -27,16 +31,10 @@ namespace DandyDoc.ViewModels
 
 		IDefinitionViewModel IParameterViewModel.Parent { get { return Parent; } }
 
-		public MethodViewModel Parent { get; private set; }
+		public TypeViewModel Parent { get; private set; }
 
 		public string RequiresQuickSummary{
 			get{
-				var name = Definition.Name;
-				Contract.Assume(!String.IsNullOrEmpty(name));
-				if (Parent.RequiresParameterNotNullOrEmpty(name))
-					return "not null and not empty";
-				if (Parent.RequiresParameterNotNull(name))
-					return "not null";
 				return null;
 			}
 		}

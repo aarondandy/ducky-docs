@@ -42,10 +42,16 @@ namespace Mvc4WebDirectDocSample.Controllers
 			ViewResult viewResult;
 			if (reference is TypeDefinition){
 				var typeDefinition = (TypeDefinition) reference;
-				if(typeDefinition.IsEnum)
-					viewResult = View("Enum", new TypeViewModel(typeDefinition, XmlDocOverlay));
-				else
-					viewResult = View("Type", new TypeViewModel(typeDefinition, XmlDocOverlay));
+				if (typeDefinition.IsDelegateType()) {
+					var delegateViewModel = new DelegateViewModel(typeDefinition, XmlDocOverlay);
+					viewResult = View("Delegate", delegateViewModel);
+				}
+				else {
+					var typeViewModel = new TypeViewModel(typeDefinition, XmlDocOverlay);
+					viewResult = View(
+						typeDefinition.IsEnum ? "Enum" : "Type",
+						typeViewModel);
+				}
 			}
 			else if (reference is MethodDefinition) {
 				viewResult = View("Method", new MethodViewModel((MethodDefinition)reference, XmlDocOverlay));

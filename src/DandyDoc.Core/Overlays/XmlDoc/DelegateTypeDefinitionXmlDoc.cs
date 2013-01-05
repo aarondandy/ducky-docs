@@ -25,7 +25,7 @@ namespace DandyDoc.Overlays.XmlDoc
 			return ParameterizedXmlDocBase.DocsForParameter(name, this);
 		}
 
-		public ParsedXmlNodeBase Returns { get { return SelectParsedXmlNode("returns"); } }
+		public ParsedXmlElementBase Returns { get { return SelectParsedXmlNode("returns") as ParsedXmlElementBase; } }
 
 		public IList<ParsedXmlException> Exceptions {
 			get{

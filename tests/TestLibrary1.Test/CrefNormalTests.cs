@@ -34,6 +34,16 @@ namespace TestLibrary1.Test
 		}
 
 		[Test]
+		public void cref_to_normal_class_guess_cref_type() {
+			var assembly = GetAssembly();
+			var crefOverlay = new CrefOverlay(new AssemblyDefinitionCollection { assembly });
+			var type = crefOverlay.GetReference("TestLibrary1.Class1");
+			Assert.IsNotNull(type);
+			Assert.IsInstanceOf(typeof(TypeDefinition), type);
+			Assert.AreEqual("Class1", type.Name);
+		}
+
+		[Test]
 		public void cref_from_normal_class() {
 			var assembly = GetAssembly();
 			var type = GetType(assembly, "Class1");
@@ -51,6 +61,16 @@ namespace TestLibrary1.Test
 		}
 
 		[Test]
+		public void cref_to_normal_method_no_params_guess_type() {
+			var assembly = GetAssembly();
+			var crefOverlay = new CrefOverlay(new AssemblyDefinitionCollection { assembly });
+			var member = crefOverlay.GetReference("TestLibrary1.Class1.BlankStatic");
+			Assert.IsNotNull(member);
+			Assert.IsInstanceOf(typeof(MethodDefinition), member);
+			Assert.AreEqual("BlankStatic", member.Name);
+		}
+
+		[Test]
 		public void cref_from_normal_method_no_params() {
 			var assembly = GetAssembly();
 			var type = GetType(assembly, "Class1");
@@ -64,6 +84,17 @@ namespace TestLibrary1.Test
 			var assembly = GetAssembly();
 			var crefOverlay = new CrefOverlay(new AssemblyDefinitionCollection { assembly });
 			var method = crefOverlay.GetMemberDefinition("M:TestLibrary1.Class1.DoubleStatic(System.Double)") as MethodDefinition;
+			Assert.IsNotNull(method);
+			Assert.AreEqual("DoubleStatic", method.Name);
+			Assert.AreEqual(1, method.Parameters.Count);
+			Assert.AreEqual("System.Double", method.Parameters[0].ParameterType.FullName);
+		}
+
+		[Test]
+		public void cref_to_normal_method_one_param_guess_type() {
+			var assembly = GetAssembly();
+			var crefOverlay = new CrefOverlay(new AssemblyDefinitionCollection { assembly });
+			var method = crefOverlay.GetReference("TestLibrary1.Class1.DoubleStatic(System.Double)") as MethodDefinition;
 			Assert.IsNotNull(method);
 			Assert.AreEqual("DoubleStatic", method.Name);
 			Assert.AreEqual(1, method.Parameters.Count);
@@ -89,6 +120,15 @@ namespace TestLibrary1.Test
 		}
 
 		[Test]
+		public void cref_to_normal_property_guess_type() {
+			var assembly = GetAssembly();
+			var crefOverlay = new CrefOverlay(new AssemblyDefinitionCollection { assembly });
+			var property = crefOverlay.GetMemberDefinition("TestLibrary1.Class1.SomeProperty") as PropertyDefinition;
+			Assert.IsNotNull(property);
+			Assert.AreEqual("SomeProperty", property.Name);
+		}
+
+		[Test]
 		public void cref_from_normal_property() {
 			var assembly = GetAssembly();
 			var type = GetType(assembly, "Class1");
@@ -102,6 +142,15 @@ namespace TestLibrary1.Test
 			var assembly = GetAssembly();
 			var crefOverlay = new CrefOverlay(new AssemblyDefinitionCollection { assembly });
 			var field = crefOverlay.GetMemberDefinition("F:TestLibrary1.Class1.SomeField") as FieldDefinition;
+			Assert.IsNotNull(field);
+			Assert.AreEqual("SomeField", field.Name);
+		}
+
+		[Test]
+		public void cref_to_normal_field_guess_type() {
+			var assembly = GetAssembly();
+			var crefOverlay = new CrefOverlay(new AssemblyDefinitionCollection { assembly });
+			var field = crefOverlay.GetMemberDefinition("TestLibrary1.Class1.SomeField") as FieldDefinition;
 			Assert.IsNotNull(field);
 			Assert.AreEqual("SomeField", field.Name);
 		}
@@ -156,6 +205,16 @@ namespace TestLibrary1.Test
 			var assembly = GetAssembly();
 			var crefOverlay = new CrefOverlay(new AssemblyDefinitionCollection { assembly });
 			var evt = crefOverlay.GetMemberDefinition("E:TestLibrary1.Class1.DoStuff") as EventDefinition;
+			Assert.IsNotNull(evt);
+			Assert.AreEqual("DoStuff", evt.Name);
+			Assert.AreEqual("MyFunc", evt.EventType.Name);
+		}
+
+		[Test]
+		public void cref_to_normal_event_guess_type() {
+			var assembly = GetAssembly();
+			var crefOverlay = new CrefOverlay(new AssemblyDefinitionCollection { assembly });
+			var evt = crefOverlay.GetMemberDefinition("TestLibrary1.Class1.DoStuff") as EventDefinition;
 			Assert.IsNotNull(evt);
 			Assert.AreEqual("DoStuff", evt.Name);
 			Assert.AreEqual("MyFunc", evt.EventType.Name);
@@ -324,6 +383,78 @@ namespace TestLibrary1.Test
 			var prop = type.Properties.First(x => x.Name == "Name");
 			var crefOverlay = new CrefOverlay(new AssemblyDefinitionCollection { assembly });
 			Assert.AreEqual("P:TestLibrary1.Class1.Inner.Name", crefOverlay.GetCref(prop));
+		}
+
+		[Test]
+		public void cref_to_global_namespace_type() {
+			var assembly = GetAssembly();
+			var crefOverlay = new CrefOverlay(new AssemblyDefinitionCollection { assembly });
+			var type = crefOverlay.GetTypeDefinition("T:InGlobal");
+			Assert.IsNotNull(type);
+			Assert.AreEqual("InGlobal", type.Name);
+		}
+
+		[Test]
+		public void cref_to_global_namespace_guess_type() {
+			var assembly = GetAssembly();
+			var crefOverlay = new CrefOverlay(new AssemblyDefinitionCollection { assembly });
+			var type = crefOverlay.GetMemberDefinition("InGlobal");
+			Assert.IsNotNull(type);
+			Assert.AreEqual("InGlobal", type.Name);
+		}
+
+		[Test]
+		public void cref_from_global_namespace_type() {
+			var assembly = GetAssembly();
+			var type = GetType(assembly, "InGlobal");
+			var crefOverlay = new CrefOverlay(new AssemblyDefinitionCollection { assembly });
+			Assert.AreEqual("T:InGlobal", crefOverlay.GetCref(type));
+		}
+
+		[Test]
+		public void invalid_double_dot_cref_to_type() {
+			var assembly = GetAssembly();
+			var crefOverlay = new CrefOverlay(new AssemblyDefinitionCollection { assembly });
+			var type = crefOverlay.GetMemberDefinition("TestLibrary1..Class1");
+			Assert.IsNull(type);
+		}
+
+		[Test]
+		public void invalid_trailing_dot_cref_to_type() {
+			var assembly = GetAssembly();
+			var crefOverlay = new CrefOverlay(new AssemblyDefinitionCollection { assembly });
+			var type = crefOverlay.GetMemberDefinition("TestLibrary1.Class1.");
+			Assert.IsNull(type);
+		}
+
+		[Test]
+		public void invalid_double_dot_namespace_cref_to_type() {
+			var assembly = GetAssembly();
+			var crefOverlay = new CrefOverlay(new AssemblyDefinitionCollection { assembly });
+			var type = crefOverlay.GetMemberDefinition("TestLibrary1..Seal.NotSealed");
+			Assert.IsNull(type);
+		}
+
+		[Test]
+		public void invalid_empty_cref_to_type() {
+			var assembly = GetAssembly();
+			var crefOverlay = new CrefOverlay(new AssemblyDefinitionCollection { assembly });
+			var type = crefOverlay.GetTypeDefinition("T:");
+			Assert.IsNull(type);
+		}
+
+		[Test]
+		public void invalid_cref_type_to_type() {
+			var assembly = GetAssembly();
+			var crefOverlay = new CrefOverlay(new AssemblyDefinitionCollection { assembly });
+			Assert.Throws<NotSupportedException>(() => crefOverlay.GetTypeDefinition("Z:TestLibrary1.Class1"));
+		}
+
+		[Test]
+		public void invalid_cref_type_to_member() {
+			var assembly = GetAssembly();
+			var crefOverlay = new CrefOverlay(new AssemblyDefinitionCollection { assembly });
+			Assert.Throws<NotSupportedException>(() => crefOverlay.GetMemberDefinition("Z:TestLibrary1.Class1.DoubleStatic(System.Int32)"));
 		}
 
 	}

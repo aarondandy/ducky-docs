@@ -11,6 +11,23 @@
 	Html.RenderPartial("Partials/NamespaceAndAssembly", Model.AssemblyNamespace);
 	if(Model.HasSignatures){Html.RenderPartial("Partials/DefinitionSignatures", Model.Signatures);}
 }
+@if (Model.HasBaseChain || Model.HasImplementedInterfaces) {
+	<h2>Inheritance</h2>
+	<div class="thumbnails">
+	@if (Model.HasBaseChain) {
+			<dl class="span6">
+				<dt>Base Types</dt>
+				<dd>@{ Html.RenderPartial("Partials/TypeReferenceList", Model.ToTypeReferenceViewModels(Model.BaseChain.Reverse())); }</dd>
+			</dl>
+	}
+	@if (Model.HasImplementedInterfaces) {
+			<dl class="span6">
+				<dt>Implements</dt>
+				<dd>@{ Html.RenderPartial("Partials/TypeReferenceList", Model.ToTypeReferenceViewModels(Model.ImplementedInterfaces)); }</dd>
+			</dl>
+	}
+	</div>
+}
 @if (Model.Definition.HasGenericParameters){
 	Html.RenderPartial("Partials/GenericParameterListing", Model.ToGenericParameterViewModels(Model.Definition.GenericParameters));
 }

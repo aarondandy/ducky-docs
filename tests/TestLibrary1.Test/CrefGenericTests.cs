@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using DandyDoc;
 using DandyDoc.Overlays.Cref;
 using Mono.Cecil;

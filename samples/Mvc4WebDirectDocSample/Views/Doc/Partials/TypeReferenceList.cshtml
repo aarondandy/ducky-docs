@@ -1,0 +1,5 @@
+﻿@model IEnumerable<DandyDoc.ViewModels.TypeReferenceViewModel>
+<ul class="unstyled">@foreach (var b in Model) {
+	var ns = b.Reference.Namespace;	 
+	<li style="text-indent: -7px;">@if(!String.IsNullOrEmpty(ns)){<small>@(ns).</small>}@b.ShortName</li>
+}</ul>

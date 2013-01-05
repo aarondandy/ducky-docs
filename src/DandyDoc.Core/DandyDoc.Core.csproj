@@ -164,6 +164,9 @@
     <Compile Include="Utility\NameUtility.cs" />
     <Compile Include="Utility\TextUtility.cs" />
     <Compile Include="ViewModels\DefinitionViewModelBase.cs" />
+    <Compile Include="ViewModels\DelegateParameterViewModel.cs" />
+    <Compile Include="ViewModels\DelegateReturnViewModel.cs" />
+    <Compile Include="ViewModels\DelegateViewModel.cs" />
     <Compile Include="ViewModels\EnsuresViewModel.cs" />
     <Compile Include="ViewModels\EnumValueViewModel.cs" />
     <Compile Include="ViewModels\EventViewModel.cs" />
@@ -172,6 +175,8 @@
     <Compile Include="ViewModels\GenericParameterTypeViewModel.cs" />
     <Compile Include="ViewModels\GenericParameterViewModelBase.cs" />
     <Compile Include="ViewModels\IDefinitionViewModel.cs" />
+    <Compile Include="ViewModels\IParameterViewModel.cs" />
+    <Compile Include="ViewModels\IReturnViewModel.cs" />
     <Compile Include="ViewModels\MemberFlair.cs" />
     <Compile Include="ViewModels\MethodViewModel.cs" />
     <Compile Include="ViewModels\AssemblyNamespaceViewModel.cs" />
@@ -181,6 +186,7 @@
     <Compile Include="ViewModels\ReturnViewModel.cs" />
     <Compile Include="ViewModels\TypeNavigationNamespaceViewModelcs.cs" />
     <Compile Include="ViewModels\TypeNavigationViewModel.cs" />
+    <Compile Include="ViewModels\TypeReferenceViewModel.cs" />
     <Compile Include="ViewModels\TypeViewModel.cs" />
   </ItemGroup>
   <ItemGroup />
