@@ -65,5 +65,15 @@ namespace DandyDoc
 			base.SetItem(index, item);
 		}
 
+		public bool ContainsDefinition(MemberReference reference){
+			if (null == reference)
+				return false;
+			var module = reference.Module;
+			if (null == module)
+				return false;
+			var assembly = module.Assembly;
+			return Contains(assembly);
+		}
+
 	}
 }

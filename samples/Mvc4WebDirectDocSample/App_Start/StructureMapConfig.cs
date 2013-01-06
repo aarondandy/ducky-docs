@@ -12,6 +12,7 @@ using DandyDoc.ViewModels;
 using Microsoft.Practices.ServiceLocation;
 using StructureMap;
 using IDependencyResolver = System.Web.Http.Dependencies.IDependencyResolver;
+using DandyDoc.Overlays.MsdnLinks;
 
 
 namespace Mvc4WebDirectDocSample.App_Start
@@ -45,6 +46,7 @@ namespace Mvc4WebDirectDocSample.App_Start
 					c.GetInstance<CrefOverlay>()
 				)
 			);
+			x.For<IMsdnLinkOverlay>().Use(_ => new MsdnDynamicLinkOverlay());
 		}
 
 		public class Scope : ServiceLocatorImplBase, IDependencyScope

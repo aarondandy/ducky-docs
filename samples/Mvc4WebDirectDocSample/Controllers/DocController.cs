@@ -3,6 +3,7 @@ using System.Diagnostics.Contracts;
 using System.Web.Mvc;
 using DandyDoc;
 using DandyDoc.Overlays.Cref;
+using DandyDoc.Overlays.MsdnLinks;
 using DandyDoc.ViewModels;
 using Mono.Cecil;
 using DandyDoc.Overlays.XmlDoc;
@@ -16,12 +17,14 @@ namespace Mvc4WebDirectDocSample.Controllers
 			AssemblyDefinitionCollection assemblyDefinitionCollection,
 			CrefOverlay crefOverlay,
 			XmlDocOverlay xmlDocOverlay,
-			TypeNavigationViewModel typeNavigationViewModel
+			TypeNavigationViewModel typeNavigationViewModel,
+			IMsdnLinkOverlay msdnLinkOverlay
 		) {
 			AssemblyDefinitionCollection = assemblyDefinitionCollection;
 			CrefOverlay = crefOverlay;
 			XmlDocOverlay = xmlDocOverlay;
 			TypeNavigationViewModel = typeNavigationViewModel;
+			MsdnLinkOverlay = msdnLinkOverlay;
 		}
 
 		public AssemblyDefinitionCollection AssemblyDefinitionCollection { get; private set; }
@@ -31,6 +34,8 @@ namespace Mvc4WebDirectDocSample.Controllers
 		public XmlDocOverlay XmlDocOverlay { get; private set; }
 
 		public TypeNavigationViewModel TypeNavigationViewModel { get; private set; }
+
+		public IMsdnLinkOverlay MsdnLinkOverlay { get; private set; }
 
 		public ActionResult Index(string cref) {
 			if(String.IsNullOrEmpty(cref))
@@ -70,6 +75,8 @@ namespace Mvc4WebDirectDocSample.Controllers
 			}
 			Contract.Assume(null != viewResult);
 			viewResult.ViewBag.TypeNavigationViewModel = TypeNavigationViewModel;
+			viewResult.ViewBag.CrefOverlay = CrefOverlay;
+			viewResult.ViewBag.MsdnLinkOverlay = MsdnLinkOverlay;
 			return viewResult;
 		}
 

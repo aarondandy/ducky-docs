@@ -1,5 +1,57 @@
-﻿@model IEnumerable<DandyDoc.ViewModels.TypeReferenceViewModel>
+﻿@using DandyDoc.Overlays.Cref
+@using DandyDoc.Overlays.MsdnLinks
+@using DandyDoc.ViewModels
+@using Mono.Cecil
+@model IEnumerable<DandyDoc.ViewModels.TypeReferenceViewModel>
+@functions{
+
+	private string GetLink(TypeReferenceViewModel referenceViewModel){
+		if (null == referenceViewModel)
+			return null;
+		var definition = referenceViewModel.Definition;
+		if (null == definition)
+			return null;
+
+		var crefOverlay = (ViewBag.CrefOverlay) as CrefOverlay;
+		if (null != crefOverlay && crefOverlay.AssemblyDefinitionCollection.ContainsDefinition(definition)){
+			var cref = crefOverlay.GetCref(definition);
+			return Url.Action("Index","Doc",new{cref});
+		}
+
+		var fullName = definition.FullName;
+		if(fullName.StartsWith("System.") || fullName.StartsWith("Microsoft.")){
+			var msdnLinkOverlay = (ViewBag.MsdnLinkOverlay) as IMsdnLinkOverlay;
+			if (null != msdnLinkOverlay){
+				var result = msdnLinkOverlay.Search(fullName).ToList();
+				if (result.Count > 0){
+					return msdnLinkOverlay.GetUrl(result[0]);
+				}
+			}
+		}
+		return "Nope!";
+	}
+	
+	private IHtmlString GetItemContent(TypeReferenceViewModel reference){
+		if (null == reference)
+			return null;
+		var coreText = HttpUtility.HtmlEncode(reference.ShortName);
+		var ns = reference.Reference.Namespace;
+		if(!String.IsNullOrEmpty(ns)){
+			coreText = String.Concat("<small>", ns, ".</small>", coreText);
+		}
+
+		var link = GetLink(reference);
+		if (!String.IsNullOrEmpty(link)){
+			coreText = String.Concat("<a href=\"", link, "\">",coreText,"</a>");
+		}
+		return Html.Raw(coreText);
+	}
+
+}
 <ul class="unstyled">@foreach (var b in Model) {
-	var ns = b.Reference.Namespace;	 
-	<li style="text-indent: -7px;">@if(!String.IsNullOrEmpty(ns)){<small>@(ns).</small>}@b.ShortName</li>
+	var ns = b.Reference.Namespace;
+	var link = GetLink(b);
+	<li style="text-indent: -7px;">
+		@GetItemContent(b)
+	</li>
 }</ul>

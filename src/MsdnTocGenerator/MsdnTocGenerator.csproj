@@ -119,12 +119,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DandyDoc.Core\DandyDoc.Core.csproj">
-      <Project>{a09f4dac-290c-4abe-b053-071ec966008f}</Project>
-      <Name>DandyDoc.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Service References\MsdnContentService\ContentService.disco" />
     <None Include="Service References\MsdnContentService\configuration91.svcinfo" />
     <None Include="Service References\MsdnContentService\configuration.svcinfo" />
