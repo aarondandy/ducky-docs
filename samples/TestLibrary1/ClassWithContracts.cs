@@ -62,6 +62,22 @@ namespace TestLibrary1
 			}
 		}
 
+		/// <summary>
+		/// A non implemented property.
+		/// </summary>
+		/// <exception cref="System.NotSupportedException">Not supported!</exception>
+		public string NotImplemented{
+			get{
+				if(SameStuff == "stuff") throw new InvalidOperationException();
+				Contract.EndContractBlock();
+				throw new NotImplementedException();
+			}
+			set{
+				if(value == "Nope!") throw new Exception("NOPE!");
+				Contract.EndContractBlock();
+			}
+		}
+
 		[ContractInvariantMethod]
 		private void CodeContractInvariant(){
 			Contract.Invariant(!String.IsNullOrEmpty(Text));

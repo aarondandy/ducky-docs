@@ -15,7 +15,7 @@ namespace DandyDoc.ViewModels
 {
 
 	public abstract class DefinitionViewModelBase<TDefinition> : IDefinitionViewModel
-		where TDefinition : IMemberDefinition
+		where TDefinition : class, IMemberDefinition
 	{
 
 		private static readonly DisplayNameOverlay ShortNameOverlay = new DisplayNameOverlay();
@@ -61,21 +61,16 @@ namespace DandyDoc.ViewModels
 
 		public virtual IList<CodeSignature> Signatures { get { return _signatures.Value; } }
 
-		public virtual bool HasSignatures {
-			get {
-				var signatures = Signatures;
-				return null != signatures && signatures.Count > 0;
-			}
-		}
+		public virtual bool HasSignatures { get { return CollectionUtility.IsNotNullOrEmpty(Signatures); } }
 
 		protected virtual MemberFlair VisibilityFlair {
 			get {
 				Contract.Ensures(Contract.Result<MemberFlair>() != null);
 				switch (ExternalVisibilityOverlay.Get(Definition)) {
-				case ExternalVisibilityKind.Hidden: return new MemberFlair("hidden","Visibility","Not externally visible.");
-				case ExternalVisibilityKind.Protected: return new MemberFlair("protected","Visibility", "Externally visible only through inheritance.");
-				case ExternalVisibilityKind.Public: return new MemberFlair("public","Visibility", "Externally visible.");
-				default: throw new InvalidOperationException("This visibility level is not supported.");
+					case ExternalVisibilityKind.Hidden: return new MemberFlair("hidden","Visibility","Not externally visible.");
+					case ExternalVisibilityKind.Protected: return new MemberFlair("protected","Visibility", "Externally visible only through inheritance.");
+					case ExternalVisibilityKind.Public: return new MemberFlair("public","Visibility", "Externally visible.");
+					default: throw new InvalidOperationException("This visibility level is not supported.");
 				}
 			}
 		}
@@ -95,43 +90,27 @@ namespace DandyDoc.ViewModels
 				Contract.Ensures(Contract.Result<IList<string>>() != null);
 				return _flair.Value;
 			}
-		} 
-
-		public ParsedXmlElementBase Summary {
-			get { return null == XmlDoc ? null : XmlDoc.Summary; }
 		}
 
-		public bool HasSummary { get { return Summary != null; } }
+		public bool HasFlair { get { return CollectionUtility.IsNotNullOrEmpty(Flair); } }
 
-		public ParsedXmlElementBase Remarks {
-			get { return null == XmlDoc ? null : XmlDoc.Remarks; }
-		}
+		public virtual ParsedXmlElementBase Summary { get { return null == XmlDoc ? null : XmlDoc.Summary; } }
 
-		public bool HasRemarks { get { return Remarks != null; } }
+		public virtual bool HasSummary { get { return Summary != null; } }
 
-		public IList<ParsedXmlElementBase> Examples {
-			get { return null == XmlDoc ? null : XmlDoc.Examples; }
-		}
+		public virtual ParsedXmlElementBase Remarks { get { return null == XmlDoc ? null : XmlDoc.Remarks; } }
 
-		public bool HasExamples{
-			get{
-				var examples = Examples;
-				return null != examples && examples.Count > 0;
-			}
-		}
+		public virtual bool HasRemarks { get { return Remarks != null; } }
 
-		public IList<ParsedXmlSeeElement> SeeAlso {
-			get { return null == XmlDoc ? null : XmlDoc.SeeAlso; }
-		}
+		public virtual IList<ParsedXmlElementBase> Examples { get { return null == XmlDoc ? null : XmlDoc.Examples; } }
 
-		public bool HasSeeAlso{
-			get {
-				var seeAlso = SeeAlso;
-				return null != seeAlso && seeAlso.Count > 0;
-			}
-		}
+		public virtual bool HasExamples { get { return CollectionUtility.IsNotNullOrEmpty(Examples); } }
 
-		public AssemblyNamespaceViewModel AssemblyNamespace {
+		public virtual IList<ParsedXmlSeeElement> SeeAlso { get { return null == XmlDoc ? null : XmlDoc.SeeAlso; } }
+
+		public virtual bool HasSeeAlso { get { return CollectionUtility.IsNotNullOrEmpty(SeeAlso); } }
+
+		public virtual AssemblyNamespaceViewModel AssemblyNamespace {
 			get {
 				Contract.Ensures(Contract.Result<AssemblyNamespaceViewModel>() != null);
 				return new AssemblyNamespaceViewModel(Definition);
@@ -140,6 +119,7 @@ namespace DandyDoc.ViewModels
 
 		public virtual string Title {
 			get{
+				Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
 				var name = ShortName;
 				var declaringType = Definition.DeclaringType;
 				if (null != declaringType) {
@@ -151,8 +131,19 @@ namespace DandyDoc.ViewModels
 
 		public abstract string SubTitle { get; }
 
-		public virtual string ShortName { get { return ShortNameOverlay.GetDisplayName(Definition); } }
+		public virtual string ShortName{
+			get{
+				Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
+				return ShortNameOverlay.GetDisplayName(Definition);
+			}
+		}
 
+		public IEnumerable<ExceptionViewModel> ToExceptionViewModels(IEnumerable<ParsedXmlException> exceptions){
+			if(null == exceptions) throw new ArgumentNullException("exceptions");
+			Contract.Ensures(Contract.Result<IEnumerable<ExceptionViewModel>>() != null);
+			return exceptions.Select(ex => new ExceptionViewModel(ex));
+		}
+			
 		[ContractInvariantMethod]
 		private void CodeContractInvariant() {
 			Contract.Invariant(null != Definition);

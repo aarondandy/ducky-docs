@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.Contracts;
+﻿using System.Diagnostics.Contracts;
 using DandyDoc.Overlays.Cref;
-using DandyDoc.Overlays.ExternalVisibility;
 using DandyDoc.Overlays.XmlDoc;
 using Mono.Cecil;
 

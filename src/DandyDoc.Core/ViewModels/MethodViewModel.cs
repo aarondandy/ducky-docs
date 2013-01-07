@@ -18,16 +18,14 @@ namespace DandyDoc.ViewModels
 		{
 			Contract.Requires(null != definition);
 			Contract.Requires(null != xmlDocOverlay);
-			Contract.EndContractBlock();
 			_xmlDocsOverride = xmlDocsOverride;
 		}
 
 		public override string Title {
 			get{
-				if (Definition.IsConstructor)
-					return ShortName;
-
-				return base.Title;
+				return Definition.IsConstructor
+					? ShortName
+					: base.Title;
 			}
 		}
 
@@ -38,16 +36,6 @@ namespace DandyDoc.ViewModels
 				if (Definition.IsOperatorOverload())
 					return "Operator";
 				return "Method";
-			}
-		}
-
-		public string InvokeName {
-			get {
-				if (Definition.IsConstructor)
-					return Definition.DeclaringType.Name;
-				if(Definition.IsOperatorOverload())
-					throw new NotImplementedException();
-				return Definition.Name;
 			}
 		}
 
@@ -72,10 +60,11 @@ namespace DandyDoc.ViewModels
 				yield return new MemberFlair("operator", "Operator", "This method is invoked through a language operator.");
 
 			if (Definition.IsSealed()) {
-				var subject = Definition.IsGetter
-					? "getter"
+				var subject =
+					Definition.IsGetter
+						? "getter"
 					: Definition.IsSetter
-					? "setter"
+						? "setter"
 					: "method";
 				yield return new MemberFlair("sealed", "Inheritance", String.Format("This {0} is sealed, preventing inheritance.", subject));
 			}
@@ -88,7 +77,7 @@ namespace DandyDoc.ViewModels
 			}
 		}
 
-		public bool IsPure {
+		public virtual bool IsPure {
 			get {
 				if (HasXmlDoc && XmlDoc.HasPureElement)
 					return true;
@@ -98,7 +87,7 @@ namespace DandyDoc.ViewModels
 			}
 		}
 
-		public bool AllResultsAndParamsNotNull{
+		public virtual bool AllResultsAndParamsNotNull{
 			get{
 
 				var hasReferenceReturn = HasReturn && !Definition.ReturnType.IsValueType;
@@ -129,42 +118,42 @@ namespace DandyDoc.ViewModels
 			}
 		}
 
-		public IList<ParsedXmlException> Exceptions {
+		public virtual IList<ParsedXmlException> Exceptions {
 			get { return null == XmlDoc ? null : MethodXmlDoc.Exceptions; }
 		}
 
-		public bool HasExceptions{
+		public virtual bool HasExceptions{
 			get{
 				var exceptions = Exceptions;
 				return null != exceptions && exceptions.Count > 0;
 			}
 		}
 
-		public IList<ParsedXmlContractCondition> Requires {
+		public virtual IList<ParsedXmlContractCondition> Requires {
 			get { return null == XmlDoc ? null : MethodXmlDoc.Requires; }
 		}
 
-		public bool HasRequires{
+		public virtual bool HasRequires{
 			get {
 				var requires = Requires;
 				return null != requires && requires.Count > 0;
 			}
 		}
 
-		public IList<ParsedXmlContractCondition> Ensures{
+		public virtual IList<ParsedXmlContractCondition> Ensures{
 			get { return null == XmlDoc ? null : MethodXmlDoc.Ensures; }
 		}
 
-		public bool HasEnsures {
+		public virtual bool HasEnsures {
 			get {
 				var ensures = Ensures;
 				return null != ensures && ensures.Count > 0;
 			}
 		}
 
-		public bool HasReturn { get { return Definition.ReturnType != null && Definition.ReturnType.FullName != "System.Void"; } }
+		public virtual bool HasReturn { get { return Definition.ReturnType != null && Definition.ReturnType.FullName != "System.Void"; } }
 
-		public bool EnsuresResultNotNull{
+		public virtual bool EnsuresResultNotNull{
 			get{
 				return HasReturn
 					&& HasXmlDoc
@@ -173,7 +162,7 @@ namespace DandyDoc.ViewModels
 			}
 		}
 
-		public bool EnsuresResultNotNullOrEmpty {
+		public virtual bool EnsuresResultNotNullOrEmpty {
 			get{
 				return HasReturn
 					&& HasXmlDoc
@@ -182,7 +171,7 @@ namespace DandyDoc.ViewModels
 			}
 		}
 
-		public bool RequiresParameterNotNull(string parameterName){
+		public virtual bool RequiresParameterNotNull(string parameterName){
 			if (String.IsNullOrEmpty(parameterName)) throw new ArgumentException("Invalid parameter name.", "parameterName");
 			Contract.EndContractBlock();
 			if (!HasXmlDoc || MethodXmlDoc.Requires.Count == 0)
@@ -190,7 +179,7 @@ namespace DandyDoc.ViewModels
 			return MethodXmlDoc.Requires.Any(x => x.RequiresParameterNotNull(parameterName));
 		}
 
-		public bool RequiresParameterNotNullOrEmpty(string parameterName){
+		public virtual bool RequiresParameterNotNullOrEmpty(string parameterName) {
 			if (String.IsNullOrEmpty(parameterName)) throw new ArgumentException("Invalid parameter name.", "parameterName");
 			Contract.EndContractBlock();
 			if (!HasXmlDoc || MethodXmlDoc.Requires.Count == 0)
@@ -198,38 +187,38 @@ namespace DandyDoc.ViewModels
 			return MethodXmlDoc.Requires.Any(x => x.RequiresParameterNotNullOrEmpty(parameterName));
 		}
 
-		public ReturnViewModel CreateReturnViewModel() {
+		public virtual MethodReturnViewModel CreateReturnViewModel() {
 			if(!HasReturn) throw new InvalidOperationException("Method does not return a value.");
 			Contract.EndContractBlock();
 			var methodXmlDocs = MethodXmlDoc;
 			var docs = null == methodXmlDocs ? null : methodXmlDocs.Returns;
 			Contract.Assume(null != Definition.ReturnType);
-			return new ReturnViewModel(Definition.ReturnType, this, docs);
+			return new MethodReturnViewModel(Definition.ReturnType, this, docs);
 		}
 
-		public IEnumerable<ParameterViewModel> CreateParameterViewModels(IEnumerable<ParameterDefinition> definitions) {
+		public virtual IEnumerable<MethodParameterViewModel> CreateParameterViewModels(IEnumerable<ParameterDefinition> definitions) {
 			if(null == definitions) throw new ArgumentNullException("definitions");
-			Contract.Ensures(Contract.Result<IEnumerable<ParameterViewModel>>() != null);
+			Contract.Ensures(Contract.Result<IEnumerable<MethodParameterViewModel>>() != null);
 			var methodXmlDocs = MethodXmlDoc;
 			return definitions.Select(item => {
 				var docs = null == methodXmlDocs ? null : methodXmlDocs.DocsForParameter(item.Name);
-				return new ParameterViewModel(item, this, docs);
+				return new MethodParameterViewModel(item, this, docs);
 			});
 		}
 
-		public IEnumerable<RequiresViewModel> ToRequiresViewModels(IEnumerable<ParsedXmlContractCondition> contracts){
+		public virtual IEnumerable<RequiresViewModel> ToRequiresViewModels(IEnumerable<ParsedXmlContractCondition> contracts) {
 			if(null == contracts) throw new ArgumentNullException("contracts");
 			Contract.Ensures(Contract.Result<IEnumerable<RequiresViewModel>>() != null);
 			return contracts.Select(c => new RequiresViewModel(this, c));
 		}
 
-		public IEnumerable<EnsuresViewModel> ToEnsuresViewModels(IEnumerable<ParsedXmlContractCondition> contracts) {
+		public virtual IEnumerable<EnsuresViewModel> ToEnsuresViewModels(IEnumerable<ParsedXmlContractCondition> contracts) {
 			if (null == contracts) throw new ArgumentNullException("contracts");
 			Contract.Ensures(Contract.Result<IEnumerable<RequiresViewModel>>() != null);
 			return contracts.Select(c => new EnsuresViewModel(this, c));
 		}
 
-		public IEnumerable<GenericParameterMethodViewModel> ToGenericParameterViewModels(IEnumerable<GenericParameter> parameters) {
+		public virtual IEnumerable<GenericParameterMethodViewModel> ToGenericParameterViewModels(IEnumerable<GenericParameter> parameters) {
 			if (null == parameters) throw new ArgumentNullException("parameters");
 			Contract.Ensures(Contract.Result<IEnumerable<GenericTypeParameterViewModel>>() != null);
 			return parameters.Select(p => new GenericParameterMethodViewModel(p, this));

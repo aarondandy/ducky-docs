@@ -7,6 +7,7 @@ using DandyDoc.Overlays.MsdnLinks;
 using DandyDoc.ViewModels;
 using Mono.Cecil;
 using DandyDoc.Overlays.XmlDoc;
+using Mvc4WebDirectDocSample.Infrastructure;
 
 namespace Mvc4WebDirectDocSample.Controllers
 {
@@ -73,10 +74,16 @@ namespace Mvc4WebDirectDocSample.Controllers
 			else{
 				throw new NotSupportedException();
 			}
+
 			Contract.Assume(null != viewResult);
+
+			viewResult.ViewBag.TypeDefinitionLinkResolver = new TypeDefinitionLinkResolver(
+				CrefOverlay,
+				Url,
+				MsdnLinkOverlay
+			);
 			viewResult.ViewBag.TypeNavigationViewModel = TypeNavigationViewModel;
-			viewResult.ViewBag.CrefOverlay = CrefOverlay;
-			viewResult.ViewBag.MsdnLinkOverlay = MsdnLinkOverlay;
+
 			return viewResult;
 		}
 

@@ -7,37 +7,21 @@ namespace DandyDoc.ViewModels
 	public class AssemblyNamespaceViewModel
 	{
 
-		public AssemblyNamespaceViewModel(IMemberDefinition definition) {
-			if(null == definition) throw new ArgumentNullException("definition");
-			Contract.EndContractBlock();
-			SetFromReference((MemberReference)definition);
-		}
-
-		public AssemblyNamespaceViewModel(MemberReference reference) {
-			if(null == reference) throw new ArgumentNullException("reference");
-			Contract.EndContractBlock();
-			SetFromReference(reference);
-		}
-
-		private void SetFromReference(MemberReference reference) {
+		private static TypeReference ResolveTypeReference(MemberReference reference){
 			Contract.Requires(null != reference);
-			
+			Contract.Ensures(Contract.Result<TypeReference>() != null);
 			var typeReference = reference as TypeReference;
-			if (null != typeReference) {
-				SetFromTypeReference(typeReference);
-				return;
+			if (null == typeReference){
+				var memberDefinition = reference as IMemberDefinition;
+				typeReference = null != memberDefinition
+					? memberDefinition.DeclaringType
+					: reference.DeclaringType;
 			}
-
-			var memberDefinition = reference as IMemberDefinition;
-			if (null != memberDefinition) {
-				SetFromTypeReference(memberDefinition.DeclaringType);
-				return;
-			}
-
-			throw new ArgumentOutOfRangeException("reference", "The given member reference is not supported.");
+			Contract.Assume(null != typeReference);
+			return typeReference;
 		}
 
-		private TypeReference FindTopLevelType(TypeReference typeReference) {
+		private static TypeReference FindTopLevelType(TypeReference typeReference) {
 			Contract.Requires(null != typeReference);
 			Contract.Ensures(Contract.Result<TypeReference>() != null);
 			while (typeReference.IsNested) {
@@ -47,8 +31,17 @@ namespace DandyDoc.ViewModels
 			return typeReference;
 		}
 
-		private void SetFromTypeReference(TypeReference typeReference) {
-			Contract.Requires(null != typeReference);
+		public AssemblyNamespaceViewModel(IMemberDefinition definition)
+			: this((MemberReference)definition)
+		{
+			Contract.Requires(null != definition);
+		}
+
+		public AssemblyNamespaceViewModel(MemberReference reference) {
+			if(null == reference) throw new ArgumentNullException("reference");
+			Contract.EndContractBlock();
+
+			var typeReference = ResolveTypeReference(reference);
 			typeReference = FindTopLevelType(typeReference);
 			Namespace = typeReference.Namespace;
 			Contract.Assume(null != typeReference.Module);
@@ -56,7 +49,14 @@ namespace DandyDoc.ViewModels
 		}
 
 		public string Namespace { get; private set; }
+
 		public AssemblyDefinition Assembly { get; private set; }
+
+		[ContractInvariantMethod]
+		private void CodeContractInvariant(){
+			Contract.Invariant(Namespace != null);
+			Contract.Invariant(Assembly != null);
+		}
 
 	}
 }

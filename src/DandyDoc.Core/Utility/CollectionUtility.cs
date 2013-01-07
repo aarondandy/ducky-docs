@@ -21,5 +21,9 @@ namespace DandyDoc.Utility
 			return innerList;
 		}
 
+		public static bool IsNotNullOrEmpty<T>(IList<T> list){
+			return null != list && list.Count > 0;
+		}
+
 	}
 }

@@ -6,20 +6,20 @@
 		foreach (var contractCondition in Model){
 			<tr>
 				<td>@{
-					    var paramName = contractCondition.RequiresParameterNotNullOrEmpty();
-					    if (!String.IsNullOrEmpty(paramName)){
-						    <text><code>@paramName</code> must not be <code>null</code> or empty.</text>
-					    }
-					    else{
-						    paramName = contractCondition.RequiresParameterNotNull();
-						    if (!String.IsNullOrEmpty(paramName)){
-							    <text><code>@paramName</code> must not be equal to <code>null</code>.</text>
-						    }
-						    else{
-							    Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", contractCondition.Xml);
-						    }
-					    }
-				    }</td>
+					var paramName = contractCondition.RequiresParameterNotNullOrEmpty();
+					if (!String.IsNullOrEmpty(paramName)){
+						<text><code>@paramName</code> must not be <code>null</code> or empty.</text>
+					}
+					else{
+						paramName = contractCondition.RequiresParameterNotNull();
+						if (!String.IsNullOrEmpty(paramName)){
+							<text><code>@paramName</code> must not be equal to <code>null</code>.</text>
+						}
+						else{
+							Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", contractCondition.Xml);
+						}
+					}
+				}</td>
 				<td>@(contractCondition.Xml.ExceptionCref ?? "Exception")</td>
 			</tr>
 		}

@@ -24,7 +24,15 @@ namespace DandyDoc.ViewModels
 			}
 
 			public string Title { get; private set; }
+
 			public IEnumerable<IDefinitionViewModel> Items { get; private set; }
+
+			[ContractInvariantMethod]
+			private void CodeContractInvariant(){
+				Contract.Invariant(!String.IsNullOrEmpty(Title));
+				Contract.Invariant(Items != null);
+			}
+
 		}
 
 		private class CategorizedFields
@@ -60,6 +68,7 @@ namespace DandyDoc.ViewModels
 			}
 
 			public ReadOnlyCollection<FieldDefinition> GetOrDefault(Category category) {
+				Contract.Ensures(Contract.Result<ReadOnlyCollection<FieldDefinition>>() != null);
 				ReadOnlyCollection<FieldDefinition> result;
 				return _sorted.TryGetValue(category, out result)
 					? result
@@ -96,6 +105,7 @@ namespace DandyDoc.ViewModels
 			}
 
 			public ReadOnlyCollection<PropertyDefinition> GetOrDefault(Category category) {
+				Contract.Ensures(Contract.Result<ReadOnlyCollection<PropertyDefinition>>() != null);
 				ReadOnlyCollection<PropertyDefinition> result;
 				return _sorted.TryGetValue(category, out result)
 					? result
@@ -132,6 +142,7 @@ namespace DandyDoc.ViewModels
 			}
 
 			public ReadOnlyCollection<EventDefinition> GetOrDefault(Category category) {
+				Contract.Ensures(Contract.Result<ReadOnlyCollection<EventDefinition>>() != null);
 				ReadOnlyCollection<EventDefinition> result;
 				return _sorted.TryGetValue(category, out result)
 					? result
@@ -180,6 +191,7 @@ namespace DandyDoc.ViewModels
 			}
 
 			public ReadOnlyCollection<MethodDefinition> GetOrDefault(Category category) {
+				Contract.Ensures(Contract.Result<ReadOnlyCollection<MethodDefinition>>() != null);
 				ReadOnlyCollection<MethodDefinition> result;
 				return _sorted.TryGetValue(category, out result)
 					? result
@@ -213,14 +225,17 @@ namespace DandyDoc.ViewModels
 		}
 
 		private ReadOnlyCollection<TypeReference> BuildDirectInterfaceList() {
+			Contract.Ensures(Contract.Result<ReadOnlyCollection<TypeReference>>() != null);
 			var results = new List<TypeReference>();
 			if (Definition.HasInterfaces) {
+				Contract.Assume(null != Definition.Interfaces);
 				results.AddRange(Definition.Interfaces);
 			}
 			return new ReadOnlyCollection<TypeReference>(results);
 		}
 
 		private ReadOnlyCollection<TypeReference> BuildBaseChain() {
+			Contract.Ensures(Contract.Result<ReadOnlyCollection<TypeReference>>() != null);
 			var results = new List<TypeReference>();
 			if (!Definition.IsInterface) {
 				var currentReference = Definition.BaseType;
@@ -237,12 +252,14 @@ namespace DandyDoc.ViewModels
 
 		public override string Title{
 			get{
+				Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
 				return Definition.IsNested ? base.Title : ShortName;
 			}
 		}
 
 		public override string SubTitle {
 			get{
+				Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
 				if (Definition.IsEnum)
 					return "Enumeration";
 				if (Definition.IsValueType)
@@ -266,8 +283,8 @@ namespace DandyDoc.ViewModels
 				yield return new MemberFlair("sealed","Inheritance","This type is sealed, preventing inheritance.");
 
 		}
-		
-		new public TypeDefinitionXmlDoc XmlDoc { get { return (TypeDefinitionXmlDoc)(base.XmlDoc); } }
+
+		new public TypeDefinitionXmlDoc XmlDoc { get { return base.XmlDoc as TypeDefinitionXmlDoc; } }
 
 		public IList<MemberSection> GetDefaultMemberListingSections() {
 			Contract.Ensures(Contract.Result<IList<MemberSection>>() != null);

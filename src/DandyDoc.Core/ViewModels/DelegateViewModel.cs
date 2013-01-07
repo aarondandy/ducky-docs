@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DandyDoc.Overlays.Cref;
 using DandyDoc.Overlays.XmlDoc;
 using Mono.Cecil;
@@ -20,6 +18,8 @@ namespace DandyDoc.ViewModels
 		public DelegateViewModel(TypeDefinition definition, XmlDocOverlay xmlDocOverlay, CrefOverlay crefOverlay = null)
 			: base(definition, xmlDocOverlay, crefOverlay)
 		{
+			Contract.Requires(null != definition);
+			Contract.Requires(null != xmlDocOverlay);
 			_parameters = new Lazy<ReadOnlyCollection<ParameterDefinition>>(() => new ReadOnlyCollection<ParameterDefinition>(Definition.GetDelegateTypeParameters()));
 			_returnType = new Lazy<TypeReference>(() => Definition.GetDelegateReturnType());
 		}
@@ -28,45 +28,44 @@ namespace DandyDoc.ViewModels
 			get { return XmlDoc as DelegateTypeDefinitionXmlDoc; }
 		}
 
-		public bool HasReturn {
+		public virtual bool HasReturn {
 			get {
 				var returnType = ReturnType;
 				return null != returnType && returnType.FullName != "System.Void";
 			}
 		}
 
-		public TypeReference ReturnType {
+		public virtual TypeReference ReturnType {
 			get { return _returnType.Value; }
 		}
 
-		public IList<ParsedXmlException> Exceptions {
+		public virtual IList<ParsedXmlException> Exceptions {
 			get { return null == DelegateXmlDoc ? null : DelegateXmlDoc.Exceptions; }
 		}
 
-		public bool HasExceptions {
+		public virtual bool HasExceptions {
 			get {
 				var exceptions = Exceptions;
 				return null != exceptions && exceptions.Count > 0;
 			}
 		}
 
-		public DelegateReturnViewModel CreateReturnViewModel() {
+		public virtual ReturnViewModel CreateReturnViewModel() {
 			if (!HasReturn) throw new InvalidOperationException("Method does not return a value.");
-			Contract.EndContractBlock();
+			Contract.Ensures(Contract.Result<ReturnViewModel>() != null);
 			var delegateXmlDoc = DelegateXmlDoc;
 			var docs = null == delegateXmlDoc ? null : delegateXmlDoc.Returns;
 			Contract.Assume(null != ReturnType);
-			return new DelegateReturnViewModel(ReturnType, this, docs);
+			return new ReturnViewModel(ReturnType, docs);
 		}
 
-		public IEnumerable<DelegateParameterViewModel> CreateParameterViewModels(IEnumerable<ParameterDefinition> definitions) {
+		public virtual IEnumerable<ParameterViewModel> CreateParameterViewModels(IEnumerable<ParameterDefinition> definitions) {
 			if (null == definitions) throw new ArgumentNullException("definitions");
-			Contract.Ensures(Contract.Result<IEnumerable<ParameterViewModel>>() != null);
+			Contract.Ensures(Contract.Result<IEnumerable<MethodParameterViewModel>>() != null);
 			var delegateXmlDocs = XmlDoc as DelegateTypeDefinitionXmlDoc;
-			return definitions.Select(item => {
-				var docs = null == delegateXmlDocs ? null : delegateXmlDocs.DocsForParameter(item.Name);
-				return new DelegateParameterViewModel(item, this, docs);
-			});
+			return null == delegateXmlDocs
+				? definitions.Select(item => new ParameterViewModel(item, null))
+				: definitions.Select(item => new ParameterViewModel(item, delegateXmlDocs.DocsForParameter(item.Name)));
 		}
 
 	}

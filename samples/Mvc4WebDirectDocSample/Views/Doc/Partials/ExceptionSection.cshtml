@@ -1,0 +1,51 @@
+﻿@using DandyDoc.ViewModels
+@using Mono.Cecil
+@using Mvc4WebDirectDocSample.Infrastructure
+@model IEnumerable<ExceptionViewModel>
+@functions{
+
+	private string GetLink(string cref){
+		if (String.IsNullOrEmpty(cref))
+			return null;
+		var linkResolver = ViewBag.TypeDefinitionLinkResolver as TypeDefinitionLinkResolver;
+		return null == linkResolver ? null : linkResolver.GetLink(cref);
+	}
+
+	private string GetLink(TypeReference reference){
+		if (null == reference)
+			return null;
+		var linkResolver = ViewBag.TypeDefinitionLinkResolver as TypeDefinitionLinkResolver;
+		return null == linkResolver ? null : linkResolver.GetLink(reference);
+	}
+
+	private IHtmlString GetItemContent(ExceptionViewModel exception) {
+		if (null == exception)
+			return null;
+		var coreText = HttpUtility.HtmlEncode(exception.ShortName);
+		var link = GetLink(exception.ExceptionTypeReference)
+			?? GetLink(exception.ExceptionXml.CRef);
+		if (!String.IsNullOrEmpty(link)) {
+			coreText = String.Concat("<a href=\"", link, "\">", coreText, "</a>");
+		}
+		return Html.Raw(coreText);
+	}
+
+}
+<h2>Exceptions</h2>
+<table class="table table-bordered table-condensed">
+	<thead><tr><th>Exception</th><th>Condition</th></tr></thead>
+	<tbody>
+	@foreach (var exception in Model){
+	<tr>
+		<td>@GetItemContent(exception)</td>
+		<td>@{
+					if (exception.HasXmlComments) {
+						Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", exception.ExceptionXml);
+					}
+					else{
+						; // TODO: create a default condition
+					}
+				}</td>
+	</tr>
+	}
+</tbody></table>

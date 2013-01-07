@@ -4,9 +4,6 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Runtime.Caching;
 using System.ServiceModel;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Xml;
 using DandyDoc.MsdnContentService;
 using DandyDoc.Utility;
@@ -22,10 +19,12 @@ namespace DandyDoc.Overlays.MsdnLinks
 
 		public static string DefaultLocale { get { return "en-us"; } }
 
+		public static string DefaultServiceUrl { get { return "http://services.msdn.microsoft.com/ContentServices/ContentService.asmx"; } }
+
 		public MsdnDynamicLinkOverlay()
 			: this(DefaultRootAssetId, DefaultVersion, DefaultLocale) { }
 
-		public MsdnDynamicLinkOverlay(string rootAssetId, string version, string locale){
+		public MsdnDynamicLinkOverlay(string rootAssetId, string version, string locale, string serviceUrl = null){
 			if(String.IsNullOrEmpty(rootAssetId)) throw new ArgumentException("A valid root asset ID is required.", "rootAssetId");
 			if(String.IsNullOrEmpty(version)) throw new ArgumentException("A valid version is required.", "version");
 			if(String.IsNullOrEmpty(locale)) throw new ArgumentException("A valid locale is required.", "locale");
@@ -33,10 +32,11 @@ namespace DandyDoc.Overlays.MsdnLinks
 			RootAssetId = rootAssetId;
 			Version = version;
 			Locale = locale;
+			ServiceUrl = serviceUrl ?? DefaultServiceUrl;
 			_tocClient = new Lazy<ContentServicePortTypeClient>(
 				() => new ContentServicePortTypeClient(
 					new BasicHttpBinding{MaxReceivedMessageSize = 1024 * 1024},
-					new EndpointAddress("http://services.msdn.microsoft.com/ContentServices/ContentService.asmx")
+					new EndpointAddress(ServiceUrl)
 				),
 				true
 			);
@@ -55,6 +55,8 @@ namespace DandyDoc.Overlays.MsdnLinks
 		public string Version { get; private set; }
 
 		public string Locale { get; private set; }
+
+		public string ServiceUrl { get; private set; }
 
 		protected ObjectCache Cache { get; private set; }
 
@@ -308,9 +310,6 @@ namespace DandyDoc.Overlays.MsdnLinks
 			Contract.Requires(parent != null);
 			Contract.Requires(childLink != null);
 			Contract.Ensures(Contract.Result<IEnumerable<MtpsNavigationNode>>() != null);
-			/*var xmlElement = GetTocXmlElement(childLink.SubTreeId.AssetId, childLink.SubTreeId.Version, childLink.SubTreeId.Locale);
-			if (null == xmlElement)
-				return Enumerable.Empty<MtpsNavigationNode>();*/
 			var tocNode = ToNavigationNode(parent, childLink);
 			return Search(searchName, tocNode);
 		}
@@ -320,12 +319,20 @@ namespace DandyDoc.Overlays.MsdnLinks
 			Contract.Requires(parent != null);
 			Contract.Requires(childLink != null);
 			Contract.Ensures(Contract.Result<IEnumerable<MtpsNavigationNode>>() != null);
-			Contract.Assume(null != childLink.SubTreeId);
+			if(null == childLink.SubTreeId)
+				return Enumerable.Empty<MtpsNavigationNode>();
 			var xmlElement = GetTocXmlElement(childLink.SubTreeId.AssetId, childLink.SubTreeId.Version, childLink.SubTreeId.Locale);
 			if (null == xmlElement)
 				return Enumerable.Empty<MtpsNavigationNode>();
 			var tocNode = ToNavigationNode(parent, xmlElement);
 			return SearchChildren(searchName, parent, tocNode.ChildLinks);
+		}
+
+		[ContractInvariantMethod]
+		private void CodeContractInvariant(){
+			Contract.Invariant(!String.IsNullOrEmpty(RootAssetId));
+			Contract.Invariant(!String.IsNullOrEmpty(Locale));
+			Contract.Invariant(!String.IsNullOrEmpty(Version));
 		}
 
 	}

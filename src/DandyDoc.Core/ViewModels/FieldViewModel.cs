@@ -18,17 +18,11 @@ namespace DandyDoc.ViewModels
 
 		new public FieldDefinitionXmlDoc XmlDoc { get { return (FieldDefinitionXmlDoc)(base.XmlDoc); } }
 
-		public override string SubTitle {
-			get{
-				if (Definition.HasConstant)
-					return "Constant";
-				return "Field";
-			}
-		}
+		public override string SubTitle { get{ return Definition.HasConstant ? "Constant" : "Field"; } }
 
-		public ParsedXmlElementBase ValueDoc {
-			get { return null == XmlDoc ? null : XmlDoc.ValueDoc; }
-		}
+		public virtual ParsedXmlElementBase ValueDoc { get { return null == XmlDoc ? null : XmlDoc.ValueDoc; } }
+
+		public virtual bool HasValueDoc { get { return ValueDoc != null; } }
 
 		protected override IEnumerable<MemberFlair> GetFlairTags(){
 			foreach (var tag in base.GetFlairTags())

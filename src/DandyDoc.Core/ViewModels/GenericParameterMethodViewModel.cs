@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using DandyDoc.Overlays.XmlDoc;
 using Mono.Cecil;
 
@@ -23,7 +18,7 @@ namespace DandyDoc.ViewModels
 
 		public MethodViewModel Parent { get; private set; }
 
-		public override ParsedXmlElementBase XmlDoc{
+		public override ParsedXmlElementBase XmlDoc {
 			get{
 				if (!Parent.HasXmlDoc)
 					return null;

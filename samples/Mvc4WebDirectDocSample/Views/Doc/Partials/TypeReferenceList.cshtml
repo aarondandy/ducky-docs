@@ -1,34 +1,11 @@
-﻿@using DandyDoc.Overlays.Cref
-@using DandyDoc.Overlays.MsdnLinks
-@using DandyDoc.ViewModels
-@using Mono.Cecil
-@model IEnumerable<DandyDoc.ViewModels.TypeReferenceViewModel>
+﻿@using DandyDoc.ViewModels
+@using Mvc4WebDirectDocSample.Infrastructure
+@model IEnumerable<TypeReferenceViewModel>
 @functions{
 
 	private string GetLink(TypeReferenceViewModel referenceViewModel){
-		if (null == referenceViewModel)
-			return null;
-		var definition = referenceViewModel.Definition;
-		if (null == definition)
-			return null;
-
-		var crefOverlay = (ViewBag.CrefOverlay) as CrefOverlay;
-		if (null != crefOverlay && crefOverlay.AssemblyDefinitionCollection.ContainsDefinition(definition)){
-			var cref = crefOverlay.GetCref(definition);
-			return Url.Action("Index","Doc",new{cref});
-		}
-
-		var fullName = definition.FullName;
-		if(fullName.StartsWith("System.") || fullName.StartsWith("Microsoft.")){
-			var msdnLinkOverlay = (ViewBag.MsdnLinkOverlay) as IMsdnLinkOverlay;
-			if (null != msdnLinkOverlay){
-				var result = msdnLinkOverlay.Search(fullName).ToList();
-				if (result.Count > 0){
-					return msdnLinkOverlay.GetUrl(result[0]);
-				}
-			}
-		}
-		return "Nope!";
+		var linkResolver = ViewBag.TypeDefinitionLinkResolver as TypeDefinitionLinkResolver;
+		return null == linkResolver ? null : linkResolver.GetLink(referenceViewModel.Definition);
 	}
 	
 	private IHtmlString GetItemContent(TypeReferenceViewModel reference){
@@ -49,9 +26,5 @@
 
 }
 <ul class="unstyled">@foreach (var b in Model) {
-	var ns = b.Reference.Namespace;
-	var link = GetLink(b);
-	<li style="text-indent: -7px;">
-		@GetItemContent(b)
-	</li>
+	<li style="text-indent: -7px;">@GetItemContent(b)</li>
 }</ul>

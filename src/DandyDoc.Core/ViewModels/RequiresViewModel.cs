@@ -20,7 +20,7 @@ namespace DandyDoc.ViewModels
 
 		public ParsedXmlContractCondition Xml { get; private set; }
 
-		public string RequiresParameterNotNullOrEmpty() {
+		public virtual string RequiresParameterNotNullOrEmpty() {
 			if (!Parent.Definition.HasParameters)
 				return null;
 			Contract.Assume(Parent.Definition.Parameters != null);
@@ -29,7 +29,7 @@ namespace DandyDoc.ViewModels
 				.FirstOrDefault(n => Xml.RequiresParameterNotNullOrEmpty(n));
 		}
 
-		public string RequiresParameterNotNull(){
+		public virtual string RequiresParameterNotNull() {
 			if (!Parent.Definition.HasParameters)
 				return null;
 			Contract.Assume(Parent.Definition.Parameters != null);

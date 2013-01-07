@@ -54,6 +54,12 @@ namespace DandyDoc.ViewModels
 				}
 			}
 
+			[ContractInvariantMethod]
+			private void CodeContractInvariant(){
+				Contract.Invariant(Accessor != null);
+				Contract.Invariant(Parent != null);
+			}
+
 		}
 
 		public PropertyViewModel(PropertyDefinition definition, XmlDocOverlay xmlDocOverlay, CrefOverlay crefOverlay = null)
@@ -67,9 +73,11 @@ namespace DandyDoc.ViewModels
 
 		public override string SubTitle { get { return "Property"; } }
 
-		public ParsedXmlElementBase ValueDoc {
+		public virtual ParsedXmlElementBase ValueDoc {
 			get { return null == XmlDoc ? null : XmlDoc.ValueDoc; }
 		}
+
+		public virtual bool HasValueDoc{ get { return ValueDoc != null; } }
 
 		protected override IEnumerable<MemberFlair> GetFlairTags() {
 			foreach (var tag in base.GetFlairTags())
@@ -134,7 +142,7 @@ namespace DandyDoc.ViewModels
 
 		}
 
-		public bool IsPure {
+		public virtual bool IsPure {
 			get {
 				if (Definition.HasPureAttribute()) {
 					return true;
@@ -147,18 +155,18 @@ namespace DandyDoc.ViewModels
 			}
 		}
 
-		public IList<ParsedXmlException> Exceptions {
+		public virtual IList<ParsedXmlException> Exceptions {
 			get { return null == XmlDoc ? null : XmlDoc.Exceptions; }
 		}
 
-		public bool HasExceptions {
+		public virtual bool HasExceptions {
 			get {
 				var exceptions = Exceptions;
 				return null != exceptions && exceptions.Count > 0;
 			}
 		}
 
-		public bool IsGetterPure {
+		public virtual bool IsGetterPure {
 			get {
 				if (HasXmlDoc && null != XmlDoc.GetterDocs && XmlDoc.GetterDocs.HasPureElement)
 					return true;
@@ -170,31 +178,31 @@ namespace DandyDoc.ViewModels
 			}
 		}
 
-		public bool HasExposedGet {
+		public virtual bool HasExposedGet {
 			get { return Definition.GetMethod != null && Definition.GetMethod.IsExternallyVisible(); }
 		}
 
-		public bool HasProtectedGet {
+		public virtual bool HasProtectedGet {
 			get { return Definition.GetMethod != null && Definition.GetMethod.IsExternallyProtected(); }
 		}
 
-		public bool HasExposedSet {
+		public virtual bool HasExposedSet {
 			get { return Definition.SetMethod != null && Definition.SetMethod.IsExternallyVisible(); }
 		}
 
-		public bool HasProtectedSet {
+		public virtual bool HasProtectedSet {
 			get { return Definition.SetMethod != null && Definition.SetMethod.IsExternallyProtected(); }
 		}
 
-		public MethodDefinitionXmlDoc GetterDocs {
+		public virtual MethodDefinitionXmlDoc GetterDocs {
 			get { return null == XmlDoc ? null : XmlDoc.GetterDocs; }
 		}
 
-		public MethodDefinitionXmlDoc SetterDocs {
+		public virtual MethodDefinitionXmlDoc SetterDocs {
 			get { return null == XmlDoc ? null : XmlDoc.SetterDocs; }
 		}
 
-		public AccessorViewModel GetAccessorViewModel() {
+		public virtual AccessorViewModel GetAccessorViewModel() {
 			if(null == Definition.GetMethod) throw new InvalidOperationException("Property has no getter.");
 			Contract.EndContractBlock();
 			return new AccessorViewModel(
@@ -202,7 +210,7 @@ namespace DandyDoc.ViewModels
 				this);
 		}
 
-		public AccessorViewModel SetAccessorViewModel() {
+		public virtual AccessorViewModel SetAccessorViewModel() {
 			if (null == Definition.SetMethod) throw new InvalidOperationException("Property has no setter.");
 			Contract.EndContractBlock();
 			return new AccessorViewModel(

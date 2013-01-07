@@ -1,40 +1,43 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using DandyDoc.Overlays.DisplayName;
 using DandyDoc.Overlays.XmlDoc;
 using Mono.Cecil;
 
 namespace DandyDoc.ViewModels
 {
-	public class ReturnViewModel : IReturnViewModel
+	public class ReturnViewModel
 	{
 
-		internal ReturnViewModel(TypeReference type, MethodViewModel parent, ParsedXmlElementBase xmlDoc) {
+		private static readonly DisplayNameOverlay FullNameOverlay = new DisplayNameOverlay{
+			IncludeNamespaceForTypes = true,
+			IncludeParameterNames = true,
+			ShowGenericParametersOnDefinition = true,
+			ShowTypeNameForMembers = true
+		};
+
+		internal ReturnViewModel(TypeReference type, ParsedXmlElementBase xmlDoc) {
 			if(null == type) throw new ArgumentNullException("type");
-			if(null == parent) throw new ArgumentNullException("parent");
 			Contract.EndContractBlock();
 			Type = type;
-			Parent = parent;
 			XmlDoc = xmlDoc;
 		}
 
-		public ParsedXmlElementBase XmlDoc { get; private set; }
+		public virtual ParsedXmlElementBase XmlDoc { get; private set; }
 
-		public bool HasXmlDoc { get { return XmlDoc != null; } }
+		public virtual bool HasXmlDoc { get { return XmlDoc != null; } }
 
-		public TypeReference Type { get; private set; }
+		public virtual TypeReference Type { get; private set; }
 
-		IDefinitionViewModel IReturnViewModel.Parent { get { return Parent; } }
+		public virtual string TypeDisplayName { get { return FullNameOverlay.GetDisplayName(Type); } }
 
-		public MethodViewModel Parent { get; private set; }
+		public virtual string EnsuresQuickSummary{
+			get { return null; }
+		}
 
-		public string EnsuresQuickSummary{
-			get {
-				if (Parent.EnsuresResultNotNullOrEmpty)
-					return "not null and not empty";
-				if (Parent.EnsuresResultNotNull)
-					return "not null";
-				return null;
-			}
+		[ContractInvariantMethod]
+		private void CodeContractInvariant(){
+			Contract.Invariant(Type != null);
 		}
 
 	}

@@ -1,14 +1,15 @@
 ﻿@model DandyDoc.ViewModels.IDefinitionViewModel
 @{
-	if (Model.HasRemarks) {
-		Html.RenderPartial("Partials/RemarksSection", Model.Remarks);
+	if (Model.HasRemarks){
+		<h2>Remarks</h2>
+		<div>@{Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", Model.Remarks);}</div>
 	}
 	if (Model.HasExamples ) {
 		<h2>Examples</h2>
-		foreach (var node in Model.Examples) {<div class="doc-page-section doc-page-example">@{ Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", node); }</div>}
+		foreach (var node in Model.Examples) {<div>@{ Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", node); }</div>}
 	}
 	if (Model.HasSeeAlso) {
 		<h2>See Also</h2>
-		foreach (var node in Model.SeeAlso) {<div class="doc-page-section doc-page-see-also">@{ Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBase", node); }</div>}	
+		foreach (var node in Model.SeeAlso) {<div>@{ Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBase", node); }</div>}	
 	}
 }

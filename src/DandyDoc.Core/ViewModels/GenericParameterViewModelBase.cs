@@ -16,7 +16,7 @@ namespace DandyDoc.ViewModels
 			string DisplayName { get; }
 		}
 
-		private class TypeConstraint : IConstraint
+		public class TypeConstraint : IConstraint
 		{
 			private static readonly DisplayNameOverlay DefaultFullDisplayNameOverlay = new DisplayNameOverlay {
 				IncludeNamespaceForTypes = true,
@@ -43,15 +43,11 @@ namespace DandyDoc.ViewModels
 
 		private class DefaultConstructorConstraint : IConstraint
 		{
-			internal DefaultConstructorConstraint() {}
-
 			public string DisplayName { get { return "Default Constructor"; } }
 		}
 
 		private class StructConstraint : IConstraint
 		{
-			internal StructConstraint() { }
-
 			public string DisplayName { get { return "Value Type"; } }
 		}
 
@@ -63,7 +59,8 @@ namespace DandyDoc.ViewModels
 		private readonly Lazy<ReadOnlyCollection<IConstraint>> _contraints;
 
 		protected GenericParameterViewModelBase(GenericParameter parameter){
-			Contract.Requires(parameter != null);
+			if(null == parameter) throw new ArgumentNullException("parameter");
+			Contract.EndContractBlock();
 			Parameter = parameter;
 			_contraints = new Lazy<ReadOnlyCollection<IConstraint>>(GenerateConstraints);
 		}
@@ -101,7 +98,8 @@ namespace DandyDoc.ViewModels
 
 		public virtual string DisplayName {
 			get {
-				Contract.Ensures(Contract.Result<string>() != null);
+				Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
+				Contract.Assume(!String.IsNullOrEmpty(Parameter.Name));
 				return Parameter.Name;
 			}
 		}

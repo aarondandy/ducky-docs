@@ -1,0 +1,32 @@
+﻿@using DandyDoc.ViewModels
+@using Mono.Cecil
+@using Mvc4WebDirectDocSample.Infrastructure
+@model DandyDoc.ViewModels.ReturnViewModel
+@functions{
+
+	private string GetLink(TypeReference reference) {
+		if (null == reference)
+			return null;
+		var linkResolver = ViewBag.TypeDefinitionLinkResolver as TypeDefinitionLinkResolver;
+		return null == linkResolver ? null : linkResolver.GetLink(reference);
+	}
+
+	private IHtmlString GetItemContent(ReturnViewModel model){
+		var reference = Model.Type;
+		if (null == reference)
+			return null;
+		var coreText = HttpUtility.HtmlEncode(model.TypeDisplayName);
+		var link = GetLink(reference);
+		if (!String.IsNullOrEmpty(link)) {
+			coreText = String.Concat("<a href=\"", link, "\">", coreText, "</a>");
+		}
+		return Html.Raw(coreText);
+	}
+}
+<h2>Returns</h2>
+@{
+	if (Model.HasXmlDoc) {<div>@{ Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", Model.XmlDoc); }</div>}
+	<div>Type: @GetItemContent(Model)</div>
+	var ensuresQuickSummary = Model.EnsuresQuickSummary;
+	if (!String.IsNullOrEmpty(ensuresQuickSummary)){<div><i class="icon-ok-sign"></i> Guaranteed: @(ensuresQuickSummary).</div>}
+}

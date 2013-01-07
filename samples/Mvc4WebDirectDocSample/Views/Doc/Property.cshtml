@@ -3,34 +3,28 @@
 	ViewBag.Title = Model.Title;
 	Layout = "_Layout.cshtml";
 }
-@{Html.RenderPartial("Partials/DefinitionTitle", Model);}
 @{
+	Html.RenderPartial("Partials/DefinitionTitle", Model);
 	if (null != Model.Summary) { Html.RenderPartial("Partials/SummarySection", Model.Summary);}
 	if (Model.Flair.Count > 0) {Html.RenderPartial("Partials/FlairTable", Model.Flair);}
 	Html.RenderPartial("Partials/NamespaceAndAssembly", Model.AssemblyNamespace);
 	if (Model.HasSignatures) { Html.RenderPartial("Partials/DefinitionSignatures", Model.Signatures); }	
-}
-<div>Type: <a href="#">@Model.Definition.PropertyType.FullName</a></div>
-@if (Model.HasExposedGet){
-	var getViewModel = Model.GetAccessorViewModel();
-	if (getViewModel.WorthDisplaying) {
-		<h2>Getter</h2>
-		Html.RenderPartial("Partials/Accessor", getViewModel);
+	<div>Type: <a href="#">@Model.Definition.PropertyType.FullName</a></div>
+	if (Model.HasExposedGet){
+		var getViewModel = Model.GetAccessorViewModel();
+		if (getViewModel.WorthDisplaying){
+			<h2>Getter</h2>
+			Html.RenderPartial("Partials/Accessor", getViewModel);
+		}
 	}
-}
-@if (Model.HasExposedSet){
-	var setViewModel = Model.SetAccessorViewModel();
-	if (setViewModel.WorthDisplaying) {
-		<h2>Setter</h2>
-		Html.RenderPartial("Partials/Accessor", setViewModel);
+	if (Model.HasExposedSet){
+		var setViewModel = Model.SetAccessorViewModel();
+		if (setViewModel.WorthDisplaying){
+			<h2>Setter</h2>
+			Html.RenderPartial("Partials/Accessor", setViewModel);
+		}
 	}
+	if (Model.HasValueDoc) {Html.RenderPartial("Partials/ValueSection", Model.ValueDoc); }
+	if (Model.HasExceptions){Html.RenderPartial("Partials/ExceptionSection", Model.ToExceptionViewModels(Model.Exceptions));}
+	Html.RenderPartial("Partials/DefinitionPageCommonSections", Model);
 }
-@if (null != Model.ValueDoc) {
-	<h2>Value</h2>
-	<div>@{ Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", Model.ValueDoc); }</div>
-}
-@if (Model.HasExceptions){
-	<h2>Exceptions</h2>
-	Html.RenderPartial("Partials/ExceptionTable", Model.Exceptions);
-}
-@{Html.RenderPartial("Partials/DefinitionPageCommonSections", Model);}

@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
-using System.Linq;
-using DandyDoc.Overlays.DisplayName;
 using DandyDoc.Overlays.XmlDoc;
 using Mono.Cecil;
 

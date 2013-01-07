@@ -8,9 +8,7 @@
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>@ViewBag.Title</title>
-	@Styles.Render("~/css/bootstrap")
-	@Styles.Render("~/css/docs")
-	@Styles.Render("~/css/sh")
+	@Styles.Render("~/css/bootstrap","~/css/docs","~/css/sh")
 </head>
 	<body>
 		<header>
@@ -48,8 +46,7 @@
 				</div>
 			</div>
 		</footer>
-		@Scripts.Render("~/bundles/jquery","~/bundles/bootstrap","~/bundles/docs")
-		@Scripts.Render("~/bundles/sh")
+		@Scripts.Render("~/bundles/jquery","~/bundles/bootstrap","~/bundles/docs","~/bundles/sh")
 		<script type="text/javascript">
 			SyntaxHighlighter.defaults['toolbar'] = false;
 			SyntaxHighlighter.defaults['gutter'] = false;

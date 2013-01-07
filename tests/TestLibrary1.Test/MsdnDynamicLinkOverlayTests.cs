@@ -77,8 +77,17 @@ namespace TestLibrary1.Test
 				Assert.AreEqual(1, results.Count);
 				Assert.IsNotNull(results[0].ContentId);
 			}
-	}
+		}
 
+		[Test]
+		public void bad_service_url(){
+			var badLinkGenerator = new MsdnDynamicLinkOverlay(
+				MsdnDynamicLinkOverlay.DefaultRootAssetId,
+				MsdnDynamicLinkOverlay.DefaultVersion,
+				MsdnDynamicLinkOverlay.DefaultLocale,
+				"http://localhost:12345/Fail.asmx");
+			Assert.That(() => badLinkGenerator.Search("System.Int32"), Throws.InstanceOf(typeof(Exception)));
+		}
 
 	}
 }

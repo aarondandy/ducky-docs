@@ -1,14 +1,16 @@
 ﻿@model DandyDoc.ViewModels.PropertyViewModel.AccessorViewModel
-@{ var accessor = Model.Accessor;}
-@if (Model.HasFlair) {
-	Html.RenderPartial("Partials/FlairTable", Model.Flair);
-}
-@if (accessor.HasExceptions) {
-	Html.RenderPartial("Partials/ExceptionTable", accessor.Exceptions);
-}
-@if (accessor.HasRequires) {
-	Html.RenderPartial("Partials/RequiresTable", accessor.ToRequiresViewModels(accessor.Requires));
-}
-@if (accessor.HasEnsures) {
-	Html.RenderPartial("Partials/EnsuresTable", accessor.ToEnsuresViewModels(accessor.Ensures));
+@{
+	var accessor = Model.Accessor;
+	if (Model.HasFlair) {
+		Html.RenderPartial("Partials/FlairTable", Model.Flair);
+	}
+	if (accessor.HasExceptions) {
+		Html.RenderPartial("Partials/ExceptionSection", Model.Parent.ToExceptionViewModels(accessor.Exceptions));
+	}
+	if (accessor.HasRequires) {
+		Html.RenderPartial("Partials/RequiresTable", accessor.ToRequiresViewModels(accessor.Requires));
+	}
+	if (accessor.HasEnsures) {
+		Html.RenderPartial("Partials/EnsuresTable", accessor.ToEnsuresViewModels(accessor.Ensures));
+	}
 }

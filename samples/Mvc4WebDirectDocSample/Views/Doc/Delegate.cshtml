@@ -5,49 +5,19 @@
 	ViewBag.Title = Model.Title;
 	Layout = "_Layout.cshtml";
 }
-@{Html.RenderPartial("Partials/DefinitionTitle", Model);}
 @{
+	Html.RenderPartial("Partials/DefinitionTitle", Model);
 	if (null != Model.Summary) { Html.RenderPartial("Partials/SummarySection", Model.Summary);}
 	if (Model.Flair.Count > 0) {Html.RenderPartial("Partials/FlairTable", Model.Flair);}
 	Html.RenderPartial("Partials/NamespaceAndAssembly", Model.AssemblyNamespace);
 	if(Model.HasSignatures){Html.RenderPartial("Partials/DefinitionSignatures", Model.Signatures);}
+	if (Model.Definition.HasGenericParameters){Html.RenderPartial("Partials/GenericParameterListing", Model.ToGenericParameterViewModels(Model.Definition.GenericParameters));}
+	var parameters = Model.Definition.GetDelegateTypeParameters();
+	if (null != parameters && parameters.Count > 0){
+		<h2>Parameters</h2>
+		Html.RenderPartial("Partials/ParameterListing", Model.CreateParameterViewModels(parameters));
+	}
+	if (Model.HasReturn) {Html.RenderPartial("Partials/ReturnsSection", Model.CreateReturnViewModel());}
+	if (Model.HasExceptions) { Html.RenderPartial("Partials/ExceptionSection", Model.ToExceptionViewModels(Model.Exceptions)); }
+	Html.RenderPartial("Partials/DefinitionPageCommonSections", Model);
 }
-@if (Model.Definition.HasGenericParameters){
-	Html.RenderPartial("Partials/GenericParameterListing", Model.ToGenericParameterViewModels(Model.Definition.GenericParameters));
-}
-@{ var parameters = Model.Definition.GetDelegateTypeParameters();}
-@if (null != parameters && parameters.Count > 0) {
-	<h2>Parameters</h2>
-	<div class="doc-page-member-listing">
-	<dl>
-		@foreach (var p in Model.CreateParameterViewModels(parameters)) {
-			<dt>@p.DisplayName</dt>
-			<dd>
-				@if (p.HasXmlDoc) {<p>@{ Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", p.XmlDoc); }</p>}
-				<div>Type: <a href="#">@p.Definition.ParameterType.FullName</a></div>
-				@{
-					var requiresQuickSummary = p.RequiresQuickSummary;
-					if (!String.IsNullOrEmpty(requiresQuickSummary)){<div><i class="icon-ok-sign"></i> Required: @(requiresQuickSummary).</div>}
-				}
-			</dd>
-		}
-	</dl>
-</div>	
-}
-@if (Model.HasReturn) {
-	<h2>Returns</h2>
-	var returnViewModel = Model.CreateReturnViewModel();
-	<div class="doc-page-member-listing">
-		@if (returnViewModel.HasXmlDoc) {<p>@{ Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", returnViewModel.XmlDoc); }</p>}
-		<div>Type: <a href="#">@returnViewModel.Type.FullName</a></div>
-		@{
-			var ensuresQuickSummary = returnViewModel.EnsuresQuickSummary;
-			if (!String.IsNullOrEmpty(ensuresQuickSummary)){<div><i class="icon-ok-sign"></i> Guaranteed: @(ensuresQuickSummary).</div>}
-		}
-	</div>
-}
-@if (Model.HasExceptions){
-	<h2>Exceptions</h2>
-	Html.RenderPartial("Partials/ExceptionTable", Model.Exceptions);
-}
-@{Html.RenderPartial("Partials/DefinitionPageCommonSections", Model);}

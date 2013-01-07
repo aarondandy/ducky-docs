@@ -1,44 +1,43 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using DandyDoc.Overlays.DisplayName;
 using DandyDoc.Overlays.XmlDoc;
 using Mono.Cecil;
 
 namespace DandyDoc.ViewModels
 {
-	public class ParameterViewModel : IParameterViewModel
+	public class ParameterViewModel
 	{
 
-		internal ParameterViewModel(ParameterDefinition definition, MethodViewModel parent, ParsedXmlElementBase xmlDoc) {
+		private static readonly DisplayNameOverlay FullNameOverlay = new DisplayNameOverlay {
+			IncludeNamespaceForTypes = true,
+			IncludeParameterNames = true,
+			ShowGenericParametersOnDefinition = true,
+			ShowTypeNameForMembers = true
+		};
+
+		internal ParameterViewModel(ParameterDefinition definition, ParsedXmlElementBase xmlDoc) {
 			if(null == definition) throw new ArgumentNullException("definition");
-			if(null == parent) throw new ArgumentNullException("parent");
 			Contract.EndContractBlock();
 			Definition = definition;
-			Parent = parent;
 			XmlDoc = xmlDoc;
 		}
 
-		public string DisplayName { get { return Definition.Name; } }
+		public virtual string DisplayName { get { return Definition.Name; } }
 
-		public ParsedXmlElementBase XmlDoc { get; private set; }
+		public virtual ParsedXmlElementBase XmlDoc { get; private set; }
 
-		public bool HasXmlDoc { get { return XmlDoc != null; } }
+		public virtual bool HasXmlDoc { get { return XmlDoc != null; } }
 
-		public ParameterDefinition Definition { get; private set; }
+		public virtual ParameterDefinition Definition { get; private set; }
 
-		IDefinitionViewModel IParameterViewModel.Parent { get { return Parent; } }
+		public virtual string TypeDisplayName { get { return FullNameOverlay.GetDisplayName(Definition.ParameterType); } }
 
-		public MethodViewModel Parent { get; private set; }
+		public virtual string RequiresQuickSummary { get { return null; } }
 
-		public string RequiresQuickSummary{
-			get{
-				var name = Definition.Name;
-				Contract.Assume(!String.IsNullOrEmpty(name));
-				if (Parent.RequiresParameterNotNullOrEmpty(name))
-					return "not null and not empty";
-				if (Parent.RequiresParameterNotNull(name))
-					return "not null";
-				return null;
-			}
+		[ContractInvariantMethod]
+		private void CodeContractInvariant(){
+			Contract.Invariant(Definition != null);
 		}
 
 	}

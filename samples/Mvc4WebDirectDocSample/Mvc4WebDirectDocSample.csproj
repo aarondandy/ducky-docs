@@ -149,6 +149,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Infrastructure\TypeDefinitionLinkResolver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -237,10 +238,12 @@
     <Content Include="Views\Doc\Partials\TypeReferenceList.cshtml" />
     <Content Include="Views\Doc\Delegate.cshtml" />
     <Content Include="Views\Doc\Partials\Accessor.cshtml" />
+    <Content Include="Views\Doc\Partials\ParameterListing.cshtml" />
+    <Content Include="Views\Doc\Partials\ReturnsSection.cshtml" />
+    <Content Include="Views\Doc\Partials\ValueSection.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Infrastructure\" />
     <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
@@ -267,9 +270,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Doc\ParsedXmlDoc\ParsedXmlListElement.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Doc\Partials\RemarksSection.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Doc\Partials\SummarySection.cshtml" />
@@ -302,7 +302,7 @@
     <Content Include="Views\Doc\Partials\TypeNavigationSideMenu.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Doc\Partials\ExceptionTable.cshtml" />
+    <Content Include="Views\Doc\Partials\ExceptionSection.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Doc\Enum.cshtml" />
