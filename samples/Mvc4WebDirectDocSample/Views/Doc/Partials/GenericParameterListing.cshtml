@@ -1,8 +1,16 @@
-﻿@using DandyDoc.ViewModels
+﻿@using DandyDoc.Overlays.DisplayName
+@using DandyDoc.ViewModels
 @using Mono.Cecil
 @using Mvc4WebDirectDocSample.Infrastructure
 @model IEnumerable<DandyDoc.ViewModels.GenericParameterViewModelBase>
 @functions{
+
+	private static readonly DisplayNameOverlay FullNameOverlay = new DisplayNameOverlay {
+		IncludeNamespaceForTypes = true,
+		IncludeParameterNames = true,
+		ShowGenericParametersOnDefinition = true,
+		ShowTypeNameForMembers = true
+	};
 
 	private string GetLink(TypeReference reference) {
 		if (null == reference)
@@ -14,7 +22,7 @@
 	private IHtmlString GetItemContent(TypeReference reference) {
 		if (null == reference)
 			return null;
-		var coreText = HttpUtility.HtmlEncode(reference.FullName);
+		var coreText = HttpUtility.HtmlEncode(FullNameOverlay.GetDisplayName(reference));
 		var link = GetLink(reference);
 		if (!String.IsNullOrEmpty(link)) {
 			coreText = String.Concat("<a href=\"", link, "\">", coreText, "</a>");
