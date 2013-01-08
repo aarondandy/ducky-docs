@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+#pragma warning disable 1591,0067,0169,0649,1574
+
 using System;
 using System.ComponentModel;
 

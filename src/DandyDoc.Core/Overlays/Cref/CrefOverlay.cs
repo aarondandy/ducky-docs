@@ -113,8 +113,15 @@ namespace DandyDoc.Overlays.Cref
 			var parsedCref = new ParsedCref(cref);
 			if (String.Equals("T", parsedCref.TargetType, StringComparison.OrdinalIgnoreCase))
 				return GetTypeDefinition(parsedCref);
-			return AssemblyDefinitionCollection.Select(x => GetMemberDefinitionExcludingTypes(x, parsedCref)).FirstOrDefault(x => null != x)
-				?? GetTypeDefinition(parsedCref);
+
+			var memberResult = AssemblyDefinitionCollection.Select(x => GetMemberDefinitionExcludingTypes(x, parsedCref)).FirstOrDefault(x => null != x);
+			if(null != memberResult)
+				return memberResult;
+
+			if(String.IsNullOrEmpty(parsedCref.TargetType))
+				return GetTypeDefinition(parsedCref);
+
+			return null;
 		}
 
 		private IMemberDefinition GetMemberDefinitionExcludingTypes(AssemblyDefinition assemblyDefinition, ParsedCref parsedCref) {
@@ -170,9 +177,7 @@ namespace DandyDoc.Overlays.Cref
 			}
 			else if (!nameTest.Equals(methodDefinition.Name)) {
 				if (methodDefinition.HasGenericParameters && nameTest.StartsWith(methodDefinition.Name)) {
-					var methodGenericParamCount = methodDefinition.Parameters
-						.Where(x => x.ParameterType.IsGenericParameter)
-						.Select(x => x.ParameterType as GenericParameter)
+					var methodGenericParamCount = methodDefinition.GenericParameters
 						.Count(x => x.Owner == methodDefinition);
 					if (!nameTest.Equals(methodDefinition.Name + "``" + methodGenericParamCount)) {
 						return false;

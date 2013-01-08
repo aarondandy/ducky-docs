@@ -10,7 +10,9 @@ using Mono.Cecil;
 
 namespace DandyDoc.ViewModels
 {
-	public class DelegateViewModel : TypeViewModel
+	public class DelegateViewModel :
+		TypeViewModel,
+		IParameterizedDefinitionViewModel
 	{
 
 		private readonly Lazy<ReadOnlyCollection<ParameterDefinition>> _parameters;
@@ -33,13 +35,13 @@ namespace DandyDoc.ViewModels
 			foreach (var tag in base.GetFlairTags())
 				yield return tag;
 
-			if (IsCanBeNull)
+			if (CanReturnNull)
 				yield return new MemberFlair("null result", "Null Values", "This method may return null.");
 			else if (AllResultsAndParamsNotNull)
 				yield return new MemberFlair("no nulls", "Null Values", "This method does not return or accept null values for reference types.");
 		}
 
-		public virtual bool IsCanBeNull {
+		public virtual bool CanReturnNull {
 			get { return Definition.HasAttributeMatchingName("CanBeNullAttribute"); }
 		}
 
@@ -131,22 +133,22 @@ namespace DandyDoc.ViewModels
 			return false;
 		}
 
-		public virtual ReturnViewModelBase CreateReturnViewModel() {
+		public virtual ReturnViewModel CreateReturnViewModel() {
 			if (!HasReturn) throw new InvalidOperationException("Method does not return a value.");
-			Contract.Ensures(Contract.Result<ReturnViewModelBase>() != null);
+			Contract.Ensures(Contract.Result<ReturnViewModel>() != null);
 			var delegateXmlDoc = DelegateXmlDoc;
 			var docs = null == delegateXmlDoc ? null : delegateXmlDoc.Returns;
 			Contract.Assume(null != ReturnType);
-			return new DelegateReturnViewModel(ReturnType, this, docs);
+			return new ReturnViewModel(this, docs);
 		}
 
-		public virtual IEnumerable<ParameterViewModelBase> CreateParameterViewModels(IEnumerable<ParameterDefinition> definitions) {
+		public virtual IEnumerable<ParameterViewModel> CreateParameterViewModels(IEnumerable<ParameterDefinition> definitions) {
 			if (null == definitions) throw new ArgumentNullException("definitions");
-			Contract.Ensures(Contract.Result<IEnumerable<MethodParameterViewModel>>() != null);
+			Contract.Ensures(Contract.Result<IEnumerable<ParameterViewModel>>() != null);
 			var delegateXmlDocs = XmlDoc as DelegateTypeDefinitionXmlDoc;
 			return null == delegateXmlDocs
-				? definitions.Select(item => new ParameterViewModelBase(item, null))
-				: definitions.Select(item => new ParameterViewModelBase(item, delegateXmlDocs.DocsForParameter(item.Name)));
+				? definitions.Select(item => new ParameterViewModel(this, item, null))
+				: definitions.Select(item => new ParameterViewModel(this, item, delegateXmlDocs.DocsForParameter(item.Name)));
 		}
 
 	}

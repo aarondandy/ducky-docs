@@ -7,14 +7,16 @@
 		{"pure","icon-leaf"},
 		{"static","icon-globe"},
 		{"extension","icon-resize-full"},
-		{"no nulls","icon-ok-sign"},
-		{"null result","icon-remove-sign"},
+		{"no nulls","icon-ok-circle"},
+		{"null result","icon-question-sign"},
+		{"null ok","icon-ok-sign"},
 		{"flags","icon-flag"},
 		{"operator","icon-plus"},
 		{"sealed","icon-lock"},
 		{"virtual","icon-circle-arrow-down"},
 		{"abstract","icon-edit"},
-		{"obsolete","icon-warning-sign"}
+		{"obsolete","icon-warning-sign"},
+		{"instant","icon-tasks"}
 	};
 }
 @if (SimpleIconClasses.ContainsKey(Model.Id)) {<i class="@SimpleIconClasses[Model.Id] flair-icon" title="@Model.Id"></i>}

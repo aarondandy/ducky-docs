@@ -8,7 +8,9 @@ using Mono.Cecil;
 
 namespace DandyDoc.ViewModels
 {
-	public class MethodViewModel : DefinitionViewModelBase<MethodDefinition>
+	public class MethodViewModel :
+		DefinitionViewModelBase<MethodDefinition>,
+		IParameterizedDefinitionViewModel
 	{
 
 		private readonly MethodDefinitionXmlDoc _xmlDocsOverride;
@@ -50,7 +52,7 @@ namespace DandyDoc.ViewModels
 			if (Definition.IsExtensionMethod())
 				yield return new MemberFlair("extension", "Extension", "This method is an extension method.");
 
-			if(IsCanBeNull)
+			if(CanReturnNull)
 				yield return new MemberFlair("null result", "Null Values", "This method may return null.");
 			else if (AllResultsAndParamsNotNull)
 				yield return new MemberFlair("no nulls", "Null Values", "This method does not return or accept null values for reference types.");
@@ -97,7 +99,7 @@ namespace DandyDoc.ViewModels
 			}
 		}
 
-		public virtual bool IsCanBeNull {
+		public virtual bool CanReturnNull {
 			get { return Definition.HasAttributeMatchingName("CanBeNullAttribute"); }
 		}
 
@@ -165,6 +167,12 @@ namespace DandyDoc.ViewModels
 			}
 		}
 
+		public virtual bool HasParameters { get { return Definition.HasParameters && Definition.Parameters.Count > 0; } }
+
+		public virtual IList<ParameterDefinition> Parameters { get { return Definition.Parameters; } }
+
+		public virtual TypeReference ReturnType { get { return Definition.ReturnType; } }
+
 		public virtual bool HasReturn { get { return Definition.ReturnType != null && Definition.ReturnType.FullName != "System.Void"; } }
 
 		public virtual bool EnsuresResultNotNull{
@@ -207,22 +215,22 @@ namespace DandyDoc.ViewModels
 			return MethodXmlDoc.Requires.Any(x => x.RequiresParameterNotNullOrEmpty(parameterName));
 		}
 
-		public virtual MethodReturnViewModel CreateReturnViewModel() {
+		public virtual ReturnViewModel CreateReturnViewModel() {
 			if(!HasReturn) throw new InvalidOperationException("Method does not return a value.");
 			Contract.EndContractBlock();
 			var methodXmlDocs = MethodXmlDoc;
 			var docs = null == methodXmlDocs ? null : methodXmlDocs.Returns;
 			Contract.Assume(null != Definition.ReturnType);
-			return new MethodReturnViewModel(Definition.ReturnType, this, docs);
+			return new ReturnViewModel(this, docs);
 		}
 
-		public virtual IEnumerable<MethodParameterViewModel> CreateParameterViewModels(IEnumerable<ParameterDefinition> definitions) {
+		public virtual IEnumerable<ParameterViewModel> CreateParameterViewModels(IEnumerable<ParameterDefinition> definitions) {
 			if(null == definitions) throw new ArgumentNullException("definitions");
-			Contract.Ensures(Contract.Result<IEnumerable<MethodParameterViewModel>>() != null);
+			Contract.Ensures(Contract.Result<IEnumerable<ParameterViewModel>>() != null);
 			var methodXmlDocs = MethodXmlDoc;
 			return definitions.Select(item => {
 				var docs = null == methodXmlDocs ? null : methodXmlDocs.DocsForParameter(item.Name);
-				return new MethodParameterViewModel(item, this, docs);
+				return new ParameterViewModel(this, item, docs);
 			});
 		}
 

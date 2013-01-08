@@ -178,11 +178,10 @@
     <Compile Include="Utility\TextUtility.cs" />
     <Compile Include="Utility\XmlUtility.cs" />
     <Compile Include="ViewModels\DefinitionViewModelBase.cs" />
-    <Compile Include="ViewModels\DelegateParameterViewModel.cs" />
-    <Compile Include="ViewModels\DelegateReturnViewModel.cs" />
     <Compile Include="ViewModels\ExceptionViewModel.cs" />
-    <Compile Include="ViewModels\ParameterViewModelBase.cs" />
-    <Compile Include="ViewModels\ReturnViewModelBase.cs" />
+    <Compile Include="ViewModels\IParameterizedDefinitionViewModel.cs" />
+    <Compile Include="ViewModels\ParameterViewModel.cs" />
+    <Compile Include="ViewModels\ReturnViewModel.cs" />
     <Compile Include="ViewModels\DelegateViewModel.cs" />
     <Compile Include="ViewModels\EnsuresViewModel.cs" />
     <Compile Include="ViewModels\EnumValueViewModel.cs" />
@@ -195,10 +194,8 @@
     <Compile Include="ViewModels\MemberFlair.cs" />
     <Compile Include="ViewModels\MethodViewModel.cs" />
     <Compile Include="ViewModels\AssemblyNamespaceViewModel.cs" />
-    <Compile Include="ViewModels\MethodParameterViewModel.cs" />
     <Compile Include="ViewModels\PropertyViewModel.cs" />
     <Compile Include="ViewModels\RequiresViewModel.cs" />
-    <Compile Include="ViewModels\MethodReturnViewModel.cs" />
     <Compile Include="ViewModels\TypeNavigationNamespaceViewModelcs.cs" />
     <Compile Include="ViewModels\TypeNavigationViewModel.cs" />
     <Compile Include="ViewModels\TypeReferenceViewModel.cs" />

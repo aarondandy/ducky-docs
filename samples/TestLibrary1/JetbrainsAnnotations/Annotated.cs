@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Test.Annotations;
 
 #pragma warning disable 1591,0067,0169,0649
@@ -30,6 +31,11 @@ namespace TestLibrary1.JetbrainsAnnotations
 		[CanBeNull]
 		public string NoNullsIn([NotNull] string thing) {
 			return null;
+		}
+
+		public void DoStuff([InstantHandle, NotNull] IEnumerable<string> things, [InstantHandle, NotNull] Action<string> doIt){
+			foreach (var item in things)
+				doIt(item);
 		}
 
 	}

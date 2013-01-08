@@ -1,7 +1,7 @@
 ﻿@using DandyDoc.ViewModels
 @using Mono.Cecil
 @using Mvc4WebDirectDocSample.Infrastructure
-@model DandyDoc.ViewModels.ReturnViewModelBase
+@model DandyDoc.ViewModels.ReturnViewModel
 @functions{
 
 	private string GetLink(TypeReference reference) {
@@ -11,7 +11,7 @@
 		return null == linkResolver ? null : linkResolver.GetLink(reference);
 	}
 
-		private IHtmlString GetItemContent(ReturnViewModelBase model) {
+		private IHtmlString GetItemContent(ReturnViewModel model) {
 		var reference = Model.Type;
 		if (null == reference)
 			return null;

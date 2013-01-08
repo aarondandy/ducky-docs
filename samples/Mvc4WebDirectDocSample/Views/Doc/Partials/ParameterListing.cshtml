@@ -1,7 +1,7 @@
 ﻿@using DandyDoc.ViewModels
 @using Mono.Cecil
 @using Mvc4WebDirectDocSample.Infrastructure
-@model IEnumerable<DandyDoc.ViewModels.ParameterViewModelBase>
+@model IEnumerable<DandyDoc.ViewModels.ParameterViewModel>
 @functions{
 
 	private string GetLink(TypeReference reference) {
@@ -11,7 +11,7 @@
 		return null == linkResolver ? null : linkResolver.GetLink(reference);
 	}
 
-	private IHtmlString GetItemContent(ParameterViewModelBase model){
+	private IHtmlString GetItemContent(ParameterViewModel model){
 		var reference = model.Definition.ParameterType;
 		if (null == reference)
 			return null;
