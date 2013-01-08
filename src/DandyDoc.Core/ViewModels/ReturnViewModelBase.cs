@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using DandyDoc.Overlays.DisplayName;
 using DandyDoc.Overlays.XmlDoc;
@@ -6,7 +7,7 @@ using Mono.Cecil;
 
 namespace DandyDoc.ViewModels
 {
-	public class ReturnViewModel
+	public abstract class ReturnViewModelBase
 	{
 
 		private static readonly DisplayNameOverlay FullNameOverlay = new DisplayNameOverlay{
@@ -16,7 +17,7 @@ namespace DandyDoc.ViewModels
 			ShowTypeNameForMembers = true
 		};
 
-		internal ReturnViewModel(TypeReference type, ParsedXmlElementBase xmlDoc) {
+		internal ReturnViewModelBase(TypeReference type, ParsedXmlElementBase xmlDoc) {
 			if(null == type) throw new ArgumentNullException("type");
 			Contract.EndContractBlock();
 			Type = type;
@@ -31,9 +32,7 @@ namespace DandyDoc.ViewModels
 
 		public virtual string TypeDisplayName { get { return FullNameOverlay.GetDisplayName(Type); } }
 
-		public virtual string EnsuresQuickSummary{
-			get { return null; }
-		}
+		public abstract IEnumerable<MemberFlair> Flair { get; }
 
 		[ContractInvariantMethod]
 		private void CodeContractInvariant(){

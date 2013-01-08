@@ -112,6 +112,8 @@
     <Compile Include="Generic1.cs" />
     <Compile Include="GenericDelegate.cs" />
     <Compile Include="InGlobal.cs" />
+    <Compile Include="JetbrainsAnnotations\Annotated.cs" />
+    <Compile Include="JetbrainsAnnotations\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ExposedVisibilityTestClasses.cs" />
     <Compile Include="Seal\SealedStuff.cs" />

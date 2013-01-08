@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using DandyDoc.Overlays.XmlDoc;
 using Mono.Cecil;
 
 namespace DandyDoc.ViewModels
 {
-	public class MethodReturnViewModel : ReturnViewModelBase
+	public class DelegateReturnViewModel : ReturnViewModelBase
 	{
 
-		internal MethodReturnViewModel(TypeReference type, MethodViewModel parent, ParsedXmlElementBase xmlDoc)
+		internal DelegateReturnViewModel(TypeReference type, DelegateViewModel parent, ParsedXmlElementBase xmlDoc)
 			: base(type, xmlDoc)
 		{
 			if(null == parent) throw new ArgumentNullException("parent");
@@ -17,17 +20,17 @@ namespace DandyDoc.ViewModels
 			Parent = parent;
 		}
 
-		public MethodViewModel Parent { get; private set; }
+		public DelegateViewModel Parent { get; private set; }
 
 		public override IEnumerable<MemberFlair> Flair {
 			get {
-				if (Parent.Definition.HasAttributeMatchingName("CanBeNullAttribute"))
+				if(Parent.Definition.HasAttributeMatchingName("CanBeNullAttribute"))
 					yield return new MemberFlair("nulls", "Null Values", "Can return null.");
-				
+
 				if (Parent.EnsuresResultNotNullOrEmpty)
-					yield return new MemberFlair("no nulls","Null Values", "Ensures: result is not null and not empty.");
+					yield return new MemberFlair("no nulls", "Null Values", "Ensures: result is not null and not empty.");
 				else if (Parent.EnsuresResultNotNull)
-					yield return new MemberFlair("no nulls","Null Values", "Ensures: result is not null.");
+					yield return new MemberFlair("no nulls", "Null Values", "Ensures: result is not null.");
 			}
 		}
 

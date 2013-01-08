@@ -1,7 +1,7 @@
 ﻿@using DandyDoc.ViewModels
 @using Mono.Cecil
 @using Mvc4WebDirectDocSample.Infrastructure
-@model DandyDoc.ViewModels.ReturnViewModel
+@model DandyDoc.ViewModels.ReturnViewModelBase
 @functions{
 
 	private string GetLink(TypeReference reference) {
@@ -11,7 +11,7 @@
 		return null == linkResolver ? null : linkResolver.GetLink(reference);
 	}
 
-	private IHtmlString GetItemContent(ReturnViewModel model){
+		private IHtmlString GetItemContent(ReturnViewModelBase model) {
 		var reference = Model.Type;
 		if (null == reference)
 			return null;
@@ -27,6 +27,12 @@
 @{
 	if (Model.HasXmlDoc) {<div>@{ Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", Model.XmlDoc); }</div>}
 	<div>Type: @GetItemContent(Model)</div>
-	var ensuresQuickSummary = Model.EnsuresQuickSummary;
-	if (!String.IsNullOrEmpty(ensuresQuickSummary)){<div><i class="icon-ok-sign"></i> Guaranteed: @(ensuresQuickSummary).</div>}
+	var flair = Model.Flair.ToList();
+	if (flair.Count > 0) {
+	<ul class="unstyled">
+		@foreach (var f in flair) {
+		<li>@{Html.RenderPartial("Partials/FlairIcon", f);} @f.Description</li>
+		}
+	</ul>
+	}
 }

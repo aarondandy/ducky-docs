@@ -6,10 +6,10 @@ using Mono.Cecil;
 
 namespace DandyDoc.ViewModels
 {
-	public class MethodParameterViewModel : ParameterViewModelBase
+	public class DelegateParameterViewModel : ParameterViewModelBase
 	{
 
-		internal MethodParameterViewModel(ParameterDefinition definition, MethodViewModel parent, ParsedXmlElementBase xmlDoc)
+		internal DelegateParameterViewModel(ParameterDefinition definition, DelegateViewModel parent, ParsedXmlElementBase xmlDoc)
 			: base(definition, xmlDoc)
 		{
 			if(null == parent) throw new ArgumentNullException("parent");
@@ -17,7 +17,7 @@ namespace DandyDoc.ViewModels
 			Parent = parent;
 		}
 
-		public MethodViewModel Parent { get; private set; }
+		public DelegateViewModel Parent { get; private set; }
 
 		public override IEnumerable<MemberFlair> Flair {
 			get {

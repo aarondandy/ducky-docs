@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using DandyDoc.Overlays.DisplayName;
 using DandyDoc.Overlays.XmlDoc;
@@ -6,7 +7,7 @@ using Mono.Cecil;
 
 namespace DandyDoc.ViewModels
 {
-	public class ParameterViewModel
+	public class ParameterViewModelBase
 	{
 
 		private static readonly DisplayNameOverlay FullNameOverlay = new DisplayNameOverlay {
@@ -16,7 +17,7 @@ namespace DandyDoc.ViewModels
 			ShowTypeNameForMembers = true
 		};
 
-		internal ParameterViewModel(ParameterDefinition definition, ParsedXmlElementBase xmlDoc) {
+		internal ParameterViewModelBase(ParameterDefinition definition, ParsedXmlElementBase xmlDoc) {
 			if(null == definition) throw new ArgumentNullException("definition");
 			Contract.EndContractBlock();
 			Definition = definition;
@@ -33,7 +34,12 @@ namespace DandyDoc.ViewModels
 
 		public virtual string TypeDisplayName { get { return FullNameOverlay.GetDisplayName(Definition.ParameterType); } }
 
-		public virtual string RequiresQuickSummary { get { return null; } }
+		public virtual IEnumerable<MemberFlair> Flair {
+			get {
+				if(Definition.HasAttributeMatchingName("CanBeNullAttribute"))
+					yield return new MemberFlair("nulls","Null Values", "This parameter can be null.");
+			}
+		}
 
 		[ContractInvariantMethod]
 		private void CodeContractInvariant(){

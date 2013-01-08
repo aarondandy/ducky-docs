@@ -46,7 +46,7 @@ namespace Mvc4WebDirectDocSample.Infrastructure
 							return MsdnLinkOverlay.GetUrl(result);
 					}
 					catch {
-						;// exception monster!
+						; // exception monster!
 					}
 				}
 			}
@@ -68,9 +68,14 @@ namespace Mvc4WebDirectDocSample.Infrastructure
 			if (null != MsdnLinkOverlay){
 				var fullName = new ParsedCref(cref).CoreName;
 				if (fullName.StartsWith("System.") || fullName.StartsWith("Microsoft.")) {
-					var result = MsdnLinkOverlay.Search(fullName).FirstOrDefault();
-					if (result != null)
-						return MsdnLinkOverlay.GetUrl(result);
+					try {
+						var result = MsdnLinkOverlay.Search(fullName).FirstOrDefault();
+						if (result != null)
+							return MsdnLinkOverlay.GetUrl(result);
+					}
+					catch {
+						; // exception monster!
+					}
 				}
 			}
 

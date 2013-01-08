@@ -12,10 +12,9 @@
 	Html.RenderPartial("Partials/NamespaceAndAssembly", Model.AssemblyNamespace);
 	if(Model.HasSignatures){Html.RenderPartial("Partials/DefinitionSignatures", Model.Signatures);}
 	if (Model.Definition.HasGenericParameters){Html.RenderPartial("Partials/GenericParameterListing", Model.ToGenericParameterViewModels(Model.Definition.GenericParameters));}
-	var parameters = Model.Definition.GetDelegateTypeParameters();
-	if (null != parameters && parameters.Count > 0){
+	if (Model.HasParameters){
 		<h2>Parameters</h2>
-		Html.RenderPartial("Partials/ParameterListing", Model.CreateParameterViewModels(parameters));
+		Html.RenderPartial("Partials/ParameterListing", Model.CreateParameterViewModels(Model.Parameters));
 	}
 	if (Model.HasReturn) {Html.RenderPartial("Partials/ReturnsSection", Model.CreateReturnViewModel());}
 	if (Model.HasExceptions) { Html.RenderPartial("Partials/ExceptionSection", Model.ToExceptionViewModels(Model.Exceptions)); }

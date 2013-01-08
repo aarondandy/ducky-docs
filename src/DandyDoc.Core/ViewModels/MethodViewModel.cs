@@ -50,7 +50,9 @@ namespace DandyDoc.ViewModels
 			if (Definition.IsExtensionMethod())
 				yield return new MemberFlair("extension", "Extension", "This method is an extension method.");
 
-			if (AllResultsAndParamsNotNull)
+			if(IsCanBeNull)
+				yield return new MemberFlair("null result", "Null Values", "This method may return null.");
+			else if (AllResultsAndParamsNotNull)
 				yield return new MemberFlair("no nulls", "Null Values", "This method does not return or accept null values for reference types.");
 
 			if (IsPure)
@@ -75,6 +77,14 @@ namespace DandyDoc.ViewModels
 				else if (Definition.IsVirtual && Definition.IsNewSlot && !Definition.IsFinal)
 					yield return new MemberFlair("virtual", "Inheritance", "This method is virtual and can be overridden by inheriting types.");
 			}
+
+			if(IsStringFormatMethod)
+				yield return new MemberFlair("string format", "Signature", "Invoked as a String.Format styled method.");
+
+		}
+
+		public virtual bool IsStringFormatMethod {
+			get { return Definition.HasAttributeMatchingName("StringFormatMethodAttribute"); }
 		}
 
 		public virtual bool IsPure {
@@ -85,6 +95,10 @@ namespace DandyDoc.ViewModels
 					return true;
 				return false;
 			}
+		}
+
+		public virtual bool IsCanBeNull {
+			get { return Definition.HasAttributeMatchingName("CanBeNullAttribute"); }
 		}
 
 		public virtual bool AllResultsAndParamsNotNull{
@@ -154,11 +168,12 @@ namespace DandyDoc.ViewModels
 		public virtual bool HasReturn { get { return Definition.ReturnType != null && Definition.ReturnType.FullName != "System.Void"; } }
 
 		public virtual bool EnsuresResultNotNull{
-			get{
-				return HasReturn
-					&& HasXmlDoc
-					&& MethodXmlDoc.Ensures.Count > 0
-					&& MethodXmlDoc.Ensures.Any(x => x.EnsuresResultNotNull);
+			get {
+				if (!HasReturn)
+					return false;
+
+				return (HasXmlDoc && MethodXmlDoc.Ensures.Count > 0 && MethodXmlDoc.Ensures.Any(x => x.EnsuresResultNotNull))
+					|| (Definition.HasAttributeMatchingName("NotNullAttribute"));
 			}
 		}
 
@@ -174,6 +189,11 @@ namespace DandyDoc.ViewModels
 		public virtual bool RequiresParameterNotNull(string parameterName){
 			if (String.IsNullOrEmpty(parameterName)) throw new ArgumentException("Invalid parameter name.", "parameterName");
 			Contract.EndContractBlock();
+			var parameter = Definition.Parameters.FirstOrDefault(p => p.Name == parameterName);
+			if (null != parameter) {
+				if (parameter.HasAttributeMatchingName("NotNullAttribute"))
+					return true;
+			}
 			if (!HasXmlDoc || MethodXmlDoc.Requires.Count == 0)
 				return false;
 			return MethodXmlDoc.Requires.Any(x => x.RequiresParameterNotNull(parameterName));
