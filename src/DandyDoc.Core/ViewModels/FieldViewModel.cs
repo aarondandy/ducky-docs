@@ -24,6 +24,18 @@ namespace DandyDoc.ViewModels
 
 		public virtual bool HasValueDoc { get { return ValueDoc != null; } }
 
+		public virtual TypeReference FieldType {
+			get {
+				Contract.Ensures(Contract.Result<TypeReference>() != null);
+				Contract.Assume(Definition.FieldType != null);
+				return Definition.FieldType;
+			}
+		}
+
+		public virtual string FieldTypeDisplayName {
+			get { return ShortNameOverlay.GetDisplayName(FieldType); }
+		}
+
 		protected override IEnumerable<MemberFlair> GetFlairTags(){
 			foreach (var tag in base.GetFlairTags())
 				yield return tag;

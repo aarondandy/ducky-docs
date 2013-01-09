@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Diagnostics.Contracts;
 using System.Xml;
+using DandyDoc.Utility;
 
 namespace DandyDoc.Overlays.XmlDoc
 {
@@ -16,6 +12,25 @@ namespace DandyDoc.Overlays.XmlDoc
 		{
 			Contract.Requires(null != element);
 			Contract.Requires(null != xmlDocBase);
+		}
+
+		public ParsedXmlContractCondition RelatedEnsures {
+			get {
+				var previousSibling = Element.FindPreviousSiblingElement();
+				if (null == previousSibling)
+					return null;
+				if("ensuresOnThrow".Equals(previousSibling.Name))
+					return new ParsedXmlContractCondition(previousSibling, DocBase);
+				return null;
+			}
+		}
+
+		public bool HasRelatedEnsures {
+			get {
+				var previousSibling = Element.FindPreviousSiblingElement();
+				return null != previousSibling
+					&& "ensuresOnThrow".Equals(previousSibling.Name);
+			}
 		}
 
 	}

@@ -25,6 +25,6 @@
 		}
 	}
 	if (Model.HasValueDoc) {Html.RenderPartial("Partials/ValueSection", Model.ValueDoc); }
-	if (Model.HasExceptions){Html.RenderPartial("Partials/ExceptionSection", Model.ToExceptionViewModels(Model.Exceptions));}
+	if (Model.HasExceptions) { Html.RenderPartial("Partials/ExceptionSection", Model.ExceptionGroups); }
 	Html.RenderPartial("Partials/DefinitionPageCommonSections", Model);
 }

@@ -24,11 +24,18 @@ namespace DandyDoc.Overlays.Cref
 		public MemberReference GetReference(string cref){
 			if (String.IsNullOrEmpty(cref)) throw new ArgumentException("Invalid cref.", "cref");
 			Contract.EndContractBlock();
-			if (cref.StartsWith("T:", StringComparison.OrdinalIgnoreCase))
+			var parsedCref = new ParsedCref(cref);
+			return GetReference(parsedCref);
+		}
+
+		public MemberReference GetReference(ParsedCref cref) {
+			if(null == cref) throw new ArgumentNullException("cref");
+			Contract.EndContractBlock();
+			if (String.IsNullOrEmpty(cref.TargetType))
+				return GetTypeDefinition(cref) ?? (GetMemberDefinition(cref) as MemberReference);
+			if ("T".Equals(cref.TargetType))
 				return GetTypeDefinition(cref);
-			if (cref.Length >= 2 && cref[1] == ':')
-				return GetMemberDefinition(cref) as MemberReference;
-			return GetTypeDefinition(cref) ?? (GetMemberDefinition(cref) as MemberReference);
+			return GetMemberDefinition(cref) as MemberReference;
 		}
 
 		public TypeDefinition GetTypeDefinition(string cref) {
@@ -109,17 +116,21 @@ namespace DandyDoc.Overlays.Cref
 		public IMemberDefinition GetMemberDefinition(string cref) {
 			if(String.IsNullOrEmpty(cref)) throw new ArgumentException("Invalid cref.", "cref");
 			Contract.EndContractBlock();
+			return GetMemberDefinition(new ParsedCref(cref));
+		}
 
-			var parsedCref = new ParsedCref(cref);
-			if (String.Equals("T", parsedCref.TargetType, StringComparison.OrdinalIgnoreCase))
-				return GetTypeDefinition(parsedCref);
+		public IMemberDefinition GetMemberDefinition(ParsedCref cref) {
+			if(null == cref) throw new ArgumentNullException("cref");
+			Contract.EndContractBlock();
+			if (String.Equals("T", cref.TargetType, StringComparison.OrdinalIgnoreCase))
+				return GetTypeDefinition(cref);
 
-			var memberResult = AssemblyDefinitionCollection.Select(x => GetMemberDefinitionExcludingTypes(x, parsedCref)).FirstOrDefault(x => null != x);
-			if(null != memberResult)
+			var memberResult = AssemblyDefinitionCollection.Select(x => GetMemberDefinitionExcludingTypes(x, cref)).FirstOrDefault(x => null != x);
+			if (null != memberResult)
 				return memberResult;
 
-			if(String.IsNullOrEmpty(parsedCref.TargetType))
-				return GetTypeDefinition(parsedCref);
+			if (String.IsNullOrEmpty(cref.TargetType))
+				return GetTypeDefinition(cref);
 
 			return null;
 		}

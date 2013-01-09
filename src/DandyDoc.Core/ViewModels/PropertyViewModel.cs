@@ -166,6 +166,15 @@ namespace DandyDoc.ViewModels
 			}
 		}
 
+		public virtual IEnumerable<ExceptionGroupViewModel> ExceptionGroups {
+			get {
+				if (!HasExceptions) throw new InvalidOperationException("Model has no exceptions.");
+				Contract.Ensures(Contract.Result<IEnumerable<ExceptionGroupViewModel>>() != null);
+				Contract.Assume(null != Exceptions);
+				return ToExceptionGroupViewModels(ToExceptionViewModels(Exceptions));
+			}
+		}
+
 		public virtual bool IsGetterPure {
 			get {
 				if (HasXmlDoc && null != XmlDoc.GetterDocs && XmlDoc.GetterDocs.HasPureElement)

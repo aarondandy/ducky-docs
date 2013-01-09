@@ -41,38 +41,47 @@ namespace Mvc4WebDirectDocSample.Controllers
 		public ActionResult Index(string cref) {
 			if(String.IsNullOrEmpty(cref))
 				return new HttpNotFoundResult();
-			var reference = CrefOverlay.GetReference(cref);
-			if (null == reference)
-				return new HttpNotFoundResult();
 
 			ViewResult viewResult;
-			if (reference is TypeDefinition){
-				var typeDefinition = (TypeDefinition) reference;
-				if (typeDefinition.IsDelegateType()) {
-					var delegateViewModel = new DelegateViewModel(typeDefinition, XmlDocOverlay);
-					viewResult = View("Delegate", delegateViewModel);
+			var parsedCref = new ParsedCref(cref);
+			if ("N".Equals(parsedCref.TargetType)) {
+				var ns = TypeNavigationViewModel.GetExposedNamespaceViewModel(parsedCref.CoreName);
+				if(null == ns)
+					return new HttpNotFoundResult();
+				viewResult = View("Namespace", ns);
+			}
+			else {
+				var reference = CrefOverlay.GetReference(parsedCref);
+				if (null == reference)
+					return new HttpNotFoundResult();
+				if (reference is TypeDefinition) {
+					var typeDefinition = (TypeDefinition)reference;
+					if (typeDefinition.IsDelegateType()) {
+						var delegateViewModel = new DelegateViewModel(typeDefinition, XmlDocOverlay);
+						viewResult = View("Delegate", delegateViewModel);
+					}
+					else {
+						var typeViewModel = new TypeViewModel(typeDefinition, XmlDocOverlay);
+						viewResult = View(
+							typeDefinition.IsEnum ? "Enum" : "Type",
+							typeViewModel);
+					}
+				}
+				else if (reference is MethodDefinition) {
+					viewResult = View("Method", new MethodViewModel((MethodDefinition)reference, XmlDocOverlay));
+				}
+				else if (reference is FieldDefinition) {
+					viewResult = View("Field", new FieldViewModel((FieldDefinition)reference, XmlDocOverlay));
+				}
+				else if (reference is PropertyDefinition) {
+					viewResult = View("Property", new PropertyViewModel((PropertyDefinition)reference, XmlDocOverlay));
+				}
+				else if (reference is EventDefinition) {
+					viewResult = View("Event", new EventViewModel((EventDefinition)reference, XmlDocOverlay));
 				}
 				else {
-					var typeViewModel = new TypeViewModel(typeDefinition, XmlDocOverlay);
-					viewResult = View(
-						typeDefinition.IsEnum ? "Enum" : "Type",
-						typeViewModel);
+					throw new NotSupportedException();
 				}
-			}
-			else if (reference is MethodDefinition) {
-				viewResult = View("Method", new MethodViewModel((MethodDefinition)reference, XmlDocOverlay));
-			}
-			else if (reference is FieldDefinition) {
-				viewResult = View("Field", new FieldViewModel((FieldDefinition)reference, XmlDocOverlay));
-			}
-			else if (reference is PropertyDefinition) {
-				viewResult = View("Property", new PropertyViewModel((PropertyDefinition)reference, XmlDocOverlay));
-			}
-			else if (reference is EventDefinition){
-				viewResult = View("Event", new EventViewModel((EventDefinition) reference, XmlDocOverlay));
-			}
-			else{
-				throw new NotSupportedException();
 			}
 
 			Contract.Assume(null != viewResult);

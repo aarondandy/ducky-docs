@@ -1,7 +1,7 @@
 ﻿@using DandyDoc.ViewModels
 @using Mono.Cecil
 @using Mvc4WebDirectDocSample.Infrastructure
-@model IEnumerable<ExceptionViewModel>
+@model IEnumerable<ExceptionGroupViewModel>
 @functions{
 
 	private string GetLink(string cref){
@@ -18,12 +18,12 @@
 		return null == linkResolver ? null : linkResolver.GetLink(reference);
 	}
 
-	private IHtmlString GetItemContent(ExceptionViewModel exception) {
+		private IHtmlString GetItemContent(ExceptionGroupViewModel exception) {
 		if (null == exception)
 			return null;
 		var coreText = HttpUtility.HtmlEncode(exception.ShortName);
 		var link = GetLink(exception.ExceptionTypeReference)
-			?? GetLink(exception.ExceptionXml.CRef);
+			?? GetLink(exception.ExceptionTypeCref);
 		if (!String.IsNullOrEmpty(link)) {
 			coreText = String.Concat("<a href=\"", link, "\">", coreText, "</a>");
 		}
@@ -38,14 +38,38 @@
 	@foreach (var exception in Model){
 	<tr>
 		<td>@GetItemContent(exception)</td>
-		<td>@{
-					if (exception.HasXmlComments) {
-						Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", exception.ExceptionXml);
-					}
-					else{
-						; // TODO: create a default condition
-					}
-				}</td>
+		<td>
+			@{
+				var conditions = exception.XmlConditions;
+				var ensures = exception.XmlEnsures;
+				if (conditions.Count == 1 && ensures.Count == 0) {
+					Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", conditions[0]);
+				}
+				else if(conditions.Count > 0 || ensures.Count > 0) {
+					var sets = new[] {
+						new {Title = "Conditions", Items = ensures},
+						new {Title = "Ensures", Items = ensures}
+					};
+					<dl>
+						@foreach (var set in sets.Where(s => s.Items.Count > 0)) {
+							<dt>@(set.Title):</dt>
+							<dd>
+								@if (set.Items.Count == 1) {
+									Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", set.Items[0]);
+								}
+								else {
+									<ul>
+										@foreach(var item in set.Items){
+											<li>@{Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", item);}</li>
+										}
+									</ul>
+								}
+							</dd>
+						}
+					</dl>
+				}
+			}
+		</td>
 	</tr>
 	}
 </tbody></table>

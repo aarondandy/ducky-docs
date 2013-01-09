@@ -9,7 +9,7 @@ namespace DandyDoc.Overlays.Cref
 	{
 
 		private static readonly Regex CrefRegex = new Regex(
-			@"((?<targetType>\w)[:])?(?<coreName>[^()]+)([(](?<params>.*)[)])?",
+			@"((?<targetType>\w)[:])?(?<coreName>[^():]+)([(](?<params>.*)[)])?",
 			RegexOptions.Compiled);
 
 		public ParsedCref(string cref) {
@@ -18,17 +18,24 @@ namespace DandyDoc.Overlays.Cref
 
 			Cref = cref;
 
-			var match = CrefRegex.Match(cref);
-			if (match.Success) {
-				var coreGroup = match.Groups["coreName"];
-				if (coreGroup.Success) {
-					CoreName = coreGroup.Value;
-					var targetTypeGroup = match.Groups["targetType"];
-					if (targetTypeGroup.Success)
-						TargetType = targetTypeGroup.Value;
-					var paramsGroup = match.Groups["params"];
-					if (paramsGroup.Success) {
-						ParamParts = paramsGroup.Value;
+			if ("N:".Equals(cref)) {
+				CoreName = String.Empty;
+				TargetType = "N";
+				ParamParts = String.Empty;
+			}
+			else {
+				var match = CrefRegex.Match(cref);
+				if (match.Success) {
+					var coreGroup = match.Groups["coreName"];
+					if (coreGroup.Success) {
+						CoreName = coreGroup.Value;
+						var targetTypeGroup = match.Groups["targetType"];
+						if (targetTypeGroup.Success)
+							TargetType = targetTypeGroup.Value;
+						var paramsGroup = match.Groups["params"];
+						if (paramsGroup.Success) {
+							ParamParts = paramsGroup.Value;
+						}
 					}
 				}
 			}

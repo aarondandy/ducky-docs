@@ -1,11 +1,10 @@
 ﻿@using System.Text.RegularExpressions
 @model DandyDoc.ViewModels.IDefinitionViewModel
 @functions{
-	static Regex TitleSplitRegex = new Regex(@"(?<=[.,;\<\(\[])");
+	static readonly Regex TitleSplitRegex = new Regex(@"(?<=[.,;\<\(\[])");
 	static IEnumerable<string> TitleParts(string title){
 		return TitleSplitRegex.Split(title);
 	}
-
 }
 <h1>@foreach(var part in TitleParts(Model.Title)){<span>@part</span>}
  <small>@Model.SubTitle</small></h1>

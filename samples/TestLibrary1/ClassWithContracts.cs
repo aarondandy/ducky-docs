@@ -17,7 +17,9 @@ namespace TestLibrary1
 		/// <param name="text"></param>
 		public ClassWithContracts(string text){
 			if(String.IsNullOrEmpty(text)) throw new ArgumentException("Nope!","text");
+			if(text.Equals("nope")) throw new ArgumentException("Was nope...","text");
 			Contract.EnsuresOnThrow<ArgumentException>(Text == null);
+			Contract.EnsuresOnThrow<ArgumentException>(Text != "nope!");
 			Contract.EndContractBlock();
 			Text = text;
 		}

@@ -23,6 +23,27 @@ namespace TestLibrary1
 	public class Class1
 	{
 
+		
+		/// <inheritdoc/>
+		public class Inherits : Class1
+		{
+			public Inherits() : base(String.Empty) { }
+
+			public void SomeNewMethod() {
+				var result = new Inherits() + new Inherits();
+				var a = result.GetHashCode() * 7;
+			}
+
+			public void VirtualInstanceMethod(int n) {
+				throw new NotImplementedException();
+			}
+
+			new public void VirtualInstanceMethod(string n) {
+				throw new NotImplementedException();
+			}
+
+		}
+
 		/// <remarks>
 		/// This is just some class.
 		/// </remarks>
@@ -39,6 +60,14 @@ namespace TestLibrary1
 			[Obsolete]
 			public string GetAName(){ throw new NotImplementedException();}
 
+		}
+
+		public Class1[] SomeClasses;
+
+		public Int32? SomeNullableInt;
+
+		public void HasStrangeParams(Int32? a, Class1[] someClass) {
+			throw new NotImplementedException();
 		}
 
 		public class NoDocs

@@ -10,6 +10,186 @@ namespace DandyDoc
 	public static class CecilExtensions
 	{
 
+		[Pure]
+		public static IList<EventDefinition> GetAllEvents(this TypeDefinition definition) {
+			if (null == definition) throw new ArgumentNullException("definition");
+			Contract.Ensures(Contract.Result<IList<EventDefinition>>() != null);
+			var result = new List<EventDefinition>();
+			if (definition.HasEvents)
+				result.AddRange(definition.Events);
+
+			var baseRef = definition.BaseType;
+			if (null != baseRef) {
+				var baseDef = baseRef.Resolve();
+				if (null != baseDef) {
+					AppendNeededBaseEvents(baseDef, result);
+				}
+			}
+			return result;
+		}
+
+		[Pure]
+		private static void AppendNeededBaseEvents(TypeDefinition definition, List<EventDefinition> baseMembers) {
+			var newAdditions = new List<EventDefinition>();
+			foreach (var e in definition.Events) {
+				if (baseMembers.Any(b => b.Name == e.Name))
+					continue;
+
+				newAdditions.Add(e);
+			}
+
+			if (newAdditions.Count > 0)
+				baseMembers.AddRange(newAdditions);
+
+			var baseRef = definition.BaseType;
+			if (null != baseRef) {
+				var baseDef = baseRef.Resolve();
+				if (null != baseDef) {
+					AppendNeededBaseEvents(baseDef, baseMembers);
+				}
+			}
+		}
+
+		[Pure]
+		public static IList<PropertyDefinition> GetAllProperties(this TypeDefinition definition) {
+			if (null == definition) throw new ArgumentNullException("definition");
+			Contract.Ensures(Contract.Result<IList<PropertyDefinition>>() != null);
+			var result = new List<PropertyDefinition>();
+			if (definition.HasProperties)
+				result.AddRange(definition.Properties);
+
+			var baseRef = definition.BaseType;
+			if (null != baseRef) {
+				var baseDef = baseRef.Resolve();
+				if (null != baseDef) {
+					AppendNeededBaseProperties(baseDef, result);
+				}
+			}
+			return result;
+		}
+
+		[Pure]
+		private static void AppendNeededBaseProperties(TypeDefinition definition, List<PropertyDefinition> baseMembers) {
+			var newAdditions = new List<PropertyDefinition>();
+			foreach (var property in definition.Properties) {
+				if (baseMembers.Any(b => b.Name == property.Name))
+					continue;
+
+				newAdditions.Add(property);
+			}
+
+			if (newAdditions.Count > 0)
+				baseMembers.AddRange(newAdditions);
+
+			var baseRef = definition.BaseType;
+			if (null != baseRef) {
+				var baseDef = baseRef.Resolve();
+				if (null != baseDef) {
+					AppendNeededBaseProperties(baseDef, baseMembers);
+				}
+			}
+		}
+
+		[Pure]
+		public static IList<FieldDefinition> GetAllFields(this TypeDefinition definition) {
+			if(null == definition) throw new ArgumentNullException("definition");
+			Contract.Ensures(Contract.Result<IList<FieldDefinition>>() != null);
+			var result = new List<FieldDefinition>();
+			if(definition.HasFields)
+				result.AddRange(definition.Fields);
+
+			var baseRef = definition.BaseType;
+			if (null != baseRef) {
+				var baseDef = baseRef.Resolve();
+				if (null != baseDef) {
+					AppendNeededBaseFields(baseDef, result);
+				}
+			}
+			return result;
+		}
+
+		[Pure]
+		private static void AppendNeededBaseFields(TypeDefinition definition, List<FieldDefinition> baseMembers) {
+			var newAdditions = new List<FieldDefinition>();
+			foreach (var field in definition.Fields) {
+				if (baseMembers.Any(b => b.Name == field.Name))
+					continue;
+
+				newAdditions.Add(field);
+			}
+
+			if (newAdditions.Count > 0)
+				baseMembers.AddRange(newAdditions);
+
+			var baseRef = definition.BaseType;
+			if (null != baseRef) {
+				var baseDef = baseRef.Resolve();
+				if (null != baseDef) {
+					AppendNeededBaseFields(baseDef, baseMembers);
+				}
+			}
+		}
+		
+		[Pure] public static IList<MethodDefinition> GetAllMethods(this TypeDefinition definition) {
+			if(null == definition) throw new ArgumentNullException("definition");
+			Contract.Ensures(Contract.Result<IList<MethodDefinition>>() != null);
+			var result = new List<MethodDefinition>();
+			if(definition.HasMethods)
+				result.AddRange(definition.Methods);
+
+			var baseRef = definition.BaseType;
+			if (null != baseRef) {
+				var baseDef = baseRef.Resolve();
+				if (null != baseDef) {
+					AppendNeededBaseMethods(baseDef, result);
+				}
+			}
+			return result;
+		}
+
+		[Pure] private static void AppendNeededBaseMethods(TypeDefinition definition, List<MethodDefinition> baseMembers) {
+			var newAdditions = new List<MethodDefinition>();
+			foreach (var method in definition.Methods) {
+				if (method.IsConstructor)
+					continue;
+
+				if (baseMembers.Any(b => SignaturesEqual(b, method)))
+					continue;
+
+				newAdditions.Add(method);
+			}
+
+			if(newAdditions.Count > 0)
+				baseMembers.AddRange(newAdditions);
+
+			var baseRef = definition.BaseType;
+			if (null != baseRef) {
+				var baseDef = baseRef.Resolve();
+				if (null != baseDef) {
+					AppendNeededBaseMethods(baseDef, baseMembers);
+				}
+			}
+		}
+
+		public static bool SignaturesEqual(MethodDefinition a, MethodDefinition b) {
+			if (null == a)
+				return null == b;
+			if (null == b)
+				return false;
+			if (a.Name != b.Name)
+				return false;
+			if (!a.HasParameters)
+				return !b.HasParameters;
+			if (a.Parameters.Count != b.Parameters.Count)
+				return false;
+
+			for (int i = 0; i < a.Parameters.Count; i++) {
+				if (a.Parameters[i].ParameterType != b.Parameters[i].ParameterType)
+					return false;
+			}
+			return true;
+		}
+
 		[Pure] public static bool IsDelegateType(this TypeDefinition typeDefinition){
 			if (null == typeDefinition)
 				return false;

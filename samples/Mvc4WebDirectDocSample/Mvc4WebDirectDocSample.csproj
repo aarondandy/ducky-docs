@@ -241,6 +241,7 @@
     <Content Include="Views\Doc\Partials\ParameterListing.cshtml" />
     <Content Include="Views\Doc\Partials\ReturnsSection.cshtml" />
     <Content Include="Views\Doc\Partials\ValueSection.cshtml" />
+    <Content Include="Views\Doc\Namespace.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

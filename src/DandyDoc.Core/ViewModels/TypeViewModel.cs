@@ -214,10 +214,10 @@ namespace DandyDoc.ViewModels
 		{
 			Contract.Requires(null != definition);
 			Contract.Requires(null != xmlDocOverlay);
-			_categorizedExposedMethods = new Lazy<CategorizedMethods>(() => new CategorizedMethods(Definition.Methods.Where(x => x.IsExternallyVisible())));
-			_categorizedExposedFields = new Lazy<CategorizedFields>(() => new CategorizedFields(Definition.Fields.Where(x => x.IsExternallyVisible())));
-			_categorizedExposedProperties = new Lazy<CategorizedProperties>(() => new CategorizedProperties(Definition.Properties.Where(x => x.IsExternallyVisible())));
-			_categorizedExposedEvents = new Lazy<CategorizedEvents>(() => new CategorizedEvents(Definition.Events.Where(x => x.IsExternallyVisible())));
+			_categorizedExposedMethods = new Lazy<CategorizedMethods>(() => new CategorizedMethods(Definition.GetAllMethods().Where(x => x.IsExternallyVisible())));
+			_categorizedExposedFields = new Lazy<CategorizedFields>(() => new CategorizedFields(Definition.GetAllFields().Where(x => x.IsExternallyVisible())));
+			_categorizedExposedProperties = new Lazy<CategorizedProperties>(() => new CategorizedProperties(Definition.GetAllProperties().Where(x => x.IsExternallyVisible())));
+			_categorizedExposedEvents = new Lazy<CategorizedEvents>(() => new CategorizedEvents(Definition.GetAllEvents().Where(x => x.IsExternallyVisible())));
 			_nestedExposedTypes = new Lazy<ReadOnlyCollection<TypeDefinition>>(() => Array.AsReadOnly(Definition.NestedTypes.Where(x => x.IsExternallyVisible() && !x.IsDelegateType()).ToArray()));
 			_delegateExposedTypes = new Lazy<ReadOnlyCollection<TypeDefinition>>(() => Array.AsReadOnly(Definition.NestedTypes.Where(x => x.IsExternallyVisible() && x.IsDelegateType()).ToArray()));
 			_baseChain = new Lazy<ReadOnlyCollection<TypeReference>>(BuildBaseChain);

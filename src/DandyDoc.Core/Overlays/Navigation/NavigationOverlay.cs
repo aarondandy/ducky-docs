@@ -45,7 +45,7 @@ namespace DandyDoc.Overlays.Navigation
 			}
 			return Array.AsReadOnly(
 				resultBuilder
-				.Select(x => new NavigationOverlayNamespace(x.Key,x.Value))
+				.Select(x => new NavigationOverlayNamespace(x.Key,x.Value, assembly))
 				.OrderBy(x => x.Namespace)
 				.ToArray());
 		}

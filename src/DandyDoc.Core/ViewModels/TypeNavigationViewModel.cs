@@ -12,7 +12,7 @@ namespace DandyDoc.ViewModels
 	public class TypeNavigationViewModel
 	{
 
-		private readonly Lazy<ReadOnlyCollection<TypeNavigationNamespaceViewModelcs>> _exposedNamespaceViewModels;
+		private readonly Lazy<ReadOnlyCollection<TypeNavigationNamespaceViewModel>> _exposedNamespaceViewModels;
 
 		public TypeNavigationViewModel(NavigationOverlay navigationOverlay, XmlDocOverlay xmlDocOverlay, CrefOverlay crefOverlay = null) {
 			if (null == navigationOverlay) throw new ArgumentNullException("navigationOverlay");
@@ -21,7 +21,7 @@ namespace DandyDoc.ViewModels
 			NavigationOverlay = navigationOverlay;
 			XmlDocOverlay = xmlDocOverlay;
 			CrefOverlay = crefOverlay ?? xmlDocOverlay.CrefOverlay;
-			_exposedNamespaceViewModels = new Lazy<ReadOnlyCollection<TypeNavigationNamespaceViewModelcs>>(CreateExposedNamespaceViewModels);
+			_exposedNamespaceViewModels = new Lazy<ReadOnlyCollection<TypeNavigationNamespaceViewModel>>(CreateExposedNamespaceViewModels);
 		}
 
 		public XmlDocOverlay XmlDocOverlay { get; private set; }
@@ -30,21 +30,33 @@ namespace DandyDoc.ViewModels
 
 		public NavigationOverlay NavigationOverlay { get; private set; }
 
-		private ReadOnlyCollection<TypeNavigationNamespaceViewModelcs> CreateExposedNamespaceViewModels() {
-			Contract.Ensures(Contract.Result<ReadOnlyCollection<TypeNavigationNamespaceViewModelcs>>() != null);
+		private ReadOnlyCollection<TypeNavigationNamespaceViewModel> CreateExposedNamespaceViewModels() {
+			Contract.Ensures(Contract.Result<ReadOnlyCollection<TypeNavigationNamespaceViewModel>>() != null);
 			var viewModels = NavigationOverlay.Namespaces
-				.Select(x => new TypeNavigationNamespaceViewModelcs(x, XmlDocOverlay, CrefOverlay))
+				.Select(x => new TypeNavigationNamespaceViewModel(x, XmlDocOverlay, CrefOverlay))
 				.Where(x => x.ExposedTypeViewModels.Count > 0)
 				.OrderBy(x => x.FullName)
 				.ToList();
-			return new ReadOnlyCollection<TypeNavigationNamespaceViewModelcs>(viewModels);
+			return new ReadOnlyCollection<TypeNavigationNamespaceViewModel>(viewModels);
 		}
 
-		public IList<TypeNavigationNamespaceViewModelcs> ExposedNamespaceViewModels{
+		public IList<TypeNavigationNamespaceViewModel> ExposedNamespaceViewModels{
 			get{
-				Contract.Ensures(Contract.Result<IList<TypeNavigationNamespaceViewModelcs>>() != null);
+				Contract.Ensures(Contract.Result<IList<TypeNavigationNamespaceViewModel>>() != null);
 				return _exposedNamespaceViewModels.Value;
 			}
+		}
+
+		public TypeNavigationNamespaceViewModel GetExposedNamespaceViewModel(string nsName) {
+			if (String.IsNullOrEmpty(nsName)) {
+				return ExposedNamespaceViewModels.FirstOrDefault(n => String.IsNullOrEmpty(nsName))
+					?? ExposedNamespaceViewModels.FirstOrDefault(n => n.FullName == "::");
+			}
+			if ("::".Equals(nsName)) {
+				return ExposedNamespaceViewModels.FirstOrDefault(n => n.FullName == "::")
+					?? ExposedNamespaceViewModels.FirstOrDefault(n => String.IsNullOrEmpty(nsName));
+			}
+			return ExposedNamespaceViewModels.FirstOrDefault(n => n.FullName == nsName);
 		}
 
 		[ContractInvariantMethod]

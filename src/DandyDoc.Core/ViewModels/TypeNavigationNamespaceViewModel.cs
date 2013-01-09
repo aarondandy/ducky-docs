@@ -8,14 +8,15 @@ using DandyDoc.Overlays.Cref;
 using DandyDoc.Overlays.ExternalVisibility;
 using DandyDoc.Overlays.Navigation;
 using DandyDoc.Overlays.XmlDoc;
+using Mono.Cecil;
 
 namespace DandyDoc.ViewModels
 {
-	public class TypeNavigationNamespaceViewModelcs
+	public class TypeNavigationNamespaceViewModel
 	{
 		private readonly Lazy<ReadOnlyCollection<TypeViewModel>> _exposedTypeViewModels;
 
-		internal TypeNavigationNamespaceViewModelcs(NavigationOverlayCompositeNamespace overlayCompositeNamespace, XmlDocOverlay xmlDocOverlay, CrefOverlay crefOverlay = null) {
+		internal TypeNavigationNamespaceViewModel(NavigationOverlayCompositeNamespace overlayCompositeNamespace, XmlDocOverlay xmlDocOverlay, CrefOverlay crefOverlay = null) {
 			if (null == overlayCompositeNamespace) throw new ArgumentNullException("overlayCompositeNamespace");
 			if (null == xmlDocOverlay) throw new ArgumentNullException("xmlDocOverlay");
 			Contract.EndContractBlock();
@@ -42,7 +43,10 @@ namespace DandyDoc.ViewModels
 			Contract.Ensures(Contract.Result<ReadOnlyCollection<TypeViewModel>>() != null);
 			var viewModels = OverlayCompositeNamespace.Types
 				.Where(x => x.IsExternallyVisible())
-				.Select(x => new TypeViewModel(x, XmlDocOverlay, CrefOverlay))
+				.Select(x =>
+					x.IsDelegateType()
+					? new DelegateViewModel(x, XmlDocOverlay, CrefOverlay)
+					: new TypeViewModel(x, XmlDocOverlay, CrefOverlay))
 				.OrderBy(x => x.ShortName)
 				.ToList();
 			return new ReadOnlyCollection<TypeViewModel>(viewModels);
@@ -55,6 +59,10 @@ namespace DandyDoc.ViewModels
 			}
 		}
 
+		public IList<AssemblyDefinition> Assemblies {
+			get { return OverlayCompositeNamespace.Components.Select(c => c.Assembly).ToList(); }
+		}
+			
 		[ContractInvariantMethod]
 		private void CodeContractInvariant(){
 			Contract.Invariant(null != XmlDocOverlay);

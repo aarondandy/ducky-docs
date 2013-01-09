@@ -28,19 +28,15 @@ namespace DandyDoc.ViewModels
 			get{
 				var target = ExceptionXml.CrefTarget;
 				if(null != target)
-					return ShortNameOverlay.GetDisplayName(ExceptionXml.CrefTarget);
-
+					return ShortNameOverlay.GetDisplayName(target);
 				if (!String.IsNullOrEmpty(ExceptionXml.CRef))
 					return new ParsedCref(ExceptionXml.CRef).CoreName;
-
 				return null;
 			}
 		}
 
 		public TypeReference ExceptionTypeReference{
-			get {
-				return ExceptionXml.CrefTarget as TypeReference;
-			}
+			get { return ExceptionXml.CrefTarget as TypeReference; }
 		}
 
 		[ContractInvariantMethod]

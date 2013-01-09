@@ -8,23 +8,28 @@ namespace DandyDoc.Overlays.Navigation
 	public class NavigationOverlayNamespace
 	{
 
-		internal NavigationOverlayNamespace(string ns, IList<TypeDefinition> types){
+		internal NavigationOverlayNamespace(string ns, IList<TypeDefinition> types, AssemblyDefinition assembly){
 			Contract.Requires(null != ns);
 			Contract.Requires(null != types);
 			Contract.Requires(Contract.ForAll(types, type => null != type));
+			Contract.Requires(null != assembly);
 			Namespace = ns;
 			Types = new ReadOnlyCollection<TypeDefinition>(types);
+			Assembly = assembly;
 		}
 
 		public string Namespace { get; private set; }
 
 		public ReadOnlyCollection<TypeDefinition> Types { get; private set; }
 
+		public AssemblyDefinition Assembly { get; private set; }
+
 		[ContractInvariantMethod]
 		private void CodeContractInvariant(){
 			Contract.Invariant(null != Namespace);
 			Contract.Invariant(null != Types);
 			Contract.Invariant(Contract.ForAll(Types, type => null != type));
+			Contract.Invariant(null != Assembly);
 		}
 
 	}

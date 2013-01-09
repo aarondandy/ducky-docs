@@ -145,6 +145,15 @@ namespace DandyDoc.ViewModels
 			}
 		}
 
+		public virtual IEnumerable<ExceptionGroupViewModel> ExceptionGroups {
+			get {
+				if(!HasExceptions) throw new InvalidOperationException("Model has no exceptions.");
+				Contract.Ensures(Contract.Result<IEnumerable<ExceptionGroupViewModel>>() != null);
+				Contract.Assume(null != Exceptions);
+				return ToExceptionGroupViewModels(ToExceptionViewModels(Exceptions));
+			}
+		}
+
 		public virtual IList<ParsedXmlContractCondition> Requires {
 			get { return null == XmlDoc ? null : MethodXmlDoc.Requires; }
 		}

@@ -14,5 +14,16 @@ namespace DandyDoc.Utility
 			return null == attribute ? null : attribute.Value;
 		}
 
+		public static XmlElement FindPreviousSiblingElement(this XmlElement element) {
+			XmlNode node = element.PreviousSibling;
+			while (null != node) {
+				var result = node as XmlElement;
+				if (null != result)
+					return result;
+				node = node.PreviousSibling;
+			}
+			return null;
+		}
+
 	}
 }

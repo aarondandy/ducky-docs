@@ -18,7 +18,7 @@ namespace DandyDoc.ViewModels
 		where TDefinition : class, IMemberDefinition
 	{
 
-		private static readonly DisplayNameOverlay ShortNameOverlay = new DisplayNameOverlay();
+		protected static readonly DisplayNameOverlay ShortNameOverlay = new DisplayNameOverlay();
 
 		protected static string GetShortName(IMemberDefinition definition){
 			if(null == definition) throw new ArgumentNullException("definition");
@@ -142,6 +142,14 @@ namespace DandyDoc.ViewModels
 			if(null == exceptions) throw new ArgumentNullException("exceptions");
 			Contract.Ensures(Contract.Result<IEnumerable<ExceptionViewModel>>() != null);
 			return exceptions.Select(ex => new ExceptionViewModel(ex));
+		}
+
+		public IEnumerable<ExceptionGroupViewModel> ToExceptionGroupViewModels(IEnumerable<ExceptionViewModel> exceptions) {
+			if(null == exceptions) throw new ArgumentNullException("exceptions");
+			Contract.Ensures(Contract.Result<IEnumerable<ExceptionGroupViewModel>>() != null);
+			return exceptions
+				.GroupBy(x => x.ExceptionXml.CRef)
+				.Select(x => new ExceptionGroupViewModel(x.ToList()));
 		}
 			
 		[ContractInvariantMethod]

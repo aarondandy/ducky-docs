@@ -178,6 +178,7 @@
     <Compile Include="Utility\TextUtility.cs" />
     <Compile Include="Utility\XmlUtility.cs" />
     <Compile Include="ViewModels\DefinitionViewModelBase.cs" />
+    <Compile Include="ViewModels\ExceptionGroupViewModel.cs" />
     <Compile Include="ViewModels\ExceptionViewModel.cs" />
     <Compile Include="ViewModels\IParameterizedDefinitionViewModel.cs" />
     <Compile Include="ViewModels\ParameterViewModel.cs" />
@@ -196,7 +197,7 @@
     <Compile Include="ViewModels\AssemblyNamespaceViewModel.cs" />
     <Compile Include="ViewModels\PropertyViewModel.cs" />
     <Compile Include="ViewModels\RequiresViewModel.cs" />
-    <Compile Include="ViewModels\TypeNavigationNamespaceViewModelcs.cs" />
+    <Compile Include="ViewModels\TypeNavigationNamespaceViewModel.cs" />
     <Compile Include="ViewModels\TypeNavigationViewModel.cs" />
     <Compile Include="ViewModels\TypeReferenceViewModel.cs" />
     <Compile Include="ViewModels\TypeViewModel.cs" />
