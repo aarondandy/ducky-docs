@@ -2,6 +2,9 @@
 
 namespace DandyDoc.Overlays.MsdnLinks
 {
+	/// <summary>
+	/// Generates links and locates content on MSDN.
+	/// </summary>
 	public interface IMsdnLinkOverlay
 	{
 

@@ -5,7 +5,7 @@
 		Html.RenderPartial("Partials/FlairTable", Model.Flair);
 	}
 	if (accessor.HasExceptions) {
-		Html.RenderPartial("Partials/ExceptionSection", Model.Parent.ToExceptionViewModels(accessor.Exceptions));
+		Html.RenderPartial("Partials/ExceptionSection", Model.Parent.ExceptionGroups);
 	}
 	if (accessor.HasRequires) {
 		Html.RenderPartial("Partials/RequiresTable", accessor.ToRequiresViewModels(accessor.Requires));

@@ -7,10 +7,10 @@ using Mono.Cecil;
 
 namespace Mvc4WebDirectDocSample.Infrastructure
 {
-	public class TypeDefinitionLinkResolver
+	public class MemberDefinitionLinkResolver
 	{
 
-		public TypeDefinitionLinkResolver(CrefOverlay crefOverlay, UrlHelper urlHelper, IMsdnLinkOverlay msdnLinkOverlay){
+		public MemberDefinitionLinkResolver(CrefOverlay crefOverlay, UrlHelper urlHelper, IMsdnLinkOverlay msdnLinkOverlay){
 			CrefOverlay = crefOverlay;
 			MsdnLinkOverlay = msdnLinkOverlay;
 			UrlHelper = urlHelper;
@@ -29,17 +29,24 @@ namespace Mvc4WebDirectDocSample.Infrastructure
 		}
 
 		public string GetLink(TypeDefinition definition){
+			return GetLink((IMemberDefinition)definition);
+		}
+
+		public string GetLink(IMemberDefinition definition){
 			if (null == definition)
 				return null;
 
-			if (null != CrefOverlay && null != UrlHelper && CrefOverlay.AssemblyDefinitionCollection.ContainsDefinition(definition)){
+			if (null != CrefOverlay && null != UrlHelper && CrefOverlay.AssemblyDefinitionCollection.ContainsDefinition(definition as MemberReference)) {
 				var cref = CrefOverlay.GetCref(definition);
-				return UrlHelper.Action("Index", "Doc", new{cref});
+				return UrlHelper.Action("Index", "Doc", new { cref });
 			}
 
 			if (null != MsdnLinkOverlay){
-				var fullName = definition.FullName;
-				if (fullName.StartsWith("System.") || fullName.StartsWith("Microsoft.")){
+				string fullName;
+				fullName = null != CrefOverlay
+					? CrefOverlay.GetCref(definition, true)
+					: definition.FullName;
+				if (!String.IsNullOrEmpty(fullName) && (fullName.StartsWith("System.") || fullName.StartsWith("Microsoft."))) {
 					try {
 						var result = MsdnLinkOverlay.Search(fullName).FirstOrDefault();
 						if (result != null)
@@ -52,6 +59,7 @@ namespace Mvc4WebDirectDocSample.Infrastructure
 			}
 
 			return null;
+
 		}
 
 		public string GetLink(string cref){
@@ -59,9 +67,9 @@ namespace Mvc4WebDirectDocSample.Infrastructure
 				return null;
 
 			if (null != CrefOverlay && null != UrlHelper){
-				var typeDefinition = CrefOverlay.GetTypeDefinition(cref);
-				if (null != typeDefinition) {
-					return GetLink(typeDefinition);
+				var memberDefinition = CrefOverlay.GetMemberDefinition(cref);
+				if (null != memberDefinition) {
+					return GetLink(memberDefinition);
 				}
 			}
 

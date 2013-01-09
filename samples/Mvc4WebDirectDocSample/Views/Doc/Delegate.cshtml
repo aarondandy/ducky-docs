@@ -1,5 +1,4 @@
-﻿@using DandyDoc
-@using DandyDoc.ViewModels
+﻿@using DandyDoc.ViewModels
 @model DelegateViewModel
 @{
 	ViewBag.Title = Model.Title;
@@ -17,6 +16,6 @@
 		Html.RenderPartial("Partials/ParameterListing", Model.CreateParameterViewModels(Model.Parameters));
 	}
 	if (Model.HasReturn) {Html.RenderPartial("Partials/ReturnsSection", Model.CreateReturnViewModel());}
-	if (Model.HasExceptions) { Html.RenderPartial("Partials/ExceptionSection", Model.ToExceptionViewModels(Model.Exceptions)); }
+	if (Model.HasExceptions) { Html.RenderPartial("Partials/ExceptionSection", Model.ExceptionGroups); }
 	Html.RenderPartial("Partials/DefinitionPageCommonSections", Model);
 }

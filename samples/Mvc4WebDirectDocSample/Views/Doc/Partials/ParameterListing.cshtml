@@ -7,7 +7,7 @@
 	private string GetLink(TypeReference reference) {
 		if (null == reference)
 			return null;
-		var linkResolver = ViewBag.TypeDefinitionLinkResolver as TypeDefinitionLinkResolver;
+		var linkResolver = ViewBag.MemberDefinitionLinkResolver as MemberDefinitionLinkResolver;
 		return null == linkResolver ? null : linkResolver.GetLink(reference);
 	}
 

@@ -310,7 +310,7 @@ namespace DandyDoc.Overlays.Cref
 			if(null == definition) throw new ArgumentNullException("definition");
 			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
 			Contract.Assume(null != (definition as MemberReference));
-			return GetCref(definition as MemberReference);
+			return GetCref(definition as MemberReference, hideCrefType);
 		}
 
 		/// <summary>

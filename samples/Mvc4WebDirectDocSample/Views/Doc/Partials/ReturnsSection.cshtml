@@ -1,13 +1,13 @@
 ﻿@using DandyDoc.ViewModels
 @using Mono.Cecil
 @using Mvc4WebDirectDocSample.Infrastructure
-@model DandyDoc.ViewModels.ReturnViewModel
+@model ReturnViewModel
 @functions{
 
 	private string GetLink(TypeReference reference) {
 		if (null == reference)
 			return null;
-		var linkResolver = ViewBag.TypeDefinitionLinkResolver as TypeDefinitionLinkResolver;
+		var linkResolver = ViewBag.MemberDefinitionLinkResolver as MemberDefinitionLinkResolver;
 		return null == linkResolver ? null : linkResolver.GetLink(reference);
 	}
 

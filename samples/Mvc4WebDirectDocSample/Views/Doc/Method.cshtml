@@ -16,10 +16,6 @@
 	}
 	if (Model.HasReturn) {Html.RenderPartial("Partials/ReturnsSection", Model.CreateReturnViewModel());}
 	if (Model.HasExceptions) { Html.RenderPartial("Partials/ExceptionSection", Model.ExceptionGroups); }
-	//if (Model.HasRequires){
-	//	<h2>Requires</h2>
-	//	Html.RenderPartial("Partials/RequiresTable", Model.ToRequiresViewModels(Model.Requires));
-	//}
 	if (Model.HasEnsures){
 		<h2>Ensures</h2>
 		Html.RenderPartial("Partials/EnsuresTable", Model.ToEnsuresViewModels(Model.Ensures));

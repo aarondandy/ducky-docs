@@ -35,5 +35,7 @@ namespace DandyDoc.ViewModels
 
 		IList<MemberFlair> Flair { get; }
 
+		bool MemberDeclaredInAnotherType { get; }
+
 	}
 }

@@ -7,18 +7,18 @@
 	private string GetLink(string cref){
 		if (String.IsNullOrEmpty(cref))
 			return null;
-		var linkResolver = ViewBag.TypeDefinitionLinkResolver as TypeDefinitionLinkResolver;
+		var linkResolver = ViewBag.MemberDefinitionLinkResolver as MemberDefinitionLinkResolver;
 		return null == linkResolver ? null : linkResolver.GetLink(cref);
 	}
 
 	private string GetLink(TypeReference reference){
 		if (null == reference)
 			return null;
-		var linkResolver = ViewBag.TypeDefinitionLinkResolver as TypeDefinitionLinkResolver;
+		var linkResolver = ViewBag.MemberDefinitionLinkResolver as MemberDefinitionLinkResolver;
 		return null == linkResolver ? null : linkResolver.GetLink(reference);
 	}
 
-		private IHtmlString GetItemContent(ExceptionGroupViewModel exception) {
+	private IHtmlString GetItemContent(ExceptionGroupViewModel exception) {
 		if (null == exception)
 			return null;
 		var coreText = HttpUtility.HtmlEncode(exception.ShortName);

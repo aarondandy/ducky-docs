@@ -8,8 +8,8 @@ namespace DandyDoc.ViewModels
 	public class EventViewModel : DefinitionViewModelBase<EventDefinition>
 	{
 
-		public EventViewModel(EventDefinition definition, XmlDocOverlay xmlDocOverlay, CrefOverlay crefOverlay = null)
-			: base(definition, xmlDocOverlay, crefOverlay)
+		public EventViewModel(EventDefinition definition, TypeViewModel typeViewModelContainer, XmlDocOverlay xmlDocOverlay, CrefOverlay crefOverlay = null)
+			: base(definition, typeViewModelContainer, xmlDocOverlay, crefOverlay)
 		{
 			Contract.Requires(null != definition);
 			Contract.Requires(null != xmlDocOverlay);

@@ -30,11 +30,12 @@ namespace DandyDoc.ViewModels
 		private readonly Lazy<ReadOnlyCollection<MemberFlair>> _flair;
 		private readonly Lazy<ReadOnlyCollection<CodeSignature>> _signatures;
 
-		protected DefinitionViewModelBase(TDefinition definition, XmlDocOverlay xmlDocOverlay, CrefOverlay crefOverlay = null) {
+		protected DefinitionViewModelBase(TDefinition definition, TypeViewModel typeViewModelContainer, XmlDocOverlay xmlDocOverlay, CrefOverlay crefOverlay = null) {
 			if (null == definition) throw new ArgumentNullException("definition");
 			if (null == xmlDocOverlay) throw new ArgumentNullException("xmlDocOverlay");
 			Contract.EndContractBlock();
 			Definition = definition;
+			TypeViewModelContainer = typeViewModelContainer;
 			XmlDocOverlay = xmlDocOverlay;
 			CrefOverlay = crefOverlay ?? xmlDocOverlay.CrefOverlay;
 			_xmlDoc = new Lazy<DefinitionXmlDocBase>(() => XmlDocOverlay.GetDocumentation(Definition));
@@ -62,6 +63,22 @@ namespace DandyDoc.ViewModels
 		public virtual IList<CodeSignature> Signatures { get { return _signatures.Value; } }
 
 		public virtual bool HasSignatures { get { return CollectionUtility.IsNotNullOrEmpty(Signatures); } }
+
+		public virtual TypeViewModel TypeViewModelContainer { get; private set; }
+
+		public virtual bool MemberDeclaredInAnotherType {
+			get{
+				if (null == TypeViewModelContainer)
+					return false;
+
+				var containerType = TypeViewModelContainer.Definition;
+				var declaringType = Definition.DeclaringType;
+				if (containerType == declaringType)
+					return false;
+
+				return true;
+			}
+		}
 
 		protected virtual MemberFlair VisibilityFlair {
 			get {

@@ -18,8 +18,8 @@ namespace DandyDoc.ViewModels
 		private readonly Lazy<ReadOnlyCollection<ParameterDefinition>> _parameters;
 		private readonly Lazy<TypeReference> _returnType;
 
-		public DelegateViewModel(TypeDefinition definition, XmlDocOverlay xmlDocOverlay, CrefOverlay crefOverlay = null)
-			: base(definition, xmlDocOverlay, crefOverlay)
+		public DelegateViewModel(TypeDefinition definition, TypeViewModel typeViewModelContainer, XmlDocOverlay xmlDocOverlay, CrefOverlay crefOverlay = null)
+			: base(definition, typeViewModelContainer, xmlDocOverlay, crefOverlay)
 		{
 			Contract.Requires(null != definition);
 			Contract.Requires(null != xmlDocOverlay);
@@ -103,6 +103,15 @@ namespace DandyDoc.ViewModels
 			get {
 				var exceptions = Exceptions;
 				return null != exceptions && exceptions.Count > 0;
+			}
+		}
+
+		public virtual IEnumerable<ExceptionGroupViewModel> ExceptionGroups {
+			get {
+				if (!HasExceptions) throw new InvalidOperationException("Model has no exceptions.");
+				Contract.Ensures(Contract.Result<IEnumerable<ExceptionGroupViewModel>>() != null);
+				Contract.Assume(null != Exceptions);
+				return ToExceptionGroupViewModels(ToExceptionViewModels(Exceptions));
 			}
 		}
 

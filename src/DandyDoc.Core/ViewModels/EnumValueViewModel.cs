@@ -8,8 +8,8 @@ namespace DandyDoc.ViewModels
 	public class EnumValueViewModel : FieldViewModel
 	{
 
-		public EnumValueViewModel(FieldDefinition definition, XmlDocOverlay xmlDocOverlay, CrefOverlay crefOverlay = null)
-			: base(definition, xmlDocOverlay, crefOverlay)
+		public EnumValueViewModel(FieldDefinition definition, TypeViewModel typeViewModelContainer, XmlDocOverlay xmlDocOverlay, CrefOverlay crefOverlay = null)
+			: base(definition, typeViewModelContainer, xmlDocOverlay, crefOverlay)
 		{
 			Contract.Requires(null != definition);
 			Contract.Requires(null != xmlDocOverlay);

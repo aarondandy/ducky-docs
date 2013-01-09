@@ -209,8 +209,8 @@ namespace DandyDoc.ViewModels
 		private readonly Lazy<ReadOnlyCollection<TypeReference>> _baseChain;
 		private readonly Lazy<ReadOnlyCollection<TypeReference>> _interfaces;
 
-		public TypeViewModel(TypeDefinition definition, XmlDocOverlay xmlDocOverlay, CrefOverlay crefOverlay = null)
-			: base(definition, xmlDocOverlay, crefOverlay)
+		public TypeViewModel(TypeDefinition definition, TypeViewModel typeViewModelContainer, XmlDocOverlay xmlDocOverlay, CrefOverlay crefOverlay = null)
+			: base(definition, typeViewModelContainer, xmlDocOverlay, crefOverlay)
 		{
 			Contract.Requires(null != definition);
 			Contract.Requires(null != xmlDocOverlay);
@@ -439,31 +439,31 @@ namespace DandyDoc.ViewModels
 		public IEnumerable<FieldViewModel> ToFieldViewModels(IEnumerable<FieldDefinition> definitions) {
 			if(null == definitions) throw new ArgumentNullException("definitions");
 			Contract.Ensures(Contract.Result<IEnumerable<FieldViewModel>>() != null);
-			return definitions.Select(d => new FieldViewModel(d, XmlDocOverlay, CrefOverlay));
+			return definitions.Select(d => new FieldViewModel(d, this, XmlDocOverlay, CrefOverlay));
 		}
 
 		public IEnumerable<EventViewModel> ToEventViewModels(IEnumerable<EventDefinition> definitions) {
 			if (null == definitions) throw new ArgumentNullException("definitions");
 			Contract.Ensures(Contract.Result<IEnumerable<EventViewModel>>() != null);
-			return definitions.Select(d => new EventViewModel(d, XmlDocOverlay, CrefOverlay));
+			return definitions.Select(d => new EventViewModel(d, this, XmlDocOverlay, CrefOverlay));
 		}
 
 		public IEnumerable<MethodViewModel> ToMethodViewModels(IEnumerable<MethodDefinition> definitions) {
 			if (null == definitions) throw new ArgumentNullException("definitions");
 			Contract.Ensures(Contract.Result<IEnumerable<MethodViewModel>>() != null);
-			return definitions.Select(d => new MethodViewModel(d, XmlDocOverlay, CrefOverlay));
+			return definitions.Select(d => new MethodViewModel(d, this, XmlDocOverlay, CrefOverlay));
 		}
 
 		public IEnumerable<PropertyViewModel> ToPropertyViewModels(IEnumerable<PropertyDefinition> definitions) {
 			if (null == definitions) throw new ArgumentNullException("definitions");
 			Contract.Ensures(Contract.Result<IEnumerable<PropertyViewModel>>() != null);
-			return definitions.Select(d => new PropertyViewModel(d, XmlDocOverlay, CrefOverlay));
+			return definitions.Select(d => new PropertyViewModel(d, this, XmlDocOverlay, CrefOverlay));
 		}
 
 		public IEnumerable<TypeViewModel> ToTypeViewModels(IEnumerable<TypeDefinition> definitions) {
 			if (null == definitions) throw new ArgumentNullException("definitions");
 			Contract.Ensures(Contract.Result<IEnumerable<TypeViewModel>>() != null);
-			return definitions.Select(d => new TypeViewModel(d, XmlDocOverlay, CrefOverlay));
+			return definitions.Select(d => new TypeViewModel(d, this, XmlDocOverlay, CrefOverlay));
 		}
 
 		public IEnumerable<TypeReferenceViewModel> ToTypeReferenceViewModels(IEnumerable<TypeReference> references) {
@@ -475,7 +475,7 @@ namespace DandyDoc.ViewModels
 		public IEnumerable<EnumValueViewModel> ToEnumValueViewModels(IEnumerable<FieldDefinition> definitions){
 			if (null == definitions) throw new ArgumentNullException("definitions");
 			Contract.Ensures(Contract.Result<IEnumerable<FieldViewModel>>() != null);
-			return definitions.Select(d => new EnumValueViewModel(d, XmlDocOverlay, CrefOverlay));
+			return definitions.Select(d => new EnumValueViewModel(d, this, XmlDocOverlay, CrefOverlay));
 		}
 
 		public IEnumerable<GenericTypeParameterViewModel> ToGenericParameterViewModels( IEnumerable<GenericParameter> parameters){

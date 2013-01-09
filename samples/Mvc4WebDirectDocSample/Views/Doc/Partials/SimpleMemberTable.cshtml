@@ -1,4 +1,6 @@
 ﻿@using DandyDoc.ViewModels
+@using Mono.Cecil
+@using Mvc4WebDirectDocSample.Infrastructure
 @model IEnumerable<IDefinitionViewModel>
 @functions{
 
@@ -12,20 +14,68 @@
 		return true;
 	}
 
+	private string GetLink(string cref) {
+		if (String.IsNullOrEmpty(cref))
+			return null;
+		var linkResolver = ViewBag.MemberDefinitionLinkResolver as MemberDefinitionLinkResolver;
+		return null == linkResolver ? null : linkResolver.GetLink(cref);
+	}
+
+	private string GetLink(IDefinitionViewModel definition) {
+		if (null == definition)
+			return null;
+		var linkResolver = ViewBag.MemberDefinitionLinkResolver as MemberDefinitionLinkResolver;
+		return null == linkResolver ? null : linkResolver.GetLink(definition.Definition);
+	}
+
+	private string GetLink(TypeReference reference) {
+		if (null == reference)
+			return null;
+		var linkResolver = ViewBag.MemberDefinitionLinkResolver as MemberDefinitionLinkResolver;
+		return null == linkResolver ? null : linkResolver.GetLink(reference);
+	}		
+
+	private IHtmlString GetItemContent(IDefinitionViewModel definition) {
+		if (null == definition)
+			return null;
+		var coreText = HttpUtility.HtmlEncode(definition.ShortName);
+		var link = GetLink(definition)
+			?? GetLink(definition.Cref);
+		if (!String.IsNullOrEmpty(link)) {
+			coreText = String.Concat("<a href=\"", link, "\">", coreText, "</a>");
+		}
+		return Html.Raw(coreText);
+	}
+
+	private IHtmlString GetItemContent(TypeReferenceViewModel model) {
+		if (null == model)
+			return null;
+		var coreText = HttpUtility.HtmlEncode(model.ShortName);
+		var link = GetLink(model.Reference);
+		if (!String.IsNullOrEmpty(link)) {
+			coreText = String.Concat("<a href=\"", link, "\">", coreText, "</a>");
+		}
+		return Html.Raw(coreText);
+	}		
+
 }
 <table class="table table-bordered">
 	<thead><tr><th><i class="icon-info-sign"></i></th><th>Name</th><th>Description</th></tr></thead>
 	<tbody>
-@foreach (var member in Model.OrderBy(x => x.ShortName)){
-	<tr>
-		<td>@{foreach (var flair in member.Flair.Where(IsForSummary)) { Html.RenderPartial("Partials/FlairIcon", flair); }}</td>
-		<td>
-			@if (String.IsNullOrEmpty(member.Cref)){@member.ShortName}
-			else{<a href="@Url.Action("Index",new{cref=member.Cref})">
-				@member.ShortName
-			</a>}
-		</td>
-		<td>@if (null != member.Summary) { Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", member.Summary); }</td>
-	</tr>
-}
+	@foreach (var member in Model.OrderBy(x => x.ShortName)) {
+		<tr>
+			<td>@{foreach (var flair in member.Flair.Where(IsForSummary)) { Html.RenderPartial("Partials/FlairIcon", flair); }}</td>
+			<td>@GetItemContent(member)</td>
+			<td>
+				@{
+					if (null != member.Summary){
+						Html.RenderPartial("ParsedXmlDoc/ParsedXmlNodeBaseChildren", member.Summary);
+					}
+					if (member.MemberDeclaredInAnotherType){
+						<text>(Decalred in @GetItemContent(new TypeReferenceViewModel(member.Definition.DeclaringType)).)</text>
+					}
+				}
+			</td>
+		</tr>
+	}
 </tbody></table>

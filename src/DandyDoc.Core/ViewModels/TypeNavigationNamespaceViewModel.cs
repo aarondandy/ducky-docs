@@ -45,8 +45,8 @@ namespace DandyDoc.ViewModels
 				.Where(x => x.IsExternallyVisible())
 				.Select(x =>
 					x.IsDelegateType()
-					? new DelegateViewModel(x, XmlDocOverlay, CrefOverlay)
-					: new TypeViewModel(x, XmlDocOverlay, CrefOverlay))
+					? new DelegateViewModel(x, null, XmlDocOverlay, CrefOverlay)
+					: new TypeViewModel(x, null, XmlDocOverlay, CrefOverlay))
 				.OrderBy(x => x.ShortName)
 				.ToList();
 			return new ReadOnlyCollection<TypeViewModel>(viewModels);

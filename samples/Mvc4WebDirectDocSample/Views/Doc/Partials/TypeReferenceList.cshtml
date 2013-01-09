@@ -4,7 +4,7 @@
 @functions{
 
 	private string GetLink(TypeReferenceViewModel referenceViewModel){
-		var linkResolver = ViewBag.TypeDefinitionLinkResolver as TypeDefinitionLinkResolver;
+		var linkResolver = ViewBag.MemberDefinitionLinkResolver as MemberDefinitionLinkResolver;
 		return null == linkResolver ? null : linkResolver.GetLink(referenceViewModel.Definition);
 	}
 	

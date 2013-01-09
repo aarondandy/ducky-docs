@@ -57,27 +57,27 @@ namespace Mvc4WebDirectDocSample.Controllers
 				if (reference is TypeDefinition) {
 					var typeDefinition = (TypeDefinition)reference;
 					if (typeDefinition.IsDelegateType()) {
-						var delegateViewModel = new DelegateViewModel(typeDefinition, XmlDocOverlay);
+						var delegateViewModel = new DelegateViewModel(typeDefinition, null, XmlDocOverlay);
 						viewResult = View("Delegate", delegateViewModel);
 					}
 					else {
-						var typeViewModel = new TypeViewModel(typeDefinition, XmlDocOverlay);
+						var typeViewModel = new TypeViewModel(typeDefinition, null, XmlDocOverlay);
 						viewResult = View(
 							typeDefinition.IsEnum ? "Enum" : "Type",
 							typeViewModel);
 					}
 				}
 				else if (reference is MethodDefinition) {
-					viewResult = View("Method", new MethodViewModel((MethodDefinition)reference, XmlDocOverlay));
+					viewResult = View("Method", new MethodViewModel((MethodDefinition)reference, null, XmlDocOverlay));
 				}
 				else if (reference is FieldDefinition) {
-					viewResult = View("Field", new FieldViewModel((FieldDefinition)reference, XmlDocOverlay));
+					viewResult = View("Field", new FieldViewModel((FieldDefinition)reference, null, XmlDocOverlay));
 				}
 				else if (reference is PropertyDefinition) {
-					viewResult = View("Property", new PropertyViewModel((PropertyDefinition)reference, XmlDocOverlay));
+					viewResult = View("Property", new PropertyViewModel((PropertyDefinition)reference, null, XmlDocOverlay));
 				}
 				else if (reference is EventDefinition) {
-					viewResult = View("Event", new EventViewModel((EventDefinition)reference, XmlDocOverlay));
+					viewResult = View("Event", new EventViewModel((EventDefinition)reference, null, XmlDocOverlay));
 				}
 				else {
 					throw new NotSupportedException();
@@ -86,7 +86,7 @@ namespace Mvc4WebDirectDocSample.Controllers
 
 			Contract.Assume(null != viewResult);
 
-			viewResult.ViewBag.TypeDefinitionLinkResolver = new TypeDefinitionLinkResolver(
+			viewResult.ViewBag.MemberDefinitionLinkResolver = new MemberDefinitionLinkResolver(
 				CrefOverlay,
 				Url,
 				MsdnLinkOverlay
