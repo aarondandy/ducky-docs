@@ -1,6 +1,20 @@
 ﻿@using System.Web.Optimization
-@{
-	Layout = null;
+@{Layout = null;}
+@functions{
+
+	protected bool IsAction(string actionName, string controllerName) {
+		var currentAction = ViewContext.Controller.ValueProvider.GetValue("action").RawValue;
+		if (!String.Equals(actionName, currentAction as string, StringComparison.OrdinalIgnoreCase))
+			return false;
+		var currentController = ViewContext.Controller.ValueProvider.GetValue("controller").RawValue;
+		return String.Equals(controllerName, currentController as string, StringComparison.OrdinalIgnoreCase);
+	}
+	
+	protected bool IsController(string controllerName) {
+			var currentController = ViewContext.Controller.ValueProvider.GetValue("controller").RawValue;
+			return String.Equals(controllerName, currentController as string, StringComparison.OrdinalIgnoreCase);
+	}
+
 }
 <!DOCTYPE html>
 <html>
@@ -12,12 +26,24 @@
 	<body>
 		<header>
 			<div class="container">
-				<h1>@ViewBag.Title</h1>
-				@if (!String.IsNullOrEmpty(ViewBag.SubTitle)){
-					<p class="lead">@ViewBag.SubTitle</p>
-				}
+				<div class="row">
+					<div class="span12">
+						<h1>@ViewBag.Title</h1>
+						@if (!String.IsNullOrEmpty(ViewBag.SubTitle)){<p class="lead">@ViewBag.SubTitle</p>}
+					</div>
+				</div>
 			</div>
 		</header>
+		<div class="navbar">
+			<div class="navbar-inner">
+				<ul class="nav">
+					<li class="@if(IsAction("Index","Home")) {<text>active</text>}"><a href="@Url.Action("Index","Home")">Index</a></li>
+					<li class="@if(IsAction("Get","Home")) {<text>active</text>}"><a href="@Url.Action("Get","Home")">Download</a></li>
+					<li class="@if(IsAction("Examples","Home")) {<text>active</text>}"><a href="@Url.Action("Examples","Home")">Examples</a></li>
+					<li class="@if(IsController("Docs")) {<text>active</text>}"><a href="@Url.Action("Index","Docs")">Documentation</a></li>
+				</ul>
+			</div>
+		</div>
 		@RenderBody()
 		@Scripts.Render("~/bundles/jquery","~/bundles/bootstrap")
 	</body>
