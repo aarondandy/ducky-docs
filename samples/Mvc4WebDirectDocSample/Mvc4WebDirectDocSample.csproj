@@ -255,7 +255,7 @@
       <Project>{a09f4dac-290c-4abe-b053-071ec966008f}</Project>
       <Name>DandyDoc.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TestLibrary1\TestLibrary1.csproj">
+    <ProjectReference Include="..\..\tests\TestLibrary1\TestLibrary1.csproj">
       <Project>{f83f4c52-a886-4b9e-8164-e95e1f22f929}</Project>
       <Name>TestLibrary1</Name>
     </ProjectReference>

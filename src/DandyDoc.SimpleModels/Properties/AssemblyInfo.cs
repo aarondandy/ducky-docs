@@ -5,8 +5,8 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("DandyDoc.Core")]
-[assembly: AssemblyDescription("Dandy Doc core assembly.")]
+[assembly: AssemblyTitle("DandyDoc.SimpleModels")]
+[assembly: AssemblyDescription("Simple models for Dandy Doc")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
@@ -14,3 +14,5 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 [assembly: CLSCompliant(true)]
+
+

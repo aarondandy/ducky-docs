@@ -46,12 +46,13 @@ namespace TestLibrary1.Test
 			var m = CrefOverlay.GetMemberDefinition("M:TestLibrary1.ClassWithContracts.#ctor(System.String)") as MethodDefinition;
 			var docs = XmlDocOverlay.GetDocumentation(m);
 			Assert.IsNotNull(docs);
-			var requires = docs.Requires.Single();
-			Assert.IsTrue(requires.IsRequires);
-			Assert.AreEqual("!IsNullOrEmpty(text)", requires.CSharp);
-			Assert.AreEqual("Not IsNullOrEmpty(text)", requires.VisualBasic);
-			Assert.AreEqual("!string.IsNullOrEmpty(text)", requires.Element.InnerXml);
-			Assert.AreEqual("T:System.ArgumentException", requires.ExceptionCref);
+			var requires = docs.Requires.ToList();
+			Assert.IsTrue(requires.All(r => r.IsRequires));
+			var firstRequire = requires.First();
+			Assert.AreEqual("!IsNullOrEmpty(text)", firstRequire.CSharp);
+			Assert.AreEqual("Not IsNullOrEmpty(text)", firstRequire.VisualBasic);
+			Assert.AreEqual("!string.IsNullOrEmpty(text)", firstRequire.Element.InnerXml);
+			Assert.AreEqual("T:System.ArgumentException", firstRequire.ExceptionCref);
 		}
 
 		[Test]
