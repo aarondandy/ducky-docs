@@ -33,13 +33,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestLibrary1.SimpleModels.T
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestLibrary1", "tests\TestLibrary1\TestLibrary1.csproj", "{F83F4C52-A886-4B9E-8164-E95E1F22F929}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A9945937-3B57-4E4F-8C5D-05C99DCDEE5A}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{8C888A75-C3A5-49EA-A747-C03D1A5FF3F7}"
 	ProjectSection(SolutionItems) = preProject
 		build\dandy-doc.nuspec = build\dandy-doc.nuspec
 		rakefile = rakefile
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "website", "website", "{5B2C4D63-9F42-4C27-BF95-52E7257A6C7A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DandyDocSite", "website\DandyDocSite\DandyDocSite.csproj", "{672C976F-5F8D-4D16-AAD4-75AA43643B8D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -75,6 +77,10 @@ Global
 		{F83F4C52-A886-4B9E-8164-E95E1F22F929}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F83F4C52-A886-4B9E-8164-E95E1F22F929}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F83F4C52-A886-4B9E-8164-E95E1F22F929}.Release|Any CPU.Build.0 = Release|Any CPU
+		{672C976F-5F8D-4D16-AAD4-75AA43643B8D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{672C976F-5F8D-4D16-AAD4-75AA43643B8D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{672C976F-5F8D-4D16-AAD4-75AA43643B8D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{672C976F-5F8D-4D16-AAD4-75AA43643B8D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -87,5 +93,6 @@ Global
 		{2F2398D0-19DD-44DE-B872-8DAF0EF633E1} = {4D0172D3-2623-4DD8-BAF8-D8B385D299C2}
 		{F83F4C52-A886-4B9E-8164-E95E1F22F929} = {4D0172D3-2623-4DD8-BAF8-D8B385D299C2}
 		{D47C32D2-DE97-47C5-9F96-FDD77335F496} = {F9450AE8-7005-42C0-A5DC-647685D78E5E}
+		{672C976F-5F8D-4D16-AAD4-75AA43643B8D} = {5B2C4D63-9F42-4C27-BF95-52E7257A6C7A}
 	EndGlobalSection
 EndGlobal

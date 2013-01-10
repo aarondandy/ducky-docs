@@ -1,0 +1,24 @@
+﻿@using System.Web.Optimization
+@{
+	Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>@ViewBag.Title</title>
+	@Styles.Render("~/css/bootstrap","~/css/sh","~/css/site")
+</head>
+	<body>
+		<header>
+			<div class="container">
+				<h1>@ViewBag.Title</h1>
+				@if (!String.IsNullOrEmpty(ViewBag.SubTitle)){
+					<p class="lead">@ViewBag.SubTitle</p>
+				}
+			</div>
+		</header>
+		@RenderBody()
+		@Scripts.Render("~/bundles/jquery","~/bundles/bootstrap")
+	</body>
+</html>
