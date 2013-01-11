@@ -16,7 +16,7 @@ namespace DandyDocSite.Controllers
 
 		public ActionResult Api(string cref) {
 			if (String.IsNullOrEmpty(cref))
-				return View("Api/Index.cshtml");
+				return View("Api/Index");
 			return new HttpNotFoundResult();
 		}
 

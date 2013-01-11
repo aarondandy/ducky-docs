@@ -21,7 +21,7 @@
 		new{Id = "Index", Title= "Index", Icon="icon-home", Url = Url.Action("Index","Home")},
 		new{Id = "Get", Title="Get It", Icon="icon-download-alt", Url = Url.Action("Get","Home")},
 		new{Id = "DocsIndex", Title="Get Started", Icon="icon-play", Url = Url.Action("Index","Docs")},
-		new{Id = "DocsApi", Title = "Documentation", Icon="icon-book", Url = Url.Action("Api","Docs")},
+		new{Id = "DocsApi", Title = "API Reference", Icon="icon-book", Url = Url.Action("Api","Docs")},
 		new{Id = "Project", Title="Project", Icon="icon-pencil", Url = "http://github.com/aarondandy/dandy-doc/"}
 	};
 	string currentMenu;
@@ -49,23 +49,23 @@
 	@Styles.Render("~/css/bootstrap","~/css/sh","~/css/site")
 </head>
 	<body>
-		<header>
-			<div class="container">
-				<div class="row">
-					<div class="span12">
+		<div class="container">
+			<div class="row">
+				<div class="span12">
+					<header>
 						<h1>@ViewBag.Title</h1>
 						@if (!String.IsNullOrEmpty(ViewBag.SubTitle)){<p class="lead">@ViewBag.SubTitle</p>}
+					</header>
+					<div class="navbar">
+						<div class="navbar-inner">
+							<ul class="nav">
+								@foreach (var menuItem in menuItems) {
+									<li class="@(menuItem.Id == currentMenu?"active":String.Empty)"><a href="@menuItem.Url">@if(!String.IsNullOrEmpty(menuItem.Icon)) {<i class="@menuItem.Icon"></i>} @menuItem.Title</a></li>
+								}
+							</ul>
+						</div>
 					</div>
 				</div>
-			</div>
-		</header>
-		<div class="navbar">
-			<div class="navbar-inner">
-				<ul class="nav">
-					@foreach (var menuItem in menuItems) {
-						<li class="@(menuItem.Id == currentMenu?"active":String.Empty)"><a href="@menuItem.Url">@if(!String.IsNullOrEmpty(menuItem.Icon)) {<i class="@menuItem.Icon"></i>} @menuItem.Title</a></li>
-					}
-				</ul>
 			</div>
 		</div>
 		@RenderBody()

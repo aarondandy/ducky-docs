@@ -1,5 +1,32 @@
-﻿@{
+﻿@using System.Text.RegularExpressions
+@{
 	Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewBag.Title = "Dandy Doc";
+	ViewBag.SubTitle = "API Reference";
 }
-Docs!
-@RenderBody()
+@functions{
+	static readonly Regex TitleSplitRegex = new Regex(@"(?<=[.,;\<\(\[])");
+	static string[] TitleParts(string title){
+		return TitleSplitRegex.Split(title);
+	}
+}
+<div class="container">
+	<div class="row">
+		<div class="span12">
+			<h1>@foreach (var part in TitleParts(ViewBag.EntityTitle)) {<span>@part</span>}
+				@if (!String.IsNullOrEmpty(ViewBag.EntitySubTitle)) {
+					<small>@ViewBag.EntitySubTitle</small>
+				}</h1>
+		</div>
+	</div>
+</div>
+<div class="container">
+	<div class="row">
+		<div class="span3">
+			namespace nav
+		</div>
+		<div class="span9">
+			@RenderBody()
+		</div>
+	</div>
+</div>
