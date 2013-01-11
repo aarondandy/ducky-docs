@@ -4,4 +4,13 @@ header {
 	padding: 20px;
 	background-color: #123;
 	color: #fefefe;
+	text-rendering: optimizeLegibility;
+}
+header p {
+	color: #dedede;
+}
+.navbar-inner {
+	-webkit-border-radius: 0;
+	-moz-border-radius: 0;
+	border-radius: 0;
 }

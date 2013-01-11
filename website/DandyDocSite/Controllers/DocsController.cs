@@ -6,15 +6,19 @@ using System.Web.Mvc;
 
 namespace DandyDocSite.Controllers
 {
-    public class DocsController : Controller
-    {
-        //
-        // GET: /Docs/
+	public class DocsController : Controller
+	{
 
-        public ActionResult Index()
-        {
-            return View();
-        }
+		public ActionResult Index()
+		{
+			return View();
+		}
+
+		public ActionResult Api(string cref) {
+			if (String.IsNullOrEmpty(cref))
+				return View("Api/Index.cshtml");
+			return new HttpNotFoundResult();
+		}
 
     }
 }

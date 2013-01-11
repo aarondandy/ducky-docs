@@ -11,10 +11,35 @@
 	}
 	
 	protected bool IsController(string controllerName) {
-			var currentController = ViewContext.Controller.ValueProvider.GetValue("controller").RawValue;
-			return String.Equals(controllerName, currentController as string, StringComparison.OrdinalIgnoreCase);
+		var currentController = ViewContext.Controller.ValueProvider.GetValue("controller").RawValue;
+		return String.Equals(controllerName, currentController as string, StringComparison.OrdinalIgnoreCase);
 	}
 
+}
+@{
+	var menuItems = new[] {
+		new{Id = "Index", Title= "Index", Icon="icon-home", Url = Url.Action("Index","Home")},
+		new{Id = "Get", Title="Get It", Icon="icon-download-alt", Url = Url.Action("Get","Home")},
+		new{Id = "DocsIndex", Title="Get Started", Icon="icon-play", Url = Url.Action("Index","Docs")},
+		new{Id = "DocsApi", Title = "Documentation", Icon="icon-book", Url = Url.Action("Api","Docs")},
+		new{Id = "Project", Title="Project", Icon="icon-pencil", Url = "http://github.com/aarondandy/dandy-doc/"}
+	};
+	string currentMenu;
+	if (IsAction("Index", "Home")) {
+		currentMenu = "Index";
+	}
+	else if (IsAction("Get", "Home")) {
+		currentMenu = "Get";
+	}
+	else if (IsAction("Api", "Docs")) {
+		currentMenu = "DocsApi";
+	}
+	else if (IsController("Docs")) {
+		currentMenu = "DocsIndex";
+	}
+	else {
+		currentMenu = "Index";
+	}
 }
 <!DOCTYPE html>
 <html>
@@ -37,10 +62,9 @@
 		<div class="navbar">
 			<div class="navbar-inner">
 				<ul class="nav">
-					<li class="@if(IsAction("Index","Home")) {<text>active</text>}"><a href="@Url.Action("Index","Home")">Index</a></li>
-					<li class="@if(IsAction("Get","Home")) {<text>active</text>}"><a href="@Url.Action("Get","Home")">Download</a></li>
-					<li class="@if(IsAction("Examples","Home")) {<text>active</text>}"><a href="@Url.Action("Examples","Home")">Examples</a></li>
-					<li class="@if(IsController("Docs")) {<text>active</text>}"><a href="@Url.Action("Index","Docs")">Documentation</a></li>
+					@foreach (var menuItem in menuItems) {
+						<li class="@(menuItem.Id == currentMenu?"active":String.Empty)"><a href="@menuItem.Url">@if(!String.IsNullOrEmpty(menuItem.Icon)) {<i class="@menuItem.Icon"></i>} @menuItem.Title</a></li>
+					}
 				</ul>
 			</div>
 		</div>
