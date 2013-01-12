@@ -57,13 +57,13 @@
 						@if (!String.IsNullOrEmpty(ViewBag.SubTitle)){<p class="lead">@ViewBag.SubTitle</p>}
 					</header>
 					<div class="navbar">
-						<div class="navbar-inner">
+						<nav class="navbar-inner">
 							<ul class="nav">
 								@foreach (var menuItem in menuItems) {
 									<li class="@(menuItem.Id == currentMenu?"active":String.Empty)"><a href="@menuItem.Url">@if(!String.IsNullOrEmpty(menuItem.Icon)) {<i class="@menuItem.Icon"></i>} @menuItem.Title</a></li>
 								}
 							</ul>
-						</div>
+						</nav>
 					</div>
 				</div>
 			</div>

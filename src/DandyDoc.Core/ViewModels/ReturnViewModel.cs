@@ -17,6 +17,7 @@ namespace DandyDoc.ViewModels
 			ShowTypeNameForMembers = true
 		};
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
 		internal ReturnViewModel(IParameterizedDefinitionViewModel parent, ParsedXmlElementBase xmlDoc) {
 			if (null == parent) throw new ArgumentNullException("parent");
 			Contract.EndContractBlock();
@@ -26,7 +27,7 @@ namespace DandyDoc.ViewModels
 
 		public IParameterizedDefinitionViewModel Parent { get; private set; }
 
-		public virtual ParsedXmlElementBase XmlDoc { get; private set; }
+		public ParsedXmlElementBase XmlDoc { get; private set; }
 
 		public virtual bool HasXmlDoc { get { return XmlDoc != null; } }
 
