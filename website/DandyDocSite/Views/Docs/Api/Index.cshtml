@@ -1,5 +1,19 @@
-﻿@{
+﻿@model DandyDoc.SimpleModels.SimpleModelRepository
+@{
 	Layout = "~/Views/Docs/Api/_Layout.cshtml";
 	ViewBag.EntityTitle = "All Namespaces";
 }
-A list of namespaces.
+<section>
+	<table class="table table-bordered">
+		<thead><tr><th><i class="icon-info-sign"></i></th><th>Namespace</th><th>Assembly</th></tr></thead>
+		<tbody>
+			@foreach (var ns in Model.Namespaces){
+				<tr>
+					<td><i class="icon-gift"></i></td>
+					<td><a href="@Url.Action("Api","Docs",new {cref=ns.CRef})">@ns.DisplayName</a></td>
+					<td>@String.Join(", ", ns.Assemblies.Select(a => a.DisplayName))</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+</section>

@@ -4,10 +4,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Web.Hosting;
 using System.Web.Http.Dependencies;
-using DandyDoc;
-using DandyDoc.Overlays.Cref;
-using DandyDoc.Overlays.Navigation;
-using DandyDoc.Overlays.XmlDoc;
+using DandyDocSite.Infrastructure;
 using Microsoft.Practices.ServiceLocation;
 using StructureMap;
 using IDependencyResolver = System.Web.Http.Dependencies.IDependencyResolver;
@@ -24,12 +21,13 @@ namespace DandyDocSite
 		}
 
 		private static void Init(IInitializationExpression x) {
-			x.For<AssemblyDefinitionCollection>().Use(_ =>
-				new AssemblyDefinitionCollection(HostingEnvironment.MapPath("~/bin/DandyDoc.Core.dll"))
+			x.For<AssemblyCollectionGenerator>().Use(_ =>
+				new AssemblyCollectionGenerator(
+					HostingEnvironment.MapPath("~/bin/DandyDoc.Core.dll"),
+					HostingEnvironment.MapPath("~/bin/DandyDoc.SimpleModels.dll")
+				)
 			);
-			x.For<CrefOverlay>().Use(c => new CrefOverlay(c.GetInstance<AssemblyDefinitionCollection>()));
-			x.For<XmlDocOverlay>().Use(c => new XmlDocOverlay(c.GetInstance<CrefOverlay>()));
-			x.For<NavigationOverlay>().Use(c => new NavigationOverlay(c.GetInstance<AssemblyDefinitionCollection>()));
+			x.For<ApiDocNavigation>().Use(c => new ApiDocNavigation(c.GetInstance<AssemblyCollectionGenerator>().GenerateDefinitions()));
 			x.For<IMsdnLinkOverlay>().Use(_ => new MsdnDynamicLinkOverlay());
 		}
 

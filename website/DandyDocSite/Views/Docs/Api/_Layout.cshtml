@@ -1,4 +1,5 @@
 ﻿@using System.Text.RegularExpressions
+@using DandyDoc.SimpleModels
 @{
 	Layout = "~/Views/Shared/_Layout.cshtml";
 	ViewBag.Title = "Dandy Doc";
@@ -22,9 +23,26 @@
 </div>
 <div class="container">
 	<div class="row">
-		<nav class="span3">
-			namespace nav
-		</nav>
+		@{
+			var navModel = ViewBag.TypeNavigationViewModel as SimpleModelRepository;
+			if (navModel != null){
+				<nav class="span3">
+					<ul class="nav-list namespace-nav unstyled">
+						@foreach (var ns in navModel.Namespaces) {
+							var varTypeListId = "typelist-" + ns.FullName.Replace(".","-");
+							<li>
+								<a href="#" data-toggle="collapse" data-target="#@varTypeListId"><i class="icon-gift"></i>@ns.DisplayName</a><a class="inline" href="@Url.Action("Api","Docs",new{cref=ns.CRef})"><i class="icon-arrow-right"></i></a>
+								<ul class="nav nav-list collapse" id="@varTypeListId">
+									@foreach (var type in ns.Types) {
+										<li><a href="@Url.Action("Api","Docs",new{cref=type.CRef})"><i class="icon-cog"></i>@type.DisplayName</a></li> 
+									}
+								</ul>
+							</li>
+						}
+					</ul>
+				</nav>
+			}
+		}
 		<article class="span9">
 			@RenderBody()
 		</article>

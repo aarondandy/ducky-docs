@@ -2,42 +2,24 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
-using DandyDoc.Overlays.Cref;
-using DandyDoc.Overlays.XmlDoc;
+using System.Linq;
 using DandyDoc.SimpleModels.Contracts;
-using Mono.Cecil;
 
 namespace DandyDoc.SimpleModels
 {
 	public class SimpleModelRepository : ISimpleModelRepository
 	{
 
-		
-
-		//private readonly object _repositoryMutex = new object();
 		private readonly Lazy<ReadOnlyCollection<IAssemblySimpleModel>> _assemblies;
 		private readonly Lazy<ReadOnlyCollection<INamespaceSimpleModel>> _namespaces;
 
 		protected AssemblyDefinitionCollection AssemblyDefinitions { get; private set; }
 
-		public XmlDocOverlay XmlDocOverlay { get; private set; }
-
-		public CrefOverlay CrefOverlay { get; private set; } 
-
-		public SimpleModelRepository(AssemblyDefinitionCollection assemblyDefinitions)
-			: this(assemblyDefinitions, new XmlDocOverlay(new CrefOverlay(assemblyDefinitions)), null)
-		{
-			Contract.Requires(assemblyDefinitions != null);
-		}
-
-		public SimpleModelRepository(AssemblyDefinitionCollection assemblyDefinitions, XmlDocOverlay xmlDocOverlay, CrefOverlay crefOverlay) {
+		public SimpleModelRepository(AssemblyDefinitionCollection assemblyDefinitions) {
 			if(null == assemblyDefinitions) throw new ArgumentNullException("assemblyDefinitions");
-			if(null == xmlDocOverlay) throw new ArgumentNullException("xmlDocOverlay");
 			Contract.EndContractBlock();
 
 			AssemblyDefinitions = assemblyDefinitions;
-			XmlDocOverlay = xmlDocOverlay;
-			CrefOverlay = crefOverlay ?? xmlDocOverlay.CrefOverlay;
 			_assemblies = new Lazy<ReadOnlyCollection<IAssemblySimpleModel>>(BuildAssemblies, true);
 			_namespaces = new Lazy<ReadOnlyCollection<INamespaceSimpleModel>>(BuildNamespaces, true);
 		}
@@ -49,37 +31,52 @@ namespace DandyDoc.SimpleModels
 				Contract.Assume(null != AssemblyDefinitions[i]);
 				assemblyModels[i] = new AssemblySimpleModel(AssemblyDefinitions[i], this);
 			}
+			Array.Sort(assemblyModels, AssemblyModelCompare);
 			return Array.AsReadOnly(assemblyModels);
+		}
+
+		protected virtual int AssemblyModelCompare(IAssemblySimpleModel a, IAssemblySimpleModel b) {
+			if (a == null)
+				return b == null ? 0 : -1;
+			if (b == null)
+				return 1;
+			return StringComparer.OrdinalIgnoreCase.Compare(a.DisplayName, b.DisplayName);
 		}
 
 		protected virtual ReadOnlyCollection<INamespaceSimpleModel> BuildNamespaces() {
 			Contract.Ensures(Contract.Result<ReadOnlyCollection<INamespaceSimpleModel>>() != null);
-			throw new NotImplementedException();
+			Contract.Assume(_assemblies.Value != null);
+			var namespaceModels = NamespaceSimpleModel.BuildNamespaces(_assemblies.Value, a => a.RootTypes, this).Cast<INamespaceSimpleModel>().ToArray();
+			Array.Sort(namespaceModels, NamespaceModelCompare);
+			return Array.AsReadOnly(namespaceModels);
 		}
 
-		[ContractInvariantMethod]
-		private void CodeContractInvariant() {
-			Contract.Invariant(XmlDocOverlay != null);
-			Contract.Invariant(CrefOverlay != null);
+		protected virtual int NamespaceModelCompare(INamespaceSimpleModel a, INamespaceSimpleModel b) {
+			if (a == null)
+				return b == null ? 0 : -1;
+			if (b == null)
+				return 1;
+			return StringComparer.OrdinalIgnoreCase.Compare(a.DisplayName, b.DisplayName);
 		}
 
 		// ------------ Public repository access
 
+		public ISimpleModel GetModelFromCref(string cref){
+			if(String.IsNullOrEmpty(cref)) throw new ArgumentException("Invalid CRef", "cref");
+			return Assemblies.Select(a => a.GetModelFromCref(cref)).FirstOrDefault(m => null != m);
+		}
+
 		public IList<IAssemblySimpleModel> Assemblies {
 			get {
 				Contract.Ensures(Contract.Result<IList<IAssemblySimpleModel>>() != null);
-				//lock (_repositoryMutex) {
-					return _assemblies.Value;
-				//}
+				return _assemblies.Value;
 			}
 		}
 
 		public IList<INamespaceSimpleModel> Namespaces {
 			get {
 				Contract.Ensures(Contract.Result<IList<INamespaceSimpleModel>>() != null);
-				//lock (_repositoryMutex) {
-					return _namespaces.Value;
-				//}
+				return _namespaces.Value;
 			}
 		}
 

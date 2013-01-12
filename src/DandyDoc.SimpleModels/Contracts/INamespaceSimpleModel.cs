@@ -9,7 +9,9 @@ namespace DandyDoc.SimpleModels.Contracts
 	public interface INamespaceSimpleModel : ISimpleModel
 	{
 
-		IEnumerable<ITypeSimpleModel> Types { get; }
+		IList<ITypeSimpleModel> Types { get; }
+
+		IList<IAssemblySimpleModel> Assemblies { get; }
 
 	}
 }

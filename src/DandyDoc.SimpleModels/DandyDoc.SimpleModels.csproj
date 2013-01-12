@@ -132,10 +132,11 @@
     <Compile Include="Contracts\IDelegateSimpleModel.cs" />
     <Compile Include="Contracts\INamespaceSimpleModel.cs" />
     <Compile Include="Contracts\ISimpleModel.cs" />
-    <Compile Include="Contracts\ISimpleModelAssemblyRepository.cs" />
+    <Compile Include="Contracts\ISimpleModelMembersCollection.cs" />
     <Compile Include="Contracts\ISimpleModelRepository.cs" />
     <Compile Include="Contracts\ITypeSimpleModel.cs" />
     <Compile Include="DelegateSimpleModel.cs" />
+    <Compile Include="NamespaceSimpleModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SimpleModelRepository.cs" />
     <Compile Include="TypeSimpleModel.cs" />

@@ -11,9 +11,7 @@ namespace DandyDoc.SimpleModels.Contracts
 
 		IList<IAssemblySimpleModel> Assemblies { get; }
 
-		XmlDocOverlay XmlDocOverlay { get; }
-
-		CrefOverlay CrefOverlay { get; }
+		ISimpleModel GetModelFromCref(string cref);
 
 	}
 }

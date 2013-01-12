@@ -8,6 +8,7 @@ using System.Linq;
 
 namespace DandyDoc.Overlays.Navigation
 {
+	[Obsolete("This should be handled by the view.")]
 	public class NavigationOverlay
 	{
 
