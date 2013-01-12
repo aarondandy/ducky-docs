@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
+using DandyDoc.SimpleModels;
+using DandyDoc.SimpleModels.Contracts;
 using DandyDocSite.Infrastructure;
 
 namespace DandyDocSite.Controllers
@@ -27,8 +26,20 @@ namespace DandyDocSite.Controllers
 			if (String.IsNullOrEmpty(cref))
 				return View("Api/Index", Navigation.NavigationRepository);
 
+			var assemblies = StructureMap.ObjectFactory.GetInstance<AssemblyCollectionGenerator>().GenerateDefinitions();
+			var repository = new SimpleModelRepository(assemblies);
+
+			var model = repository.GetModelFromCref(cref);
+
+			if(null == model)
+				return new HttpNotFoundResult();
+			if(model is IDelegateSimpleModel)
+				throw new NotImplementedException();
+			if (model is ITypeSimpleModel)
+				return View("Api/Type", model as ITypeSimpleModel);
+
 			return new HttpNotFoundResult();
 		}
 
-    }
+	}
 }

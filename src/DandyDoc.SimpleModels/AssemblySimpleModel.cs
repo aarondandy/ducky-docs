@@ -89,8 +89,16 @@ namespace DandyDoc.SimpleModels
 
 		}
 
+		private class SimpleModelMembersCollection : ISimpleModelMembersCollection
+		{
+
+			public IList<ITypeSimpleModel> Types {
+				get { throw new NotImplementedException(); }
+			}
+		}
+
 		private readonly Lazy<TypeDefinitionModelCollection> _types;
-		private readonly ConcurrentDictionary<ITypeSimpleModel, ISimpleModelMembersCollection> _membersCache;
+		private readonly ConcurrentDictionary<ITypeSimpleModel, SimpleModelMembersCollection> _membersCache;
 
 		public AssemblySimpleModel(AssemblyDefinition assemblyDefinition, ISimpleModelRepository repository) {
 			if (null == assemblyDefinition) throw new ArgumentNullException("assemblyDefinition");
@@ -100,6 +108,7 @@ namespace DandyDoc.SimpleModels
 			RootRepository = repository;
 			XmlDocOverlay = new XmlDocOverlay(new CrefOverlay(new AssemblyDefinitionCollection(new[]{assemblyDefinition})));
 			_types = new Lazy<TypeDefinitionModelCollection>(GenerateTypeViewModels, true);
+			_membersCache = new ConcurrentDictionary<ITypeSimpleModel, SimpleModelMembersCollection>();
 		}
 
 		private static IEnumerable<TypeDefinition> ExtractAllTypeDefinitions(TypeDefinition node){
@@ -160,6 +169,10 @@ namespace DandyDoc.SimpleModels
 		private ITypeSimpleModel DefinitionToModel(TypeDefinition definition){
 			Contract.Requires(null != definition);
 			return _types.Value.GetModel(definition);
+		}
+
+		private SimpleModelMembersCollection GetMembersCore(ITypeSimpleModel model){
+			throw new NotImplementedException();
 		}
 
 		// ------------ Public access
@@ -251,7 +264,7 @@ namespace DandyDoc.SimpleModels
 		public ISimpleModelMembersCollection GetMembers(ITypeSimpleModel model) {
 			if(null == model) throw new ArgumentNullException("model");
 			Contract.EndContractBlock();
-			throw new NotImplementedException();
+			return GetMembersCore(model);
 		}
 
 		[ContractInvariantMethod]

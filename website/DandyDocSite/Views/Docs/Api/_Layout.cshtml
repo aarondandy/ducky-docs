@@ -13,28 +13,21 @@
 }
 <div class="container">
 	<div class="row">
-		<div class="span12">
-			<h1>@foreach (var part in TitleParts(ViewBag.EntityTitle)) {<span>@part</span>}
-				@if (!String.IsNullOrEmpty(ViewBag.EntitySubTitle)) {
-					<small>@ViewBag.EntitySubTitle</small>
-				}</h1>
-		</div>
-	</div>
-</div>
-<div class="container">
-	<div class="row">
 		@{
 			var navModel = ViewBag.TypeNavigationViewModel as SimpleModelRepository;
 			if (navModel != null){
-				<nav class="span3">
-					<ul class="nav-list namespace-nav unstyled">
+				<nav class="span3 namespace-nav">
+					<ul class="nav-list unstyled">
 						@foreach (var ns in navModel.Namespaces) {
 							var varTypeListId = "typelist-" + ns.FullName.Replace(".","-");
 							<li>
-								<a href="#" data-toggle="collapse" data-target="#@varTypeListId"><i class="icon-gift"></i>@ns.DisplayName</a><a class="inline" href="@Url.Action("Api","Docs",new{cref=ns.CRef})"><i class="icon-arrow-right"></i></a>
+								<span>
+									<a href="@Url.Action("Api","Docs",new{cref=ns.CRef})" class="namepsace-nav-icon"><i class="icon-gift"></i></a>
+									<a href="#" data-toggle="collapse" data-target="#@varTypeListId">@foreach (var part in TitleParts(ns.DisplayName)) {<span>@part</span>}</a>
+								</span>
 								<ul class="nav nav-list collapse" id="@varTypeListId">
 									@foreach (var type in ns.Types) {
-										<li><a href="@Url.Action("Api","Docs",new{cref=type.CRef})"><i class="icon-cog"></i>@type.DisplayName</a></li> 
+										<li><a href="@Url.Action("Api","Docs",new{cref=type.CRef})"><i class="icon-cog"></i>@foreach (var part in TitleParts(type.DisplayName)) {<span>@part</span>}</a></li> 
 									}
 								</ul>
 							</li>
@@ -43,8 +36,14 @@
 				</nav>
 			}
 		}
-		<article class="span9">
-			@RenderBody()
-		</article>
+		<div class="span9">
+			<section>
+				<h1>@foreach (var part in TitleParts(ViewBag.EntityTitle)) {<span>@part</span>}
+				@if (!String.IsNullOrEmpty(ViewBag.EntitySubTitle)) {
+					<small>@ViewBag.EntitySubTitle</small>
+				}</h1>
+				@RenderBody()
+			</section>
+		</div>
 	</div>
 </div>
