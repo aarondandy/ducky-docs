@@ -7,6 +7,8 @@ namespace DandyDoc.SimpleModels.Contracts
 
 		IList<ITypeSimpleModel> Types { get; }
 
+		IList<IDelegateSimpleModel> Delegates { get; }
+
 		// Methods
 
 		// Properties

@@ -128,8 +128,11 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AssemblySimpleModel.cs" />
+    <Compile Include="ComplexText\RawComplexText.cs" />
     <Compile Include="Contracts\IAssemblySimpleModel.cs" />
+    <Compile Include="Contracts\IComplexTextModel.cs" />
     <Compile Include="Contracts\IDelegateSimpleModel.cs" />
+    <Compile Include="Contracts\IFlairTag.cs" />
     <Compile Include="Contracts\INamespaceSimpleModel.cs" />
     <Compile Include="Contracts\ISimpleModel.cs" />
     <Compile Include="Contracts\ISimpleModelMembersCollection.cs" />

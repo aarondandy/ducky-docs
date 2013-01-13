@@ -74,6 +74,14 @@ namespace DandyDoc.SimpleModels
 		IAssemblySimpleModel ISimpleModel.ContainingAssembly {
 			get { return Assemblies.FirstOrDefault(); }
 		}
+
+		public bool HasFlair {
+			get { return false; }
+		}
+
+		public IList<IFlairTag> FlairTags {
+			get { return new IFlairTag[0]; }
+		}
 		
 		[ContractInvariantMethod]
 		private void CodeContractInvariant(){

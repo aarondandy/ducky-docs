@@ -8,12 +8,17 @@
 }
 header {
 	padding: 20px;
+	text-rendering: optimizeLegibility;
+}
+header {
 	background-color: #123;
 	color: #fefefe;
-	text-rendering: optimizeLegibility;
 }
 header p {
 	color: #dedede;
+}
+footer {
+	border-top: 1px solid #d3d3d3;
 }
 .navbar-inner {
 	-webkit-border-radius: 0;

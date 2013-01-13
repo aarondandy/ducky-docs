@@ -1,40 +1,46 @@
 ﻿@using System.Text.RegularExpressions
 @using DandyDoc.SimpleModels
-@{
-	Layout = "~/Views/Shared/_Layout.cshtml";
-	ViewBag.Title = "Dandy Doc";
-	ViewBag.SubTitle = "API Reference";
-}
+@using DandyDoc.SimpleModels.Contracts
 @functions{
 	static readonly Regex TitleSplitRegex = new Regex(@"(?<=[.,;\<\(\[])");
 	static string[] TitleParts(string title){
 		return TitleSplitRegex.Split(title);
 	}
 }
+@{
+	Layout = "~/Views/Shared/_Layout.cshtml";
+	ViewBag.Title = "Dandy Doc";
+	ViewBag.SubTitle = "API Reference";
+	var navModel = ViewBag.TypeNavigationViewModel as SimpleModelRepository;
+	var pageModel = Model as ISimpleModel;
+	var modelNamespaceName = null == pageModel ? null : pageModel.NamespaceName;
+}
 <div class="container">
 	<div class="row">
-		@{
-			var navModel = ViewBag.TypeNavigationViewModel as SimpleModelRepository;
-			if (navModel != null){
-				<nav class="span3 namespace-nav">
-					<ul class="nav-list unstyled">
-						@foreach (var ns in navModel.Namespaces) {
-							var varTypeListId = "typelist-" + ns.FullName.Replace(".","-");
-							<li>
-								<span>
-									<a href="@Url.Action("Api","Docs",new{cref=ns.CRef})" class="namepsace-nav-icon"><i class="icon-gift"></i></a>
-									<a href="#" data-toggle="collapse" data-target="#@varTypeListId">@foreach (var part in TitleParts(ns.DisplayName)) {<span>@part</span>}</a>
-								</span>
-								<ul class="nav nav-list collapse" id="@varTypeListId">
-									@foreach (var type in ns.Types) {
-										<li><a href="@Url.Action("Api","Docs",new{cref=type.CRef})"><i class="icon-cog"></i>@foreach (var part in TitleParts(type.DisplayName)) {<span>@part</span>}</a></li> 
-									}
-								</ul>
-							</li>
-						}
-					</ul>
-				</nav>
-			}
+		@if (navModel != null){
+			<nav class="span3 namespace-nav">
+				<ul class="nav-list unstyled">
+					@foreach (var ns in navModel.Namespaces){
+						var isCurrentNamespace = String.Equals(modelNamespaceName, ns.NamespaceName);
+						var varTypeListId = "typelist-" + ns.FullName.Replace(".","-");
+						<li>
+							<span>
+								<a href="@Url.Action("Api","Docs",new{cref=ns.CRef})" class="namepsace-nav-icon"><i class="icon-gift"></i></a>
+								<a href="#" data-toggle="collapse" data-target="#@varTypeListId">@foreach (var part in TitleParts(ns.DisplayName)) {<span>@part</span>}</a>
+							</span>
+							<ul class="nav nav-list collapse @if (isCurrentNamespace){<text>in</text>}" id="@varTypeListId">
+								@foreach (var type in ns.Types) {
+									<li>
+										<span>
+											<a href="@Url.Action("Api","Docs",new{cref=type.CRef})"><i class="icon-cog"></i>@foreach (var part in TitleParts(type.DisplayName)) {<span>@part</span>}</a>
+										</span>
+									</li> 
+								}
+							</ul>
+						</li>
+					}
+				</ul>
+			</nav>
 		}
 		<div class="span9">
 			<section>

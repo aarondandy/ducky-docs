@@ -1,6 +1,30 @@
-﻿@model DandyDoc.SimpleModels.Contracts.ITypeSimpleModel
+﻿@using System.Collections.ObjectModel
+@using DandyDoc.SimpleModels.Contracts
+@using DandyDocSite.Models
+@model DandyDoc.SimpleModels.Contracts.ITypeSimpleModel
 @{
 	Layout = "~/Views/Docs/Api/_Layout.cshtml";
 	ViewBag.EntityTitle = Model.Title;
 	ViewBag.EntitySubTitle = Model.SubTitle;
+}
+@foreach (var memberSet in new MemberSet[]{
+	MemberSet.Create("Nested Types", Model.NestedTypes),
+	MemberSet.Create("Delegates", Model.NestedDelegates)
+}.Where(set => set.HasModels)){
+	<section>
+		<h2>@memberSet.Title</h2>
+		<table class="table table-bordered">
+			<thead><tr><th><i class="icon-info-sign"></i></th><th>Name</th><th>Description</th></tr></thead>
+			<tbody>
+				@foreach (var member in memberSet.SimpleModels) {
+					<tr>
+						<td></td>
+						<td>@member.DisplayName</td>
+						<td>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</section>
 }

@@ -148,6 +148,7 @@
     </Compile>
     <Compile Include="Infrastructure\ApiDocNavigation.cs" />
     <Compile Include="Infrastructure\AssemblyCollectionGenerator.cs" />
+    <Compile Include="Models\MemberSet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -175,7 +176,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
@@ -188,6 +188,10 @@
     <ProjectReference Include="..\..\src\DandyDoc.SimpleModels\DandyDoc.SimpleModels.csproj">
       <Project>{fd7ef106-4642-4705-b700-e851f1973e50}</Project>
       <Name>DandyDoc.SimpleModels</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\tests\TestLibrary1\TestLibrary1.csproj">
+      <Project>{f83f4c52-a886-4b9e-8164-e95e1f22f929}</Project>
+      <Name>TestLibrary1</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

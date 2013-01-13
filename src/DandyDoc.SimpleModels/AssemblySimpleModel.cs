@@ -55,7 +55,7 @@ namespace DandyDoc.SimpleModels
 				return result;
 			}
 
-			protected TDefinition GetDefinition(TModel key){
+			public TDefinition GetDefinition(TModel key){
 				Contract.Requires(key != null);
 				TDefinition result;
 				_definitionModelReverseLookup.TryGetValue(key, out result);
@@ -92,8 +92,26 @@ namespace DandyDoc.SimpleModels
 		private class SimpleModelMembersCollection : ISimpleModelMembersCollection
 		{
 
+			private readonly DefinitionModelCollection<TypeDefinition, ITypeSimpleModel> _typesCollection;
+			private readonly DefinitionModelCollection<TypeDefinition, IDelegateSimpleModel> _delegatesCollection;
+
+			public SimpleModelMembersCollection(
+				DefinitionModelCollection<TypeDefinition, ITypeSimpleModel> types,
+				DefinitionModelCollection<TypeDefinition, IDelegateSimpleModel> delegates
+			){
+				Contract.Requires(types != null);
+				Contract.Requires(delegates != null);
+				_typesCollection = types;
+				_delegatesCollection = delegates;
+			}
+
 			public IList<ITypeSimpleModel> Types {
-				get { throw new NotImplementedException(); }
+				get { return _typesCollection.SortedModels; }
+			}
+
+
+			public IList<IDelegateSimpleModel> Delegates {
+				get { return _delegatesCollection.SortedModels; }
 			}
 		}
 
@@ -172,7 +190,37 @@ namespace DandyDoc.SimpleModels
 		}
 
 		private SimpleModelMembersCollection GetMembersCore(ITypeSimpleModel model){
-			throw new NotImplementedException();
+			Contract.Requires(model != null);
+			Contract.Ensures(Contract.Result<SimpleModelMembersCollection>() != null);
+			return _membersCache.GetOrAdd(model, GenerateSimpleModelMembersCollection);
+		}
+
+		private SimpleModelMembersCollection GenerateSimpleModelMembersCollection(ITypeSimpleModel model) {
+			Contract.Requires(model != null);
+			Contract.Ensures(Contract.Result<SimpleModelMembersCollection>() != null);
+			var definition = _types.Value.GetDefinition(model);
+			Contract.Assume(definition != null);
+
+			var nestedTypes = new List<TypeDefinition>();
+			var nestedDelegates = new List<TypeDefinition>();
+			if (definition.HasNestedTypes){
+				foreach (var nestedType in definition.NestedTypes.Where(TypeFilter)){
+					(nestedType.IsDelegateType() ? nestedDelegates : nestedTypes).Add(nestedType);
+				}
+			}
+
+			var typeDefinitionModelCollection = new TypeDefinitionModelCollection(
+				nestedTypes,
+				d => _types.Value.GetModel(d),
+				TypeModelComparison);
+			var delegateDefinitionModelCollection = new DefinitionModelCollection<TypeDefinition,IDelegateSimpleModel>(
+				nestedDelegates,
+				d => (IDelegateSimpleModel)(_types.Value.GetModel(d)),
+				TypeModelComparison);
+
+			return new SimpleModelMembersCollection(
+				typeDefinitionModelCollection,
+				delegateDefinitionModelCollection);
 		}
 
 		// ------------ Public access
@@ -265,6 +313,14 @@ namespace DandyDoc.SimpleModels
 			if(null == model) throw new ArgumentNullException("model");
 			Contract.EndContractBlock();
 			return GetMembersCore(model);
+		}
+
+		public bool HasFlair {
+			get { return false; }
+		}
+
+		public IList<IFlairTag> FlairTags {
+			get { return new IFlairTag[0]; }
 		}
 
 		[ContractInvariantMethod]

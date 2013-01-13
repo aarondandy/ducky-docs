@@ -23,12 +23,22 @@ namespace DandyDoc.SimpleModels
 			IncludeNamespaceForTypes = true
 		};
 
+		private readonly Lazy<ISimpleModelMembersCollection> _members; 
+
 		public TypeSimpleModel(TypeDefinition definition, IAssemblySimpleModel assemblyModel){
 			if (null == definition) throw new ArgumentNullException("definition");
 			if (null == assemblyModel) throw new ArgumentNullException("assemblyModel");
 			Contract.EndContractBlock();
 			Definition = definition;
 			ContainingAssembly = assemblyModel;
+			_members = new Lazy<ISimpleModelMembersCollection>(() => ContainingAssembly.GetMembers(this), true);
+		}
+
+		protected ISimpleModelMembersCollection Members{
+			get{
+				Contract.Ensures(Contract.Result<ISimpleModelMembersCollection>() != null);
+				return _members.Value;
+			}
 		}
 
 		protected TypeDefinition Definition { get; private set; }
@@ -88,9 +98,17 @@ namespace DandyDoc.SimpleModels
 			}
 		}
 
-		public IList<ITypeSimpleModel> NestedTypes { get { throw new NotImplementedException(); } }
+		public IList<ITypeSimpleModel> NestedTypes { get { return Members.Types; } }
 
-		public IList<IDelegateSimpleModel> NestedDelegates { get { throw new NotImplementedException(); } }
+		public IList<IDelegateSimpleModel> NestedDelegates { get { return Members.Delegates; } }
+
+		public bool HasFlair {
+			get { return FlairTags.Count > 0; }
+		}
+
+		public IList<IFlairTag> FlairTags {
+			get { throw new NotImplementedException(); }
+		}
 
 		[ContractInvariantMethod]
 		private void CodeContractInvariant(){
@@ -98,6 +116,5 @@ namespace DandyDoc.SimpleModels
 			Contract.Invariant(ContainingAssembly != null);
 		}
 
-		
 	}
 }

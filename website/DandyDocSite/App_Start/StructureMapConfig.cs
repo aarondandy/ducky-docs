@@ -24,7 +24,8 @@ namespace DandyDocSite
 			x.For<AssemblyCollectionGenerator>().Use(_ =>
 				new AssemblyCollectionGenerator(
 					HostingEnvironment.MapPath("~/bin/DandyDoc.Core.dll"),
-					HostingEnvironment.MapPath("~/bin/DandyDoc.SimpleModels.dll")
+					HostingEnvironment.MapPath("~/bin/DandyDoc.SimpleModels.dll"),
+					HostingEnvironment.MapPath("~/bin/TestLibrary1.dll")
 				)
 			);
 			x.For<ApiDocNavigation>().Use(c => new ApiDocNavigation(c.GetInstance<AssemblyCollectionGenerator>().GenerateDefinitions()));

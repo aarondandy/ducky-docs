@@ -1,4 +1,6 @@
-﻿namespace DandyDoc.SimpleModels.Contracts
+﻿using System.Collections.Generic;
+
+namespace DandyDoc.SimpleModels.Contracts
 {
 	public interface ISimpleModel
 	{
@@ -18,6 +20,10 @@
 		IAssemblySimpleModel ContainingAssembly { get; }
 
 		ISimpleModelRepository RootRepository { get; }
+
+		bool HasFlair { get; }
+
+		IList<IFlairTag> FlairTags { get; }
 
 	}
 }
