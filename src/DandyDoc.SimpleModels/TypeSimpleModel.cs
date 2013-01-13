@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using DandyDoc.Overlays.DisplayName;
+using DandyDoc.Overlays.XmlDoc;
+using DandyDoc.SimpleModels.ComplexText;
 using DandyDoc.SimpleModels.Contracts;
 using Mono.Cecil;
 
@@ -23,7 +25,9 @@ namespace DandyDoc.SimpleModels
 			IncludeNamespaceForTypes = true
 		};
 
-		private readonly Lazy<ISimpleModelMembersCollection> _members; 
+		private readonly Lazy<ISimpleModelMembersCollection> _members;
+		private readonly Lazy<TypeDefinitionXmlDoc> _xmlDocs;
+		private readonly Lazy<IComplexTextNode> _summaryDocs;
 
 		public TypeSimpleModel(TypeDefinition definition, IAssemblySimpleModel assemblyModel){
 			if (null == definition) throw new ArgumentNullException("definition");
@@ -32,6 +36,16 @@ namespace DandyDoc.SimpleModels
 			Definition = definition;
 			ContainingAssembly = assemblyModel;
 			_members = new Lazy<ISimpleModelMembersCollection>(() => ContainingAssembly.GetMembers(this), true);
+			_xmlDocs = new Lazy<TypeDefinitionXmlDoc>(() => ContainingAssembly.XmlDocOverlay.GetDocumentation(Definition), true);
+			_summaryDocs = new Lazy<IComplexTextNode>(CreateSummaryDocs, true);
+		}
+
+		private IComplexTextNode CreateSummaryDocs(){
+			var xmlDocs = XmlDocs;
+			if (null == xmlDocs)
+				return null;
+
+			return ParsedXmlDocComplexTextNode.Convert(xmlDocs.Summary);
 		}
 
 		protected ISimpleModelMembersCollection Members{
@@ -43,13 +57,14 @@ namespace DandyDoc.SimpleModels
 
 		protected TypeDefinition Definition { get; private set; }
 
+		protected TypeDefinitionXmlDoc XmlDocs { get { return _xmlDocs.Value;  } }
+
 		public IAssemblySimpleModel ContainingAssembly { get; private set; }
 
-		public virtual string DisplayName {
+		public virtual string ShortName {
 			get{
 				Contract.Ensures(Contract.Result<string>() != null);
-				var nameGenerator = Definition.IsNested ? NestedTypeDisplayNameOverlay : RegularTypeDisplayNameOverlay;
-				return nameGenerator.GetDisplayName(Definition);
+				return RegularTypeDisplayNameOverlay.GetDisplayName(Definition);
 			}
 		}
 
@@ -70,7 +85,8 @@ namespace DandyDoc.SimpleModels
 		public virtual string Title {
 			get{
 				Contract.Ensures(Contract.Result<string>() != null);
-				return DisplayName;
+				var nameGenerator = Definition.IsNested ? NestedTypeDisplayNameOverlay : RegularTypeDisplayNameOverlay;
+				return nameGenerator.GetDisplayName(Definition);
 			}
 		}
 
@@ -109,6 +125,18 @@ namespace DandyDoc.SimpleModels
 		public IList<IFlairTag> FlairTags {
 			get { throw new NotImplementedException(); }
 		}
+
+		public bool HasSummary { get { return Summary != null; } }
+		public IComplexTextNode Summary { get { return _summaryDocs.Value; } }
+
+		public bool HasRemarks { get { return Remarks.Count > 0; } }
+		public IList<IComplexTextNode> Remarks { get { throw new NotImplementedException(); } }
+
+		public bool HasExamples { get { return Examples.Count > 0; } }
+		public IList<IComplexTextNode> Examples { get { throw new NotImplementedException(); } }
+
+		public bool HasSeeAlso { get { return SeeAlso.Count > 0; } }
+		public IList<IComplexTextNode> SeeAlso { get { throw new NotImplementedException(); } }
 
 		[ContractInvariantMethod]
 		private void CodeContractInvariant(){

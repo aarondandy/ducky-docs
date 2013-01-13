@@ -164,7 +164,7 @@ namespace DandyDoc.SimpleModels
 				return b == null ? 0 : -1;
 			if (b == null)
 				return 1;
-			return StringComparer.OrdinalIgnoreCase.Compare(a.DisplayName, b.DisplayName);
+			return StringComparer.OrdinalIgnoreCase.Compare(a.ShortName, b.ShortName);
 		}
 
 		private ISimpleModel GetModelFromCrefCore(string cref) {
@@ -238,7 +238,7 @@ namespace DandyDoc.SimpleModels
 			}
 		}
 
-		public virtual string DisplayName {
+		public virtual string ShortName {
 			get{
 				Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
 				return Definition.Name.Name;
@@ -262,7 +262,7 @@ namespace DandyDoc.SimpleModels
 		public virtual string Title{
 			get{
 				Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
-				return DisplayName;
+				return ShortName;
 			}
 		}
 
@@ -280,7 +280,7 @@ namespace DandyDoc.SimpleModels
 		}
 
 		public string NamespaceName {
-			get { return DisplayName; }
+			get { return ShortName; }
 		}
 
 		public IAssemblySimpleModel ContainingAssembly {
@@ -322,6 +322,18 @@ namespace DandyDoc.SimpleModels
 		public IList<IFlairTag> FlairTags {
 			get { return new IFlairTag[0]; }
 		}
+
+		public bool HasSummary { get { throw new NotImplementedException(); } }
+		public IComplexTextNode Summary { get { throw new NotImplementedException(); } }
+
+		public bool HasRemarks { get { return Remarks.Count > 0; } }
+		public IList<IComplexTextNode> Remarks { get { throw new NotImplementedException(); } }
+
+		public bool HasExamples { get { return Examples.Count > 0; } }
+		public IList<IComplexTextNode> Examples { get { throw new NotImplementedException(); } }
+
+		public bool HasSeeAlso { get { return SeeAlso.Count > 0; } }
+		public IList<IComplexTextNode> SeeAlso { get { throw new NotImplementedException(); } }
 
 		[ContractInvariantMethod]
 		private void CodeContractInvariants() {

@@ -33,10 +33,12 @@ namespace DandyDocSite.Controllers
 
 			if(null == model)
 				return new HttpNotFoundResult();
+			if (model is INamespaceSimpleModel)
+				return View("Api/Namespace", (INamespaceSimpleModel)model);
 			if(model is IDelegateSimpleModel)
 				throw new NotImplementedException();
 			if (model is ITypeSimpleModel)
-				return View("Api/Type", model as ITypeSimpleModel);
+				return View("Api/Type", (ITypeSimpleModel)model);
 
 			return new HttpNotFoundResult();
 		}

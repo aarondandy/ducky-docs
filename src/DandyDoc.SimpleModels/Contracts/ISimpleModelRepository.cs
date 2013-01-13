@@ -4,7 +4,7 @@ using DandyDoc.Overlays.XmlDoc;
 
 namespace DandyDoc.SimpleModels.Contracts
 {
-	public interface ISimpleModelRepository
+	public interface ISimpleModelRepository : ISimpleModel
 	{
 
 		IList<INamespaceSimpleModel> Namespaces { get; }

@@ -40,7 +40,7 @@ namespace DandyDoc.SimpleModels
 				return b == null ? 0 : -1;
 			if (b == null)
 				return 1;
-			return StringComparer.OrdinalIgnoreCase.Compare(a.DisplayName, b.DisplayName);
+			return StringComparer.OrdinalIgnoreCase.Compare(a.ShortName, b.ShortName);
 		}
 
 		protected virtual ReadOnlyCollection<INamespaceSimpleModel> BuildNamespaces() {
@@ -56,13 +56,19 @@ namespace DandyDoc.SimpleModels
 				return b == null ? 0 : -1;
 			if (b == null)
 				return 1;
-			return StringComparer.OrdinalIgnoreCase.Compare(a.DisplayName, b.DisplayName);
+			return StringComparer.OrdinalIgnoreCase.Compare(a.ShortName, b.ShortName);
 		}
 
 		// ------------ Public repository access
 
 		public ISimpleModel GetModelFromCref(string cref){
 			if(String.IsNullOrEmpty(cref)) throw new ArgumentException("Invalid CRef", "cref");
+
+			if (cref.StartsWith("N:")){
+				var namespaceName = cref.Substring(2);
+				return Namespaces.FirstOrDefault(n => n.NamespaceName == namespaceName);
+			}
+
 			return Assemblies.Select(a => a.GetModelFromCref(cref)).FirstOrDefault(m => null != m);
 		}
 
@@ -80,6 +86,76 @@ namespace DandyDoc.SimpleModels
 			}
 		}
 
+		public string Title {
+			get { return "All Namespaces"; }
+		}
 
+		public string SubTitle {
+			get { return String.Empty; }
+		}
+
+		public string ShortName {
+			get { return Title; }
+		}
+
+		public string FullName {
+			get { return Title; }
+		}
+
+		public string CRef {
+			get { return String.Empty; }
+		}
+
+		public string NamespaceName {
+			get { return String.Empty; }
+		}
+
+		public IAssemblySimpleModel ContainingAssembly {
+			get { return null; }
+		}
+
+		public ISimpleModelRepository RootRepository {
+			get { return this; }
+		}
+
+		public bool HasFlair {
+			get { return false; }
+		}
+
+		public IList<IFlairTag> FlairTags {
+			get { return new IFlairTag[0]; }
+		}
+
+		public bool HasSummary {
+			get { return false; }
+		}
+
+		public IComplexTextNode Summary {
+			get { return null; }
+		}
+
+		public bool HasRemarks {
+			get { return false; }
+		}
+
+		public IList<IComplexTextNode> Remarks {
+			get { return new IComplexTextNode[0]; }
+		}
+
+		public bool HasExamples {
+			get { return false; }
+		}
+
+		public IList<IComplexTextNode> Examples {
+			get { return new IComplexTextNode[0]; }
+		}
+
+		public bool HasSeeAlso {
+			get { return false; }
+		}
+
+		public IList<IComplexTextNode> SeeAlso {
+			get { return new IComplexTextNode[0]; }
+		}
 	}
 }

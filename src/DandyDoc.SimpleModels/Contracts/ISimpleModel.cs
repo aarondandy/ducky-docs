@@ -9,7 +9,7 @@ namespace DandyDoc.SimpleModels.Contracts
 
 		string SubTitle { get; }
 
-		string DisplayName { get; }
+		string ShortName { get; }
 
 		string FullName { get; }
 
@@ -24,6 +24,22 @@ namespace DandyDoc.SimpleModels.Contracts
 		bool HasFlair { get; }
 
 		IList<IFlairTag> FlairTags { get; }
+
+		bool HasSummary { get; }
+
+		IComplexTextNode Summary { get; }
+
+		bool HasRemarks { get; }
+
+		IList<IComplexTextNode> Remarks { get; }
+
+		bool HasExamples { get; }
+
+		IList<IComplexTextNode> Examples { get; }
+
+		bool HasSeeAlso { get; }
+
+		IList<IComplexTextNode> SeeAlso { get; }
 
 	}
 }

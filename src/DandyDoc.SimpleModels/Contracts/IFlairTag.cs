@@ -7,7 +7,7 @@
 
 		string Category { get; }
 
-		IComplexTextModel Description { get; }
+		IComplexTextNode Description { get; }
 
 	}
 }

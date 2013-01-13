@@ -1,0 +1,27 @@
+﻿@using DandyDoc.SimpleModels.Contracts
+@using DandyDocSite.Models
+@model INamespaceSimpleModel
+@{
+	Layout = "~/Views/Docs/Api/_Layout.cshtml";
+	var regularTypes = new List<ITypeSimpleModel>();
+	var delegateTypes = new List<IDelegateSimpleModel>();
+	foreach (var type in Model.Types){
+		var delegateType = type as IDelegateSimpleModel;
+		if (null != delegateType){
+			delegateTypes.Add(delegateType);
+		}
+		else{
+			regularTypes.Add(type);
+		}
+	}
+	var memberSets = new MemberSet[]{
+		MemberSet.Create("Types", regularTypes),
+		MemberSet.Create("Delegates", delegateTypes)
+	}.Where(x => x.HasModels);
+}
+@foreach (var memberSet in memberSets) {
+<section>
+	<h2>@memberSet.Title</h2>
+	@{Html.RenderPartial("Api/Partials/SimpleModelTable", memberSet.SimpleModels);}
+</section>
+}

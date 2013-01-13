@@ -4,10 +4,10 @@ using DandyDoc.SimpleModels.Contracts;
 
 namespace DandyDoc.SimpleModels.ComplexText
 {
-	public class RawComplexText : IComplexTextNode
+	public class StandardComplexText : IComplexTextNode
 	{
 
-		public RawComplexText(string text){
+		public StandardComplexText(string text) {
 			Text = text ?? String.Empty;
 		}
 

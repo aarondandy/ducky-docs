@@ -48,14 +48,14 @@ namespace DandyDoc.SimpleModels
 		public ISimpleModelRepository RootRepository { get; private set; }
 
 		public string Title {
-			get { return DisplayName; }
+			get { return ShortName; }
 		}
 
 		public string SubTitle {
 			get { return "Namespace"; }
 		}
 
-		public string DisplayName {
+		public string ShortName {
 			get {
 				if (String.IsNullOrEmpty(NamespaceName))
 					return "global::";
@@ -82,7 +82,19 @@ namespace DandyDoc.SimpleModels
 		public IList<IFlairTag> FlairTags {
 			get { return new IFlairTag[0]; }
 		}
-		
+
+		public bool HasSummary { get { throw new NotImplementedException();} }
+		public IComplexTextNode Summary { get { throw new NotImplementedException(); } }
+
+		public bool HasRemarks { get { return Remarks.Count > 0; } }
+		public IList<IComplexTextNode> Remarks { get { throw new NotImplementedException(); } }
+
+		public bool HasExamples { get { return Examples.Count > 0; } }
+		public IList<IComplexTextNode> Examples { get { throw new NotImplementedException(); } }
+
+		public bool HasSeeAlso { get { return SeeAlso.Count > 0; } }
+		public IList<IComplexTextNode> SeeAlso { get { throw new NotImplementedException(); } }
+
 		[ContractInvariantMethod]
 		private void CodeContractInvariant(){
 			Contract.Invariant(NamespaceName != null);

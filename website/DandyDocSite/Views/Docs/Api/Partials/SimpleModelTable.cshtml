@@ -1,0 +1,18 @@
+﻿@model IEnumerable<DandyDoc.SimpleModels.Contracts.ISimpleModel>
+<table class="table table-bordered">
+	<thead><tr><th><i class="icon-info-sign"></i></th><th>Name</th><th>Description</th></tr></thead>
+	<tbody>
+		@foreach (var member in Model) {
+			<tr>
+				<td>
+				</td>
+				<td>@member.ShortName</td>
+				<td>
+					@if (member.HasSummary){
+						Html.RenderPartial("Api/Partials/ComplexTextRender", member.Summary);
+					}
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>

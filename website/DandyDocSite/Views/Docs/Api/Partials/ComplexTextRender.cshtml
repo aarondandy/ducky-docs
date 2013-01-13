@@ -1,0 +1,26 @@
+﻿@using DandyDoc.SimpleModels.ComplexText
+@model DandyDoc.SimpleModels.Contracts.IComplexTextNode
+@if (Model is RawComplexText){
+	@Html.Raw(((RawComplexText) Model).Text)
+}
+else if (Model is StandardComplexText){
+	@(((StandardComplexText)Model).Text)
+}
+else if (Model is TypeParamrefComplexText){
+	var specialized = (TypeParamrefComplexText) Model;
+	if (specialized.HasChildren){
+		Html.RenderPartial("Api/Partials/ComplexTestRenderList", specialized.Children);
+	}
+	else{
+		<code>@specialized.ParameterName</code>
+	}
+}
+else if (Model is ComplexTextList){
+	var specialized = (ComplexTextList) Model;
+	if (specialized.HasChildren){
+		Html.RenderPartial("Api/Partials/ComplexTestRenderList", specialized.Children);
+	}
+}
+else{
+	throw new NotSupportedException();
+}

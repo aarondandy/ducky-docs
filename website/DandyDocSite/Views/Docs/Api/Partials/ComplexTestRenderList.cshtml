@@ -1,0 +1,4 @@
+﻿@model IEnumerable<DandyDoc.SimpleModels.Contracts.IComplexTextNode>
+@foreach (var item in Model){
+	Html.RenderPartial("Api/Partials/ComplexTextRender", item);
+}

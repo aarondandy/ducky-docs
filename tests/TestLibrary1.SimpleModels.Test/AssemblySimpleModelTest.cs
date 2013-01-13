@@ -18,26 +18,26 @@ namespace TestLibrary1.SimpleModels.Test
 
 		[Test]
 		public void check_assembly_file_name() {
-			var testAssembly = Repository.Assemblies.Single(x => x.DisplayName.StartsWith("TestLibrary1"));
+			var testAssembly = Repository.Assemblies.Single(x => x.ShortName.StartsWith("TestLibrary1"));
 			Assert.AreEqual("TestLibrary1.dll", testAssembly.AssemblyFileName);
 		}
 
 		[Test]
 		public void check_assembly_display_name() {
-			var testAssembly = Repository.Assemblies.Single(x => x.DisplayName.StartsWith("TestLibrary1"));
-			Assert.AreEqual("TestLibrary1", testAssembly.DisplayName);
+			var testAssembly = Repository.Assemblies.Single(x => x.ShortName.StartsWith("TestLibrary1"));
+			Assert.AreEqual("TestLibrary1", testAssembly.ShortName);
 		}
 
 		[Test]
 		public void check_assembly_full_name() {
-			var testAssembly = Repository.Assemblies.Single(x => x.DisplayName.StartsWith("TestLibrary1"));
+			var testAssembly = Repository.Assemblies.Single(x => x.ShortName.StartsWith("TestLibrary1"));
 			var matchRegex = new Regex(@"^TestLibrary1, Version=[\d\.]+, Culture=neutral, PublicKeyToken=null$");
 			Assert.That(matchRegex.IsMatch(testAssembly.FullName), "FullName is: " + testAssembly.FullName);
 		}
 
 		[Test]
 		public void check_assembly_cref() {
-			var testAssembly = Repository.Assemblies.Single(x => x.DisplayName.StartsWith("TestLibrary1"));
+			var testAssembly = Repository.Assemblies.Single(x => x.ShortName.StartsWith("TestLibrary1"));
 			var matchRegex = new Regex(@"^A\:TestLibrary1, Version=[\d\.]+, Culture=neutral, PublicKeyToken=null$");
 			Assert.That(matchRegex.IsMatch(testAssembly.CRef), "FullName is: " + testAssembly.CRef);
 		}

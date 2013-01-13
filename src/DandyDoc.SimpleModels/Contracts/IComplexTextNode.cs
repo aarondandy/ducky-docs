@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DandyDoc.SimpleModels.Contracts
 {
-	public interface IComplexTextModel
+	public interface IComplexTextNode
 	{
 
 
