@@ -1,9 +1,4 @@
-﻿using Mono.Cecil;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace DandyDoc.SimpleModels.Contracts
 {
@@ -14,6 +9,13 @@ namespace DandyDoc.SimpleModels.Contracts
 
 		IList<IDelegateSimpleModel> NestedDelegates { get; }
 
+		bool HasBaseChain { get; }
+
+		IList<ISimpleMemberPointerModel> BaseChain { get; }
+
+		bool HasDirectInterfaces { get; }
+
+		IList<ISimpleMemberPointerModel> DirectInterfaces { get; }
 
 	}
 }

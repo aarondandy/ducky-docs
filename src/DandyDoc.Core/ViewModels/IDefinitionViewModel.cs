@@ -13,7 +13,7 @@ namespace DandyDoc.ViewModels
 
 		bool HasSummary { get; }
 
-		ParsedXmlElementBase Remarks { get; }
+		IList<ParsedXmlElementBase> Remarks { get; }
 
 		bool HasRemarks { get; }
 

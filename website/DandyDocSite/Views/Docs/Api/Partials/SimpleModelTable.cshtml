@@ -1,11 +1,23 @@
-﻿@model IEnumerable<DandyDoc.SimpleModels.Contracts.ISimpleModel>
+﻿@using DandyDoc.SimpleModels.Contracts;
+@model IEnumerable<ISimpleModel>
+@functions{
+
+	public static bool IsForSummary(IFlairTag flair){
+		if (null == flair)
+			return false;
+		if ("public".Equals(flair.IconId, StringComparison.OrdinalIgnoreCase))
+			return false;
+				if ("operator".Equals(flair.IconId, StringComparison.OrdinalIgnoreCase))
+			return false;
+		return true;
+	}
+}	
 <table class="table table-bordered">
 	<thead><tr><th><i class="icon-info-sign"></i></th><th>Name</th><th>Description</th></tr></thead>
 	<tbody>
 		@foreach (var member in Model) {
 			<tr>
-				<td>
-				</td>
+				<td>@{foreach (var flair in member.FlairTags.Where(IsForSummary)) { Html.RenderPartial("Api/Partials/FlairIcon", flair); }}</td>
 				<td>@member.ShortName</td>
 				<td>
 					@if (member.HasSummary){

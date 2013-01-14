@@ -9,16 +9,25 @@ else if (Model is StandardComplexText){
 else if (Model is TypeParamrefComplexText){
 	var specialized = (TypeParamrefComplexText) Model;
 	if (specialized.HasChildren){
-		Html.RenderPartial("Api/Partials/ComplexTestRenderList", specialized.Children);
+		Html.RenderPartial("Api/Partials/ComplexTestRenderMultiple", specialized.Children);
 	}
 	else{
 		<code>@specialized.ParameterName</code>
 	}
 }
+else if (Model is CodeComplexText){
+	var specialized = (CodeComplexText) Model;
+	if (specialized.IsInline){
+		<code>@{Html.RenderPartial("Api/Partials/ComplexTestRenderMultiple", specialized.Children);}</code>
+	}
+	else{
+		<pre>@{Html.RenderPartial("Api/Partials/ComplexTestRenderMultiple", specialized.Children);}</pre>
+	}
+}
 else if (Model is ComplexTextList){
 	var specialized = (ComplexTextList) Model;
 	if (specialized.HasChildren){
-		Html.RenderPartial("Api/Partials/ComplexTestRenderList", specialized.Children);
+		Html.RenderPartial("Api/Partials/ComplexTestRenderMultiple", specialized.Children);
 	}
 }
 else{

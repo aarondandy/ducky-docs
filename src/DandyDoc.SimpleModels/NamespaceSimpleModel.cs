@@ -57,6 +57,7 @@ namespace DandyDoc.SimpleModels
 
 		public string ShortName {
 			get {
+				Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
 				if (String.IsNullOrEmpty(NamespaceName))
 					return "global::";
 				return NamespaceName;
@@ -71,7 +72,7 @@ namespace DandyDoc.SimpleModels
 			get { return NamespaceName; }
 		}
 
-		IAssemblySimpleModel ISimpleModel.ContainingAssembly {
+		public IAssemblySimpleModel ContainingAssembly {
 			get { return Assemblies.FirstOrDefault(); }
 		}
 
@@ -83,17 +84,17 @@ namespace DandyDoc.SimpleModels
 			get { return new IFlairTag[0]; }
 		}
 
-		public bool HasSummary { get { throw new NotImplementedException();} }
-		public IComplexTextNode Summary { get { throw new NotImplementedException(); } }
+		public bool HasSummary { get { return false; } }
+		public IComplexTextNode Summary { get { return null; } }
 
 		public bool HasRemarks { get { return Remarks.Count > 0; } }
-		public IList<IComplexTextNode> Remarks { get { throw new NotImplementedException(); } }
+		public IList<IComplexTextNode> Remarks { get { return new IComplexTextNode[0]; } }
 
 		public bool HasExamples { get { return Examples.Count > 0; } }
-		public IList<IComplexTextNode> Examples { get { throw new NotImplementedException(); } }
+		public IList<IComplexTextNode> Examples { get { return new IComplexTextNode[0]; } }
 
 		public bool HasSeeAlso { get { return SeeAlso.Count > 0; } }
-		public IList<IComplexTextNode> SeeAlso { get { throw new NotImplementedException(); } }
+		public IList<IComplexTextNode> SeeAlso { get { return new IComplexTextNode[0]; } }
 
 		[ContractInvariantMethod]
 		private void CodeContractInvariant(){

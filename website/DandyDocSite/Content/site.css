@@ -31,3 +31,6 @@ footer {
 nav.namespace-nav > ul {
 	padding-left: 0;
 }
+table th {
+	background-color: #eee;
+}

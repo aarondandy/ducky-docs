@@ -32,8 +32,11 @@ namespace DandyDoc.Overlays.XmlDoc
 			get { return (ParsedXmlElementBase)SelectParsedXmlNode("summary"); }
 		}
 
-		public virtual ParsedXmlElementBase Remarks {
-			get { return (ParsedXmlElementBase)SelectParsedXmlNode("remarks"); }
+		public virtual IList<ParsedXmlElementBase> Remarks {
+			get{
+				var nodes = SelectParsedXmlNodes("remarks");
+				return null == nodes ? null : nodes.ConvertAll(n => (ParsedXmlElementBase)n);
+			}
 		}
 
 		public virtual IList<ParsedXmlElementBase> Examples {

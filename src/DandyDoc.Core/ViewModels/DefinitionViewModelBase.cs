@@ -115,9 +115,9 @@ namespace DandyDoc.ViewModels
 
 		public virtual bool HasSummary { get { return Summary != null; } }
 
-		public virtual ParsedXmlElementBase Remarks { get { return null == XmlDoc ? null : XmlDoc.Remarks; } }
+		public virtual IList<ParsedXmlElementBase> Remarks { get { return null == XmlDoc ? null : XmlDoc.Remarks; } }
 
-		public virtual bool HasRemarks { get { return Remarks != null; } }
+		public virtual bool HasRemarks { get { return CollectionUtility.IsNotNullOrEmpty(Remarks); } }
 
 		public virtual IList<ParsedXmlElementBase> Examples { get { return null == XmlDoc ? null : XmlDoc.Examples; } }
 

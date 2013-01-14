@@ -1,0 +1,4 @@
+﻿@model IEnumerable<DandyDoc.SimpleModels.Contracts.ISimpleMemberPointerModel>
+<ul class="unstyled">@foreach (var pointer in Model) {
+	<li style="text-indent: -7px;">@pointer.MemberDisplayName</li>
+}</ul>

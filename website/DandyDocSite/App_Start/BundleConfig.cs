@@ -44,6 +44,10 @@ namespace DandyDocSite
 				"~/Scripts/d3/d3.v2.js"
 			));
 
+			bundles.Add(new ScriptBundle("~/bundles/site").Include(
+				"~/Scripts/site.js"
+			));
+
 		}
 	}
 }

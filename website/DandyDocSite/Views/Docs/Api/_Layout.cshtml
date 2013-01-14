@@ -47,11 +47,36 @@
 		}
 		<div class="span9">
 			<section>
-				<h1>@foreach (var part in TitleParts(ViewBag.EntityTitle)) {<span>@part</span>}
-				@if (!String.IsNullOrEmpty(ViewBag.EntitySubTitle)) {
-					<small>@ViewBag.EntitySubTitle</small>
-				}</h1>
+				<h1>@{foreach (var part in TitleParts(ViewBag.EntityTitle)) {<span>@part</span>} if (!String.IsNullOrEmpty(ViewBag.EntitySubTitle)) { <small>@ViewBag.EntitySubTitle</small>}}</h1>
+				@{
+					if (Model.HasSummary) {<p class="lead">@{ Html.RenderPartial("Api/Partials/ComplexTextRender", Model.Summary); }</p>}
+					if (Model.HasFlair) { Html.RenderPartial("Api/Partials/FlairTable", Model.FlairTags); }
+				}
+				<div><b>Namespace:</b> @Model.NamespaceName</div>
+				<div><b>Assembly: </b> @Model.ContainingAssembly.ShortName (@(Model.ContainingAssembly.AssemblyFileName))</div>
 				@RenderBody()
+				@if (Model.HasRemarks){
+					<h2>Remarks</h2>	
+					foreach (var section in Model.Remarks){
+						Html.RenderPartial("Api/Partials/ComplexTextRender", section);
+					}
+				}
+				@if (Model.HasExamples){
+					<h2>Examples</h2>
+					foreach (var section in Model.Examples){
+						Html.RenderPartial("Api/Partials/ComplexTextRender", section);
+					}
+				}
+				@if (Model.HasSeeAlso){
+					<h2>See Also</h2>
+					<section>
+						<ul>
+							@foreach (var section in Model.SeeAlso){
+								<li>@{Html.RenderPartial("Api/Partials/ComplexTextRender", section);}</li>
+							}
+						</ul>
+					</section>
+				}
 			</section>
 		</div>
 	</div>

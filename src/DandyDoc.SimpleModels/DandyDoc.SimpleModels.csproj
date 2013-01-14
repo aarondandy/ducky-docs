@@ -128,7 +128,9 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AssemblySimpleModel.cs" />
+    <Compile Include="ComplexText\CodeComplexText.cs" />
     <Compile Include="ComplexText\ComplexTextList.cs" />
+    <Compile Include="ComplexText\ContractConditionComplexText.cs" />
     <Compile Include="ComplexText\ParsedXmlDocComplexTextNode.cs" />
     <Compile Include="ComplexText\RawComplexText.cs" />
     <Compile Include="ComplexText\StandardComplexText.cs" />
@@ -138,13 +140,19 @@
     <Compile Include="Contracts\IDelegateSimpleModel.cs" />
     <Compile Include="Contracts\IFlairTag.cs" />
     <Compile Include="Contracts\INamespaceSimpleModel.cs" />
+    <Compile Include="Contracts\ISimpleMemberPointerModel.cs" />
     <Compile Include="Contracts\ISimpleModel.cs" />
     <Compile Include="Contracts\ISimpleModelMembersCollection.cs" />
     <Compile Include="Contracts\ISimpleModelRepository.cs" />
     <Compile Include="Contracts\ITypeSimpleModel.cs" />
+    <Compile Include="CrefSimpleMemberPointer.cs" />
+    <Compile Include="DefinitionSimpleMemberPointer.cs" />
+    <Compile Include="DefinitionSimpleModelBase.cs" />
     <Compile Include="DelegateSimpleModel.cs" />
     <Compile Include="NamespaceSimpleModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReferenceSimpleMemberPointer.cs" />
+    <Compile Include="SimpleFlairTag.cs" />
     <Compile Include="SimpleModelRepository.cs" />
     <Compile Include="TypeSimpleModel.cs" />
   </ItemGroup>

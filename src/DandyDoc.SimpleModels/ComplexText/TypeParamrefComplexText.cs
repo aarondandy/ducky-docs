@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.Contracts;
 using DandyDoc.SimpleModels.Contracts;
 using System.Collections.Generic;
+using System;
 
 namespace DandyDoc.SimpleModels.ComplexText
 {
@@ -11,10 +12,15 @@ namespace DandyDoc.SimpleModels.ComplexText
 			: base(children)
 		{
 			Contract.Requires(children != null);
-			ParameterName = parameterName;
+			ParameterName = parameterName ?? String.Empty;
 		}
 
 		public string ParameterName { get; private set; }
+
+		[ContractInvariantMethod]
+		private void CodeContractInvariant() {
+			Contract.Invariant(ParameterName != null);
+		}
 
 	}
 

@@ -13,6 +13,20 @@ namespace DandyDoc.Overlays.Cref
 	public class CrefOverlay
 	{
 
+		private static readonly CrefOverlay DefaultInstance = new CrefOverlay(new AssemblyDefinitionCollection());
+
+		public static string GetDefaultCref(IMemberDefinition definition){
+			if(null == definition) throw new ArgumentNullException("definition");
+			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
+			return DefaultInstance.GetCref(definition);
+		}
+
+		public static string GetDefaultCref(MemberReference reference){
+			if(null == reference) throw new ArgumentNullException("reference");
+			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
+			return DefaultInstance.GetCref(reference);
+		}
+
 		public CrefOverlay(AssemblyDefinitionCollection assemblyDefinitionCollection) {
 			if(null == assemblyDefinitionCollection) throw new ArgumentNullException("assemblyDefinitionCollection");
 			Contract.EndContractBlock();

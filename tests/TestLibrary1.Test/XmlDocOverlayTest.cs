@@ -57,7 +57,7 @@ namespace TestLibrary1.Test
 			var type = CrefOverlay.GetTypeDefinition("T:TestLibrary1.Class1.Inner");
 			var docs = XmlDocOverlay.GetDocumentation(type);
 			Assert.IsNotNull(docs.Remarks);
-			Assert.AreEqual("This is just some class.", docs.Remarks.Node.InnerXml);
+			Assert.AreEqual("This is just some class.", docs.Remarks.First().Node.InnerXml);
 		}
 
 		[Test]
@@ -92,7 +92,7 @@ namespace TestLibrary1.Test
 			Assert.IsNotNull(docs.Summary);
 			Assert.AreEqual("The instance constructor.", docs.Summary.Node.InnerXml);
 			Assert.IsNotNull(docs.Remarks);
-			Assert.AreEqual("A remark.", docs.Remarks.Node.InnerXml);
+			Assert.AreEqual("A remark.", docs.Remarks.First().Node.InnerXml);
 			Assert.IsNotNull(docs.DocsForParameter("crap"));
 			Assert.AreEqual("Whatever.", docs.DocsForParameter("crap").Node.InnerXml);
 		}
@@ -195,6 +195,7 @@ namespace TestLibrary1.Test
 			var docs = XmlDocOverlay.GetDocumentation(method) as ParameterizedXmlDocBase;
 			Assert.IsNotNull(docs);
 			var codeBlock = docs.Remarks
+				.First()
 				.Children
 				.OfType<ParsedXmlCode>()
 				.FirstOrDefault();
@@ -240,7 +241,7 @@ namespace TestLibrary1.Test
 			var method = CrefOverlay.GetMemberDefinition("M:TestLibrary1.Class1.Finalize");
 			var docs = XmlDocOverlay.GetDocumentation(method) as ParameterizedXmlDocBase;
 			Assert.IsNotNull(docs);
-			var paragraphs = docs.Remarks.Children.OfType<ParsedXmlParagraphElement>().ToList();
+			var paragraphs = docs.Remarks.First().Children.OfType<ParsedXmlParagraphElement>().ToList();
 			Assert.AreEqual(3, paragraphs.Count);
 			Assert.AreEqual("a paragraph", paragraphs[0].Node.InnerXml.Trim());
 			Assert.AreEqual("and another", paragraphs[1].Node.InnerXml.Trim());
@@ -252,7 +253,7 @@ namespace TestLibrary1.Test
 			var property = CrefOverlay.GetMemberDefinition("P:TestLibrary1.Class1.Item(System.Int32)");
 			var docs = XmlDocOverlay.GetDocumentation(property) as PropertyDefinitionXmlDoc;
 			Assert.IsNotNull(docs);
-			var paramref = docs.Remarks.Children.OfType<ParsedXmlParamrefElement>().Single();
+			var paramref = docs.Remarks.First().Children.OfType<ParsedXmlParamrefElement>().Single();
 			Assert.AreEqual("index", paramref.Node.InnerXml);
 			Assert.AreEqual("n", paramref.ParameterName);
 			Assert.IsNotNull(paramref.Target);
@@ -264,7 +265,7 @@ namespace TestLibrary1.Test
 			var method = CrefOverlay.GetMemberDefinition("M:TestLibrary1.Class1.#ctor(System.String,System.String)");
 			var docs = XmlDocOverlay.GetDocumentation(method) as MethodDefinitionXmlDoc;
 			Assert.IsNotNull(docs);
-			var paramref = docs.Remarks.Children.OfType<ParsedXmlParamrefElement>().Single();
+			var paramref = docs.Remarks.First().Children.OfType<ParsedXmlParamrefElement>().Single();
 			Assert.AreEqual("crap", paramref.ParameterName);
 			Assert.IsNotNull(paramref.Target);
 			Assert.AreEqual("crap", paramref.Target.Name);
@@ -275,7 +276,7 @@ namespace TestLibrary1.Test
 			var d = CrefOverlay.GetTypeDefinition("T:TestLibrary1.Class1.MyFunc");
 			var docs = XmlDocOverlay.GetDocumentation(d) as DelegateTypeDefinitionXmlDoc;
 			Assert.IsNotNull(docs);
-			var paramref = docs.Remarks.Children.OfType<ParsedXmlParamrefElement>().Single();
+			var paramref = docs.Remarks.First().Children.OfType<ParsedXmlParamrefElement>().Single();
 			Assert.AreEqual("a", paramref.ParameterName);
 			Assert.IsNotNull(paramref.Target);
 			Assert.AreEqual("a", paramref.Target.Name);
@@ -294,7 +295,7 @@ namespace TestLibrary1.Test
 		public void see_and_seealso_from_event(){
 			var e = CrefOverlay.GetMemberDefinition("E:TestLibrary1.Class1.DoStuff");
 			var docs = XmlDocOverlay.GetDocumentation(e);
-			var see = docs.Remarks.Children.OfType<ParsedXmlSeeElement>().Single();
+			var see = docs.Remarks.First().Children.OfType<ParsedXmlSeeElement>().Single();
 			Assert.AreEqual("T:TestLibrary1.Class1", see.CRef);
 			Assert.IsNotNull(see.CrefTarget);
 			Assert.AreEqual("Class1", see.CrefTarget.Name);
