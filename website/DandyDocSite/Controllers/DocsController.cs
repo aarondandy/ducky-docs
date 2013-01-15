@@ -43,6 +43,8 @@ namespace DandyDocSite.Controllers
 					return View("Api/Enum", typeModel);
 				return View("Api/Type", typeModel);
 			}
+			if (model is IMethodSimpleModel)
+				return View("Api/Method", (IMethodSimpleModel) model);
 
 			return new HttpNotFoundResult();
 		}

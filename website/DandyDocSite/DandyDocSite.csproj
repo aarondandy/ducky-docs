@@ -252,6 +252,12 @@
   <ItemGroup>
     <Content Include="Views\Docs\Api\Partials\GenericParameterListing.cshtml" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Docs\Api\Delegate.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Docs\Api\Method.cshtml" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

@@ -1,0 +1,13 @@
+﻿@model DandyDoc.SimpleModels.Contracts.IDelegateSimpleModel
+@{
+	Layout = "~/Views/Docs/Api/_Layout.cshtml";
+
+	if (Model.HasGenericParameters){
+		<h2>Generic Parameters</h2>
+		Html.RenderPartial("Api/Partials/GenericParameterListing", Model.GenericParameters);
+	}
+	
+	// TODO: parameters
+	// TODO: returns
+	// TODO: exceptions
+}

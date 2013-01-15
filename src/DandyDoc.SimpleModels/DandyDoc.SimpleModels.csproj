@@ -147,6 +147,7 @@
     <Compile Include="Contracts\IGenericParameterSimpleModel.cs" />
     <Compile Include="Contracts\IMethodSimpleModel.cs" />
     <Compile Include="Contracts\INamespaceSimpleModel.cs" />
+    <Compile Include="Contracts\IParameterSimpleModel.cs" />
     <Compile Include="Contracts\IPropertySimpleModel.cs" />
     <Compile Include="Contracts\ISimpleMemberPointerModel.cs" />
     <Compile Include="Contracts\ISimpleModel.cs" />
@@ -156,6 +157,7 @@
     <Compile Include="CrefSimpleMemberPointer.cs" />
     <Compile Include="DefinitionGenericParameterSimpleModel.cs" />
     <Compile Include="DefinitionMemberSimpleModelBase.cs" />
+    <Compile Include="DefinitionParameterSimpleModel.cs" />
     <Compile Include="DefinitionSimpleMemberPointer.cs" />
     <Compile Include="DefinitionSimpleModelBase.cs" />
     <Compile Include="DelegateSimpleModel.cs" />

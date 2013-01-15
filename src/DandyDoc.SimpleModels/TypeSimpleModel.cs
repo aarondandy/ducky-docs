@@ -83,10 +83,7 @@ namespace DandyDoc.SimpleModels
 					if (null != xmlDocs){
 						var summaryParsedXml = xmlDocs.DocsForTypeparam(genericParameterDefinition.Name);
 						if (null != summaryParsedXml && summaryParsedXml.Children.Count > 0){
-							summary = ParsedXmlDocComplexTextNode.ConvertToSingleComplexNode(summaryParsedXml.Children)
-								?? ParsedXmlDocComplexTextNode.Convert(summaryParsedXml);
-						}else if (null != summaryParsedXml){
-							summary = ParsedXmlDocComplexTextNode.Convert(summaryParsedXml);
+							summary = ParsedXmlDocComplexTextNode.ConvertToSingleComplexNode(summaryParsedXml.Children);
 						}
 					}
 

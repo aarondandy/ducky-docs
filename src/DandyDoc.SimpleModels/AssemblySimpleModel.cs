@@ -92,14 +92,14 @@ namespace DandyDoc.SimpleModels
 		private class SimpleModelMembersCollection : ISimpleModelMembersCollection
 		{
 
-			private readonly DefinitionModelCollection<TypeDefinition, ITypeSimpleModel> _typesCollection;
-			private readonly DefinitionModelCollection<TypeDefinition, IDelegateSimpleModel> _delegatesCollection;
-			private readonly DefinitionModelCollection<MethodDefinition, IMethodSimpleModel> _constructorsCollection;
-			private readonly DefinitionModelCollection<PropertyDefinition, IPropertySimpleModel> _propertiesCollection;
-			private readonly DefinitionModelCollection<FieldDefinition, IFieldSimpleModel> _fieldsCollection;
-			private readonly DefinitionModelCollection<MethodDefinition, IMethodSimpleModel> _methodsCollection;
-			private readonly DefinitionModelCollection<MethodDefinition, IMethodSimpleModel> _operatorsCollection;
-			private readonly DefinitionModelCollection<EventDefinition, IEventSimpleModel> _eventsCollection;
+			public readonly DefinitionModelCollection<TypeDefinition, ITypeSimpleModel> TypesCollection;
+			public readonly DefinitionModelCollection<TypeDefinition, IDelegateSimpleModel> DelegatesCollection;
+			public readonly DefinitionModelCollection<MethodDefinition, IMethodSimpleModel> ConstructorsCollection;
+			public readonly DefinitionModelCollection<PropertyDefinition, IPropertySimpleModel> PropertiesCollection;
+			public readonly DefinitionModelCollection<FieldDefinition, IFieldSimpleModel> FieldsCollection;
+			public readonly DefinitionModelCollection<MethodDefinition, IMethodSimpleModel> MethodsCollection;
+			public readonly DefinitionModelCollection<MethodDefinition, IMethodSimpleModel> OperatorsCollection;
+			public readonly DefinitionModelCollection<EventDefinition, IEventSimpleModel> EventsCollection;
 
 			public SimpleModelMembersCollection(
 				DefinitionModelCollection<TypeDefinition, ITypeSimpleModel> types,
@@ -119,69 +119,69 @@ namespace DandyDoc.SimpleModels
 				Contract.Requires(properties != null);
 				Contract.Requires(fields != null);
 				Contract.Requires(events != null);
-				_typesCollection = types;
-				_delegatesCollection = delegates;
-				_constructorsCollection = constructors;
-				_methodsCollection = methods;
-				_operatorsCollection = operators;
-				_propertiesCollection = properties;
-				_fieldsCollection = fields;
-				_eventsCollection = events;
+				TypesCollection = types;
+				DelegatesCollection = delegates;
+				ConstructorsCollection = constructors;
+				MethodsCollection = methods;
+				OperatorsCollection = operators;
+				PropertiesCollection = properties;
+				FieldsCollection = fields;
+				EventsCollection = events;
 			}
 
 			public IList<ITypeSimpleModel> NestedTypes {
 				get {
 					Contract.Ensures(Contract.Result<IList<ITypeSimpleModel>>() != null);
-					return _typesCollection.SortedModels;
+					return TypesCollection.SortedModels;
 				}
 			}
 
 			public IList<IDelegateSimpleModel> NestedDelegates {
 				get {
 					Contract.Ensures(Contract.Result<IList<IDelegateSimpleModel>>() != null);
-					return _delegatesCollection.SortedModels;
+					return DelegatesCollection.SortedModels;
 				}
 			}
 
 			public IList<IMethodSimpleModel> Constructors {
 				get {
 					Contract.Ensures(Contract.Result<IList<IMethodSimpleModel>>() != null);
-					return _constructorsCollection.SortedModels;
+					return ConstructorsCollection.SortedModels;
 				}
 			}
 
 			public IList<IMethodSimpleModel> Methods {
 				get {
 					Contract.Ensures(Contract.Result<IList<IMethodSimpleModel>>() != null);
-					return _methodsCollection.SortedModels;
+					return MethodsCollection.SortedModels;
 				}
 			}
 
 			public IList<IMethodSimpleModel> Operators {
 				get {
 					Contract.Ensures(Contract.Result<IList<IMethodSimpleModel>>() != null);
-					return _operatorsCollection.SortedModels;
+					return OperatorsCollection.SortedModels;
 				}
 			}
 
 			public IList<IPropertySimpleModel> Properties {
 				get {
 					Contract.Ensures(Contract.Result<IList<IPropertySimpleModel>>() != null);
-					return _propertiesCollection.SortedModels;
+					return PropertiesCollection.SortedModels;
 				}
 			}
 
 			public IList<IFieldSimpleModel> Fields {
 				get {
 					Contract.Ensures(Contract.Result<IList<IFieldSimpleModel>>() != null);
-					return _fieldsCollection.SortedModels;
+					return FieldsCollection.SortedModels;
 				}
 			}
 
 			public IList<IEventSimpleModel> Events {
 				get {
 					Contract.Ensures(Contract.Result<IList<IEventSimpleModel>>() != null);
-					return _eventsCollection.SortedModels;
+					return EventsCollection.SortedModels;
 				}
 			}
 
@@ -306,6 +306,19 @@ namespace DandyDoc.SimpleModels
 			Contract.Requires(null != reference);
 			if (reference is TypeDefinition)
 				return DefinitionToModel((TypeDefinition)reference);
+
+			if (reference is IMemberDefinition){
+				var memberDefinition = (IMemberDefinition) reference;
+				var typeDefinition = memberDefinition.DeclaringType;
+				var typeModel = DefinitionToModel(typeDefinition);
+				var membersData = GetMembersCore(typeModel);
+				if (memberDefinition is MethodDefinition) {
+					var methodDefinition = (MethodDefinition)memberDefinition;
+					return membersData.MethodsCollection.GetModel(methodDefinition)
+						?? membersData.ConstructorsCollection.GetModel(methodDefinition)
+						?? membersData.OperatorsCollection.GetModel(methodDefinition);
+				}
+			}
 
 			throw new NotSupportedException();
 		}

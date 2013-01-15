@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using DandyDoc.SimpleModels.Contracts;
 using Mono.Cecil;
 
@@ -14,5 +15,16 @@ namespace DandyDoc.SimpleModels
 			Contract.Requires(assemblyModel != null);
 		}
 
+
+		public bool HasParameters {
+			get { return Parameters.Count > 0; }
+		}
+
+		public IList<IParameterSimpleModel> Parameters {
+			get{
+				// TODO: extract the parameters from the invoke method maybe?
+				return new IParameterSimpleModel[0];
+			}
+		}
 	}
 }
