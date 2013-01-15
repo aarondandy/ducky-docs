@@ -5,6 +5,8 @@ namespace DandyDoc.SimpleModels.Contracts
 	public interface ITypeSimpleModel : ISimpleModel, ISimpleModelMembersCollection
 	{
 
+		bool IsEnum { get; }
+
 		bool HasBaseChain { get; }
 
 		IList<ISimpleMemberPointerModel> BaseChain { get; }
@@ -12,6 +14,10 @@ namespace DandyDoc.SimpleModels.Contracts
 		bool HasDirectInterfaces { get; }
 
 		IList<ISimpleMemberPointerModel> DirectInterfaces { get; }
+
+		bool HasGenericParameters { get; }
+
+		IList<IGenericParameterSimpleModel> GenericParameters { get; } 
 
 	}
 }

@@ -24,6 +24,9 @@ else if (Model is CodeComplexText){
 		<pre>@{Html.RenderPartial("Api/Partials/ComplexTestRenderMultiple", specialized.Children);}</pre>
 	}
 }
+else if (Model is DescriptionListComplexText){
+	Html.RenderPartial("Api/Partials/ComplexTextRenderDescriptionList", (DescriptionListComplexText)Model);
+}
 else if (Model is ComplexTextList){
 	var specialized = (ComplexTextList) Model;
 	if (specialized.HasChildren){

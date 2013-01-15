@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using DandyDoc.Overlays.XmlDoc;
 using DandyDoc.SimpleModels.Contracts;
 
@@ -25,7 +26,22 @@ namespace DandyDoc.SimpleModels.ComplexText
 			if (node is ParsedXmlElementBase){
 				var parsedElement = (ParsedXmlElementBase) node;
 				var xmlElement = parsedElement.Element;
+
+				if (parsedElement is ParsedXmlListElement) {
+					var specialized = (ParsedXmlListElement)parsedElement;
+					return new DescriptionListComplexText(
+						specialized.ListType,
+						specialized.Items.Select(x =>
+							new DescriptionListComplexText.ListItem(
+								x.IsHeader,
+								x.Term == null ? null : ConvertToSingleComplexNode(x.Term.Children),
+								x.Description == null ? null : ConvertToSingleComplexNode(x.Description.Children))
+						).ToList()
+					);
+				}
+
 				var children = Convert(parsedElement.Children);
+
 				if (BasicUnpackNodes.Contains(xmlElement.Name)){
 					return ConvertToSingleComplexNode(children);
 				}
@@ -43,7 +59,7 @@ namespace DandyDoc.SimpleModels.ComplexText
 				}
 			}
 
-			throw new NotSupportedException();
+			return new XmlNodeComplexText(node.Node, Convert(node.Children));
 		}
 
 		public static IList<IComplexTextNode> Convert<T>(IList<T> nodes) where T : ParsedXmlNodeBase {
@@ -56,20 +72,16 @@ namespace DandyDoc.SimpleModels.ComplexText
 			return results;
 		}
 
-		private static IComplexTextNode ConvertToSingleComplexNode(IList<IComplexTextNode> items){
-			Contract.Requires(items != null);
-			Contract.Ensures(items.Count == 0 ? Contract.Result<IComplexTextNode>() == null : Contract.Result<IComplexTextNode>() != null);
-			if (items.Count == 0)
+		public static IComplexTextNode ConvertToSingleComplexNode(IList<IComplexTextNode> items){
+			if (items == null || items.Count == 0)
 				return null;
 			if (items.Count == 1)
 				return items[0];
 			return new ComplexTextList(items);
 		}
 
-		private static IComplexTextNode ConvertToSingleComplexNode(IList<ParsedXmlNodeBase> items) {
-			Contract.Requires(items != null);
-			Contract.Ensures(items.Count == 0 ? Contract.Result<IComplexTextNode>() == null : Contract.Result<IComplexTextNode>() != null);
-			if (items.Count == 0)
+		public static IComplexTextNode ConvertToSingleComplexNode(IList<ParsedXmlNodeBase> items) {
+			if (items == null || items.Count == 0)
 				return null;
 			if (items.Count == 1)
 				return Convert(items[0]);

@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using DandyDoc.Overlays.XmlDoc;
+using DandyDoc.SimpleModels.ComplexText;
 using DandyDoc.SimpleModels.Contracts;
 using Mono.Cecil;
 
@@ -59,6 +60,7 @@ namespace DandyDoc.SimpleModels
 		private readonly Lazy<ISimpleModelMembersCollection> _members;
 		private readonly Lazy<ReadOnlyCollection<IFlairTag>> _flair;
 		private readonly Lazy<InheritanceData> _inheritanceData;
+		private readonly Lazy<ReadOnlyCollection<IGenericParameterSimpleModel>> _genericParameters;
 
 		public TypeSimpleModel(TypeDefinition definition, IAssemblySimpleModel assemblyModel)
 			: base(definition, assemblyModel)
@@ -68,6 +70,46 @@ namespace DandyDoc.SimpleModels
 			_members = new Lazy<ISimpleModelMembersCollection>(() => ContainingAssembly.GetMembers(this), true);
 			_flair = new Lazy<ReadOnlyCollection<IFlairTag>>(CreateFlairTags, true);
 			_inheritanceData = new Lazy<InheritanceData>(() => new InheritanceData(Definition, x => NestedTypeDisplayNameOverlay.GetDisplayName(x)), true);
+			_genericParameters = new Lazy<ReadOnlyCollection<IGenericParameterSimpleModel>>(CreateGenericParameters, true);
+		}
+
+		private ReadOnlyCollection<IGenericParameterSimpleModel> CreateGenericParameters(){
+			var results = new List<IGenericParameterSimpleModel>();
+			if (Definition.HasGenericParameters){
+				var xmlDocs = TypeXmlDocs;
+				foreach (var genericParameterDefinition in Definition.GenericParameters){
+					Contract.Assume(!String.IsNullOrEmpty(genericParameterDefinition.Name));
+					IComplexTextNode summary = null;
+					if (null != xmlDocs){
+						var summaryParsedXml = xmlDocs.DocsForTypeparam(genericParameterDefinition.Name);
+						if (null != summaryParsedXml && summaryParsedXml.Children.Count > 0){
+							summary = ParsedXmlDocComplexTextNode.ConvertToSingleComplexNode(summaryParsedXml.Children)
+								?? ParsedXmlDocComplexTextNode.Convert(summaryParsedXml);
+						}else if (null != summaryParsedXml){
+							summary = ParsedXmlDocComplexTextNode.Convert(summaryParsedXml);
+						}
+					}
+
+					var constraints = new List<IGenericParameterConstraint>();
+					if(genericParameterDefinition.HasNotNullableValueTypeConstraint)
+						constraints.Add(new ValueTypeGenericConstraint());
+					else if(genericParameterDefinition.HasReferenceTypeConstraint)
+						constraints.Add(new ReferenceTypeGenericConstraint());
+
+					var constraintReferenceTypes = (IEnumerable<TypeReference>)genericParameterDefinition.Constraints;
+					if(genericParameterDefinition.HasNotNullableValueTypeConstraint)
+						constraintReferenceTypes = constraintReferenceTypes.Where(x => x.FullName != "System.ValueType");
+					var pointerConstraints = constraintReferenceTypes
+						.Select(x => new MemberPointerGenericConstraint(new ReferenceSimpleMemberPointer(NestedTypeDisplayNameOverlay.GetDisplayName(x),x)));
+					constraints.AddRange(pointerConstraints);
+
+					if (genericParameterDefinition.HasDefaultConstructorConstraint && !genericParameterDefinition.HasNotNullableValueTypeConstraint)
+						constraints.Add(new DefaultConstructorGenericConstraint());
+
+					results.Add(new DefinitionGenericParameterSimpleModel(genericParameterDefinition, summary, constraints));
+				}
+			}
+			return new ReadOnlyCollection<IGenericParameterSimpleModel>(results);
 		}
 
 		private ReadOnlyCollection<IFlairTag> CreateFlairTags(){
@@ -127,6 +169,8 @@ namespace DandyDoc.SimpleModels
 			}
 		}
 
+		public bool IsEnum { get { return Definition.IsEnum; } }
+
 		public IList<ITypeSimpleModel> NestedTypes { get { return Members.NestedTypes; } }
 
 		public IList<IDelegateSimpleModel> NestedDelegates { get { return Members.NestedDelegates; } }
@@ -152,6 +196,10 @@ namespace DandyDoc.SimpleModels
 		public IList<ISimpleMemberPointerModel> DirectInterfaces { get { return _inheritanceData.Value.DirectImplementedInterfaces; } }
 
 		public override IList<IFlairTag> FlairTags { get { return _flair.Value; } }
+
+		public bool HasGenericParameters { get { return GenericParameters.Count > 0; } }
+
+		public IList<IGenericParameterSimpleModel> GenericParameters { get { return _genericParameters.Value; } }
 
 	}
 }

@@ -89,7 +89,7 @@ namespace DandyDoc.Overlays.XmlDoc
 		public string PrefixXml{
 			get {
 				var outer = Node.OuterXml;
-				var innerIndex = outer.IndexOf(Node.InnerXml, StringComparison.OrdinalIgnoreCase);
+				var innerIndex = outer.IndexOf(Node.InnerXml, StringComparison.Ordinal);
 				if (innerIndex <= 0)
 					return String.Empty;
 				return outer.Substring(0, innerIndex);
@@ -102,7 +102,7 @@ namespace DandyDoc.Overlays.XmlDoc
 				var inner = Node.InnerXml;
 				if (String.IsNullOrEmpty(inner))
 					return outer;
-				var innerIndex = outer.IndexOf(inner, StringComparison.OrdinalIgnoreCase);
+				var innerIndex = outer.IndexOf(inner, StringComparison.Ordinal);
 				if (innerIndex < 0)
 					return String.Empty;
 				return outer.Substring(innerIndex + inner.Length);

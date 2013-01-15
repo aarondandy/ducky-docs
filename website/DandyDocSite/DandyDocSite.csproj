@@ -243,6 +243,15 @@
   <ItemGroup>
     <Content Include="Views\Docs\Api\Partials\TypeReferenceList.cshtml" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Docs\Api\Partials\ComplexTextRenderDescriptionList.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Docs\Api\Enum.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Docs\Api\Partials\GenericParameterListing.cshtml" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

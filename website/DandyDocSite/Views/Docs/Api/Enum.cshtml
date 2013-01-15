@@ -1,0 +1,9 @@
+﻿@using DandyDocSite.Models
+@model DandyDoc.SimpleModels.Contracts.ITypeSimpleModel
+@{
+	Layout = "~/Views/Docs/Api/_Layout.cshtml";
+	<section>
+		<h2>Values</h2>
+		@{ Html.RenderPartial("Api/Partials/SimpleModelTable", Model.Fields); }
+	</section>
+}

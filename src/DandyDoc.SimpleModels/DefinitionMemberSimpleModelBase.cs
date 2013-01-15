@@ -12,6 +12,7 @@ namespace DandyDoc.SimpleModels
 		{
 			Contract.Requires(definition != null);
 			Contract.Requires(declaringModel != null);
+			Contract.Requires(declaringModel.ContainingAssembly != null);
 			DeclaringModel = declaringModel;
 		}
 

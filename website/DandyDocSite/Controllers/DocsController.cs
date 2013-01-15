@@ -36,9 +36,13 @@ namespace DandyDocSite.Controllers
 			if (model is INamespaceSimpleModel)
 				return View("Api/Namespace", (INamespaceSimpleModel)model);
 			if(model is IDelegateSimpleModel)
-				throw new NotImplementedException();
-			if (model is ITypeSimpleModel)
-				return View("Api/Type", (ITypeSimpleModel)model);
+				return View("Api/Delegate", (IDelegateSimpleModel)model);
+			if (model is ITypeSimpleModel){
+				var typeModel = (ITypeSimpleModel) model;
+				if (typeModel.IsEnum)
+					return View("Api/Enum", typeModel);
+				return View("Api/Type", typeModel);
+			}
 
 			return new HttpNotFoundResult();
 		}

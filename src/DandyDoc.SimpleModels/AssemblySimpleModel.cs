@@ -273,7 +273,9 @@ namespace DandyDoc.SimpleModels
 			Contract.Requires(definition != null);
 			if (definition.Name.Length >= 2 && definition.Name[0] == '$' && definition.Name[definition.Name.Length - 1] == '$')
 				return false;
-			if (definition.IsSpecialName || definition.IsFinalizer())
+			if (!definition.IsOperatorOverload() && definition.IsSpecialName)
+				return false;
+			if (definition.IsFinalizer())
 				return false;
 			return definition.IsExternallyVisible();
 		}

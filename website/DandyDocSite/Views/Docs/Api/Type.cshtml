@@ -2,6 +2,7 @@
 @model DandyDoc.SimpleModels.Contracts.ITypeSimpleModel
 @{
 	Layout = "~/Views/Docs/Api/_Layout.cshtml";
+
 	var memberSets = new MemberSet[]{
 		MemberSet.Create("Nested Types", Model.NestedTypes),
 		MemberSet.Create("Delegates", Model.NestedDelegates),
@@ -12,29 +13,34 @@
 		MemberSet.Create("Events", Model.Events),
 		MemberSet.Create("Operators", Model.Operators)
 	}.Where(set => set.HasModels);
-}
 
-@if (Model.HasBaseChain || Model.HasDirectInterfaces){
-	<section>
-		<h2>Inheritance</h2>
-			@if (Model.HasBaseChain) {
+	if (Model.HasBaseChain || Model.HasDirectInterfaces){
+		<section>
+			<h2>Inheritance</h2>
+			@if (Model.HasBaseChain){
 				<dl>
 					<dt>Base NestedTypes</dt>
 					<dd>@{ Html.RenderPartial("Api/Partials/TypeReferenceList", Model.BaseChain); }</dd>
 				</dl>
 			}
-			@if (Model.HasDirectInterfaces) {
+			@if (Model.HasDirectInterfaces){
 				<dl>
 					<dt>Implements</dt>
 					<dd>@{ Html.RenderPartial("Api/Partials/TypeReferenceList", Model.DirectInterfaces); }</dd>
 				</dl>
 			}
-	</section>
-}
+		</section>
+	}
 
-@foreach (var memberSet in memberSets) {
-<section>
-	<h2>@memberSet.Title</h2>
-	@{Html.RenderPartial("Api/Partials/SimpleModelTable", memberSet.SimpleModels);}
-</section>
+	if (Model.HasGenericParameters){
+		<h2>Generic Parameters</h2>
+		Html.RenderPartial("Api/Partials/GenericParameterListing", Model.GenericParameters);
+	}
+
+	foreach (var memberSet in memberSets){
+		<section>
+			<h2>@memberSet.Title</h2>
+			@{ Html.RenderPartial("Api/Partials/SimpleModelTable", memberSet.SimpleModels); }
+		</section>
+	}
 }

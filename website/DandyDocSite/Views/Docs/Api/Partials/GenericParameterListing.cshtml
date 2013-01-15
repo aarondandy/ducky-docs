@@ -1,0 +1,21 @@
+﻿@model IEnumerable<DandyDoc.SimpleModels.Contracts.IGenericParameterSimpleModel>
+<dl>
+	@foreach (var p in Model) {
+		<dt>@p.DisplayName</dt>
+		<dd>@{
+			if (p.HasSummary) {<p>@{Html.RenderPartial("Api/Partials/ComplexTextRender", p.Summary);}</p>}
+			if (p.IsContravariant) {<div><i class="icon-random"></i>Contravariant: Type is used for input and can be used with a more specific type.</div>}
+			if (p.IsCovariant) {<div><i class="icon-random"></i>Covariant: Type is used for output and can be used as a more general type.</div>}
+			if (p.HasConstraints) {
+				<div>
+					Constraints:
+					<ul>
+						@foreach (var c in p.Constraints) {
+							<li>@c.DisplayName</li>
+						}
+					</ul>
+				</div>
+			}
+		}</dd>
+	}
+</dl>
