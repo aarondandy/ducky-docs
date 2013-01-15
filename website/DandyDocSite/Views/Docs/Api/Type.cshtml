@@ -4,7 +4,13 @@
 	Layout = "~/Views/Docs/Api/_Layout.cshtml";
 	var memberSets = new MemberSet[]{
 		MemberSet.Create("Nested Types", Model.NestedTypes),
-		MemberSet.Create("Delegates", Model.NestedDelegates)
+		MemberSet.Create("Delegates", Model.NestedDelegates),
+		MemberSet.Create("Constructors", Model.Constructors),
+		MemberSet.Create("Properties", Model.Properties),
+		MemberSet.Create("Fields", Model.Fields),
+		MemberSet.Create("Methods", Model.Methods),
+		MemberSet.Create("Events", Model.Events),
+		MemberSet.Create("Operators", Model.Operators)
 	}.Where(set => set.HasModels);
 }
 
@@ -13,7 +19,7 @@
 		<h2>Inheritance</h2>
 			@if (Model.HasBaseChain) {
 				<dl>
-					<dt>Base Types</dt>
+					<dt>Base NestedTypes</dt>
 					<dd>@{ Html.RenderPartial("Api/Partials/TypeReferenceList", Model.BaseChain); }</dd>
 				</dl>
 			}

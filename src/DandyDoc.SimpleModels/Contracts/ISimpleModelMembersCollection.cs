@@ -4,18 +4,13 @@ namespace DandyDoc.SimpleModels.Contracts
 {
 	public interface ISimpleModelMembersCollection
 	{
-
-		IList<ITypeSimpleModel> Types { get; }
-
-		IList<IDelegateSimpleModel> Delegates { get; }
-
-		// Methods
-
-		// Properties
-
-		// Fields
-
-		// Events
-
+		IList<ITypeSimpleModel> NestedTypes { get; }
+		IList<IDelegateSimpleModel> NestedDelegates { get; }
+		IList<IMethodSimpleModel> Constructors { get; }
+		IList<IMethodSimpleModel> Methods { get; }
+		IList<IMethodSimpleModel> Operators { get; }
+		IList<IPropertySimpleModel> Properties { get; }
+		IList<IFieldSimpleModel> Fields { get; }
+		IList<IEventSimpleModel> Events { get; }
 	}
 }

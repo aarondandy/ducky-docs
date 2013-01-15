@@ -63,9 +63,8 @@ namespace DandyDoc.SimpleModels
 		public TypeSimpleModel(TypeDefinition definition, IAssemblySimpleModel assemblyModel)
 			: base(definition, assemblyModel)
 		{
-			if (null == definition) throw new ArgumentNullException("definition");
-			if (null == assemblyModel) throw new ArgumentNullException("assemblyModel");
-			Contract.EndContractBlock();
+			Contract.Requires(definition != null);
+			Contract.Requires(assemblyModel != null);
 			_members = new Lazy<ISimpleModelMembersCollection>(() => ContainingAssembly.GetMembers(this), true);
 			_flair = new Lazy<ReadOnlyCollection<IFlairTag>>(CreateFlairTags, true);
 			_inheritanceData = new Lazy<InheritanceData>(() => new InheritanceData(Definition, x => NestedTypeDisplayNameOverlay.GetDisplayName(x)), true);
@@ -128,9 +127,21 @@ namespace DandyDoc.SimpleModels
 			}
 		}
 
-		public IList<ITypeSimpleModel> NestedTypes { get { return Members.Types; } }
+		public IList<ITypeSimpleModel> NestedTypes { get { return Members.NestedTypes; } }
 
-		public IList<IDelegateSimpleModel> NestedDelegates { get { return Members.Delegates; } }
+		public IList<IDelegateSimpleModel> NestedDelegates { get { return Members.NestedDelegates; } }
+
+		public IList<IMethodSimpleModel> Constructors { get { return Members.Constructors; } }
+
+		public IList<IMethodSimpleModel> Methods { get { return Members.Methods; } }
+
+		public IList<IMethodSimpleModel> Operators { get { return Members.Operators; } }
+
+		public IList<IPropertySimpleModel> Properties { get { return Members.Properties; } }
+
+		public IList<IFieldSimpleModel> Fields { get { return Members.Fields; } }
+
+		public IList<IEventSimpleModel> Events { get { return Members.Events; } }
 
 		public bool HasBaseChain { get { return BaseChain.Count > 0; } }
 
@@ -140,11 +151,7 @@ namespace DandyDoc.SimpleModels
 
 		public IList<ISimpleMemberPointerModel> DirectInterfaces { get { return _inheritanceData.Value.DirectImplementedInterfaces; } }
 
-		public override IList<IFlairTag> FlairTags {
-			get { return _flair.Value; }
-		}
-
-		
+		public override IList<IFlairTag> FlairTags { get { return _flair.Value; } }
 
 	}
 }

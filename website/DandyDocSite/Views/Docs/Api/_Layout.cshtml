@@ -51,9 +51,9 @@
 				@{
 					if (Model.HasSummary) {<p class="lead">@{ Html.RenderPartial("Api/Partials/ComplexTextRender", Model.Summary); }</p>}
 					if (Model.HasFlair) { Html.RenderPartial("Api/Partials/FlairTable", Model.FlairTags); }
+					if (!String.IsNullOrEmpty(Model.NamespaceName)) {<div><b>Namespace:</b> @Model.NamespaceName</div>}
+					if (Model.ContainingAssembly != null){<div><b>Assembly: </b> @Model.ContainingAssembly.ShortName (@(Model.ContainingAssembly.AssemblyFileName))</div>}
 				}
-				<div><b>Namespace:</b> @Model.NamespaceName</div>
-				<div><b>Assembly: </b> @Model.ContainingAssembly.ShortName (@(Model.ContainingAssembly.AssemblyFileName))</div>
 				@RenderBody()
 				@if (Model.HasRemarks){
 					<h2>Remarks</h2>	

@@ -94,25 +94,97 @@ namespace DandyDoc.SimpleModels
 
 			private readonly DefinitionModelCollection<TypeDefinition, ITypeSimpleModel> _typesCollection;
 			private readonly DefinitionModelCollection<TypeDefinition, IDelegateSimpleModel> _delegatesCollection;
+			private readonly DefinitionModelCollection<MethodDefinition, IMethodSimpleModel> _constructorsCollection;
+			private readonly DefinitionModelCollection<PropertyDefinition, IPropertySimpleModel> _propertiesCollection;
+			private readonly DefinitionModelCollection<FieldDefinition, IFieldSimpleModel> _fieldsCollection;
+			private readonly DefinitionModelCollection<MethodDefinition, IMethodSimpleModel> _methodsCollection;
+			private readonly DefinitionModelCollection<MethodDefinition, IMethodSimpleModel> _operatorsCollection;
+			private readonly DefinitionModelCollection<EventDefinition, IEventSimpleModel> _eventsCollection;
 
 			public SimpleModelMembersCollection(
 				DefinitionModelCollection<TypeDefinition, ITypeSimpleModel> types,
-				DefinitionModelCollection<TypeDefinition, IDelegateSimpleModel> delegates
+				DefinitionModelCollection<TypeDefinition, IDelegateSimpleModel> delegates,
+				DefinitionModelCollection<MethodDefinition, IMethodSimpleModel> constructors,
+				DefinitionModelCollection<MethodDefinition, IMethodSimpleModel> methods,
+				DefinitionModelCollection<MethodDefinition, IMethodSimpleModel> operators,
+				DefinitionModelCollection<PropertyDefinition, IPropertySimpleModel> properties,
+				DefinitionModelCollection<FieldDefinition, IFieldSimpleModel> fields,
+				DefinitionModelCollection<EventDefinition, IEventSimpleModel> events
 			){
 				Contract.Requires(types != null);
 				Contract.Requires(delegates != null);
+				Contract.Requires(constructors != null);
+				Contract.Requires(methods != null);
+				Contract.Requires(operators != null);
+				Contract.Requires(properties != null);
+				Contract.Requires(fields != null);
+				Contract.Requires(events != null);
 				_typesCollection = types;
 				_delegatesCollection = delegates;
+				_constructorsCollection = constructors;
+				_methodsCollection = methods;
+				_operatorsCollection = operators;
+				_propertiesCollection = properties;
+				_fieldsCollection = fields;
+				_eventsCollection = events;
 			}
 
-			public IList<ITypeSimpleModel> Types {
-				get { return _typesCollection.SortedModels; }
+			public IList<ITypeSimpleModel> NestedTypes {
+				get {
+					Contract.Ensures(Contract.Result<IList<ITypeSimpleModel>>() != null);
+					return _typesCollection.SortedModels;
+				}
 			}
 
-
-			public IList<IDelegateSimpleModel> Delegates {
-				get { return _delegatesCollection.SortedModels; }
+			public IList<IDelegateSimpleModel> NestedDelegates {
+				get {
+					Contract.Ensures(Contract.Result<IList<IDelegateSimpleModel>>() != null);
+					return _delegatesCollection.SortedModels;
+				}
 			}
+
+			public IList<IMethodSimpleModel> Constructors {
+				get {
+					Contract.Ensures(Contract.Result<IList<IMethodSimpleModel>>() != null);
+					return _constructorsCollection.SortedModels;
+				}
+			}
+
+			public IList<IMethodSimpleModel> Methods {
+				get {
+					Contract.Ensures(Contract.Result<IList<IMethodSimpleModel>>() != null);
+					return _methodsCollection.SortedModels;
+				}
+			}
+
+			public IList<IMethodSimpleModel> Operators {
+				get {
+					Contract.Ensures(Contract.Result<IList<IMethodSimpleModel>>() != null);
+					return _operatorsCollection.SortedModels;
+				}
+			}
+
+			public IList<IPropertySimpleModel> Properties {
+				get {
+					Contract.Ensures(Contract.Result<IList<IPropertySimpleModel>>() != null);
+					return _propertiesCollection.SortedModels;
+				}
+			}
+
+			public IList<IFieldSimpleModel> Fields {
+				get {
+					Contract.Ensures(Contract.Result<IList<IFieldSimpleModel>>() != null);
+					return _fieldsCollection.SortedModels;
+				}
+			}
+
+			public IList<IEventSimpleModel> Events {
+				get {
+					Contract.Ensures(Contract.Result<IList<IEventSimpleModel>>() != null);
+					return _eventsCollection.SortedModels;
+				}
+			}
+
 		}
 
 		private readonly Lazy<TypeDefinitionModelCollection> _types;
@@ -154,17 +226,69 @@ namespace DandyDoc.SimpleModels
 			return new TypeSimpleModel(definition, this);
 		}
 
+		private static int DefaultSimpleModelComparison(ISimpleModel a, ISimpleModel b) {
+			if (a == null)
+				return b == null ? 0 : -1;
+			if (b == null)
+				return 1;
+			return StringComparer.OrdinalIgnoreCase.Compare(a.ShortName, b.ShortName);
+		}
+
+		protected virtual bool PropertyFilter(PropertyDefinition definition) {
+			Contract.Requires(definition != null);
+			if (definition.IsSpecialName)
+				return false;
+			return definition.IsExternallyVisible();
+		}
+
+		protected virtual int PropertyModelComparison(IPropertySimpleModel a, IPropertySimpleModel b) {
+			return DefaultSimpleModelComparison(a, b);
+		}
+
+		protected virtual bool FieldFilter(FieldDefinition definition) {
+			Contract.Requires(definition != null);
+			if (definition.Name.Length >= 2 && definition.Name[0] == '$' && definition.Name[definition.Name.Length - 1] == '$')
+				return false;
+			if (definition.IsSpecialName)
+				return false;
+			return definition.IsExternallyVisible();
+		}
+
+		protected virtual int FieldModelComparison(IFieldSimpleModel a, IFieldSimpleModel b) {
+			return DefaultSimpleModelComparison(a, b);
+		}
+
+		protected virtual bool EventFilter(EventDefinition definition) {
+			Contract.Requires(definition != null);
+			if (definition.IsSpecialName)
+				return false;
+			return definition.IsExternallyVisible();
+		}
+
+		protected virtual int EventModelComparison(IEventSimpleModel a, IEventSimpleModel b) {
+			return DefaultSimpleModelComparison(a, b);
+		}
+
+		protected virtual bool MethodFilter(MethodDefinition definition) {
+			Contract.Requires(definition != null);
+			if (definition.Name.Length >= 2 && definition.Name[0] == '$' && definition.Name[definition.Name.Length - 1] == '$')
+				return false;
+			if (definition.IsSpecialName || definition.IsFinalizer())
+				return false;
+			return definition.IsExternallyVisible();
+		}
+
+		protected virtual int MethodModelComparison(IMethodSimpleModel a, IMethodSimpleModel b) {
+			return DefaultSimpleModelComparison(a, b);
+		}
+
 		protected virtual bool TypeFilter(TypeDefinition definition) {
 			Contract.Requires(definition != null);
 			return definition.IsExternallyVisible();
 		}
 
 		protected virtual int TypeModelComparison(ITypeSimpleModel a, ITypeSimpleModel b){
-			if (a == null)
-				return b == null ? 0 : -1;
-			if (b == null)
-				return 1;
-			return StringComparer.OrdinalIgnoreCase.Compare(a.ShortName, b.ShortName);
+			return DefaultSimpleModelComparison(a, b);
 		}
 
 		private ISimpleModel GetModelFromCrefCore(string cref) {
@@ -209,18 +333,31 @@ namespace DandyDoc.SimpleModels
 				}
 			}
 
-			var typeDefinitionModelCollection = new TypeDefinitionModelCollection(
-				nestedTypes,
-				d => _types.Value.GetModel(d),
-				TypeModelComparison);
-			var delegateDefinitionModelCollection = new DefinitionModelCollection<TypeDefinition,IDelegateSimpleModel>(
-				nestedDelegates,
-				d => (IDelegateSimpleModel)(_types.Value.GetModel(d)),
-				TypeModelComparison);
+			var constructors = new List<MethodDefinition>();
+			var methods = new List<MethodDefinition>();
+			var operators = new List<MethodDefinition>();
+			if (definition.HasMethods) {
+				foreach (var methodDefinition in definition.Methods.Where(MethodFilter)) {
+					var target =
+						methodDefinition.IsConstructor
+						? constructors
+						: methodDefinition.IsOperatorOverload()
+						? operators
+						: methods;
+					target.Add(methodDefinition);
+				}
+			}
 
 			return new SimpleModelMembersCollection(
-				typeDefinitionModelCollection,
-				delegateDefinitionModelCollection);
+				new TypeDefinitionModelCollection(nestedTypes,d => _types.Value.GetModel(d),TypeModelComparison),
+				new DefinitionModelCollection<TypeDefinition, IDelegateSimpleModel>(nestedDelegates, d => (IDelegateSimpleModel)(_types.Value.GetModel(d)), TypeModelComparison),
+				new DefinitionModelCollection<MethodDefinition, IMethodSimpleModel>(constructors, d => new MethodSimpleModel(d, model), MethodModelComparison),
+				new DefinitionModelCollection<MethodDefinition, IMethodSimpleModel>(methods, d => new MethodSimpleModel(d, model), MethodModelComparison),
+				new DefinitionModelCollection<MethodDefinition, IMethodSimpleModel>(operators, d => new MethodSimpleModel(d, model), MethodModelComparison),
+				new DefinitionModelCollection<PropertyDefinition, IPropertySimpleModel>(definition.Properties.Where(PropertyFilter), d => new PropertySimpleModel(d, model), PropertyModelComparison),
+				new DefinitionModelCollection<FieldDefinition, IFieldSimpleModel>(definition.Fields.Where(FieldFilter), d => new FieldSimpleModel(d, model), FieldModelComparison),
+				new DefinitionModelCollection<EventDefinition, IEventSimpleModel>(definition.Events.Where(EventFilter), d => new EventSimpleModel(d, model), EventModelComparison)
+			);
 		}
 
 		// ------------ Public access

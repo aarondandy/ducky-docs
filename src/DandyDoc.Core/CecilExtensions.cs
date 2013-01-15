@@ -280,6 +280,12 @@ namespace DandyDoc
 			return OperatorMethodNames.Contains(methodDefinition.Name);
 		}
 
+		public static bool IsItemIndexerProperty(this PropertyDefinition definition) {
+			if(null == definition) throw new ArgumentNullException("definition");
+			Contract.EndContractBlock();
+			return definition.HasParameters && "Item".Equals(definition.Name);
+		}
+
 		public static bool IsFinalizer(this MethodDefinition methodDefinition){
 			if (null == methodDefinition) throw new ArgumentNullException("methodDefinition");
 			Contract.EndContractBlock();

@@ -2,12 +2,8 @@
 
 namespace DandyDoc.SimpleModels.Contracts
 {
-	public interface ITypeSimpleModel : ISimpleModel
+	public interface ITypeSimpleModel : ISimpleModel, ISimpleModelMembersCollection
 	{
-
-		IList<ITypeSimpleModel> NestedTypes { get; }
-
-		IList<IDelegateSimpleModel> NestedDelegates { get; }
 
 		bool HasBaseChain { get; }
 
