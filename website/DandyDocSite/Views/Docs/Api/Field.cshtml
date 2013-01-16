@@ -1,0 +1,4 @@
+﻿@model DandyDoc.SimpleModels.Contracts.IFieldSimpleModel
+@{ Layout = "~/Views/Docs/Api/_Layout.cshtml"; }
+<div>Type: @{Html.RenderPartial("Api/Partials/TypeLink", Model.FieldType);}</div>
+@if (Model.HasValueDescription) {Html.RenderPartial("Api/Partials/ComplexTextRender", Model.ValueDescription);}	

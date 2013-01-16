@@ -30,21 +30,27 @@ namespace DandyDocSite.Controllers
 			var repository = new SimpleModelRepository(assemblies);
 
 			var model = repository.GetModelFromCref(cref);
-
-			if(null == model)
+			if (model == null)
 				return new HttpNotFoundResult();
+
+			if (model is ITypeSimpleModel){
+				if (model is IDelegateSimpleModel)
+					return View("Api/Delegate", (IDelegateSimpleModel)model);
+				
+				var typeModel = (ITypeSimpleModel) model;
+				return View(typeModel.IsEnum ? "Api/Enum" : "Api/Type", typeModel);
+			}
+
 			if (model is INamespaceSimpleModel)
 				return View("Api/Namespace", (INamespaceSimpleModel)model);
-			if(model is IDelegateSimpleModel)
-				return View("Api/Delegate", (IDelegateSimpleModel)model);
-			if (model is ITypeSimpleModel){
-				var typeModel = (ITypeSimpleModel) model;
-				if (typeModel.IsEnum)
-					return View("Api/Enum", typeModel);
-				return View("Api/Type", typeModel);
-			}
 			if (model is IMethodSimpleModel)
-				return View("Api/Method", (IMethodSimpleModel) model);
+				return View("Api/Method", (IMethodSimpleModel)model);
+			if (model is IFieldSimpleModel)
+				return View("Api/Field", (IFieldSimpleModel)model);
+			if (model is IPropertySimpleModel)
+				return View("Api/Property", (IPropertySimpleModel)model);
+			if (model is IEventSimpleModel)
+				return View("Api/Event", (IEventSimpleModel)model);
 
 			return new HttpNotFoundResult();
 		}

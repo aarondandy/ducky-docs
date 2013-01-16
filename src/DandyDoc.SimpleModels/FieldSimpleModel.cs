@@ -22,5 +22,19 @@ namespace DandyDoc.SimpleModels
 			}
 		}
 
+		public ISimpleMemberPointerModel FieldType {
+			get {
+				var defMemberReference = (MemberReference)Definition;
+				return new ReferenceSimpleMemberPointer(FullTypeDisplayNameOverlay.GetDisplayName(defMemberReference), defMemberReference);
+			}
+		}
+
+		public bool HasValueDescription {
+			get { return ValueDescription != null; }
+		}
+
+		public IComplexTextNode ValueDescription {
+			get { throw new System.NotImplementedException(); }
+		}
 	}
 }
