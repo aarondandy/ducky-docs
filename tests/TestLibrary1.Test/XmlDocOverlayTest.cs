@@ -65,7 +65,8 @@ namespace TestLibrary1.Test
 			var type = CrefOverlay.GetTypeDefinition("T:TestLibrary1.Class1.NoRemarks");
 			var docs = XmlDocOverlay.GetDocumentation(type);
 			Assert.IsNotNull(docs);
-			Assert.IsNull(docs.Remarks);
+			Assert.IsNotNull(docs.Remarks);
+			Assert.IsEmpty(docs.Remarks);
 		}
 
 		[Test]
@@ -79,7 +80,8 @@ namespace TestLibrary1.Test
 		public void read_summary_and_blank_remarks_from_static_constructor() {
 			var ctor = CrefOverlay.GetMemberDefinition("M:TestLibrary1.Class1.#cctor");
 			var docs = XmlDocOverlay.GetDocumentation(ctor);
-			Assert.IsNull(docs.Remarks);
+			Assert.IsNotNull(docs.Remarks);
+			Assert.IsEmpty(docs.Remarks);
 			Assert.IsNotNull(docs.Summary);
 			Assert.AreEqual("The static constructor.", docs.Summary.Node.InnerXml);
 		}

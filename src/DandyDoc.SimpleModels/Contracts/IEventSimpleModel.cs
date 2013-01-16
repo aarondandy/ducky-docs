@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DandyDoc.SimpleModels.Contracts
+﻿namespace DandyDoc.SimpleModels.Contracts
 {
 	public interface IEventSimpleModel : ISimpleModel
 	{
+
+		string SubTitle { get;  }
+
+		ISimpleMemberPointerModel DelegateType { get; }
+
 	}
 }

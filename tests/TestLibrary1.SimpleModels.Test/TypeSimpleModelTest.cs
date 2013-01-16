@@ -51,7 +51,7 @@ namespace TestLibrary1.SimpleModels.Test
 		[Test]
 		public void nested_class_display_name() {
 			var type = (TypeSimpleModel)GetTypeModelFromCref("TestLibrary1.Class1.Inner");
-			Assert.AreEqual("Class1.Inner", type.ShortName);
+			Assert.AreEqual("Inner", type.ShortName);
 		}
 
 		[Test]

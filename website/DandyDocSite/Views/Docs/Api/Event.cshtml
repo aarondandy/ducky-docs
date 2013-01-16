@@ -1,5 +1,6 @@
 ﻿@model DandyDoc.SimpleModels.Contracts.IEventSimpleModel
-@{
-	Layout = "~/Views/Docs/Api/_Layout.cshtml";
-	// TODO: delegate type
-}
+@{Layout = "~/Views/Docs/Api/_Layout.cshtml";}
+<dl>
+	<dt>Type</dt>
+	<dd>@{Html.RenderPartial("Api/Partials/TypeLink", Model.DelegateType);}</dd>
+</dl>

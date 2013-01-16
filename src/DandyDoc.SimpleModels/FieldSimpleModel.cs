@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics.Contracts;
+using DandyDoc.Overlays.XmlDoc;
+using DandyDoc.SimpleModels.ComplexText;
 using DandyDoc.SimpleModels.Contracts;
 using Mono.Cecil;
 
@@ -22,10 +24,11 @@ namespace DandyDoc.SimpleModels
 			}
 		}
 
+		protected FieldDefinitionXmlDoc FieldXmlDocs { get { return DefinitionXmlDocs as FieldDefinitionXmlDoc; } }
+
 		public ISimpleMemberPointerModel FieldType {
 			get {
-				var defMemberReference = (MemberReference)Definition;
-				return new ReferenceSimpleMemberPointer(FullTypeDisplayNameOverlay.GetDisplayName(defMemberReference), defMemberReference);
+				return new ReferenceSimpleMemberPointer(FullTypeDisplayNameOverlay.GetDisplayName(Definition.FieldType), Definition.FieldType);
 			}
 		}
 
@@ -34,7 +37,14 @@ namespace DandyDoc.SimpleModels
 		}
 
 		public IComplexTextNode ValueDescription {
-			get { throw new System.NotImplementedException(); }
+			get { var xmlDoc = FieldXmlDocs;
+				if (xmlDoc == null)
+					return null;
+				var valueDoc = xmlDoc.ValueDoc;
+				if (null == valueDoc)
+					return null;
+				return ParsedXmlDocComplexTextNode.ConvertToSingleComplexNode(valueDoc.Children);
+			}
 		}
 	}
 }

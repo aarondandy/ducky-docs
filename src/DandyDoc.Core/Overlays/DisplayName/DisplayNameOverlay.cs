@@ -159,12 +159,20 @@ namespace DandyDoc.Overlays.DisplayName
 			if (reference.IsGenericParameter)
 				return reference.Name;
 
-			var fullTypeName = ShowTypeNameForMembers
-				? GetNestedTypeDisplayName(ref reference)
-				: GetTypeDisplayName(reference);
+			var rootTypeReference = reference;
+			string fullTypeName;
+			if (ShowTypeNameForMembers){
+				fullTypeName = GetNestedTypeDisplayName(ref rootTypeReference);
+			}
+			else{
+				fullTypeName = GetTypeDisplayName(reference);
+				while (rootTypeReference.DeclaringType != null){
+					rootTypeReference = rootTypeReference.DeclaringType;
+				}
+			}
 
-			if (IncludeNamespaceForTypes && !String.IsNullOrEmpty(reference.Namespace))
-				fullTypeName = String.Concat(reference.Namespace, '.', fullTypeName);
+			if (IncludeNamespaceForTypes && !String.IsNullOrEmpty(rootTypeReference.Namespace))
+				fullTypeName = String.Concat(rootTypeReference.Namespace, '.', fullTypeName);
 
 			var definition = reference as TypeDefinition;
 			if (null != definition) {

@@ -134,7 +134,7 @@ namespace DandyDoc.SimpleModels
 
 		public override string Title {
 			get{
-				Contract.Ensures(Contract.Result<string>() != null);
+				Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<String>()));
 				var nameGenerator = Definition.IsNested ? NestedTypeDisplayNameOverlay : RegularTypeDisplayNameOverlay;
 				return nameGenerator.GetDisplayName(Definition);
 			}

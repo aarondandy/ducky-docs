@@ -10,5 +10,9 @@ namespace DandyDoc.SimpleModels.Contracts
 
 		IList<IParameterSimpleModel> Parameters { get; }
 
+		bool HasReturn { get; }
+
+		IParameterSimpleModel Return { get; }
+
 	}
 }

@@ -1,4 +1,6 @@
-﻿namespace DandyDoc.SimpleModels.Contracts
+﻿using System.Collections.Generic;
+
+namespace DandyDoc.SimpleModels.Contracts
 {
 	public interface IParameterSimpleModel
 	{
@@ -10,6 +12,10 @@
 		IComplexTextNode Summary { get; }
 
 		ISimpleMemberPointerModel Type { get; }
+
+		bool HasFlair { get; }
+
+		IList<IFlairTag> Flair { get; }
 
 	}
 }

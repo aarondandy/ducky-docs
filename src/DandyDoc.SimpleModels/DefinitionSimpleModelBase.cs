@@ -121,7 +121,7 @@ namespace DandyDoc.SimpleModels
 		public virtual string ShortName{
 			get{
 				Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<String>()));
-				return RegularTypeDisplayNameOverlay.GetDisplayName((MemberReference) Definition);
+				return RegularTypeDisplayNameOverlay.GetDisplayName((MemberReference)Definition);
 			}
 		}
 

@@ -318,6 +318,12 @@ namespace DandyDoc.SimpleModels
 						?? membersData.ConstructorsCollection.GetModel(methodDefinition)
 						?? membersData.OperatorsCollection.GetModel(methodDefinition);
 				}
+				if (memberDefinition is FieldDefinition){
+					return membersData.FieldsCollection.GetModel((FieldDefinition) memberDefinition);
+				}
+				if (memberDefinition is EventDefinition){
+					return membersData.EventsCollection.GetModel((EventDefinition) memberDefinition);
+				}
 			}
 
 			throw new NotSupportedException();

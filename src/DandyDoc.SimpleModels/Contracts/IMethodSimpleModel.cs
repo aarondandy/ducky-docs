@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace DandyDoc.SimpleModels.Contracts
 {
@@ -16,6 +12,14 @@ namespace DandyDoc.SimpleModels.Contracts
 		bool HasParameters { get; }
 
 		IList<IParameterSimpleModel> Parameters { get; }
+
+		bool HasReturn { get; }
+
+		IParameterSimpleModel Return { get; }
+
+		bool HasExceptions { get; }
+
+		IList<IExceptionSimpleModel> Exceptions { get; }
 
 	}
 }

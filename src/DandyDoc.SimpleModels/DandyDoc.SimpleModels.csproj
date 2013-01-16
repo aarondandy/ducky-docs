@@ -141,6 +141,7 @@
     <Compile Include="Contracts\IComplexTextNode.cs" />
     <Compile Include="Contracts\IDelegateSimpleModel.cs" />
     <Compile Include="Contracts\IEventSimpleModel.cs" />
+    <Compile Include="Contracts\IExceptionSimpleModel.cs" />
     <Compile Include="Contracts\IFieldSimpleModel.cs" />
     <Compile Include="Contracts\IFlairTag.cs" />
     <Compile Include="Contracts\IGenericParameterConstraint.cs" />
@@ -166,9 +167,11 @@
     <Compile Include="GenericParameterConstraints.cs" />
     <Compile Include="MethodSimpleModel.cs" />
     <Compile Include="NamespaceSimpleModel.cs" />
+    <Compile Include="ExceptionSimpleModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertySimpleModel.cs" />
     <Compile Include="ReferenceSimpleMemberPointer.cs" />
+    <Compile Include="ReturnSimpleModel.cs" />
     <Compile Include="SimpleFlairTag.cs" />
     <Compile Include="SimpleModelRepository.cs" />
     <Compile Include="TypeSimpleModel.cs" />

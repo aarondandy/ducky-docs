@@ -3,11 +3,25 @@
 	Layout = "~/Views/Docs/Api/_Layout.cshtml";
 
 	if (Model.HasGenericParameters){
-		<h2>Generic Parameters</h2>
-		Html.RenderPartial("Api/Partials/GenericParameterListing", Model.GenericParameters);
+		<section>
+			<h2>Generic Parameters</h2>
+			@{Html.RenderPartial("Api/Partials/GenericParameterListing", Model.GenericParameters);}
+		</section>	
 	}
 	
-	// TODO: parameters
-	// TODO: returns
+	if (Model.HasParameters){
+		<section>
+			<h2>Parameters</h2>
+			@{Html.RenderPartial("Api/Partials/ParameterList", Model.Parameters);}
+		</section>
+	}
+
+	if (Model.HasReturn){
+		<section>
+			<h2>Returns</h2>
+			@{Html.RenderPartial("Api/Partials/ParameterDetails", Model.Return);}
+		</section>
+	}
+		
 	// TODO: exceptions
 }

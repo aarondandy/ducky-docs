@@ -14,9 +14,11 @@ namespace DandyDoc.SimpleModels
 			Contract.Requires(declaringModel != null);
 		}
 
-		public override string SubTitle {
+		public override string SubTitle { get { return "Event"; } }
+
+		public ISimpleMemberPointerModel DelegateType {
 			get {
-				return "Event";
+				return new ReferenceSimpleMemberPointer(FullTypeDisplayNameOverlay.GetDisplayName(Definition.EventType), Definition.EventType);
 			}
 		}
 

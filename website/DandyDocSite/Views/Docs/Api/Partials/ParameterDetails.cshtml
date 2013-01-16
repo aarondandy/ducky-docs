@@ -1,0 +1,12 @@
+﻿@model DandyDoc.SimpleModels.Contracts.IParameterSimpleModel
+@if (Model.HasSummary) {<div>@{ Html.RenderPartial("Api/Partials/ComplexTextRender", Model.Summary); }</div>}
+<div>Type: @Model.Type.MemberDisplayName</div>
+@{
+	if (Model.HasFlair) {
+		<ul class="unstyled">
+			@foreach (var f in Model.Flair) {
+				<li>@{Html.RenderPartial("Api/Partials/FlairIcon", f);} @f.Description</li>
+			}
+		</ul>
+	}
+}

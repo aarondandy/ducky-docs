@@ -56,20 +56,24 @@
 				}
 				@RenderBody()
 				@if (Model.HasRemarks){
-					<h2>Remarks</h2>	
-					foreach (var section in Model.Remarks){
-						Html.RenderPartial("Api/Partials/ComplexTextRender", section);
-					}
+					<section>
+						<h2>Remarks</h2>
+						@foreach (var section in Model.Remarks){
+							Html.RenderPartial("Api/Partials/ComplexTextRender", section);
+						}
+					</section>
 				}
 				@if (Model.HasExamples){
-					<h2>Examples</h2>
-					foreach (var section in Model.Examples){
-						Html.RenderPartial("Api/Partials/ComplexTextRender", section);
-					}
+					<section>
+						<h2>Examples</h2>
+						@foreach (var section in Model.Examples){
+							Html.RenderPartial("Api/Partials/ComplexTextRender", section);
+						}
+					</section>
 				}
 				@if (Model.HasSeeAlso){
-					<h2>See Also</h2>
 					<section>
+						<h2>See Also</h2>
 						<ul>
 							@foreach (var section in Model.SeeAlso){
 								<li>@{Html.RenderPartial("Api/Partials/ComplexTextRender", section);}</li>
