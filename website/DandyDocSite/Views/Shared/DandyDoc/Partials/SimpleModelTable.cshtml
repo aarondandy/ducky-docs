@@ -1,7 +1,6 @@
 ﻿@using DandyDoc.SimpleModels.Contracts;
 @model IEnumerable<ISimpleModel>
 @functions{
-
 	public static bool IsForSummary(IFlairTag flair){
 		if (null == flair)
 			return false;
@@ -16,15 +15,15 @@
 	<thead><tr><th><i class="icon-info-sign"></i></th><th>Name</th><th>Description</th></tr></thead>
 	<tbody>
 		@foreach (var member in Model) {
-			<tr>
-				<td>@{foreach (var flair in member.FlairTags.Where(IsForSummary)) { Html.RenderPartial("Api/Partials/FlairIcon", flair); }}</td>
-				<td>@member.ShortName</td>
-				<td>
-					@if (member.HasSummary){
-						Html.RenderPartial("Api/Partials/ComplexTextRender", member.Summary);
-					}
-				</td>
-			</tr>
+		<tr>
+			<td>@{foreach (var flair in member.FlairTags.Where(IsForSummary)) { Html.RenderPartial("DandyDoc/Partials/FlairIcon", flair); }}</td>
+			<td>@member.ShortName</td>
+			<td>
+				@if (member.HasSummary){
+					Html.RenderPartial("DandyDoc/Partials/ComplexTextRender", member.Summary);
+				}
+			</td>
+		</tr>
 		}
 	</tbody>
 </table>

@@ -1,7 +1,6 @@
 ﻿@using System.Text.RegularExpressions
 @using DandyDoc.SimpleModels
-@using DandyDoc.SimpleModels.Contracts
-@model ISimpleModel
+@model DandyDoc.SimpleModels.Contracts.ISimpleModel
 @functions{
 	static readonly Regex TitleSplitRegex = new Regex(@"(?<=[.,;\<\(\[])");
 	static string[] TitleParts(string title){
@@ -10,13 +9,13 @@
 }
 @{
 	Layout = "~/Views/Shared/_Layout.cshtml";
+
 	ViewBag.Title = "Dandy Doc";
 	ViewBag.SubTitle = "API Reference";
 	ViewBag.EntityTitle = Model.Title;
 	ViewBag.EntitySubTitle = Model.SubTitle;	
 	var navModel = ViewBag.TypeNavigationViewModel as SimpleModelRepository;
-	var pageModel = Model as ISimpleModel;
-	var modelNamespaceName = null == pageModel ? null : pageModel.NamespaceName;
+	var modelNamespaceName = Model.NamespaceName;
 }
 <div class="container">
 	<div class="row">
@@ -28,14 +27,14 @@
 						var varTypeListId = "typelist-" + ns.FullName.Replace(".","-");
 						<li>
 							<span>
-								<a href="@Url.Action("Api","Docs",new{cref=ns.CRef})" class="namepsace-nav-icon"><i class="icon-gift"></i></a>
-								<a href="#" data-toggle="collapse" data-target="#@varTypeListId">@foreach (var part in TitleParts(ns.ShortName)) {<span>@part</span>}</a>
+								<a href="#" ><i class="icon-gift"></i></a>
+								<a href="#" data-toggle="collapse" data-target="#@varTypeListId" onclick="return false;">@foreach (var part in TitleParts(ns.ShortName)) {<span>@part</span>}</a>
 							</span>
 							<ul class="nav nav-list collapse @if (isCurrentNamespace){<text>in</text>}" id="@varTypeListId">
 								@foreach (var type in ns.Types) {
 									<li>
 										<span>
-											<a href="@Url.Action("Api","Docs",new{cref=type.CRef})"><i class="icon-cog"></i>@foreach (var part in TitleParts(type.ShortName)) {<span>@part</span>}</a>
+											<a href="#"><i class="icon-cog"></i>@foreach (var part in TitleParts(type.ShortName)) {<span>@part</span>}</a>
 										</span>
 									</li> 
 								}
@@ -49,37 +48,43 @@
 			<section>
 				<h1>@{foreach (var part in TitleParts(ViewBag.EntityTitle)) {<span>@part</span>} if (!String.IsNullOrEmpty(ViewBag.EntitySubTitle)) { <small>@ViewBag.EntitySubTitle</small>}}</h1>
 				@{
-					if (Model.HasSummary) {<p class="lead">@{ Html.RenderPartial("Api/Partials/ComplexTextRender", Model.Summary); }</p>}
-					if (Model.HasFlair) { Html.RenderPartial("Api/Partials/FlairTable", Model.FlairTags); }
-					if (!String.IsNullOrEmpty(Model.NamespaceName)) {<div><b>Namespace:</b> @Model.NamespaceName</div>}
-					if (Model.ContainingAssembly != null){<div><b>Assembly: </b> @Model.ContainingAssembly.ShortName (@(Model.ContainingAssembly.AssemblyFileName))</div>}
+					if (Model.HasSummary) {
+					<p class="lead">@{ Html.RenderPartial("DandyDoc/Partials/ComplexTextRender", Model.Summary); }</p>
+					}
+					if (Model.HasFlair) { Html.RenderPartial("DandyDoc/Partials/FlairTable", Model.FlairTags); }
+					if (!String.IsNullOrEmpty(Model.NamespaceName)) {
+					<div><b>Namespace:</b> @Model.NamespaceName</div>
+					}
+					if (Model.ContainingAssembly != null) {
+					<div><b>Assembly: </b> @Model.ContainingAssembly.ShortName (@(Model.ContainingAssembly.AssemblyFileName))</div>
+					}
 				}
 				@RenderBody()
 				@if (Model.HasRemarks){
-					<section>
-						<h2>Remarks</h2>
-						@foreach (var section in Model.Remarks){
-							Html.RenderPartial("Api/Partials/ComplexTextRender", section);
-						}
-					</section>
+				<section>
+					<h2>Remarks</h2>
+					@foreach (var section in Model.Remarks){
+						Html.RenderPartial("DandyDoc/Partials/ComplexTextRender", section);
+					}
+				</section>
 				}
 				@if (Model.HasExamples){
-					<section>
-						<h2>Examples</h2>
-						@foreach (var section in Model.Examples){
-							Html.RenderPartial("Api/Partials/ComplexTextRender", section);
-						}
-					</section>
+				<section>
+					<h2>Examples</h2>
+					@foreach (var section in Model.Examples){
+						Html.RenderPartial("DandyDoc/Partials/ComplexTextRender", section);
+					}
+				</section>
 				}
 				@if (Model.HasSeeAlso){
-					<section>
-						<h2>See Also</h2>
-						<ul>
-							@foreach (var section in Model.SeeAlso){
-								<li>@{Html.RenderPartial("Api/Partials/ComplexTextRender", section);}</li>
-							}
-						</ul>
-					</section>
+				<section>
+					<h2>See Also</h2>
+					<ul>
+						@foreach (var section in Model.SeeAlso){
+							<li>@{Html.RenderPartial("DandyDoc/Partials/ComplexTextRender", section);}</li>
+						}
+					</ul>
+				</section>
 				}
 			</section>
 		</div>

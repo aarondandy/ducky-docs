@@ -7,7 +7,18 @@ namespace DandyDoc.SimpleModels
 	public class CrefSimpleMemberPointer : ISimpleMemberPointerModel
 	{
 
-		public CrefSimpleMemberPointer(string displayName, string cRef){
+		private static string StripCrefTypePrefix(string cRef) {
+			if (String.IsNullOrEmpty(cRef))
+				return cRef;
+			if (cRef.Length >= 2 && cRef[1] == ':')
+				return cRef.Substring(2);
+			return cRef;
+		}
+
+		public CrefSimpleMemberPointer(string cRef)
+			: this(cRef, StripCrefTypePrefix(cRef)) { }
+
+		public CrefSimpleMemberPointer(string cRef, string displayName) {
 			if(String.IsNullOrEmpty(displayName)) throw new ArgumentException("Display name is required.");
 			Contract.EndContractBlock();
 			MemberDisplayName = displayName;

@@ -1,6 +1,6 @@
 ﻿@model DandyDoc.SimpleModels.Contracts.IEventSimpleModel
-@{Layout = "~/Views/Docs/Api/_Layout.cshtml";}
+@{Layout = "./_Layout.cshtml";}
 <dl>
 	<dt>Type</dt>
-	<dd>@{Html.RenderPartial("Api/Partials/TypeLink", Model.DelegateType);}</dd>
+	<dd>@{Html.RenderPartial("DandyDoc/Partials/TypeLink", Model.DelegateType);}</dd>
 </dl>

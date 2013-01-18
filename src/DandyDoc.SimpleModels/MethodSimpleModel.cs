@@ -12,12 +12,16 @@ namespace DandyDoc.SimpleModels
 {
 	public class MethodSimpleModel : DefinitionMemberSimpleModelBase<MethodDefinition>, IMethodSimpleModel
 	{
+
+		private readonly MethodDefinitionXmlDoc _methodDefinitionXmlDocOverride;
 		private readonly Lazy<ReadOnlyCollection<IGenericParameterSimpleModel>> _genericParameters;
 		private readonly Lazy<ReadOnlyCollection<IParameterSimpleModel>> _parameters;
 		private readonly Lazy<IParameterSimpleModel> _return;
 		private readonly Lazy<ReadOnlyCollection<IExceptionSimpleModel>> _exceptions;
+		private readonly Lazy<ReadOnlyCollection<IContractConditionSimpleModel>> _ensures;
+		private readonly Lazy<ReadOnlyCollection<IContractConditionSimpleModel>> _requires;
 
-		public MethodSimpleModel(MethodDefinition definition, ITypeSimpleModel declaringModel)
+		public MethodSimpleModel(MethodDefinition definition, ITypeSimpleModel declaringModel, MethodDefinitionXmlDoc xmlDocOverride = null)
 			: base(definition, declaringModel)
 		{
 			Contract.Requires(definition != null);
@@ -26,6 +30,50 @@ namespace DandyDoc.SimpleModels
 			_parameters = new Lazy<ReadOnlyCollection<IParameterSimpleModel>>(CreateParameters, true);
 			_return = new Lazy<IParameterSimpleModel>(CreateReturn, true);
 			_exceptions = new Lazy<ReadOnlyCollection<IExceptionSimpleModel>>(CreateExceptions, true);
+			_ensures = new Lazy<ReadOnlyCollection<IContractConditionSimpleModel>>(CreateEnsures, true);
+			_requires = new Lazy<ReadOnlyCollection<IContractConditionSimpleModel>>(CreateRequires, true);
+			_methodDefinitionXmlDocOverride = xmlDocOverride;
+		}
+
+		private ReadOnlyCollection<IContractConditionSimpleModel> CreateRequires() {
+			var results = new List<IContractConditionSimpleModel>();
+			var xmlDocs = MethodXmlDocs;
+			if (null != xmlDocs) {
+				var xmlRequires = xmlDocs.Requires;
+				if (null != xmlRequires) {
+					foreach (var xmlRequired in xmlRequires) {
+						if (xmlRequired.Children.Count > 0) {
+							var exceptionCref = xmlRequired.ExceptionCref;
+							var exceptionType = String.IsNullOrEmpty(exceptionCref) ? null : new CrefSimpleMemberPointer(exceptionCref);
+							var description = ParsedXmlDocComplexTextNode.ConvertToSingleComplexNode(xmlRequired.Children);
+							Contract.Assume(description != null);
+							results.Add(new ContractConditionSimpleModel(description, exceptionType));
+						}
+					}
+				}
+			}
+			return new ReadOnlyCollection<IContractConditionSimpleModel>(results);
+		}
+
+		private ReadOnlyCollection<IContractConditionSimpleModel> CreateEnsures() {
+			var results = new List<IContractConditionSimpleModel>();
+			var xmlDocs = MethodXmlDocs;
+			if (null != xmlDocs) {
+				var xmlEnsures = xmlDocs.Ensures;
+				if (null != xmlEnsures) {
+					foreach (var xmlEnsured in xmlEnsures) {
+						if (xmlEnsured.Children.Count > 0) {
+							ISimpleMemberPointerModel exceptionType = (xmlEnsured.IsEnsuresOnThrow)
+								? new CrefSimpleMemberPointer(xmlEnsured.ExceptionCref)
+								: null;
+							var description = ParsedXmlDocComplexTextNode.ConvertToSingleComplexNode(xmlEnsured.Children);
+							Contract.Assume(description != null);
+							results.Add(new ContractConditionSimpleModel(description, exceptionType));
+						}
+					}
+				}
+			}
+			return new ReadOnlyCollection<IContractConditionSimpleModel>(results);
 		}
 
 		private ReadOnlyCollection<IExceptionSimpleModel> CreateExceptions(){
@@ -131,7 +179,12 @@ namespace DandyDoc.SimpleModels
 			return new ReadOnlyCollection<IGenericParameterSimpleModel>(results);
 		}
 
-		protected MethodDefinitionXmlDoc MethodXmlDocs { get { return DefinitionXmlDocs as MethodDefinitionXmlDoc; } }
+		protected MethodDefinitionXmlDoc MethodXmlDocs {
+			get {
+				return _methodDefinitionXmlDocOverride
+					?? DefinitionXmlDocs as MethodDefinitionXmlDoc;
+			}
+		}
 
 		public override string SubTitle {
 			get {
@@ -139,6 +192,10 @@ namespace DandyDoc.SimpleModels
 					return "Constructor";
 				if (Definition.IsOperatorOverload())
 					return "Operator";
+				if (Definition.IsGetter)
+					return "Getter";
+				if (Definition.IsSetter)
+					return "Setter";
 				return "Method";
 			}
 		}
@@ -159,6 +216,15 @@ namespace DandyDoc.SimpleModels
 
 		public IList<IExceptionSimpleModel> Exceptions { get { return _exceptions.Value; } }
 
+		public bool HasEnsures { get { return Ensures.Count > 0; } }
+
+		public IList<IContractConditionSimpleModel> Ensures { get { return _ensures.Value; } }
+
+		public bool HasRequires { get { return Requires.Count > 0; } }
+
+		public IList<IContractConditionSimpleModel> Requires {
+			get { return _requires.Value; }
+		}
 	}
 }
 

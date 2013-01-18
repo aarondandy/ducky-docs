@@ -235,7 +235,8 @@ namespace DandyDoc.SimpleModels
 		}
 
 		protected virtual bool PropertyFilter(PropertyDefinition definition) {
-			Contract.Requires(definition != null);
+			if (definition == null)
+				return false;
 			if (definition.IsSpecialName)
 				return false;
 			return definition.IsExternallyVisible();
@@ -246,7 +247,8 @@ namespace DandyDoc.SimpleModels
 		}
 
 		protected virtual bool FieldFilter(FieldDefinition definition) {
-			Contract.Requires(definition != null);
+			if (definition == null)
+				return false;
 			if (definition.Name.Length >= 2 && definition.Name[0] == '$' && definition.Name[definition.Name.Length - 1] == '$')
 				return false;
 			if (definition.IsSpecialName)
@@ -259,7 +261,8 @@ namespace DandyDoc.SimpleModels
 		}
 
 		protected virtual bool EventFilter(EventDefinition definition) {
-			Contract.Requires(definition != null);
+			if (definition == null)
+				return false;
 			if (definition.IsSpecialName)
 				return false;
 			return definition.IsExternallyVisible();
@@ -269,8 +272,15 @@ namespace DandyDoc.SimpleModels
 			return DefaultSimpleModelComparison(a, b);
 		}
 
+		protected virtual bool AccessorMethodFilter(MethodDefinition definition) {
+			if (definition == null)
+				return false;
+			return definition.IsExternallyVisible();
+		}
+
 		protected virtual bool MethodFilter(MethodDefinition definition) {
-			Contract.Requires(definition != null);
+			if (definition == null)
+				return false;
 			if (definition.Name.Length >= 2 && definition.Name[0] == '$' && definition.Name[definition.Name.Length - 1] == '$')
 				return false;
 			if (!definition.IsOperatorOverload() && definition.IsSpecialName)
@@ -285,7 +295,8 @@ namespace DandyDoc.SimpleModels
 		}
 
 		protected virtual bool TypeFilter(TypeDefinition definition) {
-			Contract.Requires(definition != null);
+			if (definition == null)
+				return false;
 			return definition.IsExternallyVisible();
 		}
 
@@ -323,6 +334,9 @@ namespace DandyDoc.SimpleModels
 				}
 				if (memberDefinition is EventDefinition){
 					return membersData.EventsCollection.GetModel((EventDefinition) memberDefinition);
+				}
+				if (memberDefinition is PropertyDefinition) {
+					return membersData.PropertiesCollection.GetModel((PropertyDefinition) memberDefinition);
 				}
 			}
 
@@ -375,7 +389,24 @@ namespace DandyDoc.SimpleModels
 				new DefinitionModelCollection<MethodDefinition, IMethodSimpleModel>(constructors, d => new MethodSimpleModel(d, model), MethodModelComparison),
 				new DefinitionModelCollection<MethodDefinition, IMethodSimpleModel>(methods, d => new MethodSimpleModel(d, model), MethodModelComparison),
 				new DefinitionModelCollection<MethodDefinition, IMethodSimpleModel>(operators, d => new MethodSimpleModel(d, model), MethodModelComparison),
-				new DefinitionModelCollection<PropertyDefinition, IPropertySimpleModel>(definition.Properties.Where(PropertyFilter), d => new PropertySimpleModel(d, model), PropertyModelComparison),
+				new DefinitionModelCollection<PropertyDefinition, IPropertySimpleModel>(definition.Properties.Where(PropertyFilter), d => {
+					var getterDefinition = d.GetMethod;
+					var setterDefinition = d.SetMethod;
+					IMethodSimpleModel getter = null, setter = null;
+					var propertyXmlDocs = XmlDocOverlay.GetDocumentation(d);
+					if (getterDefinition != null && AccessorMethodFilter(getterDefinition)) {
+						getter = new MethodSimpleModel(getterDefinition, model, null == propertyXmlDocs ? null : propertyXmlDocs.GetterDocs);
+					}
+					if (setterDefinition != null && AccessorMethodFilter(setterDefinition)) {
+						setter = new MethodSimpleModel(setterDefinition, model, null == propertyXmlDocs ? null : propertyXmlDocs.SetterDocs);
+					}
+					return new PropertySimpleModel(
+						d,
+						getter,
+						setter,
+						model
+					);
+				}, PropertyModelComparison),
 				new DefinitionModelCollection<FieldDefinition, IFieldSimpleModel>(definition.Fields.Where(FieldFilter), d => new FieldSimpleModel(d, model), FieldModelComparison),
 				new DefinitionModelCollection<EventDefinition, IEventSimpleModel>(definition.Events.Where(EventFilter), d => new EventSimpleModel(d, model), EventModelComparison)
 			);

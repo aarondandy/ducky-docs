@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using DandyDoc.Overlays.XmlDoc;
 using DandyDoc.SimpleModels.ComplexText;
 using DandyDoc.SimpleModels.Contracts;
@@ -14,6 +15,7 @@ namespace DandyDoc.SimpleModels
 
 		private readonly Lazy<ReadOnlyCollection<IParameterSimpleModel>> _parameters;
 		private readonly Lazy<IParameterSimpleModel> _return;
+		private readonly Lazy<ReadOnlyCollection<IExceptionSimpleModel>> _exceptions;
 
 		public DelegateSimpleModel(TypeDefinition definition, IAssemblySimpleModel assemblyModel)
 			: base(definition, assemblyModel)
@@ -22,9 +24,39 @@ namespace DandyDoc.SimpleModels
 			Contract.Requires(assemblyModel != null);
 			_parameters = new Lazy<ReadOnlyCollection<IParameterSimpleModel>>(CreateParameters, true);
 			_return = new Lazy<IParameterSimpleModel>(CreateReturn, true);
+			_exceptions = new Lazy<ReadOnlyCollection<IExceptionSimpleModel>>(CreateExceptions, true);
 		}
 
 		protected DelegateTypeDefinitionXmlDoc DelegateXmlDocs { get { return DefinitionXmlDocs as DelegateTypeDefinitionXmlDoc; } }
+
+		private ReadOnlyCollection<IExceptionSimpleModel> CreateExceptions() {
+			var results = new List<IExceptionSimpleModel>();
+			var xmlDocs = DelegateXmlDocs;
+			if (null != xmlDocs) {
+				var xmlExceptions = xmlDocs.Exceptions;
+				if (null != xmlExceptions) {
+					foreach (var set in xmlExceptions.GroupBy(ex => ex.CRef)) {
+						var cRef = set.Key;
+						var conditions = new List<IComplexTextNode>();
+						var ensures = new List<IComplexTextNode>();
+						foreach (var exceptionItem in set.Where(ex => ex.Children.Count > 0)) {
+							var summary = ParsedXmlDocComplexTextNode.ConvertToSingleComplexNode(exceptionItem.Children);
+							if (null != summary) {
+								(exceptionItem.HasRelatedEnsures ? ensures : conditions).Add(summary);
+							}
+						}
+
+						var firstReference = set.Select(ex => ex.CrefTarget).FirstOrDefault(ex => ex != null);
+						var exceptionPointer = firstReference == null
+							? (ISimpleMemberPointerModel)new CrefSimpleMemberPointer(cRef, cRef)
+							: new ReferenceSimpleMemberPointer(NestedTypeDisplayNameOverlay.GetDisplayName(firstReference), firstReference);
+
+						results.Add(new ExceptionSimpleModel(exceptionPointer, conditions, ensures));
+					}
+				}
+			}
+			return new ReadOnlyCollection<IExceptionSimpleModel>(results);
+		}
 
 		private IParameterSimpleModel CreateReturn(){
 			var returnType = Definition.GetDelegateReturnType();
@@ -73,5 +105,10 @@ namespace DandyDoc.SimpleModels
 		public bool HasReturn { get { return Return != null; } }
 
 		public IParameterSimpleModel Return { get { return _return.Value; } }
+
+
+		public bool HasExceptions { get { return Exceptions.Count > 0; } }
+
+		public IList<IExceptionSimpleModel> Exceptions { get { return _exceptions.Value; } }
 	}
 }

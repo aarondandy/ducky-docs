@@ -137,8 +137,10 @@
     <Compile Include="ComplexText\StandardComplexText.cs" />
     <Compile Include="ComplexText\TypeParamrefComplexText.cs" />
     <Compile Include="ComplexText\XmlNodeComplexText.cs" />
+    <Compile Include="ContractConditionSimpleModel.cs" />
     <Compile Include="Contracts\IAssemblySimpleModel.cs" />
     <Compile Include="Contracts\IComplexTextNode.cs" />
+    <Compile Include="Contracts\IContractConditionSimpleModel.cs" />
     <Compile Include="Contracts\IDelegateSimpleModel.cs" />
     <Compile Include="Contracts\IEventSimpleModel.cs" />
     <Compile Include="Contracts\IExceptionSimpleModel.cs" />

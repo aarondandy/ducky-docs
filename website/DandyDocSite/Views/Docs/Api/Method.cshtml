@@ -1,34 +1,40 @@
 ﻿@model DandyDoc.SimpleModels.Contracts.IMethodSimpleModel
 @{
-	Layout = "~/Views/Docs/Api/_Layout.cshtml";
+Layout = "./_Layout.cshtml";
 
-	if (Model.HasGenericParameters){
-		<section>
-			<h2>Generic Parameters</h2>
-			@{Html.RenderPartial("Api/Partials/GenericParameterListing", Model.GenericParameters);}
-		</section>
-	}
+if (Model.HasGenericParameters){
+<section>
+	<h2>Generic Parameters</h2>
+	@{Html.RenderPartial("DandyDoc/Partials/GenericParameterListing", Model.GenericParameters);}
+</section>
+}
 
-	if (Model.HasParameters){
-		<section>
-			<h2>Parameters</h2>
-			@{Html.RenderPartial("Api/Partials/ParameterList", Model.Parameters);}
-		</section>
-	}
+if (Model.HasParameters){
+<section>
+	<h2>Parameters</h2>
+	@{Html.RenderPartial("DandyDoc/Partials/ParameterList", Model.Parameters);}
+</section>
+}
 
-	if (Model.HasReturn){
-		<section>
-			<h2>Returns</h2>
-			@{Html.RenderPartial("Api/Partials/ParameterDetails", Model.Return);}
-		</section>
-	}
+if (Model.HasReturn){
+<section>
+	<h2>Returns</h2>
+	@{Html.RenderPartial("DandyDoc/Partials/ParameterDetails", Model.Return);}
+</section>
+}
 
-	if (Model.HasExceptions){
-		<section>
-			<h2>Exceptions</h2>
-			@{Html.RenderPartial("Api/Partials/ExceptionsTable", Model.Exceptions);}
-		</section>
-	}
+if (Model.HasExceptions){
+<section>
+	<h2>Exceptions</h2>
+	@{Html.RenderPartial("DandyDoc/Partials/ExceptionsTable", Model.Exceptions);}
+</section>
+}
 
-	// TODO: ensures
+if (Model.HasEnsures) {
+<section>
+	<h2>Ensures</h2>
+	@{Html.RenderPartial("DandyDoc/Partials/EnsuresTable", Model.Ensures);}
+</section>
+}
+
 }

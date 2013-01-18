@@ -1,18 +1,18 @@
 ﻿@model DandyDoc.SimpleModels.Contracts.ISimpleModelRepository
 @{
-	Layout = "~/Views/Docs/Api/_Layout.cshtml";
-}
+Layout = "./_Layout.cshtml";
 <section>
 	<table class="table table-bordered">
 		<thead><tr><th><i class="icon-info-sign"></i></th><th>Namespace</th><th>Assembly</th></tr></thead>
 		<tbody>
-			@foreach (var ns in Model.Namespaces){
-				<tr>
-					<td><i class="icon-gift"></i></td>
-					<td><a href="@Url.Action("Api","Docs",new {cref=ns.CRef})">@ns.ShortName</a></td>
-					<td>@String.Join(", ", ns.Assemblies.Select(a => a.ShortName))</td>
-				</tr>
+			@foreach (var ns in Model.Namespaces) {
+			<tr>
+				<td><i class="icon-gift"></i></td>
+				<td>@ns.ShortName</td>
+				<td>@String.Join(", ", ns.Assemblies.Select(a => a.ShortName))</td>
+			</tr>
 			}
 		</tbody>
 	</table>
 </section>
+}

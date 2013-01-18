@@ -1,9 +1,9 @@
 ﻿@model IEnumerable<DandyDoc.SimpleModels.Contracts.IParameterSimpleModel>
 <dl>
 	@foreach (var p in Model) {
-		<dt>@p.DisplayName</dt>
-		<dd>
-			@{Html.RenderPartial("Api/Partials/ParameterDetails", p);}
-		</dd>
+	<dt>@p.DisplayName</dt>
+	<dd>
+		@{Html.RenderPartial("DandyDoc/Partials/ParameterDetails", p);}
+	</dd>
 	}
 </dl>

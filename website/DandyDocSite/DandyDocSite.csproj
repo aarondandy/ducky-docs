@@ -226,31 +226,31 @@
     <Content Include="Views\Docs\Api\Namespace.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Docs\Api\Partials\SimpleModelTable.cshtml" />
+    <Content Include="Views\Shared\DandyDoc\Partials\SimpleModelTable.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Docs\Api\Partials\ComplexTextRender.cshtml" />
+    <Content Include="Views\Shared\DandyDoc\Partials\ComplexTextRender.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Docs\Api\Partials\ComplexTestRenderMultiple.cshtml" />
+    <Content Include="Views\Shared\DandyDoc\Partials\ComplexTestRenderMultiple.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Docs\Api\Partials\FlairTable.cshtml" />
+    <Content Include="Views\Shared\DandyDoc\Partials\FlairTable.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Docs\Api\Partials\FlairIcon.cshtml" />
+    <Content Include="Views\Shared\DandyDoc\Partials\FlairIcon.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Docs\Api\Partials\TypeReferenceList.cshtml" />
+    <Content Include="Views\Shared\DandyDoc\Partials\TypeReferenceList.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Docs\Api\Partials\ComplexTextRenderDescriptionList.cshtml" />
+    <Content Include="Views\Shared\DandyDoc\Partials\ComplexTextRenderDescriptionList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Docs\Api\Enum.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Docs\Api\Partials\GenericParameterListing.cshtml" />
+    <Content Include="Views\Shared\DandyDoc\Partials\GenericParameterListing.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Docs\Api\Delegate.cshtml" />
@@ -268,16 +268,25 @@
     <Content Include="Views\Docs\Api\Event.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Docs\Api\Partials\TypeLink.cshtml" />
+    <Content Include="Views\Shared\DandyDoc\Partials\TypeLink.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Docs\Api\Partials\ParameterList.cshtml" />
+    <Content Include="Views\Shared\DandyDoc\Partials\ParameterList.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Docs\Api\Partials\ParameterDetails.cshtml" />
+    <Content Include="Views\Shared\DandyDoc\Partials\ParameterDetails.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Docs\Api\Partials\ExceptionsTable.cshtml" />
+    <Content Include="Views\Shared\DandyDoc\Partials\ExceptionsTable.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shared\DandyDoc\Partials\EnsuresTable.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shared\DandyDoc\Partials\Accessor.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shared\DandyDoc\Partials\RequiresTable.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

@@ -2,9 +2,9 @@
 <table class="table table-bordered table-condensed">
 @foreach (var flair in Model){
 	<tr>
-		<th>@{Html.RenderPartial("Api/Partials/FlairIcon", flair);}</th>
+		<th>@{Html.RenderPartial("DandyDoc/Partials/FlairIcon", flair);}</th>
 		<td>@flair.Category</td>
-		<td>@{Html.RenderPartial("Api/Partials/ComplexTextRender", flair.Description);}</td>
+		<td>@{Html.RenderPartial("DandyDoc/Partials/ComplexTextRender", flair.Description);}</td>
 	</tr>
 }
 </table>

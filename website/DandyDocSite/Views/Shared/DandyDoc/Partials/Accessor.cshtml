@@ -1,0 +1,24 @@
+﻿@model DandyDoc.SimpleModels.Contracts.IMethodSimpleModel
+@{
+if (Model.HasFlair) {
+	Html.RenderPartial("DandyDoc/Partials/FlairTable", Model.FlairTags);
+}
+if (Model.HasExceptions) {
+<section>
+	<h3>Exceptions</h3>
+	@{Html.RenderPartial("DandyDoc/Partials/ExceptionsTable", Model.Exceptions);}
+</section>
+}
+if (Model.HasRequires) {
+<section>
+	<h3>Requires</h3>
+	@{Html.RenderPartial("DandyDoc/Partials/RequiresTable", Model.Requires);}
+</section>
+}
+if (Model.HasEnsures) {
+<section>
+	<h3>Ensures</h3>
+	@{Html.RenderPartial("DandyDoc/Partials/EnsuresTable", Model.Ensures);}
+</section>
+}
+}

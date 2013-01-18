@@ -21,5 +21,13 @@ namespace DandyDoc.SimpleModels.Contracts
 
 		IList<IExceptionSimpleModel> Exceptions { get; }
 
+		bool HasEnsures { get; }
+
+		IList<IContractConditionSimpleModel> Ensures { get; }
+
+		bool HasRequires { get; }
+
+		IList<IContractConditionSimpleModel> Requires { get; }
+
 	}
 }

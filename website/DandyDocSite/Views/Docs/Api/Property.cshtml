@@ -1,9 +1,50 @@
-﻿@model DandyDoc.SimpleModels.Contracts.IPropertySimpleModel
+﻿@using DandyDoc.SimpleModels.Contracts
+@model IPropertySimpleModel
+@functions {
+
+	private static bool IsWorthDisplaying(IMethodSimpleModel method) {
+		return method.HasFlair || method.HasExceptions || method.HasEnsures || method.HasRequires;
+	}
+
+}
+@helper AccessorText(){
+var accessorText = Model.HasGetter
+	? (Model.HasSetter ? "Get and Set." : "Get only.")
+	: (Model.HasSetter ? "Set only." : "Inaccessible.");
+<div><b>Accessors:</b> @accessorText</div>
+}
 @{
-	Layout = "~/Views/Docs/Api/_Layout.cshtml";
-	// TODO: type
-	// TODO: value docs
-	// TODO: getter
-	// TODO: setter
-	// TODO: exceptions
+Layout = "./_Layout.cshtml";
+
+<div><b>Value Type:</b> @{Html.RenderPartial("DandyDoc/Partials/TypeLink", Model.PropertyType);}</div>
+@AccessorText()
+
+if (Model.HasValueDescription){
+<section> 
+	<h2>Value</h2>
+	@{Html.RenderPartial("DandyDoc/Partials/ComplexTextRender", Model.ValueDescription);}
+</section>
+}
+
+if (Model.HasGetter && IsWorthDisplaying(Model.Getter)) {
+<section>
+	<h2>Getter</h2>
+	@{Html.RenderPartial("DandyDoc/Partials/Accessor", Model.Getter);}
+</section>
+}
+
+if (Model.HasSetter && IsWorthDisplaying(Model.Setter)) {
+<section>
+	<h2>Setter</h2>
+	@{Html.RenderPartial("DandyDoc/Partials/Accessor", Model.Setter);}
+</section>
+}
+
+if (Model.HasExceptions){
+<section>
+	<h2>Exceptions</h2>
+	@{Html.RenderPartial("DandyDoc/Partials/ExceptionsTable", Model.Exceptions);}
+</section>
+}
+
 }

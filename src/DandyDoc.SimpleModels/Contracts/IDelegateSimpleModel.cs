@@ -14,5 +14,9 @@ namespace DandyDoc.SimpleModels.Contracts
 
 		IParameterSimpleModel Return { get; }
 
+		bool HasExceptions { get; }
+
+		IList<IExceptionSimpleModel> Exceptions { get; }
+
 	}
 }
