@@ -13,12 +13,12 @@ namespace DandyDoc.Overlays.XmlDoc
 	public class FieldDefinitionXmlDoc : DefinitionXmlDocBase
 	{
 
-		internal FieldDefinitionXmlDoc(FieldDefinition definition, XmlNode xmlNode, CrefOverlay crefOverlay)
-			: base(definition, xmlNode, crefOverlay)
+		internal FieldDefinitionXmlDoc(FieldDefinition definition, XmlNode xmlNode, CRefOverlay cRefOverlay)
+			: base(definition, xmlNode, cRefOverlay)
 		{
 			Contract.Requires(null != definition);
 			Contract.Requires(null != xmlNode);
-			Contract.Requires(null != crefOverlay);
+			Contract.Requires(null != cRefOverlay);
 		}
 
 		new public FieldDefinition Definition { get { return (FieldDefinition)(base.Definition); } }

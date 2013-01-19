@@ -14,26 +14,26 @@ namespace DandyDoc.ViewModels
 
 		private readonly Lazy<ReadOnlyCollection<TypeNavigationNamespaceViewModel>> _exposedNamespaceViewModels;
 
-		public TypeNavigationViewModel(NavigationOverlay navigationOverlay, XmlDocOverlay xmlDocOverlay, CrefOverlay crefOverlay = null) {
+		public TypeNavigationViewModel(NavigationOverlay navigationOverlay, XmlDocOverlay xmlDocOverlay, CRefOverlay cRefOverlay = null) {
 			if (null == navigationOverlay) throw new ArgumentNullException("navigationOverlay");
 			if (null == xmlDocOverlay) throw new ArgumentNullException("xmlDocOverlay");
 			Contract.EndContractBlock();
 			NavigationOverlay = navigationOverlay;
 			XmlDocOverlay = xmlDocOverlay;
-			CrefOverlay = crefOverlay ?? xmlDocOverlay.CrefOverlay;
+			CRefOverlay = cRefOverlay ?? xmlDocOverlay.CRefOverlay;
 			_exposedNamespaceViewModels = new Lazy<ReadOnlyCollection<TypeNavigationNamespaceViewModel>>(CreateExposedNamespaceViewModels);
 		}
 
 		public XmlDocOverlay XmlDocOverlay { get; private set; }
 
-		public CrefOverlay CrefOverlay { get; private set; }
+		public CRefOverlay CRefOverlay { get; private set; }
 
 		public NavigationOverlay NavigationOverlay { get; private set; }
 
 		private ReadOnlyCollection<TypeNavigationNamespaceViewModel> CreateExposedNamespaceViewModels() {
 			Contract.Ensures(Contract.Result<ReadOnlyCollection<TypeNavigationNamespaceViewModel>>() != null);
 			var viewModels = NavigationOverlay.Namespaces
-				.Select(x => new TypeNavigationNamespaceViewModel(x, XmlDocOverlay, CrefOverlay))
+				.Select(x => new TypeNavigationNamespaceViewModel(x, XmlDocOverlay, CRefOverlay))
 				.Where(x => x.ExposedTypeViewModels.Count > 0)
 				.OrderBy(x => x.FullName)
 				.ToList();
@@ -62,7 +62,7 @@ namespace DandyDoc.ViewModels
 		[ContractInvariantMethod]
 		private void CodeContractInvariant() {
 			Contract.Invariant(null != XmlDocOverlay);
-			Contract.Invariant(null != CrefOverlay);
+			Contract.Invariant(null != CRefOverlay);
 			Contract.Invariant(null != NavigationOverlay);
 		}
 

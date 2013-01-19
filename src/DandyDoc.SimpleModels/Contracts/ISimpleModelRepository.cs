@@ -13,5 +13,9 @@ namespace DandyDoc.SimpleModels.Contracts
 
 		ISimpleModel GetModelFromCref(string cref);
 
+		XmlDocOverlay XmlDocOverlay { get; }
+
+		CRefOverlay CRefOverlay { get; }
+
 	}
 }

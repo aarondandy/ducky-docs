@@ -11,9 +11,43 @@ namespace DandyDoc
 	public class AssemblyDefinitionCollection : Collection<AssemblyDefinition>
 	{
 
-		// TODO: need some stuff to syncronize access to the assembly definitions as I don't think they are thread safe
+		private class ImmediateAssemblyResolver : IAssemblyResolver
+		{
 
-		public static AssemblyDefinition LoadAssemblyDefinition(string filePath) {
+			private readonly IAssemblyResolver _core;
+			private readonly ReaderParameters _immediateParams;
+
+			public ImmediateAssemblyResolver(){
+				_core = new DefaultAssemblyResolver();
+				_immediateParams = new ReaderParameters(ReadingMode.Immediate);
+				_immediateParams.AssemblyResolver = this;
+			}
+
+			public AssemblyDefinition Resolve(string fullName, ReaderParameters parameters){
+				return _core.Resolve(fullName, parameters);
+			}
+
+			public AssemblyDefinition Resolve(string fullName) {
+				return _core.Resolve(fullName, _immediateParams);
+			}
+
+			public AssemblyDefinition Resolve(AssemblyNameReference name, ReaderParameters parameters) {
+				return _core.Resolve(name, parameters);
+			}
+
+			public AssemblyDefinition Resolve(AssemblyNameReference name) {
+				return _core.Resolve(name, _immediateParams);
+			}
+
+		}
+
+		public static AssemblyDefinition LoadAssemblyDefinition(string filePath){
+			Contract.Requires(!String.IsNullOrEmpty(filePath));
+			Contract.Ensures(Contract.Result<AssemblyDefinition>() != null);
+			return LoadAssemblyDefinition(filePath, false);
+		}
+
+		public static AssemblyDefinition LoadAssemblyDefinition(string filePath, bool immediate) {
 			if (String.IsNullOrEmpty(filePath)) throw new ArgumentException("Invalid file path.", "filePath");
 			Contract.Ensures(Contract.Result<AssemblyDefinition>() != null);
 
@@ -21,7 +55,16 @@ namespace DandyDoc
 			if (!fileInfo.Exists)
 				throw new FileNotFoundException("The given file was not found.", fileInfo.FullName);
 
-			var assemblyDefinition = AssemblyDefinition.ReadAssembly(fileInfo.FullName);
+			AssemblyDefinition assemblyDefinition;
+			if (immediate){
+				var readerParams = new ReaderParameters(ReadingMode.Immediate);
+				readerParams.AssemblyResolver = new ImmediateAssemblyResolver();
+				assemblyDefinition = AssemblyDefinition.ReadAssembly(fileInfo.FullName, readerParams);
+			}
+			else{
+				assemblyDefinition = AssemblyDefinition.ReadAssembly(fileInfo.FullName);
+			}
+
 			if (null == assemblyDefinition)
 				throw new ArgumentException("Failed to load the given assembly from '" + fileInfo.FullName + '\'', "filePath");
 			return assemblyDefinition;
@@ -29,9 +72,15 @@ namespace DandyDoc
 
 		public AssemblyDefinitionCollection() { }
 
+		public AssemblyDefinitionCollection(bool immediate, params string[] filePaths)
+			: this(Array.ConvertAll(filePaths, p => LoadAssemblyDefinition(p, immediate))) { Contract.Requires(null != filePaths); }
+
 		public AssemblyDefinitionCollection(params string[] filePaths)
 			: this(Array.ConvertAll(filePaths, LoadAssemblyDefinition))
 		{ Contract.Requires(null != filePaths); }
+
+		public AssemblyDefinitionCollection(bool immediate, IEnumerable<string> filePaths)
+			: this(filePaths.Select(p => LoadAssemblyDefinition(p, immediate))) { Contract.Requires(null != filePaths); }
 
 		public AssemblyDefinitionCollection(IEnumerable<string> filePaths)
 			: this(filePaths.Select(LoadAssemblyDefinition))
@@ -48,7 +97,7 @@ namespace DandyDoc
 			if(null == definitions) throw new ArgumentNullException("definitions");
 			Contract.EndContractBlock();
 			foreach (var definition in definitions) {
-				if(null == definitions) throw new ArgumentException("Enumerable contains a null element.","definitions");
+				if(null == definition) throw new ArgumentException("Enumerable contains a null element.","definitions");
 				Add(definition);
 			}
 		}

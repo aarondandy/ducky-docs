@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Web.Mvc;
 using DandyDoc.Overlays.MsdnLinks;
-using DandyDoc.SimpleModels;
 using DandyDoc.SimpleModels.Contracts;
 using DandyDocSite.Infrastructure;
 
@@ -11,12 +9,12 @@ namespace DandyDocSite.Controllers
 	public class DocsController : Controller
 	{
 
-		public DocsController(ApiDocNavigation navigation, IMsdnLinkOverlay msdnLinkOverlay){
-			Navigation = navigation;
+		public DocsController(ISimpleModelRepository docModelRepository, IMsdnLinkOverlay msdnLinkOverlay){
+			DocModelRepository = docModelRepository;
 			MsdnLinkOverlay = msdnLinkOverlay;
 		}
 
-		public ApiDocNavigation Navigation { get; set; }
+		public ISimpleModelRepository DocModelRepository { get; set; }
 
 		public IMsdnLinkOverlay MsdnLinkOverlay { get; set; }
 
@@ -26,20 +24,17 @@ namespace DandyDocSite.Controllers
 		}
 
 		public ActionResult Api(string cRef){
-			var assemblies = StructureMap.ObjectFactory.GetInstance<AssemblyCollectionGenerator>().GenerateDefinitions();
-			var repository = new SimpleModelRepository(assemblies);
-
-			ViewBag.TypeNavigationViewModel = Navigation.NavigationRepository;
+			ViewBag.TypeNavigationViewModel = DocModelRepository;
 			ViewBag.ApiDocLinkResolver = new ApiDocLinkResolver {
 				UrlHelper = Url,
 				MsdnLinkOverlay = MsdnLinkOverlay,
-				LocalRepository = repository
+				LocalRepository = DocModelRepository
 			};
 
 			if (String.IsNullOrEmpty(cRef))
-				return View("Api/Index", Navigation.NavigationRepository);
+				return View("Api/Index", DocModelRepository);
 
-			var model = repository.GetModelFromCref(cRef);
+			var model = DocModelRepository.GetModelFromCref(cRef);
 			if (model == null)
 				return new HttpNotFoundResult();
 

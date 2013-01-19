@@ -62,8 +62,8 @@ namespace DandyDoc.ViewModels
 
 		}
 
-		public PropertyViewModel(PropertyDefinition definition, TypeViewModel typeViewModelContainer, XmlDocOverlay xmlDocOverlay, CrefOverlay crefOverlay = null)
-			: base(definition, typeViewModelContainer, xmlDocOverlay, crefOverlay)
+		public PropertyViewModel(PropertyDefinition definition, TypeViewModel typeViewModelContainer, XmlDocOverlay xmlDocOverlay, CRefOverlay cRefOverlay = null)
+			: base(definition, typeViewModelContainer, xmlDocOverlay, cRefOverlay)
 		{
 			Contract.Requires(null != definition);
 			Contract.Requires(null != xmlDocOverlay);
@@ -215,7 +215,7 @@ namespace DandyDoc.ViewModels
 			if(null == Definition.GetMethod) throw new InvalidOperationException("Property has no getter.");
 			Contract.EndContractBlock();
 			return new AccessorViewModel(
-				new MethodViewModel(Definition.GetMethod, TypeViewModelContainer, XmlDocOverlay, CrefOverlay, GetterDocs),
+				new MethodViewModel(Definition.GetMethod, TypeViewModelContainer, XmlDocOverlay, CRefOverlay, GetterDocs),
 				this);
 		}
 
@@ -223,7 +223,7 @@ namespace DandyDoc.ViewModels
 			if (null == Definition.SetMethod) throw new InvalidOperationException("Property has no setter.");
 			Contract.EndContractBlock();
 			return new AccessorViewModel(
-				new MethodViewModel(Definition.SetMethod, TypeViewModelContainer, XmlDocOverlay, CrefOverlay, SetterDocs),
+				new MethodViewModel(Definition.SetMethod, TypeViewModelContainer, XmlDocOverlay, CRefOverlay, SetterDocs),
 				this);
 		}
 

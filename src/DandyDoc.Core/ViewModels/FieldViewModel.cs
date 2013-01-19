@@ -9,8 +9,8 @@ namespace DandyDoc.ViewModels
 	public class FieldViewModel : DefinitionViewModelBase<FieldDefinition>
 	{
 
-		public FieldViewModel(FieldDefinition definition, TypeViewModel typeViewModelContainer, XmlDocOverlay xmlDocOverlay, CrefOverlay crefOverlay = null)
-			: base(definition, typeViewModelContainer, xmlDocOverlay, crefOverlay)
+		public FieldViewModel(FieldDefinition definition, TypeViewModel typeViewModelContainer, XmlDocOverlay xmlDocOverlay, CRefOverlay cRefOverlay = null)
+			: base(definition, typeViewModelContainer, xmlDocOverlay, cRefOverlay)
 		{
 			Contract.Requires(null != definition);
 			Contract.Requires(null != xmlDocOverlay);

@@ -30,14 +30,14 @@ namespace DandyDoc.ViewModels
 		private readonly Lazy<ReadOnlyCollection<MemberFlair>> _flair;
 		private readonly Lazy<ReadOnlyCollection<CodeSignature>> _signatures;
 
-		protected DefinitionViewModelBase(TDefinition definition, TypeViewModel typeViewModelContainer, XmlDocOverlay xmlDocOverlay, CrefOverlay crefOverlay = null) {
+		protected DefinitionViewModelBase(TDefinition definition, TypeViewModel typeViewModelContainer, XmlDocOverlay xmlDocOverlay, CRefOverlay cRefOverlay = null) {
 			if (null == definition) throw new ArgumentNullException("definition");
 			if (null == xmlDocOverlay) throw new ArgumentNullException("xmlDocOverlay");
 			Contract.EndContractBlock();
 			Definition = definition;
 			TypeViewModelContainer = typeViewModelContainer;
 			XmlDocOverlay = xmlDocOverlay;
-			CrefOverlay = crefOverlay ?? xmlDocOverlay.CrefOverlay;
+			CRefOverlay = cRefOverlay ?? xmlDocOverlay.CRefOverlay;
 			_xmlDoc = new Lazy<DefinitionXmlDocBase>(() => XmlDocOverlay.GetDocumentation(Definition));
 			_flair = new Lazy<ReadOnlyCollection<MemberFlair>>(() => {
 				var results = GetFlairTags();
@@ -52,9 +52,9 @@ namespace DandyDoc.ViewModels
 
 		public XmlDocOverlay XmlDocOverlay { get; private set; }
 
-		public CrefOverlay CrefOverlay { get; private set; }
+		public CRefOverlay CRefOverlay { get; private set; }
 
-		public virtual string Cref { get { return CrefOverlay.GetCref(Definition); } }
+		public virtual string Cref { get { return CRefOverlay.GetCref(Definition); } }
 
 		public virtual DefinitionXmlDocBase XmlDoc { get { return _xmlDoc.Value; } }
 
@@ -173,7 +173,7 @@ namespace DandyDoc.ViewModels
 		private void CodeContractInvariant() {
 			Contract.Invariant(null != Definition);
 			Contract.Invariant(null != XmlDocOverlay);
-			Contract.Invariant(null != CrefOverlay);
+			Contract.Invariant(null != CRefOverlay);
 		}
 
 	}

@@ -196,7 +196,8 @@ namespace DandyDoc.SimpleModels
 			Contract.EndContractBlock();
 			Definition = assemblyDefinition;
 			RootRepository = repository;
-			XmlDocOverlay = new XmlDocOverlay(new CrefOverlay(new AssemblyDefinitionCollection(new[]{assemblyDefinition})));
+			//XmlDocOverlay = repository.XmlDocOverlay;
+			//XmlDocOverlay = new XmlDocOverlay(new CRefOverlay(new AssemblyDefinitionCollection(new[]{assemblyDefinition})));
 			_types = new Lazy<TypeDefinitionModelCollection>(GenerateTypeViewModels, true);
 			_membersCache = new ConcurrentDictionary<ITypeSimpleModel, SimpleModelMembersCollection>();
 		}
@@ -306,7 +307,7 @@ namespace DandyDoc.SimpleModels
 
 		private ISimpleModel GetModelFromCrefCore(string cref) {
 			Contract.Requires(!String.IsNullOrEmpty(cref));
-			var reference = CrefOverlay.GetReference(cref);
+			var reference = CRefOverlay.GetReference(cref);
 			if (null == reference)
 				return null;
 
@@ -322,6 +323,8 @@ namespace DandyDoc.SimpleModels
 				var memberDefinition = (IMemberDefinition) reference;
 				var typeDefinition = memberDefinition.DeclaringType;
 				var typeModel = DefinitionToModel(typeDefinition);
+				if (typeModel == null)
+					return null;
 				var membersData = GetMembersCore(typeModel);
 				if (memberDefinition is MethodDefinition) {
 					var methodDefinition = (MethodDefinition)memberDefinition;
@@ -340,7 +343,7 @@ namespace DandyDoc.SimpleModels
 				}
 			}
 
-			throw new NotSupportedException();
+			return null;
 		}
 
 		private ITypeSimpleModel DefinitionToModel(TypeDefinition definition){
@@ -412,16 +415,21 @@ namespace DandyDoc.SimpleModels
 
 		// ------------ Public access
 
-		public XmlDocOverlay XmlDocOverlay { get; private set; }
+		public XmlDocOverlay XmlDocOverlay{
+			get{
+				Contract.Ensures(Contract.Result<XmlDocOverlay>() != null);
+				return RootRepository.XmlDocOverlay;
+			}
+		}
 
 		public ISimpleModelRepository RootRepository { get; private set; }
 
 		protected AssemblyDefinition Definition { get; private set; }
 
-		public CrefOverlay CrefOverlay {
+		public CRefOverlay CRefOverlay {
 			get {
-				Contract.Ensures(Contract.Result<CrefOverlay>() != null);
-				return XmlDocOverlay.CrefOverlay;
+				Contract.Ensures(Contract.Result<CRefOverlay>() != null);
+				return XmlDocOverlay.CRefOverlay;
 			}
 		}
 

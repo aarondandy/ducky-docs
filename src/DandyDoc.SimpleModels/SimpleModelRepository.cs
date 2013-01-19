@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using DandyDoc.Overlays.Cref;
+using DandyDoc.Overlays.XmlDoc;
 using DandyDoc.SimpleModels.Contracts;
 
 namespace DandyDoc.SimpleModels
@@ -20,8 +22,24 @@ namespace DandyDoc.SimpleModels
 			Contract.EndContractBlock();
 
 			AssemblyDefinitions = assemblyDefinitions;
+			XmlDocOverlay = new XmlDocOverlay(new CRefOverlay(assemblyDefinitions));
 			_assemblies = new Lazy<ReadOnlyCollection<IAssemblySimpleModel>>(BuildAssemblies, true);
 			_namespaces = new Lazy<ReadOnlyCollection<INamespaceSimpleModel>>(BuildNamespaces, true);
+		}
+
+		[ContractInvariantMethod]
+		private void CodeContractInvariant(){
+			Contract.Invariant(XmlDocOverlay != null);
+			Contract.Invariant(AssemblyDefinitions != null);
+		}
+
+		public XmlDocOverlay XmlDocOverlay { get; private set; }
+
+		public CRefOverlay CRefOverlay{
+			get{
+				Contract.Ensures(Contract.Result<CRefOverlay>() != null);
+				return XmlDocOverlay.CRefOverlay;
+			}
 		}
 
 		protected virtual ReadOnlyCollection<IAssemblySimpleModel> BuildAssemblies() {

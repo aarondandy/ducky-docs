@@ -95,7 +95,7 @@ namespace DandyDocSite.Infrastructure
 					try {
 						var resolved = ((TypeReference)reference).Resolve();
 						if (null != resolved) {
-							cRef = CrefOverlay.GetDefaultCref((MemberReference)resolved);
+							cRef = CRefOverlay.GetDefaultCref((MemberReference)resolved);
 						}
 					}
 					catch {

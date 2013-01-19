@@ -27,12 +27,12 @@ namespace DandyDoc.Overlays.XmlDoc
 			return xmlDoc.SelectParsedXmlNode(query) as ParsedXmlElementBase;
 		}
 
-		internal ParameterizedXmlDocBase(IMemberDefinition definition, XmlNode xmlNode, CrefOverlay crefOverlay)
-			: base(definition, xmlNode, crefOverlay)
+		internal ParameterizedXmlDocBase(IMemberDefinition definition, XmlNode xmlNode, CRefOverlay cRefOverlay)
+			: base(definition, xmlNode, cRefOverlay)
 		{
 			Contract.Requires(null != definition);
 			Contract.Requires(null != xmlNode);
-			Contract.Requires(null != crefOverlay);
+			Contract.Requires(null != cRefOverlay);
 		}
 
 		public ParsedXmlElementBase DocsForParameter(string name) {

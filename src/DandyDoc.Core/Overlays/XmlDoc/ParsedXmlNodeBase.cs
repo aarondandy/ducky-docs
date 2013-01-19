@@ -69,10 +69,10 @@ namespace DandyDoc.Overlays.XmlDoc
 
 		public XmlNode Node { get; private set; }
 
-		public CrefOverlay CrefOverlay{
+		public CRefOverlay CRefOverlay{
 			get {
-				Contract.Ensures(Contract.Result<CrefOverlay>() != null);
-				return DocBase.CrefOverlay;
+				Contract.Ensures(Contract.Result<CRefOverlay>() != null);
+				return DocBase.CRefOverlay;
 			}
 		}
 

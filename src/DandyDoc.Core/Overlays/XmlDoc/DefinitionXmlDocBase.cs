@@ -12,21 +12,21 @@ namespace DandyDoc.Overlays.XmlDoc
 	public abstract class DefinitionXmlDocBase
 	{
 
-		protected DefinitionXmlDocBase(IMemberDefinition definition, XmlNode xmlNode, CrefOverlay crefOverlay) {
+		protected DefinitionXmlDocBase(IMemberDefinition definition, XmlNode xmlNode, CRefOverlay cRefOverlay) {
 			if(null == definition) throw new ArgumentNullException("definition");
 			if(null == xmlNode) throw new ArgumentNullException("xmlNode");
-			if(null == crefOverlay) throw new ArgumentNullException("crefOverlay");
+			if(null == cRefOverlay) throw new ArgumentNullException("cRefOverlay");
 			Contract.EndContractBlock();
 			Definition = definition;
 			Node = xmlNode;
-			CrefOverlay = crefOverlay;
+			CRefOverlay = cRefOverlay;
 		}
 
 		public IMemberDefinition Definition { get; private set; }
 
 		public XmlNode Node { get; private set; }
 
-		public CrefOverlay CrefOverlay { get; private set; }
+		public CRefOverlay CRefOverlay { get; private set; }
 
 		public virtual ParsedXmlElementBase Summary {
 			get { return (ParsedXmlElementBase)SelectParsedXmlNode("summary"); }
@@ -89,7 +89,7 @@ namespace DandyDoc.Overlays.XmlDoc
 		private void CodeContractInvariant() {
 			Contract.Invariant(null != Definition);
 			Contract.Invariant(null != Node);
-			Contract.Invariant(null != CrefOverlay);
+			Contract.Invariant(null != CRefOverlay);
 		}
 
 	}

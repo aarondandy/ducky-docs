@@ -18,8 +18,8 @@ namespace DandyDoc.ViewModels
 		private readonly Lazy<ReadOnlyCollection<ParameterDefinition>> _parameters;
 		private readonly Lazy<TypeReference> _returnType;
 
-		public DelegateViewModel(TypeDefinition definition, TypeViewModel typeViewModelContainer, XmlDocOverlay xmlDocOverlay, CrefOverlay crefOverlay = null)
-			: base(definition, typeViewModelContainer, xmlDocOverlay, crefOverlay)
+		public DelegateViewModel(TypeDefinition definition, TypeViewModel typeViewModelContainer, XmlDocOverlay xmlDocOverlay, CRefOverlay cRefOverlay = null)
+			: base(definition, typeViewModelContainer, xmlDocOverlay, cRefOverlay)
 		{
 			Contract.Requires(null != definition);
 			Contract.Requires(null != xmlDocOverlay);

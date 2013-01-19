@@ -15,8 +15,8 @@ namespace DandyDoc.ViewModels
 
 		private readonly MethodDefinitionXmlDoc _xmlDocsOverride;
 
-		public MethodViewModel(MethodDefinition definition, TypeViewModel typeViewModelContainer, XmlDocOverlay xmlDocOverlay, CrefOverlay crefOverlay = null, MethodDefinitionXmlDoc xmlDocsOverride = null)
-			: base(definition, typeViewModelContainer, xmlDocOverlay, crefOverlay)
+		public MethodViewModel(MethodDefinition definition, TypeViewModel typeViewModelContainer, XmlDocOverlay xmlDocOverlay, CRefOverlay cRefOverlay = null, MethodDefinitionXmlDoc xmlDocsOverride = null)
+			: base(definition, typeViewModelContainer, xmlDocOverlay, cRefOverlay)
 		{
 			Contract.Requires(null != definition);
 			Contract.Requires(null != xmlDocOverlay);

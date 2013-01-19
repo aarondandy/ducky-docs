@@ -12,7 +12,7 @@ namespace DandyDoc.SimpleModels.Contracts
 
 		IList<ITypeSimpleModel> RootTypes { get; }
 
-		CrefOverlay CrefOverlay { get; }
+		CRefOverlay CRefOverlay { get; }
 
 		XmlDocOverlay XmlDocOverlay { get; }
 

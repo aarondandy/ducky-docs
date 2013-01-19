@@ -18,10 +18,10 @@ namespace DandyDoc.Overlays.XmlDoc
 
 		private readonly ConcurrentDictionary<AssemblyDefinition, XmlDocument> _xmlDocRootCache;
 
-		public XmlDocOverlay(CrefOverlay crefOverlay){
-			if(null == crefOverlay) throw new ArgumentNullException("crefOverlay");
+		public XmlDocOverlay(CRefOverlay cRefOverlay){
+			if(null == cRefOverlay) throw new ArgumentNullException("cRefOverlay");
 			Contract.EndContractBlock();
-			CrefOverlay = crefOverlay;
+			CRefOverlay = cRefOverlay;
 			_xmlDocRootCache = new ConcurrentDictionary<AssemblyDefinition, XmlDocument>();
 		}
 
@@ -108,36 +108,36 @@ namespace DandyDoc.Overlays.XmlDoc
 				return null;
 
 			if (definition.IsDelegateType())
-				return new DelegateTypeDefinitionXmlDoc(definition, node, CrefOverlay);
-			return new TypeDefinitionXmlDoc(definition, node, CrefOverlay);
+				return new DelegateTypeDefinitionXmlDoc(definition, node, CRefOverlay);
+			return new TypeDefinitionXmlDoc(definition, node, CRefOverlay);
 		}
 
 		public MethodDefinitionXmlDoc GetDocumentation(MethodDefinition definition) {
 			if (null == definition) throw new ArgumentNullException("definition");
 			Contract.EndContractBlock();
 			var node = GetNodeForDefinition(definition);
-			return null == node ? null : new MethodDefinitionXmlDoc(definition, node, CrefOverlay);
+			return null == node ? null : new MethodDefinitionXmlDoc(definition, node, CRefOverlay);
 		}
 
 		public PropertyDefinitionXmlDoc GetDocumentation(PropertyDefinition definition) {
 			if (null == definition) throw new ArgumentNullException("definition");
 			Contract.EndContractBlock();
 			var node = GetNodeForDefinition(definition);
-			return null == node ? null : new PropertyDefinitionXmlDoc(definition, node, CrefOverlay);
+			return null == node ? null : new PropertyDefinitionXmlDoc(definition, node, CRefOverlay);
 		}
 
 		public FieldDefinitionXmlDoc GetDocumentation(FieldDefinition definition) {
 			if (null == definition) throw new ArgumentNullException("definition");
 			Contract.EndContractBlock();
 			var node = GetNodeForDefinition(definition);
-			return null == node ? null : new FieldDefinitionXmlDoc(definition, node, CrefOverlay);
+			return null == node ? null : new FieldDefinitionXmlDoc(definition, node, CRefOverlay);
 		}
 
 		public EventDefinitionXmlDoc GetDocumentation(EventDefinition definition) {
 			if (null == definition) throw new ArgumentNullException("definition");
 			Contract.EndContractBlock();
 			var node = GetNodeForDefinition(definition);
-			return null == node ? null : new EventDefinitionXmlDoc(definition, node, CrefOverlay);
+			return null == node ? null : new EventDefinitionXmlDoc(definition, node, CRefOverlay);
 		}
 
 		private XmlNode GetNodeForDefinition(MemberReference definition) {
@@ -146,16 +146,16 @@ namespace DandyDoc.Overlays.XmlDoc
 			var doc = GetDocumentForAssembly(definition.Module.Assembly);
 			if (null == doc)
 				return null;
-			var cref = CrefOverlay.GetCref(definition, false);
+			var cref = CRefOverlay.GetCref(definition, false);
 			return doc.SelectSingleNode(
 				String.Format("/doc/members/member[@name=\"{0}\"]", cref));
 		}
 
-		public CrefOverlay CrefOverlay { get; private set; }
+		public CRefOverlay CRefOverlay { get; private set; }
 
 		[ContractInvariantMethod]
 		private void CodeContractInvariant(){
-			Contract.Invariant(null != CrefOverlay);
+			Contract.Invariant(null != CRefOverlay);
 			Contract.Invariant(null != _xmlDocRootCache);
 		}
 

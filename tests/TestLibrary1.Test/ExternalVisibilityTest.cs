@@ -20,7 +20,7 @@ namespace TestLibrary1.Test
 		}
 
 		private ExternalVisibilityKind GetVisibility(string cref) {
-			var memberDefinition = CrefOverlay.GetMemberDefinition(cref);
+			var memberDefinition = CRefOverlay.GetMemberDefinition(cref);
 			return GetVisibility(memberDefinition);
 		}
 
@@ -47,12 +47,12 @@ namespace TestLibrary1.Test
 
 		public ExternalVisibilityTest() {
 			AssemblyDefinitionCollection = new AssemblyDefinitionCollection{GetAssembly()};
-			CrefOverlay = new CrefOverlay(AssemblyDefinitionCollection);
+			CRefOverlay = new CRefOverlay(AssemblyDefinitionCollection);
 		}
 
 		public AssemblyDefinitionCollection AssemblyDefinitionCollection { get; private set; }
 
-		public CrefOverlay CrefOverlay { get; private set; }
+		public CRefOverlay CRefOverlay { get; private set; }
 
 		[Test]
 		public void min_kind() {
@@ -96,7 +96,7 @@ namespace TestLibrary1.Test
 				new {Vis = ExternalVisibilityKind.Protected, Name = "ProtectedInternalField"}
 			};
 			foreach (var typeTuple in AllClasses) {
-				var type = CrefOverlay.GetTypeDefinition(typeTuple.Item2);
+				var type = CRefOverlay.GetTypeDefinition(typeTuple.Item2);
 				var typeVis = typeTuple.Item1;
 				foreach (var fieldSet in fields) {
 					var fieldDefinition = type.Fields.Single(x => x.Name == fieldSet.Name);
@@ -116,7 +116,7 @@ namespace TestLibrary1.Test
 				new {Vis = ExternalVisibilityKind.Protected, Name = "ProtectedInternalMethod"}
 			};
 			foreach (var typeTuple in AllClasses) {
-				var type = CrefOverlay.GetTypeDefinition(typeTuple.Item2);
+				var type = CRefOverlay.GetTypeDefinition(typeTuple.Item2);
 				var typeVis = typeTuple.Item1;
 				foreach (var methodSet in methods) {
 					var methodDefinition = type.Methods.Single(x => x.Name == methodSet.Name);
@@ -136,7 +136,7 @@ namespace TestLibrary1.Test
 				new {Vis = ExternalVisibilityKind.Protected, Name = "ProtectedInternalDelegate"}
 			};
 			foreach (var typeTuple in AllClasses) {
-				var type = CrefOverlay.GetTypeDefinition(typeTuple.Item2);
+				var type = CRefOverlay.GetTypeDefinition(typeTuple.Item2);
 				var typeVis = typeTuple.Item1;
 				foreach (var delegateSet in delegates) {
 					var delegateDefinition = type.NestedTypes.Single(x => x.Name == delegateSet.Name);
@@ -156,7 +156,7 @@ namespace TestLibrary1.Test
 				new {Vis = ExternalVisibilityKind.Protected, Name = "ProtectedInternalEvent"}
 			};
 			foreach (var typeTuple in AllClasses) {
-				var type = CrefOverlay.GetTypeDefinition(typeTuple.Item2);
+				var type = CRefOverlay.GetTypeDefinition(typeTuple.Item2);
 				var typeVis = typeTuple.Item1;
 				foreach (var eventSet in events) {
 					var eventDefinition = type.Events.Single(x => x.Name == eventSet.Name);
@@ -192,7 +192,7 @@ namespace TestLibrary1.Test
 				new{Name = "PropPinPin", Get = ExternalVisibilityKind.Protected, Set = ExternalVisibilityKind.Protected}
 			};
 			foreach (var typeTuple in AllClasses) {
-				var type = CrefOverlay.GetTypeDefinition(typeTuple.Item2);
+				var type = CRefOverlay.GetTypeDefinition(typeTuple.Item2);
 				var typeVis = typeTuple.Item1;
 				foreach (var propSet in props) {
 					var propDef = type.Properties.Single(x => x.Name == propSet.Name);

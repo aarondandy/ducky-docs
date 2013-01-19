@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics.Contracts;
 
 namespace DandyDoc.Overlays.MsdnLinks
 {
@@ -15,13 +14,14 @@ namespace DandyDoc.Overlays.MsdnLinks
 			MtpsIdentifier subTreeId,
 			MtpsIdentifier targetId,
 			MtpsNodeCore parent = null,
+			bool phantom = false,
 			Guid? guid = null,
 			string contentId = null,
 			string alias = null,
 			string title = null,
 			IList<MtpsNodeCore> childLinks = null
 		)
-			: base(subTreeId, targetId, title, parent)
+			: base(subTreeId, targetId, title, parent, phantom)
 		{
 			Guid = guid;
 			ContentId = contentId;

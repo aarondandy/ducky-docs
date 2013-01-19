@@ -16,19 +16,19 @@ namespace DandyDoc.ViewModels
 	{
 		private readonly Lazy<ReadOnlyCollection<TypeViewModel>> _exposedTypeViewModels;
 
-		internal TypeNavigationNamespaceViewModel(NavigationOverlayCompositeNamespace overlayCompositeNamespace, XmlDocOverlay xmlDocOverlay, CrefOverlay crefOverlay = null) {
+		internal TypeNavigationNamespaceViewModel(NavigationOverlayCompositeNamespace overlayCompositeNamespace, XmlDocOverlay xmlDocOverlay, CRefOverlay cRefOverlay = null) {
 			if (null == overlayCompositeNamespace) throw new ArgumentNullException("overlayCompositeNamespace");
 			if (null == xmlDocOverlay) throw new ArgumentNullException("xmlDocOverlay");
 			Contract.EndContractBlock();
 			OverlayCompositeNamespace = overlayCompositeNamespace;
 			XmlDocOverlay = xmlDocOverlay;
-			CrefOverlay = crefOverlay ?? xmlDocOverlay.CrefOverlay;
+			CRefOverlay = cRefOverlay ?? xmlDocOverlay.CRefOverlay;
 			_exposedTypeViewModels = new Lazy<ReadOnlyCollection<TypeViewModel>>(CreateExposedTypeViewModels, LazyThreadSafetyMode.ExecutionAndPublication);
 		}
 
 		public XmlDocOverlay XmlDocOverlay { get; private set; }
 
-		public CrefOverlay CrefOverlay { get; private set; }
+		public CRefOverlay CRefOverlay { get; private set; }
 
 		public NavigationOverlayCompositeNamespace OverlayCompositeNamespace { get; private set; }
 
@@ -45,8 +45,8 @@ namespace DandyDoc.ViewModels
 				.Where(x => x.IsExternallyVisible())
 				.Select(x =>
 					x.IsDelegateType()
-					? new DelegateViewModel(x, null, XmlDocOverlay, CrefOverlay)
-					: new TypeViewModel(x, null, XmlDocOverlay, CrefOverlay))
+					? new DelegateViewModel(x, null, XmlDocOverlay, CRefOverlay)
+					: new TypeViewModel(x, null, XmlDocOverlay, CRefOverlay))
 				.OrderBy(x => x.ShortName)
 				.ToList();
 			return new ReadOnlyCollection<TypeViewModel>(viewModels);
@@ -66,7 +66,7 @@ namespace DandyDoc.ViewModels
 		[ContractInvariantMethod]
 		private void CodeContractInvariant(){
 			Contract.Invariant(null != XmlDocOverlay);
-			Contract.Invariant(null != CrefOverlay);
+			Contract.Invariant(null != CRefOverlay);
 			Contract.Invariant(null != OverlayCompositeNamespace);
 		}
 

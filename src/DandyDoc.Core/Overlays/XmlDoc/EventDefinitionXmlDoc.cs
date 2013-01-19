@@ -13,12 +13,12 @@ namespace DandyDoc.Overlays.XmlDoc
 	public class EventDefinitionXmlDoc : DefinitionXmlDocBase
 	{
 
-		internal EventDefinitionXmlDoc(EventDefinition definition, XmlNode xmlNode, CrefOverlay crefOverlay)
-			: base(definition, xmlNode, crefOverlay)
+		internal EventDefinitionXmlDoc(EventDefinition definition, XmlNode xmlNode, CRefOverlay cRefOverlay)
+			: base(definition, xmlNode, cRefOverlay)
 		{
 			Contract.Requires(null != definition);
 			Contract.Requires(null != xmlNode);
-			Contract.Requires(null != crefOverlay);
+			Contract.Requires(null != cRefOverlay);
 		}
 
 		new public EventDefinition Definition { get { return (EventDefinition)(base.Definition); } }

@@ -10,13 +10,13 @@ namespace Mvc4WebDirectDocSample.Infrastructure
 	public class MemberDefinitionLinkResolver
 	{
 
-		public MemberDefinitionLinkResolver(CrefOverlay crefOverlay, UrlHelper urlHelper, IMsdnLinkOverlay msdnLinkOverlay){
-			CrefOverlay = crefOverlay;
+		public MemberDefinitionLinkResolver(CRefOverlay cRefOverlay, UrlHelper urlHelper, IMsdnLinkOverlay msdnLinkOverlay){
+			CRefOverlay = cRefOverlay;
 			MsdnLinkOverlay = msdnLinkOverlay;
 			UrlHelper = urlHelper;
 		}
 
-		public CrefOverlay CrefOverlay { get; private set; }
+		public CRefOverlay CRefOverlay { get; private set; }
 
 		public IMsdnLinkOverlay MsdnLinkOverlay { get; private set; }
 
@@ -36,15 +36,15 @@ namespace Mvc4WebDirectDocSample.Infrastructure
 			if (null == definition)
 				return null;
 
-			if (null != CrefOverlay && null != UrlHelper && CrefOverlay.AssemblyDefinitionCollection.ContainsDefinition(definition as MemberReference)) {
-				var cref = CrefOverlay.GetCref(definition);
+			if (null != CRefOverlay && null != UrlHelper && CRefOverlay.AssemblyDefinitionCollection.ContainsDefinition(definition as MemberReference)) {
+				var cref = CRefOverlay.GetCref(definition);
 				return UrlHelper.Action("Index", "Doc", new { cref });
 			}
 
 			if (null != MsdnLinkOverlay){
 				string fullName;
-				fullName = null != CrefOverlay
-					? CrefOverlay.GetCref(definition, true)
+				fullName = null != CRefOverlay
+					? CRefOverlay.GetCref(definition, true)
 					: definition.FullName;
 				if (!String.IsNullOrEmpty(fullName) && (fullName.StartsWith("System.") || fullName.StartsWith("Microsoft."))) {
 					try {
@@ -66,8 +66,8 @@ namespace Mvc4WebDirectDocSample.Infrastructure
 			if (String.IsNullOrEmpty(cref))
 				return null;
 
-			if (null != CrefOverlay && null != UrlHelper){
-				var memberDefinition = CrefOverlay.GetMemberDefinition(cref);
+			if (null != CRefOverlay && null != UrlHelper){
+				var memberDefinition = CRefOverlay.GetMemberDefinition(cref);
 				if (null != memberDefinition) {
 					return GetLink(memberDefinition);
 				}

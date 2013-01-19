@@ -135,7 +135,7 @@ namespace DandyDoc.SimpleModels
 		public string CRef {
 			get{
 				Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<String>()));
-				return ContainingAssembly.CrefOverlay.GetCref((MemberReference)Definition);
+				return ContainingAssembly.CRefOverlay.GetCref((MemberReference)Definition);
 			}
 		}
 

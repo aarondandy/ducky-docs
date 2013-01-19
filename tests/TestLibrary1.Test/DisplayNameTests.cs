@@ -23,7 +23,7 @@ namespace TestLibrary1.Test
 
 		public DisplayNameTests() {
 			AssemblyDefinitionCollection = new AssemblyDefinitionCollection{GetAssembly()};
-			CrefOverlay = new CrefOverlay(AssemblyDefinitionCollection);
+			CRefOverlay = new CRefOverlay(AssemblyDefinitionCollection);
 			Default = new DisplayNameOverlay();
 			Full = new DisplayNameOverlay(){
 				IncludeNamespaceForTypes = true,
@@ -35,18 +35,18 @@ namespace TestLibrary1.Test
 
 		public AssemblyDefinitionCollection AssemblyDefinitionCollection { get; private set; }
 
-		public CrefOverlay CrefOverlay { get; private set; }
+		public CRefOverlay CRefOverlay { get; private set; }
 
 		public DisplayNameOverlay Default { get; private set; }
 
 		public DisplayNameOverlay Full { get; private set; }
 
 		public TypeDefinition GetType(string cref){
-			return CrefOverlay.GetTypeDefinition(cref);
+			return CRefOverlay.GetTypeDefinition(cref);
 		}
 
 		public IMemberDefinition GetMember(string cref){
-			return CrefOverlay.GetMemberDefinition(cref);
+			return CRefOverlay.GetMemberDefinition(cref);
 		}
 
 		[Test]

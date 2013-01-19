@@ -179,6 +179,7 @@ namespace DandyDoc.Overlays.MsdnLinks
 				subTreeId: node.SubTreeId,
 				targetId: node.TargetId,
 				parent: parent,
+				phantom: node.IsPhantom,
 				guid: guid,
 				contentId: contentId,
 				alias: alias,
@@ -203,6 +204,8 @@ namespace DandyDoc.Overlays.MsdnLinks
 			var targetAssetId = xmlElement.Attributes.GetValueOrDefault("toc:Target");
 			var targetLocale = xmlElement.Attributes.GetValueOrDefault("toc:TargetLocale");
 			var targetVersion = xmlElement.Attributes.GetValueOrDefault("toc:TargetVersion");
+			bool isPhantom;
+			Boolean.TryParse(xmlElement.Attributes.GetValueOrDefault("toc:IsPhantom"), out isPhantom);
 
 			var children = new List<MtpsNodeCore>();
 			foreach (var childElement in xmlElement.ChildNodes.Cast<XmlElement>()){
@@ -255,6 +258,7 @@ namespace DandyDoc.Overlays.MsdnLinks
 				subTreeId: subTreeId,
 				targetId: targetId,
 				parent: parent,
+				phantom: isPhantom,
 				guid: guid,
 				contentId: contentId,
 				alias: alias,
@@ -290,7 +294,7 @@ namespace DandyDoc.Overlays.MsdnLinks
 			Contract.Ensures(Contract.Result<IEnumerable<MtpsNavigationNode>>() != null);
 
 			var results = new List<MtpsNavigationNode>(0);
-			foreach (var childNode in children) {
+			foreach (var childNode in children.Where(c => !c.IsPhantom)) {
 				if (childNode.IsNamespace || childNode.IsTypeOrMember) {
 					var fullName = childNode.GetFullName();
 					if (!String.IsNullOrEmpty(fullName) && searchName.StartsWith(fullName)) {

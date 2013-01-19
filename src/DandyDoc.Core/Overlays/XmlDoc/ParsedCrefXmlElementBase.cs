@@ -32,7 +32,7 @@ namespace DandyDoc.Overlays.XmlDoc
 		public MemberReference CrefTarget {
 			get {
 				var cref = CRef;
-				return String.IsNullOrEmpty(cref) ? null : CrefOverlay.GetReference(cref);
+				return String.IsNullOrEmpty(cref) ? null : CRefOverlay.GetReference(cref);
 			}
 		}
 

@@ -13,12 +13,12 @@ namespace DandyDoc.Overlays.XmlDoc
 	public class PropertyDefinitionXmlDoc : ParameterizedXmlDocBase
 	{
 
-		internal PropertyDefinitionXmlDoc(PropertyDefinition definition, XmlNode xmlNode, CrefOverlay crefOverlay)
-			: base(definition, xmlNode, crefOverlay)
+		internal PropertyDefinitionXmlDoc(PropertyDefinition definition, XmlNode xmlNode, CRefOverlay cRefOverlay)
+			: base(definition, xmlNode, cRefOverlay)
 		{
 			Contract.Requires(null != definition);
 			Contract.Requires(null != xmlNode);
-			Contract.Requires(null != crefOverlay);
+			Contract.Requires(null != cRefOverlay);
 		}
 
 		public new PropertyDefinition Definition { get { return (PropertyDefinition)(base.Definition); } }
@@ -33,7 +33,7 @@ namespace DandyDoc.Overlays.XmlDoc
 				var method = Definition.SetMethod;
 				if (null == method)
 					return null;
-				return new MethodDefinitionXmlDoc(method, node, CrefOverlay);
+				return new MethodDefinitionXmlDoc(method, node, CRefOverlay);
 			}
 		}
 
@@ -45,7 +45,7 @@ namespace DandyDoc.Overlays.XmlDoc
 				var method = Definition.GetMethod;
 				if (null == method)
 					return null;
-				return new MethodDefinitionXmlDoc(method, node, CrefOverlay);
+				return new MethodDefinitionXmlDoc(method, node, CRefOverlay);
 			}
 		}
 

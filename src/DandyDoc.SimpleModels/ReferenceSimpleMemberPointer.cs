@@ -24,7 +24,7 @@ namespace DandyDoc.SimpleModels
 		public string CRef {
 			get{
 				Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
-				return CrefOverlay.GetDefaultCref(Reference);
+				return CRefOverlay.GetDefaultCref(Reference);
 			}
 		}
 

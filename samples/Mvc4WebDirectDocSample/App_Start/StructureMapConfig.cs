@@ -36,14 +36,14 @@ namespace Mvc4WebDirectDocSample.App_Start
 					HostingEnvironment.MapPath("~/bin/Vertesaur.Generation.dll")
 				)
 			);
-			x.For<CrefOverlay>().Use(c => new CrefOverlay(c.GetInstance<AssemblyDefinitionCollection>()));
-			x.For<XmlDocOverlay>().Use(c => new XmlDocOverlay(c.GetInstance<CrefOverlay>()));
+			x.For<CRefOverlay>().Use(c => new CRefOverlay(c.GetInstance<AssemblyDefinitionCollection>()));
+			x.For<XmlDocOverlay>().Use(c => new XmlDocOverlay(c.GetInstance<CRefOverlay>()));
 			x.For<NavigationOverlay>().Use(c => new NavigationOverlay(c.GetInstance<AssemblyDefinitionCollection>()));
 			x.For<TypeNavigationViewModel>().Use(c =>
 				new TypeNavigationViewModel(
 					c.GetInstance<NavigationOverlay>(),
 					c.GetInstance<XmlDocOverlay>(),
-					c.GetInstance<CrefOverlay>()
+					c.GetInstance<CRefOverlay>()
 				)
 			);
 			x.For<IMsdnLinkOverlay>().Use(_ => new MsdnDynamicLinkOverlay());

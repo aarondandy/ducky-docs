@@ -11,12 +11,12 @@ namespace DandyDoc.Overlays.XmlDoc
 	public class DelegateTypeDefinitionXmlDoc : TypeDefinitionXmlDoc
 	{
 
-		internal DelegateTypeDefinitionXmlDoc(TypeDefinition typeDefinition, XmlNode xmlNode, CrefOverlay crefOverlay)
-			: base(typeDefinition, xmlNode, crefOverlay)
+		internal DelegateTypeDefinitionXmlDoc(TypeDefinition typeDefinition, XmlNode xmlNode, CRefOverlay cRefOverlay)
+			: base(typeDefinition, xmlNode, cRefOverlay)
 		{
 			Contract.Requires(null != typeDefinition);
 			Contract.Requires(null != xmlNode);
-			Contract.Requires(null != crefOverlay);
+			Contract.Requires(null != cRefOverlay);
 		}
 
 		public ParsedXmlElementBase DocsForParameter(string name) {

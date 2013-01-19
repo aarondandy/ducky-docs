@@ -4,6 +4,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DandyDoc.Overlays.Cref;
 using Mono.Cecil;
 
 namespace DandyDoc.Overlays.DisplayName
@@ -16,7 +17,7 @@ namespace DandyDoc.Overlays.DisplayName
 	/// <para>
 	/// Note: the resulting display name can not be resolved back into the
 	/// generating declaration or reference as it may be missing critical information.
-	/// Use <see cref="DandyDoc.Overlays.Cref.CrefOverlay"/> if a unique and reversible
+	/// Use <see cref="CRefOverlay"/> if a unique and reversible
 	/// identifying name is required.
 	/// </para>
 	/// </remarks>

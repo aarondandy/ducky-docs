@@ -4,7 +4,9 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Web.Hosting;
 using System.Web.Http.Dependencies;
-using DandyDocSite.Infrastructure;
+using DandyDoc;
+using DandyDoc.SimpleModels;
+using DandyDoc.SimpleModels.Contracts;
 using Microsoft.Practices.ServiceLocation;
 using StructureMap;
 using IDependencyResolver = System.Web.Http.Dependencies.IDependencyResolver;
@@ -21,15 +23,18 @@ namespace DandyDocSite
 		}
 
 		private static void Init(IInitializationExpression x) {
-			x.For<AssemblyCollectionGenerator>().Use(_ =>
-				new AssemblyCollectionGenerator(
-					HostingEnvironment.MapPath("~/bin/DandyDoc.Core.dll"),
-					HostingEnvironment.MapPath("~/bin/DandyDoc.SimpleModels.dll"),
-					HostingEnvironment.MapPath("~/bin/TestLibrary1.dll")
-				)
-			);
-			x.For<ApiDocNavigation>().Use(c => new ApiDocNavigation(c.GetInstance<AssemblyCollectionGenerator>().GenerateDefinitions()));
-			x.For<IMsdnLinkOverlay>().Use(_ => new MsdnDynamicLinkOverlay());
+			x.For<IMsdnLinkOverlay>()
+				.Singleton()
+				.Use(_ => new MsdnDynamicLinkOverlay());
+
+			x.For<ISimpleModelRepository>()
+				.Singleton()
+				.Use(_ =>
+					new SimpleModelRepository(new AssemblyDefinitionCollection(
+						true,
+						HostingEnvironment.MapPath("~/bin/DandyDoc.Core.dll"),
+						HostingEnvironment.MapPath("~/bin/DandyDoc.SimpleModels.dll"),
+						HostingEnvironment.MapPath("~/bin/TestLibrary1.dll"))));
 		}
 
 		public class Scope : ServiceLocatorImplBase, IDependencyScope

@@ -10,17 +10,19 @@ namespace DandyDoc.Overlays.MsdnLinks
 		private static readonly string[] TypeEndings = new[]{" Class", " Interface", " Structure", "Enumeration", " Delegate"};
 		private static readonly string[] GroupEndings = new[]{"Namespaces", "Fields", "Properties", "Methods", "Members", "Constructors", "Events", "Overload"};
 
-		public MtpsNodeCore(MtpsIdentifier subTreeId, MtpsIdentifier targetId, string title, MtpsNodeCore parent){
+		public MtpsNodeCore(MtpsIdentifier subTreeId, MtpsIdentifier targetId, string title, MtpsNodeCore parent, bool phantom = false){
 			SubTreeId = subTreeId;
 			TargetId = targetId;
 			Title = title;
 			Parent = parent;
+			IsPhantom = phantom;
 		}
 
 		public MtpsIdentifier SubTreeId { get; private set; }
 		public MtpsIdentifier TargetId { get; private set; }
 		public string Title { get; private set; }
 		public MtpsNodeCore Parent { get; private set; }
+		public bool IsPhantom { get; private set; }
 
 		public bool IsNamespace {
 			get { return GetNamespace() != null; }

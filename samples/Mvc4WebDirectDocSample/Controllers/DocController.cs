@@ -16,13 +16,13 @@ namespace Mvc4WebDirectDocSample.Controllers
 
 		public DocController(
 			AssemblyDefinitionCollection assemblyDefinitionCollection,
-			CrefOverlay crefOverlay,
+			CRefOverlay cRefOverlay,
 			XmlDocOverlay xmlDocOverlay,
 			TypeNavigationViewModel typeNavigationViewModel,
 			IMsdnLinkOverlay msdnLinkOverlay
 		) {
 			AssemblyDefinitionCollection = assemblyDefinitionCollection;
-			CrefOverlay = crefOverlay;
+			CRefOverlay = cRefOverlay;
 			XmlDocOverlay = xmlDocOverlay;
 			TypeNavigationViewModel = typeNavigationViewModel;
 			MsdnLinkOverlay = msdnLinkOverlay;
@@ -30,7 +30,7 @@ namespace Mvc4WebDirectDocSample.Controllers
 
 		public AssemblyDefinitionCollection AssemblyDefinitionCollection { get; private set; }
 
-		public CrefOverlay CrefOverlay { get; private set; }
+		public CRefOverlay CRefOverlay { get; private set; }
 
 		public XmlDocOverlay XmlDocOverlay { get; private set; }
 
@@ -51,7 +51,7 @@ namespace Mvc4WebDirectDocSample.Controllers
 				viewResult = View("Namespace", ns);
 			}
 			else {
-				var reference = CrefOverlay.GetReference(parsedCref);
+				var reference = CRefOverlay.GetReference(parsedCref);
 				if (null == reference)
 					return new HttpNotFoundResult();
 				if (reference is TypeDefinition) {
@@ -87,7 +87,7 @@ namespace Mvc4WebDirectDocSample.Controllers
 			Contract.Assume(null != viewResult);
 
 			viewResult.ViewBag.MemberDefinitionLinkResolver = new MemberDefinitionLinkResolver(
-				CrefOverlay,
+				CRefOverlay,
 				Url,
 				MsdnLinkOverlay
 			);

@@ -23,18 +23,18 @@ namespace TestLibrary1.Test
 
 		public CodeSignatureCsharpTests() {
 			AssemblyDefinitionCollection = new AssemblyDefinitionCollection{GetAssembly()};
-			CrefOverlay = new CrefOverlay(AssemblyDefinitionCollection);
+			CRefOverlay = new CRefOverlay(AssemblyDefinitionCollection);
 			Generator = new CodeSignatureGeneratorCSharp();
 		}
 
 		public AssemblyDefinitionCollection AssemblyDefinitionCollection { get; private set; }
 
-		public CrefOverlay CrefOverlay { get; private set; }
+		public CRefOverlay CRefOverlay { get; private set; }
 
 		public CodeSignatureGeneratorCSharp Generator { get; private set; }
 
 		public IMemberDefinition GetMemberDefinition(string cref) {
-			return CrefOverlay.GetMemberDefinition(cref);
+			return CRefOverlay.GetMemberDefinition(cref);
 		}
 
 		public MethodDefinition GetMethod(string cref) {
@@ -42,7 +42,7 @@ namespace TestLibrary1.Test
 		}
 
 		public TypeDefinition GetType(string cref) {
-			return CrefOverlay.GetTypeDefinition(cref);
+			return CRefOverlay.GetTypeDefinition(cref);
 		}
 
 		public PropertyDefinition GetProperty(string cref) {

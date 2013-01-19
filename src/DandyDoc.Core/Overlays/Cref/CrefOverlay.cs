@@ -10,10 +10,10 @@ namespace DandyDoc.Overlays.Cref
 	/// <summary>
 	/// A documentation overlay which can translate between Cecil references and XML documentation cref hyperlinks.
 	/// </summary>
-	public class CrefOverlay
+	public class CRefOverlay
 	{
 
-		private static readonly CrefOverlay DefaultInstance = new CrefOverlay(new AssemblyDefinitionCollection());
+		private static readonly CRefOverlay DefaultInstance = new CRefOverlay(new AssemblyDefinitionCollection());
 
 		public static string GetDefaultCref(IMemberDefinition definition){
 			if(null == definition) throw new ArgumentNullException("definition");
@@ -27,7 +27,7 @@ namespace DandyDoc.Overlays.Cref
 			return DefaultInstance.GetCref(reference);
 		}
 
-		public CrefOverlay(AssemblyDefinitionCollection assemblyDefinitionCollection) {
+		public CRefOverlay(AssemblyDefinitionCollection assemblyDefinitionCollection) {
 			if(null == assemblyDefinitionCollection) throw new ArgumentNullException("assemblyDefinitionCollection");
 			Contract.EndContractBlock();
 			AssemblyDefinitionCollection = assemblyDefinitionCollection;
