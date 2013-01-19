@@ -35,14 +35,14 @@ if (Model.HasBaseChain || Model.HasDirectInterfaces){
 if (Model.HasGenericParameters){
 <section>
 	<h2>Generic Parameters</h2>
-	Html.RenderPartial("DandyDoc/Partials/GenericParameterListing", Model.GenericParameters);
+	@{Html.RenderPartial("DandyDoc/Partials/GenericParameterListing", Model.GenericParameters);}
 </section>
 }
 
 foreach (var memberSet in memberSets){
 <section>
 	<h2>@memberSet.Title</h2>
-	@{ Html.RenderPartial("DandyDoc/Partials/SimpleModelTable", memberSet.SimpleModels); }
+	@{Html.RenderPartial("DandyDoc/Partials/SimpleModelTable", memberSet.SimpleModels);}
 </section>
 }
 }

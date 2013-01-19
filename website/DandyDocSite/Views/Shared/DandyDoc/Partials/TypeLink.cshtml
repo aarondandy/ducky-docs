@@ -1,2 +1,11 @@
-﻿@model DandyDoc.SimpleModels.Contracts.ISimpleMemberPointerModel
-@Model.MemberDisplayName
+﻿@using DandyDocSite.Infrastructure
+@model DandyDoc.SimpleModels.Contracts.ISimpleMemberPointerModel
+@{
+	var linkResolver = ViewBag.ApiDocLinkResolver as ApiDocLinkResolver;
+	string link = null;
+	if (null != linkResolver) {
+		link = linkResolver.GetUrl(Model);
+	}
+	if (String.IsNullOrEmpty(link)) {@Model.MemberDisplayName}
+	else {<a href="@link">@Model.MemberDisplayName</a>}
+}

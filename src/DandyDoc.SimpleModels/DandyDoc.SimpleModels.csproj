@@ -161,7 +161,6 @@
     <Compile Include="DefinitionGenericParameterSimpleModel.cs" />
     <Compile Include="DefinitionMemberSimpleModelBase.cs" />
     <Compile Include="DefinitionParameterSimpleModel.cs" />
-    <Compile Include="DefinitionSimpleMemberPointer.cs" />
     <Compile Include="DefinitionSimpleModelBase.cs" />
     <Compile Include="DelegateSimpleModel.cs" />
     <Compile Include="EventSimpleModel.cs" />

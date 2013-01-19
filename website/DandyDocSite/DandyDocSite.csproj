@@ -146,6 +146,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Infrastructure\ApiDocLinkResolver.cs" />
     <Compile Include="Infrastructure\ApiDocNavigation.cs" />
     <Compile Include="Infrastructure\AssemblyCollectionGenerator.cs" />
     <Compile Include="Models\MemberSet.cs" />

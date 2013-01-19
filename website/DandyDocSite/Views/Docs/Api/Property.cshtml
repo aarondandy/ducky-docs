@@ -7,17 +7,14 @@
 	}
 
 }
-@helper AccessorText(){
-var accessorText = Model.HasGetter
-	? (Model.HasSetter ? "Get and Set." : "Get only.")
-	: (Model.HasSetter ? "Set only." : "Inaccessible.");
-<div><b>Accessors:</b> @accessorText</div>
-}
 @{
 Layout = "./_Layout.cshtml";
 
 <div><b>Value Type:</b> @{Html.RenderPartial("DandyDoc/Partials/TypeLink", Model.PropertyType);}</div>
-@AccessorText()
+<div><b>Accessors:</b> @(Model.HasGetter
+	? (Model.HasSetter ? "Get and Set." : "Get only.")
+	: (Model.HasSetter ? "Set only." : "Inaccessible.")
+)</div>
 
 if (Model.HasValueDescription){
 <section> 

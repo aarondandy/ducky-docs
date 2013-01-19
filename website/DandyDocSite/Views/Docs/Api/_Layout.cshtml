@@ -1,5 +1,7 @@
 ﻿@using System.Text.RegularExpressions
 @using DandyDoc.SimpleModels
+@using DandyDoc.SimpleModels.Contracts
+@using DandyDocSite.Infrastructure
 @model DandyDoc.SimpleModels.Contracts.ISimpleModel
 @functions{
 	static readonly Regex TitleSplitRegex = new Regex(@"(?<=[.,;\<\(\[])");
@@ -7,84 +9,99 @@
 		return TitleSplitRegex.Split(title);
 	}
 }
+@helper RenderNameParts(string nameText){
+	var parts = TitleParts(nameText);
+	if (parts.Length == 1) {
+		@(parts[0])
+	}
+	else {
+		foreach (var part in parts) {<span>@part</span>}
+	}
+}
+@helper GenerateTypeNavMenu(IEnumerable<INamespaceSimpleModel> namespaceModels, string activeNamespace, ApiDocLinkResolver linkResolver){
+	<ul class="nav-list unstyled">
+		@foreach (var namespaceModel in namespaceModels) {
+			var isActiveNamespace = String.Equals(activeNamespace, namespaceModel.NamespaceName);
+			var varTypeListId = "typelist-" + namespaceModel.FullName.Replace(".", "-");
+			<li>
+				<span>
+					<a href="@linkResolver.GetLocalCrefUrl(namespaceModel.CRef)"><i class="icon-gift"></i></a>
+					<a href="#" data-toggle="collapse" data-target="#@varTypeListId" onclick="return false;">@RenderNameParts(namespaceModel.ShortName)</a>
+				</span>
+				<ul class="nav nav-list collapse @if (isActiveNamespace) {@("in")}" id="@varTypeListId">
+					@foreach (var type in namespaceModel.Types) {
+						<li>
+							<span>
+								<i class="icon-cog"></i><a href="@linkResolver.GetLocalCrefUrl(type.CRef)">@RenderNameParts(type.ShortName)</a>
+							</span>
+						</li> 
+					}
+				</ul>
+			</li>
+		}
+	</ul>
+}
 @{
 	Layout = "~/Views/Shared/_Layout.cshtml";
-
 	ViewBag.Title = "Dandy Doc";
 	ViewBag.SubTitle = "API Reference";
 	ViewBag.EntityTitle = Model.Title;
-	ViewBag.EntitySubTitle = Model.SubTitle;	
-	var navModel = ViewBag.TypeNavigationViewModel as SimpleModelRepository;
-	var modelNamespaceName = Model.NamespaceName;
+	ViewBag.EntitySubTitle = Model.SubTitle;
+	var linkResolver = (ViewBag.ApiDocLinkResolver as ApiDocLinkResolver)
+		?? new ApiDocLinkResolver{UrlHelper = Url};
 }
 <div class="container">
 	<div class="row">
-		@if (navModel != null){
-			<nav class="span3 namespace-nav">
-				<ul class="nav-list unstyled">
-					@foreach (var ns in navModel.Namespaces){
-						var isCurrentNamespace = String.Equals(modelNamespaceName, ns.NamespaceName);
-						var varTypeListId = "typelist-" + ns.FullName.Replace(".","-");
-						<li>
-							<span>
-								<a href="#" ><i class="icon-gift"></i></a>
-								<a href="#" data-toggle="collapse" data-target="#@varTypeListId" onclick="return false;">@foreach (var part in TitleParts(ns.ShortName)) {<span>@part</span>}</a>
-							</span>
-							<ul class="nav nav-list collapse @if (isCurrentNamespace){<text>in</text>}" id="@varTypeListId">
-								@foreach (var type in ns.Types) {
-									<li>
-										<span>
-											<a href="#"><i class="icon-cog"></i>@foreach (var part in TitleParts(type.ShortName)) {<span>@part</span>}</a>
-										</span>
-									</li> 
-								}
-							</ul>
-						</li>
-					}
-				</ul>
-			</nav>
-		}
+		<nav class="span3 namespace-nav">
+			@if (ViewBag.TypeNavigationViewModel is SimpleModelRepository) {
+				@GenerateTypeNavMenu(((SimpleModelRepository)ViewBag.TypeNavigationViewModel).Namespaces, Model.NamespaceName, linkResolver)
+			}
+		</nav>
 		<div class="span9">
 			<section>
 				<h1>@{foreach (var part in TitleParts(ViewBag.EntityTitle)) {<span>@part</span>} if (!String.IsNullOrEmpty(ViewBag.EntitySubTitle)) { <small>@ViewBag.EntitySubTitle</small>}}</h1>
 				@{
 					if (Model.HasSummary) {
-					<p class="lead">@{ Html.RenderPartial("DandyDoc/Partials/ComplexTextRender", Model.Summary); }</p>
+						<p class="lead">@{ Html.RenderPartial("DandyDoc/Partials/ComplexTextRender", Model.Summary); }</p>
 					}
 					if (Model.HasFlair) { Html.RenderPartial("DandyDoc/Partials/FlairTable", Model.FlairTags); }
 					if (!String.IsNullOrEmpty(Model.NamespaceName)) {
-					<div><b>Namespace:</b> @Model.NamespaceName</div>
+						<div><b>Namespace:</b> <a href="@linkResolver.GetLocalCrefUrl("N:" + Model.NamespaceName)">@Model.NamespaceName</a></div>
 					}
 					if (Model.ContainingAssembly != null) {
-					<div><b>Assembly: </b> @Model.ContainingAssembly.ShortName (@(Model.ContainingAssembly.AssemblyFileName))</div>
+						<div><b>Assembly: </b> @Model.ContainingAssembly.ShortName (@(Model.ContainingAssembly.AssemblyFileName))</div>
 					}
 				}
 				@RenderBody()
 				@if (Model.HasRemarks){
-				<section>
-					<h2>Remarks</h2>
-					@foreach (var section in Model.Remarks){
-						Html.RenderPartial("DandyDoc/Partials/ComplexTextRender", section);
-					}
-				</section>
+					<section>
+						<h2>Remarks</h2>
+						@foreach (var section in Model.Remarks){
+							<div>
+								@{Html.RenderPartial("DandyDoc/Partials/ComplexTextRender", section);}
+							</div>
+						}
+					</section>
 				}
 				@if (Model.HasExamples){
-				<section>
-					<h2>Examples</h2>
-					@foreach (var section in Model.Examples){
-						Html.RenderPartial("DandyDoc/Partials/ComplexTextRender", section);
-					}
-				</section>
+					<section>
+						<h2>Examples</h2>
+						@foreach (var section in Model.Examples){
+							<div>
+								@{Html.RenderPartial("DandyDoc/Partials/ComplexTextRender", section);}
+							</div>
+						}
+					</section>
 				}
 				@if (Model.HasSeeAlso){
-				<section>
-					<h2>See Also</h2>
-					<ul>
-						@foreach (var section in Model.SeeAlso){
-							<li>@{Html.RenderPartial("DandyDoc/Partials/ComplexTextRender", section);}</li>
-						}
-					</ul>
-				</section>
+					<section>
+						<h2>See Also</h2>
+						<ul>
+							@foreach (var section in Model.SeeAlso){
+								<li>@{Html.RenderPartial("DandyDoc/Partials/ComplexTextRender", section);}</li>
+							}
+						</ul>
+					</section>
 				}
 			</section>
 		</div>

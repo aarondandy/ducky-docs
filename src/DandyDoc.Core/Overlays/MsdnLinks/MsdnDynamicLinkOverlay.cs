@@ -87,6 +87,10 @@ namespace DandyDoc.Overlays.MsdnLinks
 			var root = GetRootNode();
 			if (null == root)
 				throw new InvalidOperationException("The root asset is not valid.");
+
+			if (memberName.Length > 2 && memberName[1] == ':')
+				memberName = memberName.Substring(2);
+			Contract.Assume(!String.IsNullOrEmpty(memberName));
 			return Search(memberName, root);
 		}
 
@@ -271,8 +275,9 @@ namespace DandyDoc.Overlays.MsdnLinks
 
 			var results = new List<MtpsNavigationNode>(0);
 			var nodeFullName = node.GetFullName();
-			if (searchName.Equals(nodeFullName))
+			if (searchName.Equals(nodeFullName)) {
 				results.Add(node);
+			}
 
 			results.AddRange(SearchChildren(searchName, node, node.ChildLinks));
 			return results;

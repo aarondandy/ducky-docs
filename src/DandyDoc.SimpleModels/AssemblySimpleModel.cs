@@ -283,7 +283,7 @@ namespace DandyDoc.SimpleModels
 				return false;
 			if (definition.Name.Length >= 2 && definition.Name[0] == '$' && definition.Name[definition.Name.Length - 1] == '$')
 				return false;
-			if (!definition.IsOperatorOverload() && definition.IsSpecialName)
+			if (!definition.IsOperatorOverload() && !definition.IsConstructor && definition.IsSpecialName)
 				return false;
 			if (definition.IsFinalizer())
 				return false;
@@ -371,16 +371,14 @@ namespace DandyDoc.SimpleModels
 			var constructors = new List<MethodDefinition>();
 			var methods = new List<MethodDefinition>();
 			var operators = new List<MethodDefinition>();
-			if (definition.HasMethods) {
-				foreach (var methodDefinition in definition.Methods.Where(MethodFilter)) {
-					var target =
-						methodDefinition.IsConstructor
-						? constructors
-						: methodDefinition.IsOperatorOverload()
-						? operators
-						: methods;
-					target.Add(methodDefinition);
-				}
+			foreach (var methodDefinition in definition.GetAllMethods().Where(MethodFilter)) {
+				var target =
+					methodDefinition.IsConstructor
+					? constructors
+					: methodDefinition.IsOperatorOverload()
+					? operators
+					: methods;
+				target.Add(methodDefinition);
 			}
 
 			return new SimpleModelMembersCollection(
@@ -389,7 +387,7 @@ namespace DandyDoc.SimpleModels
 				new DefinitionModelCollection<MethodDefinition, IMethodSimpleModel>(constructors, d => new MethodSimpleModel(d, model), MethodModelComparison),
 				new DefinitionModelCollection<MethodDefinition, IMethodSimpleModel>(methods, d => new MethodSimpleModel(d, model), MethodModelComparison),
 				new DefinitionModelCollection<MethodDefinition, IMethodSimpleModel>(operators, d => new MethodSimpleModel(d, model), MethodModelComparison),
-				new DefinitionModelCollection<PropertyDefinition, IPropertySimpleModel>(definition.Properties.Where(PropertyFilter), d => {
+				new DefinitionModelCollection<PropertyDefinition, IPropertySimpleModel>(definition.GetAllProperties().Where(PropertyFilter), d => {
 					var getterDefinition = d.GetMethod;
 					var setterDefinition = d.SetMethod;
 					IMethodSimpleModel getter = null, setter = null;
@@ -407,8 +405,8 @@ namespace DandyDoc.SimpleModels
 						model
 					);
 				}, PropertyModelComparison),
-				new DefinitionModelCollection<FieldDefinition, IFieldSimpleModel>(definition.Fields.Where(FieldFilter), d => new FieldSimpleModel(d, model), FieldModelComparison),
-				new DefinitionModelCollection<EventDefinition, IEventSimpleModel>(definition.Events.Where(EventFilter), d => new EventSimpleModel(d, model), EventModelComparison)
+				new DefinitionModelCollection<FieldDefinition, IFieldSimpleModel>(definition.GetAllFields().Where(FieldFilter), d => new FieldSimpleModel(d, model), FieldModelComparison),
+				new DefinitionModelCollection<EventDefinition, IEventSimpleModel>(definition.GetAllEvents().Where(EventFilter), d => new EventSimpleModel(d, model), EventModelComparison)
 			);
 		}
 

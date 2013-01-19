@@ -1,4 +1,5 @@
-﻿@model IEnumerable<DandyDoc.SimpleModels.Contracts.IGenericParameterSimpleModel>
+﻿@using DandyDoc.SimpleModels
+@model IEnumerable<DandyDoc.SimpleModels.Contracts.IGenericParameterSimpleModel>
 <dl>
 	@foreach (var p in Model) {
 		<dt>@p.DisplayName</dt>
@@ -11,7 +12,16 @@
 				Constraints:
 				<ul>
 					@foreach (var c in p.Constraints) {
-					<li>@c.DisplayName</li>
+						<li>
+							@if (c is MemberPointerGenericConstraint) {
+								Html.RenderPartial(
+									"DandyDoc/Partials/TypeLink",
+									((MemberPointerGenericConstraint)c).Member
+								);
+							}else{
+								@c.DisplayName
+							}
+						</li>
 					}
 				</ul>
 			</div>

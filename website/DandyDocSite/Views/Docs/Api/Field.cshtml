@@ -2,9 +2,7 @@
 @{ Layout = "./_Layout.cshtml"; }
 <dl>
 	<dt>Type</dt>
-	<dd>
-		@{Html.RenderPartial("DandyDoc/Partials/TypeLink", Model.FieldType);}
-	</dd>
+	<dd>@{Html.RenderPartial("DandyDoc/Partials/TypeLink", Model.FieldType);}</dd>
 </dl>
 @if (Model.HasValueDescription){
 <section> 

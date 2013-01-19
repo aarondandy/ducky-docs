@@ -1,15 +1,18 @@
-﻿@model DandyDoc.SimpleModels.Contracts.ISimpleModelRepository
+﻿@using DandyDocSite.Infrastructure
+@model DandyDoc.SimpleModels.Contracts.ISimpleModelRepository
 @{
 Layout = "./_Layout.cshtml";
+var linkResolver = (ViewBag.ApiDocLinkResolver as ApiDocLinkResolver)
+	?? new ApiDocLinkResolver { UrlHelper = Url };
 <section>
 	<table class="table table-bordered">
 		<thead><tr><th><i class="icon-info-sign"></i></th><th>Namespace</th><th>Assembly</th></tr></thead>
 		<tbody>
-			@foreach (var ns in Model.Namespaces) {
+			@foreach (var namespaceModel in Model.Namespaces) {
 			<tr>
 				<td><i class="icon-gift"></i></td>
-				<td>@ns.ShortName</td>
-				<td>@String.Join(", ", ns.Assemblies.Select(a => a.ShortName))</td>
+				<td><a href="@linkResolver.GetLocalCrefUrl(namespaceModel.CRef)">@namespaceModel.ShortName</a></td>
+				<td>@String.Join(", ", namespaceModel.Assemblies.Select(a => a.ShortName))</td>
 			</tr>
 			}
 		</tbody>

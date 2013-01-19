@@ -143,6 +143,22 @@ namespace DandyDoc.Overlays.MsdnLinks
 			return null;
 		}
 
+		public string GetCrefName() {
+			const string assetIdPrefix = "AssetId:";
+			if (null == TargetId)
+				return null;
+
+			var result = TargetId.AssetId;
+			if (result.StartsWith(assetIdPrefix))
+				result = result.Substring(assetIdPrefix.Length);
+
+			if (result.Length > 2 && result[1] == ':') {
+				result = result.Substring(2);
+				return result;
+			}
+			return null;
+		}
+
 		public override string ToString(){
 			return Title;
 		}
