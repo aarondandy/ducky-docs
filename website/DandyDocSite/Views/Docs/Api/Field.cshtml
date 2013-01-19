@@ -1,12 +1,9 @@
 ﻿@model DandyDoc.SimpleModels.Contracts.IFieldSimpleModel
 @{ Layout = "./_Layout.cshtml"; }
-<dl>
-	<dt>Type</dt>
-	<dd>@{Html.RenderPartial("DandyDoc/Partials/TypeLink", Model.FieldType);}</dd>
-</dl>
-@if (Model.HasValueDescription){
 <section> 
 	<h2>Value</h2>
-	@{Html.RenderPartial("DandyDoc/Partials/ComplexTextRender", Model.ValueDescription);}
+	<p><b>Type:</b> @{Html.RenderPartial("DandyDoc/Partials/TypeLink", Model.FieldType);}</p>
+	@if (Model.HasValueDescription){
+		Html.RenderPartial("DandyDoc/Partials/ComplexTextRender", Model.ValueDescription);
+	}
 </section>
-}

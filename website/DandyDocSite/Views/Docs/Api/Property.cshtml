@@ -10,18 +10,17 @@
 @{
 Layout = "./_Layout.cshtml";
 
-<div><b>Value Type:</b> @{Html.RenderPartial("DandyDoc/Partials/TypeLink", Model.PropertyType);}</div>
-<div><b>Accessors:</b> @(Model.HasGetter
-	? (Model.HasSetter ? "Get and Set." : "Get only.")
-	: (Model.HasSetter ? "Set only." : "Inaccessible.")
-)</div>
-
-if (Model.HasValueDescription){
-<section> 
+<section>
 	<h2>Value</h2>
-	@{Html.RenderPartial("DandyDoc/Partials/ComplexTextRender", Model.ValueDescription);}
+	<p><b>Type:</b> @{Html.RenderPartial("DandyDoc/Partials/TypeLink", Model.PropertyType);}</p>
+	@if (Model.HasValueDescription){
+		Html.RenderPartial("DandyDoc/Partials/ComplexTextRender", Model.ValueDescription);
+	}
+	<p><b>Accessors:</b> @(Model.HasGetter
+		? (Model.HasSetter ? "Get and Set." : "Get only.")
+		: (Model.HasSetter ? "Set only." : "Inaccessible.")
+	)</p>
 </section>
-}
 
 if (Model.HasGetter && IsWorthDisplaying(Model.Getter)) {
 <section>

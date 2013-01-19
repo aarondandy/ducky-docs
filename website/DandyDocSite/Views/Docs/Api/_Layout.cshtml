@@ -65,14 +65,14 @@
 						<p class="lead">@{ Html.RenderPartial("DandyDoc/Partials/ComplexTextRender", Model.Summary); }</p>
 					}
 					if (Model.HasFlair) { Html.RenderPartial("DandyDoc/Partials/FlairTable", Model.FlairTags); }
+					if (Model.DeclaringModel is ITypeSimpleModel){
+						<div><b>Declared In:</b> <a href="@linkResolver.GetLocalCrefUrl(Model.DeclaringModel.CRef)">@Model.DeclaringModel.ShortName</a></div>
+					}
 					if (!String.IsNullOrEmpty(Model.NamespaceName)) {
 						<div><b>Namespace:</b> <a href="@linkResolver.GetLocalCrefUrl("N:" + Model.NamespaceName)">@Model.NamespaceName</a></div>
 					}
 					if (Model.ContainingAssembly != null) {
 						<div><b>Assembly:</b> @Model.ContainingAssembly.ShortName (@(Model.ContainingAssembly.AssemblyFileName))</div>
-					}
-					if (Model.DeclaringModel is ITypeSimpleModel){
-						<div><b>Declared In:</b> <a href="@linkResolver.GetLocalCrefUrl(Model.DeclaringModel.CRef)">@Model.DeclaringModel.ShortName</a></div>
 					}
 				}
 				@RenderBody()

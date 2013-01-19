@@ -49,7 +49,7 @@ namespace DandyDoc.SimpleModels
 
 						var firstReference = set.Select(ex => ex.CrefTarget).FirstOrDefault(ex => ex != null);
 						var exceptionPointer = firstReference == null
-							? (ISimpleMemberPointerModel)new CrefSimpleMemberPointer(cRef, cRef)
+							? (ISimpleMemberPointerModel)new CrefSimpleMemberPointer(cRef)
 							: new ReferenceSimpleMemberPointer(NestedTypeDisplayNameOverlay.GetDisplayName(firstReference), firstReference);
 
 						results.Add(new ExceptionSimpleModel(exceptionPointer, conditions, ensures));
@@ -73,7 +73,7 @@ namespace DandyDoc.SimpleModels
 					summary = ParsedXmlDocComplexTextNode.ConvertToSingleComplexNode(summaryParsedXml.Children);
 				}
 			}
-			var paramTypeModel = new ReferenceSimpleMemberPointer(NestedTypeDisplayNameOverlay.GetDisplayName(returnType), returnType);
+			var paramTypeModel = new ReferenceSimpleMemberPointer(FullTypeDisplayNameOverlay.GetDisplayName(returnType), returnType);
 			return new ReturnSimpleModel(paramTypeModel, summary);
 		}
 
@@ -94,7 +94,7 @@ namespace DandyDoc.SimpleModels
 
 					var paramTypeReference = parameterDefinition.ParameterType;
 					Contract.Assume(paramTypeReference != null);
-					var paramTypeModel = new ReferenceSimpleMemberPointer(NestedTypeDisplayNameOverlay.GetDisplayName(paramTypeReference), paramTypeReference);
+					var paramTypeModel = new ReferenceSimpleMemberPointer(FullTypeDisplayNameOverlay.GetDisplayName(paramTypeReference), paramTypeReference);
 					results.Add(new DefinitionParameterSimpleModel(parameterDefinition, paramTypeModel, summary));
 				}
 			}
