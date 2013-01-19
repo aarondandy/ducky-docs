@@ -47,6 +47,8 @@ namespace DandyDoc.SimpleModels
 
 		public ISimpleModelRepository RootRepository { get; private set; }
 
+		public ISimpleModel DeclaringModel { get { return RootRepository; } }
+
 		public string Title {
 			get { return ShortName; }
 		}

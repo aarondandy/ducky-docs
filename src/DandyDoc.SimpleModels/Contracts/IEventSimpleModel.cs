@@ -3,8 +3,6 @@
 	public interface IEventSimpleModel : ISimpleModel
 	{
 
-		string SubTitle { get;  }
-
 		ISimpleMemberPointerModel DelegateType { get; }
 
 	}

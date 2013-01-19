@@ -7,16 +7,25 @@ namespace DandyDoc.SimpleModels
 	public abstract class DefinitionMemberSimpleModelBase<TDefinition> : DefinitionSimpleModelBase<TDefinition>
 		where TDefinition : MemberReference, IMemberDefinition
 	{
+
+		private static IAssemblySimpleModel GetContainingAssembly(ITypeSimpleModel declaringModel){
+			Contract.Requires(null != declaringModel);
+			Contract.Ensures(Contract.Result<IAssemblySimpleModel>() != null);
+			Contract.Assume(declaringModel.ContainingAssembly != null);
+			return declaringModel.ContainingAssembly;
+		}
+
 		protected DefinitionMemberSimpleModelBase(TDefinition definition, ITypeSimpleModel declaringModel)
-			: base(definition, declaringModel.ContainingAssembly)
+			: base(definition, GetContainingAssembly(declaringModel))
 		{
 			Contract.Requires(definition != null);
 			Contract.Requires(declaringModel != null);
-			Contract.Requires(declaringModel.ContainingAssembly != null);
-			DeclaringModel = declaringModel;
+			DeclaringTypeModel = declaringModel;
 		}
 
-		public ITypeSimpleModel DeclaringModel { get; private set; }
+		public override ISimpleModel DeclaringModel { get { return DeclaringTypeModel; } }
+
+		public ITypeSimpleModel DeclaringTypeModel { get; private set; }
 
 		public abstract override string SubTitle { get; }
 

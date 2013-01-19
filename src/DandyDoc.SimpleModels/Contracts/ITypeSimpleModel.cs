@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace DandyDoc.SimpleModels.Contracts
 {
+
 	public interface ITypeSimpleModel : ISimpleModel, ISimpleModelMembersCollection
 	{
 
@@ -20,4 +22,5 @@ namespace DandyDoc.SimpleModels.Contracts
 		IList<IGenericParameterSimpleModel> GenericParameters { get; } 
 
 	}
+
 }

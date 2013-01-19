@@ -175,5 +175,9 @@ namespace DandyDoc.SimpleModels
 		public IList<IComplexTextNode> SeeAlso {
 			get { return new IComplexTextNode[0]; }
 		}
+
+		public ISimpleModel DeclaringModel {
+			get { return null; }
+		}
 	}
 }

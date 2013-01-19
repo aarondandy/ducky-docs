@@ -73,6 +73,13 @@ namespace DandyDoc.SimpleModels
 			_genericParameters = new Lazy<ReadOnlyCollection<IGenericParameterSimpleModel>>(CreateGenericParameters, true);
 		}
 
+
+		public override ISimpleModel DeclaringModel { get { return DeclaringTypeModel; } }
+
+		public ITypeSimpleModel DeclaringTypeModel { get {
+			return null; // TODO: figure out how to get this set
+		} }
+
 		private ReadOnlyCollection<IGenericParameterSimpleModel> CreateGenericParameters(){
 			var results = new List<IGenericParameterSimpleModel>();
 			if (Definition.HasGenericParameters){

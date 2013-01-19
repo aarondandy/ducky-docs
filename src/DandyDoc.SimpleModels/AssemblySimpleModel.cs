@@ -196,8 +196,6 @@ namespace DandyDoc.SimpleModels
 			Contract.EndContractBlock();
 			Definition = assemblyDefinition;
 			RootRepository = repository;
-			//XmlDocOverlay = repository.XmlDocOverlay;
-			//XmlDocOverlay = new XmlDocOverlay(new CRefOverlay(new AssemblyDefinitionCollection(new[]{assemblyDefinition})));
 			_types = new Lazy<TypeDefinitionModelCollection>(GenerateTypeViewModels, true);
 			_membersCache = new ConcurrentDictionary<ITypeSimpleModel, SimpleModelMembersCollection>();
 		}
@@ -222,6 +220,7 @@ namespace DandyDoc.SimpleModels
 		protected virtual ITypeSimpleModel CreateTypeSimpleModelInstance(TypeDefinition definition) {
 			Contract.Requires(definition != null);
 			Contract.Ensures(Contract.Result<ITypeSimpleModel>() != null);
+
 			if(definition.IsDelegateType())
 				return new DelegateSimpleModel(definition, this);
 			return new TypeSimpleModel(definition, this);
@@ -322,6 +321,7 @@ namespace DandyDoc.SimpleModels
 			if (reference is IMemberDefinition){
 				var memberDefinition = (IMemberDefinition) reference;
 				var typeDefinition = memberDefinition.DeclaringType;
+				Contract.Assume(typeDefinition != null);
 				var typeModel = DefinitionToModel(typeDefinition);
 				if (typeModel == null)
 					return null;
@@ -518,17 +518,19 @@ namespace DandyDoc.SimpleModels
 			get { return new IFlairTag[0]; }
 		}
 
-		public bool HasSummary { get { throw new NotImplementedException(); } }
-		public IComplexTextNode Summary { get { throw new NotImplementedException(); } }
+		bool ISimpleModel.HasSummary { get { return false; } }
+		IComplexTextNode ISimpleModel.Summary { get { throw new NotSupportedException(); } }
 
-		public bool HasRemarks { get { return Remarks.Count > 0; } }
-		public IList<IComplexTextNode> Remarks { get { throw new NotImplementedException(); } }
+		bool ISimpleModel.HasRemarks { get { return false; } }
+		IList<IComplexTextNode> ISimpleModel.Remarks { get { throw new NotSupportedException(); } }
 
-		public bool HasExamples { get { return Examples.Count > 0; } }
-		public IList<IComplexTextNode> Examples { get { throw new NotImplementedException(); } }
+		bool ISimpleModel.HasExamples { get { return false; } }
+		IList<IComplexTextNode> ISimpleModel.Examples { get { throw new NotSupportedException(); } }
 
-		public bool HasSeeAlso { get { return SeeAlso.Count > 0; } }
-		public IList<IComplexTextNode> SeeAlso { get { throw new NotImplementedException(); } }
+		bool ISimpleModel.HasSeeAlso { get { return false; } }
+		IList<IComplexTextNode> ISimpleModel.SeeAlso { get { throw new NotSupportedException(); } }
+
+		public ISimpleModel DeclaringModel { get { return RootRepository; } }
 
 		[ContractInvariantMethod]
 		private void CodeContractInvariants() {

@@ -203,10 +203,13 @@ namespace DandyDoc.SimpleModels
 			}
 		}
 
+		public abstract ISimpleModel DeclaringModel { get; }
+
 		[ContractInvariantMethod]
 		private void CodeContractInvariant() {
 			Contract.Invariant(Definition != null);
 			Contract.Invariant(ContainingAssembly != null);
 		}
+
 	}
 }

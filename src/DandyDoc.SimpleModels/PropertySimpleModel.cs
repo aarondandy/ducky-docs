@@ -35,6 +35,7 @@ namespace DandyDoc.SimpleModels
 				if (null != xmlExceptions) {
 					foreach (var set in xmlExceptions.GroupBy(ex => ex.CRef)) {
 						var cRef = set.Key;
+						Contract.Assume(!String.IsNullOrEmpty(cRef));
 						var conditions = new List<IComplexTextNode>();
 						var ensures = new List<IComplexTextNode>();
 						foreach (var exceptionItem in set.Where(ex => ex.Children.Count > 0)) {
@@ -63,6 +64,7 @@ namespace DandyDoc.SimpleModels
 				foreach (var parameterDefinition in Definition.Parameters) {
 					IComplexTextNode summary = null;
 					if (null != xmlDocs) {
+						Contract.Assume(!String.IsNullOrEmpty(parameterDefinition.Name));
 						var summaryParsedXml = xmlDocs.DocsForParameter(parameterDefinition.Name);
 						if (null != summaryParsedXml && summaryParsedXml.Children.Count > 0) {
 							summary = ParsedXmlDocComplexTextNode.ConvertToSingleComplexNode(summaryParsedXml.Children);
@@ -70,6 +72,7 @@ namespace DandyDoc.SimpleModels
 					}
 
 					var paramTypeReference = parameterDefinition.ParameterType;
+					Contract.Assume(paramTypeReference != null);
 					var paramTypeModel = new ReferenceSimpleMemberPointer(NestedTypeDisplayNameOverlay.GetDisplayName(paramTypeReference), paramTypeReference);
 					results.Add(new DefinitionParameterSimpleModel(parameterDefinition, paramTypeModel, summary));
 				}
@@ -88,7 +91,9 @@ namespace DandyDoc.SimpleModels
 		}
 
 		public ISimpleMemberPointerModel PropertyType {
-			get { return new ReferenceSimpleMemberPointer(
+			get {
+				Contract.Assume(Definition.PropertyType != null);
+				return new ReferenceSimpleMemberPointer(
 					RegularTypeDisplayNameOverlay.GetDisplayName(Definition.PropertyType),
 					Definition.PropertyType
 				);

@@ -8,6 +8,7 @@ namespace DandyDoc.SimpleModels
 	{
 
 		private static string StripCrefTypePrefix(string cRef) {
+			Contract.Ensures(String.IsNullOrEmpty(cRef) ? String.IsNullOrEmpty(Contract.Result<string>()) : !String.IsNullOrEmpty(Contract.Result<string>()));
 			if (String.IsNullOrEmpty(cRef))
 				return cRef;
 			if (cRef.Length >= 2 && cRef[1] == ':')
@@ -16,7 +17,10 @@ namespace DandyDoc.SimpleModels
 		}
 
 		public CrefSimpleMemberPointer(string cRef)
-			: this(cRef, StripCrefTypePrefix(cRef)) { }
+			: this(cRef, StripCrefTypePrefix(cRef))
+		{
+			Contract.Requires(!String.IsNullOrEmpty(cRef));
+		}
 
 		public CrefSimpleMemberPointer(string cRef, string displayName) {
 			if(String.IsNullOrEmpty(displayName)) throw new ArgumentException("Display name is required.");
