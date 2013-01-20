@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using DandyDoc.SimpleModels.ComplexText;
 using DandyDoc.SimpleModels.Contracts;
 
 namespace DandyDoc.SimpleModels
@@ -15,8 +16,8 @@ namespace DandyDoc.SimpleModels
 
 		public ISimpleMemberPointerModel Member { get; private set; }
 
-		public string DisplayName {
-			get { return Member.MemberDisplayName; }
+		public IComplexTextNode DisplayName {
+			get { return Member.Description; }
 		}
 
 		[ContractInvariantMethod]
@@ -28,17 +29,17 @@ namespace DandyDoc.SimpleModels
 
 	public class DefaultConstructorGenericConstraint : IGenericParameterConstraint
 	{
-		public string DisplayName { get { return "Default Constructor"; } }
+		public IComplexTextNode DisplayName { get { return new StandardComplexText("Default Constructor"); } }
 	}
 
 	public class ValueTypeGenericConstraint : IGenericParameterConstraint
 	{
-		public string DisplayName { get { return "Value Type"; } }
+		public IComplexTextNode DisplayName { get { return new StandardComplexText("Value Type"); } }
 	}
 
 	public class ReferenceTypeGenericConstraint : IGenericParameterConstraint
 	{
-		public string DisplayName { get { return "Reference Type"; } }
+		public IComplexTextNode DisplayName { get { return new StandardComplexText("Reference Type"); } }
 	}
 
 }

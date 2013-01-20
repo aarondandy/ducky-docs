@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using DandyDoc.SimpleModels.ComplexText;
 using DandyDoc.SimpleModels.Contracts;
 using Mono.Cecil;
 
@@ -21,8 +22,8 @@ namespace DandyDoc.SimpleModels
 
 		public ParameterDefinition Parameter { get; private set; }
 
-		public string DisplayName {
-			get { return Parameter.Name; }
+		public IComplexTextNode DisplayName {
+			get { return new StandardComplexText(Parameter.Name); }
 		}
 
 		public bool HasSummary {

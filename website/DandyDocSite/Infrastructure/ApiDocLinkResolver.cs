@@ -46,7 +46,7 @@ namespace DandyDocSite.Infrastructure
 					return result;
 			}
 
-			return GetUrlForExternalCref(pointerModel.CRef);
+			return GetUrl(pointerModel.CRef);
 		}
 
 		protected virtual string GetUrlForExternalCref(string cRef) {

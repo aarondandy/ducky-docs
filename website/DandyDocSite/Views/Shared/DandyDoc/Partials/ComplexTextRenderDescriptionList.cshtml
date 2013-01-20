@@ -12,7 +12,7 @@
 	}
 }
 @if (!String.IsNullOrEmpty(listHtmlType)){
-	@Html.Raw('<' + listHtmlType + '>');
+	@Html.Raw('<' + listHtmlType + '>')
 	foreach (var row in Model.Children){
 			var term = row.Term;
 			var description = row.Description;

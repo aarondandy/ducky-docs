@@ -3,7 +3,7 @@
 	public interface ISimpleMemberPointerModel
 	{
 
-		string MemberDisplayName { get; }
+		IComplexTextNode Description { get; }
 
 		string CRef { get; }
 

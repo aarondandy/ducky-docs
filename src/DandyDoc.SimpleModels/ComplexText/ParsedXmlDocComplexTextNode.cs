@@ -47,7 +47,11 @@ namespace DandyDoc.SimpleModels.ComplexText
 				}
 				if (parsedElement is ParsedXmlTypeparamrefElement){
 					var specialized = (ParsedXmlTypeparamrefElement) parsedElement;
-					return new TypeParamrefComplexText(specialized.TypeparamName, children);
+					return new ParamrefComplexText(specialized.TypeparamName, children);
+				}
+				if (parsedElement is ParsedXmlParamrefElement){
+					var specialied = (ParsedXmlParamrefElement) parsedElement;
+					return new ParamrefComplexText(specialied.ParameterName, children);
 				}
 				if (parsedElement is ParsedXmlCode){
 					var specialized = (ParsedXmlCode) parsedElement;
@@ -56,6 +60,28 @@ namespace DandyDoc.SimpleModels.ComplexText
 				if (parsedElement is ParsedXmlContractCondition){
 					var specialized = (ParsedXmlContractCondition)parsedElement;
 					return new ContractConditionComplexText(specialized, children);
+				}
+				if (parsedElement is ParsedCrefXmlElementBase){
+					var specialized = (ParsedCrefXmlElementBase)parsedElement;
+					string target;
+					SeeComplexText.TargetKind kind;
+					if (specialized is ParsedXmlSeeElement && !String.IsNullOrEmpty(((ParsedXmlSeeElement)specialized).HRef)){
+						target = ((ParsedXmlSeeElement) specialized).HRef;
+						kind = SeeComplexText.TargetKind.HRef;
+					}
+					else if (!String.IsNullOrEmpty(specialized.CRef)) {
+						target = specialized.CRef;
+						kind = SeeComplexText.TargetKind.CRef;
+					}
+					else if (!String.IsNullOrEmpty(specialized.HRef)) {
+						target = specialized.HRef;
+						kind = SeeComplexText.TargetKind.HRef;
+					}
+					else {
+						target = String.Empty;
+						kind = SeeComplexText.TargetKind.None;
+					}
+					return new SeeComplexText(target, kind, children);
 				}
 			}
 

@@ -6,6 +6,9 @@
 	if (null != linkResolver) {
 		link = linkResolver.GetUrl(Model);
 	}
-	if (String.IsNullOrEmpty(link)) {@Model.MemberDisplayName}
-	else {<a href="@link">@Model.MemberDisplayName</a>}
+
+	if (String.IsNullOrEmpty(link)) {
+		Html.RenderPartial("DandyDoc/Partials/ComplexTextRender", Model.Description);
+	}
+	else {<a href="@link">@{Html.RenderPartial("DandyDoc/Partials/ComplexTextRender", Model.Description);}</a>}
 }

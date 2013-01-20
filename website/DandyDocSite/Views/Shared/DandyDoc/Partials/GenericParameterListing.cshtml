@@ -19,7 +19,7 @@
 									((MemberPointerGenericConstraint)c).Member
 								);
 							}else{
-								@c.DisplayName
+								Html.RenderPartial("DandyDoc/Partials/ComplexTextRender", c.DisplayName);
 							}
 						</li>
 					}

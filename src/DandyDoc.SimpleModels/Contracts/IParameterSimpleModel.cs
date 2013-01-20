@@ -5,7 +5,7 @@ namespace DandyDoc.SimpleModels.Contracts
 	public interface IParameterSimpleModel
 	{
 
-		string DisplayName { get; }
+		IComplexTextNode DisplayName { get; }
 
 		bool HasSummary { get; }
 

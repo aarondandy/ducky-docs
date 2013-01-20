@@ -19,7 +19,9 @@ namespace DandyDoc.SimpleModels
 		public ISimpleMemberPointerModel DelegateType {
 			get {
 				Contract.Assume(Definition.EventType != null);
-				return new ReferenceSimpleMemberPointer(FullTypeDisplayNameOverlay.GetDisplayName(Definition.EventType), Definition.EventType);
+				return new ReferenceSimpleMemberPointer(
+					Definition.EventType,
+					FullTypeDisplayNameOverlay.GetDisplayName(Definition.EventType));
 			}
 		}
 

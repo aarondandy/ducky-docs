@@ -2,7 +2,7 @@
 @using DandyDoc.SimpleModels
 @using DandyDoc.SimpleModels.Contracts
 @using DandyDocSite.Infrastructure
-@model DandyDoc.SimpleModels.Contracts.ISimpleModel
+@model ISimpleModel
 @functions{
 	static readonly Regex TitleSplitRegex = new Regex(@"(?<=[.,;\<\(\[])");
 	static string[] TitleParts(string title){

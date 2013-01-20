@@ -1,4 +1,5 @@
-﻿@using DandyDoc.SimpleModels.ComplexText
+﻿@using DandyDoc.SimpleModels
+@using DandyDoc.SimpleModels.ComplexText
 @model DandyDoc.SimpleModels.Contracts.IComplexTextNode
 @if (Model is RawComplexText){
 	@Html.Raw(((RawComplexText) Model).Text)
@@ -6,8 +7,8 @@
 else if (Model is StandardComplexText){
 	@(((StandardComplexText)Model).Text)
 }
-else if (Model is TypeParamrefComplexText){
-	var specialized = (TypeParamrefComplexText) Model;
+else if (Model is ParamrefComplexText){
+	var specialized = (ParamrefComplexText) Model;
 	if (specialized.HasChildren){
 		Html.RenderPartial("DandyDoc/Partials/ComplexTestRenderMultiple", specialized.Children);
 	}
@@ -20,6 +21,40 @@ else if (Model is CodeComplexText){
 }
 else if (Model is DescriptionListComplexText){
 	Html.RenderPartial("DandyDoc/Partials/ComplexTextRenderDescriptionList", (DescriptionListComplexText)Model);
+}
+else if (Model is SeeComplexText){
+	var specialized = (SeeComplexText) Model;
+	switch (specialized.Kind){
+		case SeeComplexText.TargetKind.CRef:{
+			var simplePointer = specialized.HasChildren
+				? new CrefSimpleMemberPointer(specialized.Target, specialized.Children)
+				: new CrefSimpleMemberPointer(specialized.Target);
+			Html.RenderPartial("DandyDoc/Partials/TypeLink", simplePointer);
+			break;
+		}
+		case SeeComplexText.TargetKind.HRef:{
+			<a href="@specialized.Target">
+				@if (specialized.HasChildren){
+					Html.RenderPartial("DandyDoc/Partials/ComplexTestRenderMultiple", specialized.Children);
+				}
+				else{
+					@specialized.Target
+				}
+			</a>
+			break;
+		}
+		case SeeComplexText.TargetKind.LanguageWord:{
+			var link = String.Format("http://www.bing.com/search?q={0}+keyword+msdn", specialized.Target);
+			<a href="@link">@specialized.Target</a>
+			break;
+		}
+		default:{
+			if (specialized.HasChildren) {
+				Html.RenderPartial("DandyDoc/Partials/ComplexTestRenderMultiple", specialized.Children);
+			}
+			break;
+		}
+	}
 }
 else if (Model is ComplexTextList){
 	var specialized = (ComplexTextList) Model;

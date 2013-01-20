@@ -9,7 +9,7 @@ namespace DandyDoc.SimpleModels.Contracts
 	public interface IGenericParameterConstraint
 	{
 
-		string DisplayName { get; }
+		IComplexTextNode DisplayName { get; }
 
 	}
 }

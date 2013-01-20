@@ -134,8 +134,9 @@
     <Compile Include="ComplexText\DescriptionListComplexText.cs" />
     <Compile Include="ComplexText\ParsedXmlDocComplexTextNode.cs" />
     <Compile Include="ComplexText\RawComplexText.cs" />
+    <Compile Include="ComplexText\SeeComplexText.cs" />
     <Compile Include="ComplexText\StandardComplexText.cs" />
-    <Compile Include="ComplexText\TypeParamrefComplexText.cs" />
+    <Compile Include="ComplexText\ParamrefComplexText.cs" />
     <Compile Include="ComplexText\XmlNodeComplexText.cs" />
     <Compile Include="ContractConditionSimpleModel.cs" />
     <Compile Include="Contracts\IAssemblySimpleModel.cs" />
@@ -166,6 +167,7 @@
     <Compile Include="EventSimpleModel.cs" />
     <Compile Include="FieldSimpleModel.cs" />
     <Compile Include="GenericParameterConstraints.cs" />
+    <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="MethodSimpleModel.cs" />
     <Compile Include="NamespaceSimpleModel.cs" />
     <Compile Include="ExceptionSimpleModel.cs" />

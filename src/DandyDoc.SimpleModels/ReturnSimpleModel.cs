@@ -16,8 +16,8 @@ namespace DandyDoc.SimpleModels
 
 		}
 
-		public string DisplayName {
-			get { return Type.MemberDisplayName; }
+		public IComplexTextNode DisplayName {
+			get { return Type.Description; }
 		}
 
 		public bool HasSummary {

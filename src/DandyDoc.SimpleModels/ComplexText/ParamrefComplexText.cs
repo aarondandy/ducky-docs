@@ -5,10 +5,10 @@ using System;
 
 namespace DandyDoc.SimpleModels.ComplexText
 {
-	public class TypeParamrefComplexText : ComplexTextList
+	public class ParamrefComplexText : ComplexTextList
 	{
 
-		public TypeParamrefComplexText(string parameterName, IList<IComplexTextNode> children)
+		public ParamrefComplexText(string parameterName, IList<IComplexTextNode> children)
 			: base(children)
 		{
 			Contract.Requires(children != null);

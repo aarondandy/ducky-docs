@@ -26,7 +26,7 @@ namespace DandyDoc.SimpleModels
 					while (null != currentReference){
 						var displayName = getName(currentReference);
 						Contract.Assume(!String.IsNullOrEmpty(displayName));
-						baseChain.Add(new ReferenceSimpleMemberPointer(displayName, currentReference));
+						baseChain.Add(new ReferenceSimpleMemberPointer(currentReference, displayName));
 						var currentDefinition = currentReference.Resolve();
 						if (null == currentDefinition)
 							break;
@@ -39,7 +39,7 @@ namespace DandyDoc.SimpleModels
 				var directInterfaces = new List<ISimpleMemberPointerModel>();
 				if (definition.HasInterfaces) {
 					Contract.Assume(null != definition.Interfaces);
-					directInterfaces.AddRange(definition.Interfaces.Select(x => new ReferenceSimpleMemberPointer(getName(x), x)));
+					directInterfaces.AddRange(definition.Interfaces.Select(x => new ReferenceSimpleMemberPointer(x, getName(x))));
 				}
 				DirectImplementedInterfaces = new ReadOnlyCollection<ISimpleMemberPointerModel>(directInterfaces);
 			}
@@ -104,7 +104,9 @@ namespace DandyDoc.SimpleModels
 					if(genericParameterDefinition.HasNotNullableValueTypeConstraint)
 						constraintReferenceTypes = constraintReferenceTypes.Where(x => x.FullName != "System.ValueType");
 					var pointerConstraints = constraintReferenceTypes
-						.Select(x => new MemberPointerGenericConstraint(new ReferenceSimpleMemberPointer(NestedTypeDisplayNameOverlay.GetDisplayName(x),x)));
+						.Select(x => new MemberPointerGenericConstraint(new ReferenceSimpleMemberPointer(
+							x,
+							NestedTypeDisplayNameOverlay.GetDisplayName(x))));
 					constraints.AddRange(pointerConstraints);
 
 					if (genericParameterDefinition.HasDefaultConstructorConstraint && !genericParameterDefinition.HasNotNullableValueTypeConstraint)

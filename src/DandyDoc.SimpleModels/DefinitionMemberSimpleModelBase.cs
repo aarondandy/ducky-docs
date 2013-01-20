@@ -15,6 +15,7 @@ namespace DandyDoc.SimpleModels
 			return declaringModel.ContainingAssembly;
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
 		protected DefinitionMemberSimpleModelBase(TDefinition definition, ITypeSimpleModel declaringModel)
 			: base(definition, GetContainingAssembly(declaringModel))
 		{

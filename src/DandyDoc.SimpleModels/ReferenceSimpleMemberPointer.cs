@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using DandyDoc.Overlays.Cref;
+using DandyDoc.SimpleModels.ComplexText;
 using DandyDoc.SimpleModels.Contracts;
 using Mono.Cecil;
 
@@ -9,15 +10,23 @@ namespace DandyDoc.SimpleModels
 	public class ReferenceSimpleMemberPointer : ISimpleMemberPointerModel
 	{
 
-		public ReferenceSimpleMemberPointer(string displayName, MemberReference reference) {
-			if (String.IsNullOrEmpty(displayName)) throw new ArgumentException("Display name is required.");
+		public ReferenceSimpleMemberPointer(MemberReference reference, string description) {
 			if (null == reference) throw new ArgumentNullException("reference");
 			Contract.EndContractBlock();
-			MemberDisplayName = displayName;
+			Description = String.IsNullOrEmpty(description)
+				? new StandardComplexText(reference.FullName)
+				: new StandardComplexText(description);
 			Reference = reference;
 		}
 
-		public string MemberDisplayName { get; private set; }
+		public ReferenceSimpleMemberPointer(MemberReference reference, IComplexTextNode description = null) {
+			if (null == reference) throw new ArgumentNullException("reference");
+			Contract.EndContractBlock();
+			Description = description ?? new StandardComplexText(reference.FullName);
+			Reference = reference;
+		}
+
+		public IComplexTextNode Description { get; private set; }
 
 		public MemberReference Reference { get; private set; }
 
@@ -30,7 +39,7 @@ namespace DandyDoc.SimpleModels
 
 		[ContractInvariantMethod]
 		private void CodeContractInvariant(){
-			Contract.Invariant(!String.IsNullOrEmpty(MemberDisplayName));
+			Contract.Invariant(Description != null);
 			Contract.Invariant(Reference != null);
 		}
 

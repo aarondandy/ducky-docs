@@ -29,7 +29,7 @@ namespace DandyDoc.SimpleModels
 		public ISimpleMemberPointerModel FieldType {
 			get {
 				Contract.Assume(Definition.FieldType != null);
-				return new ReferenceSimpleMemberPointer(FullTypeDisplayNameOverlay.GetDisplayName(Definition.FieldType), Definition.FieldType);
+				return new ReferenceSimpleMemberPointer(Definition.FieldType, FullTypeDisplayNameOverlay.GetDisplayName(Definition.FieldType));
 			}
 		}
 
