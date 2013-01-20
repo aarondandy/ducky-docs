@@ -2,24 +2,12 @@
 
 namespace DandyDoc.SimpleModels.Contracts
 {
-	public interface IMethodSimpleModel : ISimpleModel
+	public interface IMethodSimpleModel : ISimpleModel, IInvokableSimpleModel
 	{
 
 		bool HasGenericParameters { get; }
 
 		IList<IGenericParameterSimpleModel> GenericParameters { get; }
-
-		bool HasParameters { get; }
-
-		IList<IParameterSimpleModel> Parameters { get; }
-
-		bool HasReturn { get; }
-
-		IParameterSimpleModel Return { get; }
-
-		bool HasExceptions { get; }
-
-		IList<IExceptionSimpleModel> Exceptions { get; }
 
 		bool HasEnsures { get; }
 

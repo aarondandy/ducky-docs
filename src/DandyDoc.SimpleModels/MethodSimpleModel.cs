@@ -40,6 +40,10 @@ namespace DandyDoc.SimpleModels
 			_methodDefinitionXmlDocOverride = xmlDocOverride;
 		}
 
+		public virtual bool CanReturnNull {
+			get { return Definition.HasAttributeMatchingName("CanBeNullAttribute"); }
+		}
+
 		public override IList<IFlairTag> FlairTags {
 			get {
 				var tags = base.FlairTags;
@@ -47,7 +51,7 @@ namespace DandyDoc.SimpleModels
 				if (Definition.IsExtensionMethod())
 					tags.Add(DefaultExtensionMethodTag);
 
-				if (Definition.HasAttributeMatchingName("CanBeNullAttribute"))
+				if (CanReturnNull)
 					tags.Add(DefaultCanReturnNullTag);
 				else if (AllReferenceParamsAndReturnNotNull)
 					tags.Add(DefaultNotNullTag);
@@ -65,7 +69,9 @@ namespace DandyDoc.SimpleModels
 						: Definition.IsSetter
 							? "setter"
 						: "method";
-					tags.Add(new SimpleFlairTag("sealed", "Inheritance", String.Format("This {0} is sealed, preventing inheritance.", subject)));
+					var description = String.Format("This {0} is sealed, preventing inheritance.", subject);
+					Contract.Assume(!String.IsNullOrEmpty(description));
+					tags.Add(new SimpleFlairTag("sealed", "Inheritance", description));
 				}
 
 				if (!Definition.DeclaringType.IsInterface) {
@@ -251,7 +257,7 @@ namespace DandyDoc.SimpleModels
 			var paramTypeModel = new ReferenceSimpleMemberPointer(
 				paramTypeReference,
 				FullTypeDisplayNameOverlay.GetDisplayName(paramTypeReference));
-			return new ReturnSimpleModel(paramTypeModel, summary);
+			return new ReturnSimpleModel(paramTypeModel, this, summary);
 		}
 
 		private ReadOnlyCollection<IParameterSimpleModel> CreateParameters(){
@@ -273,7 +279,7 @@ namespace DandyDoc.SimpleModels
 					var paramTypeModel = new ReferenceSimpleMemberPointer(
 						paramTypeReference,
 						FullTypeDisplayNameOverlay.GetDisplayName(paramTypeReference));
-					results.Add(new DefinitionParameterSimpleModel(parameterDefinition, paramTypeModel, summary));
+					results.Add(new DefinitionParameterSimpleModel(parameterDefinition, this, paramTypeModel, summary));
 				}
 			}
 			return new ReadOnlyCollection<IParameterSimpleModel>(results);

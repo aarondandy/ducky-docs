@@ -5,6 +5,8 @@ namespace DandyDoc.SimpleModels.Contracts
 	public interface IParameterSimpleModel
 	{
 
+		IInvokableSimpleModel Parent { get; }
+
 		string Name { get; }
 
 		IComplexTextNode DisplayName { get; }

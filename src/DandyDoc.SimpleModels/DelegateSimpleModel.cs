@@ -29,14 +29,28 @@ namespace DandyDoc.SimpleModels
 
 		protected DelegateTypeDefinitionXmlDoc DelegateXmlDocs { get { return DefinitionXmlDocs as DelegateTypeDefinitionXmlDoc; } }
 
+		public virtual bool IsPure {
+			get {
+				return Definition.HasPureAttribute()
+					|| (DelegateXmlDocs != null && DelegateXmlDocs.HasPureElement);
+			}
+		}
+
+		public virtual bool CanReturnNull{
+			get { return Definition.HasAttributeMatchingName("CanBeNullAttribute"); }
+		}
+
 		public override IList<IFlairTag> FlairTags {
 			get {
 				var tags = base.FlairTags;
 
-				if (Definition.HasAttributeMatchingName("CanBeNullAttribute"))
+				if (CanReturnNull)
 					tags.Add(DefaultCanReturnNullTag);
 				else if(AllReferenceParamsAndReturnNotNull)
 					tags.Add(DefaultNotNullTag);
+
+				if (IsPure)
+					tags.Add(DefaultPureTag);
 
 				return tags;
 			}
@@ -148,7 +162,7 @@ namespace DandyDoc.SimpleModels
 			var paramTypeModel = new ReferenceSimpleMemberPointer(
 				returnType,
 				FullTypeDisplayNameOverlay.GetDisplayName(returnType));
-			return new ReturnSimpleModel(paramTypeModel, summary);
+			return new ReturnSimpleModel(paramTypeModel, this, summary);
 		}
 
 		private ReadOnlyCollection<IParameterSimpleModel> CreateParameters() {
@@ -171,7 +185,7 @@ namespace DandyDoc.SimpleModels
 					var paramTypeModel = new ReferenceSimpleMemberPointer(
 						paramTypeReference,
 						FullTypeDisplayNameOverlay.GetDisplayName(paramTypeReference));
-					results.Add(new DefinitionParameterSimpleModel(parameterDefinition, paramTypeModel, summary));
+					results.Add(new DefinitionParameterSimpleModel(parameterDefinition, this, paramTypeModel, summary));
 				}
 			}
 			return new ReadOnlyCollection<IParameterSimpleModel>(results);

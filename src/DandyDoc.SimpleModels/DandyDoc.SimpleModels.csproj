@@ -149,6 +149,7 @@
     <Compile Include="Contracts\IFlairTag.cs" />
     <Compile Include="Contracts\IGenericParameterConstraint.cs" />
     <Compile Include="Contracts\IGenericParameterSimpleModel.cs" />
+    <Compile Include="Contracts\IInvokableSimpleModel.cs" />
     <Compile Include="Contracts\IMethodSimpleModel.cs" />
     <Compile Include="Contracts\INamespaceSimpleModel.cs" />
     <Compile Include="Contracts\IParameterSimpleModel.cs" />

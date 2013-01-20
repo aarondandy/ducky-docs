@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-
-namespace DandyDoc.SimpleModels.Contracts
+﻿namespace DandyDoc.SimpleModels.Contracts
 {
-	public interface IPropertySimpleModel : ISimpleModel
+	public interface IPropertySimpleModel : ISimpleModel, IInvokableSimpleModel
 	{
 
 		ISimpleMemberPointerModel PropertyType { get; }
@@ -10,14 +8,6 @@ namespace DandyDoc.SimpleModels.Contracts
 		bool HasValueDescription { get; }
 
 		IComplexTextNode ValueDescription { get; }
-
-		bool HasParameters { get; }
-
-		IList<IParameterSimpleModel> Parameters { get; }
-
-		bool HasExceptions { get; }
-
-		IList<IExceptionSimpleModel> Exceptions { get; }
 
 		bool HasGetter { get; }
 

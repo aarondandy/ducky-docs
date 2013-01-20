@@ -1,22 +1,7 @@
-﻿
-using System.Collections.Generic;
-
-namespace DandyDoc.SimpleModels.Contracts
+﻿namespace DandyDoc.SimpleModels.Contracts
 {
-	public interface IDelegateSimpleModel : ITypeSimpleModel
+	public interface IDelegateSimpleModel : ITypeSimpleModel, IInvokableSimpleModel
 	{
-
-		bool HasParameters { get; }
-
-		IList<IParameterSimpleModel> Parameters { get; }
-
-		bool HasReturn { get; }
-
-		IParameterSimpleModel Return { get; }
-
-		bool HasExceptions { get; }
-
-		IList<IExceptionSimpleModel> Exceptions { get; }
 
 	}
 }

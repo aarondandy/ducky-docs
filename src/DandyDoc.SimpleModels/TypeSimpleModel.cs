@@ -58,7 +58,6 @@ namespace DandyDoc.SimpleModels
 		protected static readonly IFlairTag DefaultSealedFlair = new SimpleFlairTag("sealed", "Inheritance", "This type is sealed, preventing inheritance.");
 
 		private readonly Lazy<ISimpleModelMembersCollection> _members;
-		private readonly Lazy<ReadOnlyCollection<IFlairTag>> _flair;
 		private readonly Lazy<InheritanceData> _inheritanceData;
 		private readonly Lazy<ReadOnlyCollection<IGenericParameterSimpleModel>> _genericParameters;
 
@@ -68,7 +67,6 @@ namespace DandyDoc.SimpleModels
 			Contract.Requires(definition != null);
 			Contract.Requires(assemblyModel != null);
 			_members = new Lazy<ISimpleModelMembersCollection>(() => ContainingAssembly.GetMembers(this), true);
-			_flair = new Lazy<ReadOnlyCollection<IFlairTag>>(CreateFlairTags, true);
 			_inheritanceData = new Lazy<InheritanceData>(() => new InheritanceData(Definition, x => NestedTypeDisplayNameOverlay.GetDisplayName(x)), true);
 			_genericParameters = new Lazy<ReadOnlyCollection<IGenericParameterSimpleModel>>(CreateGenericParameters, true);
 		}
@@ -118,19 +116,6 @@ namespace DandyDoc.SimpleModels
 			return new ReadOnlyCollection<IGenericParameterSimpleModel>(results);
 		}
 
-		private ReadOnlyCollection<IFlairTag> CreateFlairTags(){
-			Contract.Ensures(Contract.Result<ReadOnlyCollection<IFlairTag>>() != null);
-			var results = new List<IFlairTag>();
-			results.AddRange(base.FlairTags);
-
-			if(Definition.IsEnum && Definition.HasFlagsAttribute())
-				results.Add(DefaultFlagsFlair);
-
-			if(!Definition.IsValueType && Definition.IsSealed && !Definition.IsDelegateType())
-				results.Add(DefaultSealedFlair);
-
-			return new ReadOnlyCollection<IFlairTag>(results);
-		}
 
 		protected ISimpleModelMembersCollection Members{
 			get{
@@ -201,7 +186,20 @@ namespace DandyDoc.SimpleModels
 
 		public IList<ISimpleMemberPointerModel> DirectInterfaces { get { return _inheritanceData.Value.DirectImplementedInterfaces; } }
 
-		public override IList<IFlairTag> FlairTags { get { return _flair.Value; } }
+		public override IList<IFlairTag> FlairTags{
+			get {
+				var tags = new List<IFlairTag>();
+				tags.AddRange(base.FlairTags);
+
+				if (Definition.IsEnum && Definition.HasFlagsAttribute())
+					tags.Add(DefaultFlagsFlair);
+
+				if (!Definition.IsValueType && Definition.IsSealed && !Definition.IsDelegateType())
+					tags.Add(DefaultSealedFlair);
+
+				return tags;
+			}
+		}
 
 		public bool HasGenericParameters { get { return GenericParameters.Count > 0; } }
 
