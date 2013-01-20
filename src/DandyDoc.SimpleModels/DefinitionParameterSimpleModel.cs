@@ -22,9 +22,9 @@ namespace DandyDoc.SimpleModels
 
 		public ParameterDefinition Parameter { get; private set; }
 
-		public IComplexTextNode DisplayName {
-			get { return new StandardComplexText(Parameter.Name); }
-		}
+		public string Name { get { return Parameter.Name; } }
+
+		public IComplexTextNode DisplayName { get { return new StandardComplexText(Name); } }
 
 		public bool HasSummary {
 			get { return Summary != null; }
@@ -40,6 +40,10 @@ namespace DandyDoc.SimpleModels
 
 		public IList<IFlairTag> Flair {
 			get { return new IFlairTag[0]; }
+		}
+
+		public bool HasAttributeMatchingName(string name){
+			return Parameter.HasAttributeMatchingName(name);
 		}
 	}
 }

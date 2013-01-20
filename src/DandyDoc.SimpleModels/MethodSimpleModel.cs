@@ -13,6 +13,11 @@ namespace DandyDoc.SimpleModels
 	public class MethodSimpleModel : DefinitionMemberSimpleModelBase<MethodDefinition>, IMethodSimpleModel
 	{
 
+		protected static readonly IFlairTag DefaultExtensionMethodTag = new SimpleFlairTag("extension", "Extension", "This method is an extension method.");
+		protected static readonly IFlairTag DefaultAbstractMethodTag = new SimpleFlairTag("abstract", "Inheritance", "This method is abstract and must be implemented by inheriting types.");
+		protected static readonly IFlairTag DefaultVirtualMethodTag = new SimpleFlairTag("virtual", "Inheritance", "This method is virtual and can be overridden by inheriting types.");
+		protected static readonly IFlairTag DefaultStringFormatMethodTag = new SimpleFlairTag("string format", "Signature", "Invoked as a String.Format styled method.");
+
 		private readonly MethodDefinitionXmlDoc _methodDefinitionXmlDocOverride;
 		private readonly Lazy<ReadOnlyCollection<IGenericParameterSimpleModel>> _genericParameters;
 		private readonly Lazy<ReadOnlyCollection<IParameterSimpleModel>> _parameters;
@@ -33,6 +38,127 @@ namespace DandyDoc.SimpleModels
 			_ensures = new Lazy<ReadOnlyCollection<IContractConditionSimpleModel>>(CreateEnsures, true);
 			_requires = new Lazy<ReadOnlyCollection<IContractConditionSimpleModel>>(CreateRequires, true);
 			_methodDefinitionXmlDocOverride = xmlDocOverride;
+		}
+
+		public override IList<IFlairTag> FlairTags {
+			get {
+				var tags = base.FlairTags;
+
+				if (Definition.IsExtensionMethod())
+					tags.Add(DefaultExtensionMethodTag);
+
+				if (Definition.HasAttributeMatchingName("CanBeNullAttribute"))
+					tags.Add(DefaultCanReturnNullTag);
+				else if (AllReferenceParamsAndReturnNotNull)
+					tags.Add(DefaultNotNullTag);
+
+				if(IsPure)
+					tags.Add(DefaultPureTag);
+
+				if (Definition.IsOperatorOverload())
+					tags.Add(DefaultOperatorTag);
+
+				if (Definition.IsSealed()) {
+					var subject =
+						Definition.IsGetter
+							? "getter"
+						: Definition.IsSetter
+							? "setter"
+						: "method";
+					tags.Add(new SimpleFlairTag("sealed", "Inheritance", String.Format("This {0} is sealed, preventing inheritance.", subject)));
+				}
+
+				if (!Definition.DeclaringType.IsInterface) {
+					if (Definition.IsAbstract && !Definition.DeclaringType.IsInterface)
+						tags.Add(DefaultAbstractMethodTag);
+					else if (Definition.IsVirtual && Definition.IsNewSlot && !Definition.IsFinal)
+						tags.Add(DefaultVirtualMethodTag);
+				}
+
+				if (Definition.HasAttributeMatchingName("StringFormatMethodAttribute"))
+					tags.Add(DefaultStringFormatMethodTag);
+
+				return tags;
+			}
+		}
+
+		public virtual bool AllReferenceParamsAndReturnNotNull {
+			get {
+
+				var hasReferenceReturn = HasReturn && !(Return.Type.IsValueType.GetValueOrDefault());
+				if (hasReferenceReturn) {
+					if (!EnsuresResultNotNull && !EnsuresResultNotNullOrEmpty) {
+						return false;
+					}
+				}
+				else {
+					if (!Definition.HasParameters)
+						return false;
+				}
+
+				var refParams = Definition.Parameters.Where(p => !(p.ParameterType.IsValueType)).ToList();
+				if (0 == refParams.Count) {
+					if (!hasReferenceReturn)
+						return false;
+				}
+				else {
+					foreach (var paramName in refParams.Select(p => p.Name)) {
+						Contract.Assume(!String.IsNullOrEmpty(paramName));
+						if (!RequiresParameterNotNull(paramName) && !RequiresParameterNotNullOrEmpty(paramName))
+							return false;
+					}
+				}
+
+				return true;
+			}
+		}
+
+		public virtual bool EnsuresResultNotNull {
+			get{
+				return HasReturn && (
+					Definition.HasAttributeMatchingName("NotNullAttribute")
+					|| (
+						MethodXmlDocs != null
+						&& MethodXmlDocs.Ensures.Count > 0
+						&& MethodXmlDocs.Ensures.Any(x => x.EnsuresResultNotNull)));
+			}
+		}
+
+		public virtual bool EnsuresResultNotNullOrEmpty {
+			get {
+				return HasReturn
+					&& MethodXmlDocs != null
+					&& MethodXmlDocs.Ensures.Count > 0
+					&& MethodXmlDocs.Ensures.Any(x => x.EnsuresResultNotNullOrEmpty);
+			}
+		}
+
+		public virtual bool RequiresParameterNotNull(string parameterName) {
+			if (String.IsNullOrEmpty(parameterName)) throw new ArgumentException("Invalid parameter name.", "parameterName");
+			Contract.EndContractBlock();
+			var parameter = Definition.Parameters.FirstOrDefault(p => p.Name == parameterName);
+			if (null != parameter) {
+				if (parameter.HasAttributeMatchingName("NotNullAttribute"))
+					return true;
+			}
+			if (MethodXmlDocs == null || MethodXmlDocs.Requires.Count == 0)
+				return false;
+			return MethodXmlDocs.Requires.Any(x => x.RequiresParameterNotNull(parameterName));
+		}
+
+		public virtual bool RequiresParameterNotNullOrEmpty(string parameterName) {
+			if (String.IsNullOrEmpty(parameterName)) throw new ArgumentException("Invalid parameter name.", "parameterName");
+			Contract.EndContractBlock();
+			if (MethodXmlDocs == null || MethodXmlDocs.Requires.Count == 0)
+				return false;
+			return MethodXmlDocs.Requires.Any(x => x.RequiresParameterNotNullOrEmpty(parameterName));
+		}
+
+		public virtual bool IsPure {
+			get{
+				return Definition.HasPureAttribute()
+					|| (MethodXmlDocs != null && MethodXmlDocs.HasPureElement);
+			}
 		}
 
 		private ReadOnlyCollection<IContractConditionSimpleModel> CreateRequires() {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using DandyDoc.Overlays.DisplayName;
+using DandyDoc.Overlays.ExternalVisibility;
 using DandyDoc.Overlays.XmlDoc;
 using DandyDoc.SimpleModels.ComplexText;
 using DandyDoc.SimpleModels.Contracts;
@@ -55,8 +56,14 @@ namespace DandyDoc.SimpleModels
 		}
 
 		protected static readonly IFlairTag DefaultStaticFlair = new SimpleFlairTag("static", "Static", "Accessible relative to a type rather than an object instance.");
-
 		protected static readonly IFlairTag DefaultObsoleteTag = new SimpleFlairTag("obsolete", "Warning", "This is deprecated.");
+		protected static readonly IFlairTag DefaultPublicTag = new SimpleFlairTag("public", "Visibility", "Externally visible.");
+		protected static readonly IFlairTag DefaultProtectedTag = new SimpleFlairTag("protected", "Visibility", "Externally visible only through inheritance.");
+		protected static readonly IFlairTag DefaultHiddenTag = new SimpleFlairTag("hidden", "Visibility", "Not externally visible.");
+		protected static readonly IFlairTag DefaultCanReturnNullTag = new SimpleFlairTag("null result", "Null Values", "May return null.");
+		protected static readonly IFlairTag DefaultNotNullTag = new SimpleFlairTag("no nulls", "Null Values", "Does not return or accept null values for reference types.");
+		protected static readonly IFlairTag DefaultPureTag = new SimpleFlairTag("pure", "Purity", "Does not have side effects.");
+		protected static readonly IFlairTag DefaultOperatorTag = new SimpleFlairTag("operator", "Operator", "Invoked through a language operator.");
 
 		protected static readonly DisplayNameOverlay RegularTypeDisplayNameOverlay = new DisplayNameOverlay {
 			ShowTypeNameForMembers = false
@@ -155,11 +162,26 @@ namespace DandyDoc.SimpleModels
 		public virtual IList<IFlairTag> FlairTags {
 			get {
 				Contract.Ensures(Contract.Result<IList<IFlairTag>>() != null);
+
 				var results = new List<IFlairTag>();
+				switch (ExternalVisibilityOverlay.Get(Definition)){
+					case ExternalVisibilityKind.Hidden:
+						results.Add(DefaultHiddenTag);
+						break;
+					case ExternalVisibilityKind.Protected:
+						results.Add(DefaultProtectedTag);
+						break;
+					case ExternalVisibilityKind.Public:
+						results.Add(DefaultPublicTag);
+						break;
+				}
+
 				if(Definition.IsStatic())
 					results.Add(DefaultStaticFlair);
+
 				if(Definition.HasObsoleteAttribute())
 					results.Add(DefaultObsoleteTag);
+
 				return results;
 			}
 		}

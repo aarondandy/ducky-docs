@@ -16,6 +16,8 @@ namespace DandyDoc.SimpleModels
 
 		}
 
+		public string Name { get { return Type.CRef; } }
+
 		public IComplexTextNode DisplayName {
 			get { return Type.Description; }
 		}
@@ -36,5 +38,8 @@ namespace DandyDoc.SimpleModels
 			get { return new IFlairTag[0]; }
 		}
 
+		public bool HasAttributeMatchingName(string name){
+			return false;
+		}
 	}
 }

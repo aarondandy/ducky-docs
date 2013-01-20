@@ -50,6 +50,8 @@ namespace DandyDoc.SimpleModels
 
 		public string CRef { get; private set; }
 
+		public bool? IsValueType { get { return null; } }
+
 		[ContractInvariantMethod]
 		private void CodeContractInvariant(){
 			Contract.Invariant(Description != null);

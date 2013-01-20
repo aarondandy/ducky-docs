@@ -29,6 +29,76 @@ namespace DandyDoc.SimpleModels
 
 		protected DelegateTypeDefinitionXmlDoc DelegateXmlDocs { get { return DefinitionXmlDocs as DelegateTypeDefinitionXmlDoc; } }
 
+		public override IList<IFlairTag> FlairTags {
+			get {
+				var tags = base.FlairTags;
+
+				if (Definition.HasAttributeMatchingName("CanBeNullAttribute"))
+					tags.Add(DefaultCanReturnNullTag);
+				else if(AllReferenceParamsAndReturnNotNull)
+					tags.Add(DefaultNotNullTag);
+
+				return tags;
+			}
+		}
+
+		public virtual bool AllReferenceParamsAndReturnNotNull {
+			get {
+				
+				var hasReferenceReturn = HasReturn && !(Return.Type.IsValueType.GetValueOrDefault());
+				if (hasReferenceReturn) {
+					if (!EnsuresResultNotNull && !EnsuresResultNotNullOrEmpty) {
+						return false;
+					}
+				}
+				else if (!HasParameters){
+					return false;
+				}
+
+				var refParams = Parameters.Where(p => !(p.Type.IsValueType.GetValueOrDefault())).ToList();
+				if (0 == refParams.Count) {
+					if (!hasReferenceReturn)
+						return false;
+				}
+				else {
+					foreach (var paramName in refParams.Select(p => p.Name)) {
+						Contract.Assume(!String.IsNullOrEmpty(paramName));
+						if (!RequiresParameterNotNull(paramName) && !RequiresParameterNotNullOrEmpty(paramName))
+							return false;
+					}
+				}
+
+				return true;
+			}
+		}
+
+		public virtual bool EnsuresResultNotNull {
+			get {
+				return HasReturn
+					&& Definition.HasAttributeMatchingName("NotNullAttribute");
+			}
+		}
+
+		public virtual bool EnsuresResultNotNullOrEmpty {
+			get { return false; }
+		}
+
+		public virtual bool RequiresParameterNotNull(string parameterName) {
+			if (String.IsNullOrEmpty(parameterName)) throw new ArgumentException("Invalid parameter name.", "parameterName");
+			Contract.EndContractBlock();
+			var parameter = Parameters.FirstOrDefault(p => p.Name == parameterName);
+			if (null == parameter)
+				return false;
+
+			return parameter.HasAttributeMatchingName("NotNullAttribute");
+		}
+
+		public virtual bool RequiresParameterNotNullOrEmpty(string parameterName) {
+			if (String.IsNullOrEmpty(parameterName)) throw new ArgumentException("Invalid parameter name.", "parameterName");
+			Contract.EndContractBlock();
+			return false;
+		}
+
 		private ReadOnlyCollection<IExceptionSimpleModel> CreateExceptions() {
 			var results = new List<IExceptionSimpleModel>();
 			var xmlDocs = DelegateXmlDocs;
@@ -110,7 +180,6 @@ namespace DandyDoc.SimpleModels
 		public bool HasParameters { get { return Parameters.Count > 0; } }
 
 		public IList<IParameterSimpleModel> Parameters { get { return _parameters.Value; } }
-
 
 		public bool HasReturn { get { return Return != null; } }
 

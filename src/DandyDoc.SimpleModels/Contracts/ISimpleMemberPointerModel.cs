@@ -7,5 +7,7 @@
 
 		string CRef { get; }
 
+		bool? IsValueType { get; }
+
 	}
 }

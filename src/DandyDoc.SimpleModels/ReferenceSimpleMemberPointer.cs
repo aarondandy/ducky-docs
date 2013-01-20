@@ -30,6 +30,15 @@ namespace DandyDoc.SimpleModels
 
 		public MemberReference Reference { get; private set; }
 
+		public bool? IsValueType{
+			get{
+				var typeReference = Reference as TypeReference;
+				if (typeReference == null)
+					return null;
+				return typeReference.IsValueType;
+			}
+		}
+
 		public string CRef {
 			get{
 				Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));

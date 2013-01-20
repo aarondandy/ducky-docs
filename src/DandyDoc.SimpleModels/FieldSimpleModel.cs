@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using DandyDoc.Overlays.XmlDoc;
 using DandyDoc.SimpleModels.ComplexText;
 using DandyDoc.SimpleModels.Contracts;
@@ -8,6 +9,8 @@ namespace DandyDoc.SimpleModels
 {
 	public class FieldSimpleModel : DefinitionMemberSimpleModelBase<FieldDefinition>, IFieldSimpleModel
 	{
+		protected static readonly IFlairTag DefaultConstantTag = new SimpleFlairTag("constant", "Value", "This field is a constant.");
+		protected static readonly IFlairTag DefaultReadOnlyTag = new SimpleFlairTag("readonly", "Value", "This field is only assignable during instantiation.");
 
 		public FieldSimpleModel(FieldDefinition definition, ITypeSimpleModel declaringModel)
 			: base(definition, declaringModel)
@@ -47,5 +50,20 @@ namespace DandyDoc.SimpleModels
 				return ParsedXmlDocComplexTextNode.ConvertToSingleComplexNode(valueDoc.Children);
 			}
 		}
+
+		public override IList<IFlairTag> FlairTags {
+			get {
+				var tags = base.FlairTags;
+
+				if(Definition.HasConstant)
+					tags.Add(DefaultConstantTag);
+
+				else if(Definition.IsInitOnly)
+					tags.Add(DefaultReadOnlyTag);
+
+				return tags;
+			}
+		}
+
 	}
 }
