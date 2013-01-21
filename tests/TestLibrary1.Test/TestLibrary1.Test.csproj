@@ -77,7 +77,6 @@
     <Compile Include="DisplayNameTests.cs" />
     <Compile Include="ExternalVisibilityTest.cs" />
     <Compile Include="MsdnDynamicLinkOverlayTests.cs" />
-    <Compile Include="NavigationOverlayTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="XmlDocOverlayTest.cs" />
   </ItemGroup>

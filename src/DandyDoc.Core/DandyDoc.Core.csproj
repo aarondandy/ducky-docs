@@ -186,9 +186,6 @@
     <Compile Include="Overlays\MsdnLinks\MtpsNodeCore.cs" />
     <Compile Include="Overlays\MsdnLinks\MtpsIdentifier.cs" />
     <Compile Include="Overlays\MsdnLinks\MtpsNavigationNode.cs" />
-    <Compile Include="Overlays\Navigation\NavigationOverlay.cs" />
-    <Compile Include="Overlays\Navigation\NavigationOverlayCompositeNamespace.cs" />
-    <Compile Include="Overlays\Navigation\NavigationOverlayNamespace.cs" />
     <Compile Include="Overlays\CodeSignature\CodeSignature.cs" />
     <Compile Include="Overlays\CodeSignature\CodeSignatureOverlay.cs" />
     <Compile Include="Overlays\XmlDoc\DefinitionXmlDocBase.cs" />
