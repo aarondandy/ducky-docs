@@ -7,7 +7,7 @@ if (Model.HasSummary) {<div>@{ Html.RenderPartial("DandyDoc/Partials/ComplexText
 		@foreach (var f in Model.Flair) {
 		<li>@{
 				Html.RenderPartial("DandyDoc/Partials/FlairIcon", f);
-			  Html.Raw(" ");
+			  @Html.Raw(" ");
 				Html.RenderPartial("DandyDoc/Partials/ComplexTextRender", f.Description);
 			}</li>
 		}

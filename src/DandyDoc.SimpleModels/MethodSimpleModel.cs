@@ -215,25 +215,7 @@ namespace DandyDoc.SimpleModels
 				var xmlExceptions = xmlDocs.Exceptions;
 				if (null != xmlExceptions){
 					foreach (var set in xmlExceptions.GroupBy(ex => ex.CRef)){
-						var cRef = set.Key;
-						Contract.Assume(!String.IsNullOrEmpty(cRef));
-						var conditions = new List<IComplexTextNode>();
-						var ensures = new List<IComplexTextNode>();
-						foreach (var exceptionItem in set.Where(ex => ex.Children.Count > 0)){
-							var summary = ParsedXmlDocComplexTextNode.ConvertToSingleComplexNode(exceptionItem.Children);
-							if (null != summary){
-								(exceptionItem.HasRelatedEnsures ? ensures : conditions).Add(summary);
-							}
-						}
-
-						var firstReference = set.Select(ex => ex.CrefTarget).FirstOrDefault(ex => ex != null);
-						var exceptionPointer = firstReference == null
-							? (ISimpleMemberPointerModel)new CrefSimpleMemberPointer(cRef)
-							: new ReferenceSimpleMemberPointer(
-								firstReference,
-								NestedTypeDisplayNameOverlay.GetDisplayName(firstReference));
-
-						results.Add(new ExceptionSimpleModel(exceptionPointer, conditions, ensures));
+						results.Add(ExceptionSimpleModel.Create(set.Key, set));
 					}
 				}
 			}

@@ -15,6 +15,12 @@ namespace DandyDoc.SimpleModels.ComplexText
 			LanguageWord
 		}
 
+		public SeeComplexText(string target, TargetKind kind)
+			: this(target, kind, new IComplexTextNode[0]) { }
+
+		public SeeComplexText(string target, TargetKind kind, string description)
+			: this(target, kind, new IComplexTextNode[]{new StandardComplexText(description)}) { }
+
 		public SeeComplexText(string target, TargetKind kind, IList<IComplexTextNode> children)
 			: base(children)
 		{

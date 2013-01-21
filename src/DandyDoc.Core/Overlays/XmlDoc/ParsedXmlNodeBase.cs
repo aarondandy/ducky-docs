@@ -76,7 +76,7 @@ namespace DandyDoc.Overlays.XmlDoc
 			}
 		}
 
-		public IList<ParsedXmlNodeBase> Children {
+		public virtual IList<ParsedXmlNodeBase> Children {
 			get{
 				Contract.Ensures(Contract.Result<IList<ParsedXmlNodeBase>>() != null);
 				return Node.ChildNodes

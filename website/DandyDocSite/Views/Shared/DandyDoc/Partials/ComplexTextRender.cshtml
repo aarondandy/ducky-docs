@@ -44,7 +44,7 @@ else if (Model is SeeComplexText){
 			break;
 		}
 		case SeeComplexText.TargetKind.LanguageWord:{
-			var link = String.Format("http://www.bing.com/search?q={0}+keyword+msdn", specialized.Target);
+			var link = String.Format("http://www.bing.com/search?q={0}+keyword+%2Bmsdn", specialized.Target);
 			<a href="@link">@specialized.Target</a>
 			break;
 		}

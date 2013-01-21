@@ -8,6 +8,9 @@ namespace DandyDoc.SimpleModels.ComplexText
 	public class CodeComplexText : ComplexTextList
 	{
 
+		public CodeComplexText(bool isInline, string languageName, string code)
+			: this(isInline, languageName, new IComplexTextNode[]{new StandardComplexText(code)}) { }
+
 		public CodeComplexText(bool isInline, string languageName, IList<IComplexTextNode> children)
 			: base(children)
 		{
