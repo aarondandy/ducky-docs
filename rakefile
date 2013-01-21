@@ -13,7 +13,7 @@ end
 
 task :default => [:build,:make_nupkg]
 
-task :make_nupkg => [:make_nupkg_core]
+task :make_nupkg => [:make_nupkg_core,:make_nupkg_simplemodel]
 
 msbuild :build do |msb|
 	msb.targets = [:Clean, :Build]
@@ -25,5 +25,12 @@ exec :make_nupkg_core do |cmd|
 	asmVersion3 = extract_assembly_version "./CommonAssemblyInfo.cs"
 	puts "Version: #{asmVersion3}"
 	cmd.command = "./.nuget/nuget.exe"
-	cmd.parameters = "pack build/dandy-doc.nuspec -Verbosity detailed -Version #{asmVersion3} -Symbols -OutputDirectory ./build/packed/ -Properties Configuration=Release"
+	cmd.parameters = "pack build/DandyDoc.Core.nuspec -Verbosity detailed -Version #{asmVersion3} -Symbols -OutputDirectory ./build/packed/ -Properties Configuration=Release"
+end
+
+exec :make_nupkg_simplemodel do |cmd|
+	asmVersion3 = extract_assembly_version "./CommonAssemblyInfo.cs"
+	puts "Version: #{asmVersion3}"
+	cmd.command = "./.nuget/nuget.exe"
+	cmd.parameters = "pack build/DandyDoc.SimpleModels.nuspec -Verbosity detailed -Version #{asmVersion3} -Symbols -OutputDirectory ./build/packed/ -Properties Configuration=Release"
 end
