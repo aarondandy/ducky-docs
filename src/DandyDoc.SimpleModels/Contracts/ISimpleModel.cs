@@ -55,42 +55,36 @@ namespace DandyDoc.SimpleModels.Contracts
 
 		public string Title {
 			get{
-				Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
 				throw new NotImplementedException();
 			}
 		}
 
 		public string SubTitle {
 			get {
-				Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
 				throw new NotImplementedException();
 			}
 		}
 
 		public string ShortName {
 			get{
-				Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
 				throw new NotImplementedException();
 			}
 		}
 
 		public string FullName {
 			get{
-				Contract.Ensures(Contract.Result<string>() != null);
 				throw new NotImplementedException();
 			}
 		}
 
 		public string CRef {
 			get{
-				Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
 				throw new NotImplementedException();
 			}
 		}
 
 		public string NamespaceName {
 			get{
-				Contract.Ensures(Contract.Result<string>() != null);
 				throw new NotImplementedException();
 			}
 		}
@@ -103,7 +97,6 @@ namespace DandyDoc.SimpleModels.Contracts
 
 		public ISimpleModelRepository RootRepository {
 			get{
-				Contract.Ensures(Contract.Result<ISimpleModelRepository>() != null);
 				throw new NotImplementedException();
 			}
 		}
@@ -114,7 +107,6 @@ namespace DandyDoc.SimpleModels.Contracts
 
 		public IList<IFlairTag> FlairTags {
 			get{
-				Contract.Ensures(Contract.Result<IList<IFlairTag>>() != null);
 				throw new NotImplementedException();
 			}
 		}

@@ -32,7 +32,7 @@ namespace TestLibrary1.Test
 		[Test]
 		public void can_load_xml_from_assembly_definition(){
 			var assemblyDefinition = GetAssembly();
-			var xmlDoc = XmlDocOverlay.Load(assemblyDefinition);
+			var xmlDoc = new XmlDocOverlay(new CRefOverlay(AssemblyDefinitionCollection)).Load(assemblyDefinition);
 			Assert.IsNotNull(xmlDoc);
 			Assert.IsNotNull(xmlDoc.FirstChild);
 		}

@@ -7,7 +7,7 @@ namespace DandyDocSite
 		public static void RegisterBundles(BundleCollection bundles) {
 			bundles.UseCdn = true;
 
-			bundles.Add(new StyleBundle("~/css/bootstrap").Include(
+			bundles.Add(new StyleBundle("~/bootstrap").Include(
 				"~/Content/bootstrap.css",
 				"~/Content/bootstrap-responsive.css"
 				));
@@ -19,7 +19,7 @@ namespace DandyDocSite
 				"~/Content/site.css"
 				));
 
-			bundles.Add(new ScriptBundle("~/bundles/jquery", "http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.2.min.js")
+			bundles.Add(new ScriptBundle("~/bundles/jquery", "http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.9.0.min.js")
 				.Include("~/Scripts/jquery-{version}.js"));
 			bundles.Add(new ScriptBundle("~/bundles/jquery.color").Include("~/Scripts/jquery.color-2.1.0.js"));
 

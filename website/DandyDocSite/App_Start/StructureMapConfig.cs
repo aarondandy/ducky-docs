@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Web.Hosting;
-using System.Web.Http.Dependencies;
+using System.Web.UI.WebControls;
 using DandyDoc;
 using DandyDoc.SimpleModels;
 using DandyDoc.SimpleModels.Contracts;
 using Microsoft.Practices.ServiceLocation;
 using StructureMap;
-using IDependencyResolver = System.Web.Http.Dependencies.IDependencyResolver;
 using DandyDoc.Overlays.MsdnLinks;
+using IDependencyResolver = System.Web.Mvc.IDependencyResolver;
 
 namespace DandyDocSite
 {
@@ -29,15 +29,17 @@ namespace DandyDocSite
 
 			x.For<ISimpleModelRepository>()
 				.Singleton()
-				.Use(_ =>
-					new SimpleModelRepository(new AssemblyDefinitionCollection(
+				.Use(_ =>{
+					var repository = new SimpleModelRepository(new AssemblyDefinitionCollection(
 						true,
 						HostingEnvironment.MapPath("~/bin/DandyDoc.Core.dll"),
-						HostingEnvironment.MapPath("~/bin/DandyDoc.SimpleModels.dll"),
-						HostingEnvironment.MapPath("~/bin/TestLibrary1.dll"))));
+						HostingEnvironment.MapPath("~/bin/DandyDoc.SimpleModels.dll")));
+					repository.XmlDocOverlay.XmlSearchPath = HostingEnvironment.MapPath("~/bin/bin/");
+					return repository;
+				});
 		}
 
-		public class Scope : ServiceLocatorImplBase, IDependencyScope
+		public class Scope : ServiceLocatorImplBase/*, IDependencyScope*/
 		{
 
 			public Scope(IContainer container) {
@@ -91,9 +93,9 @@ namespace DandyDocSite
 				Contract.Requires(null != container);
 			}
 
-			public IDependencyScope BeginScope() {
+			/*public IDependencyScope BeginScope() {
 				return new Resolver(Container.GetNestedContainer());
-			}
+			}*/
 		}
 
 	}

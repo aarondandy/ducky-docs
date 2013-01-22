@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using DandyDoc.Overlays.Cref;
 using DandyDoc.Utility;
@@ -18,14 +15,17 @@ namespace DandyDoc.Overlays.XmlDoc
 
 		private readonly ConcurrentDictionary<AssemblyDefinition, XmlDocument> _xmlDocRootCache;
 
-		public XmlDocOverlay(CRefOverlay cRefOverlay){
+		public XmlDocOverlay(CRefOverlay cRefOverlay, string xmlSearchPath = null) {
 			if(null == cRefOverlay) throw new ArgumentNullException("cRefOverlay");
 			Contract.EndContractBlock();
 			CRefOverlay = cRefOverlay;
 			_xmlDocRootCache = new ConcurrentDictionary<AssemblyDefinition, XmlDocument>();
+			XmlSearchPath = xmlSearchPath;
 		}
 
-		public static XmlDocument Load(AssemblyDefinition assemblyDefinition){
+		public string XmlSearchPath { get; set; }
+
+		public XmlDocument Load(AssemblyDefinition assemblyDefinition){
 			if(null == assemblyDefinition) throw new ArgumentNullException("assemblyDefinition");
 			Contract.EndContractBlock();
 			if (null == assemblyDefinition.MainModule)
@@ -36,15 +36,34 @@ namespace DandyDoc.Overlays.XmlDoc
 			if (!assemblyFilePath.Exists)
 				return null;
 
-			var xmlPath = SuggestedXmlDocPaths(assemblyFilePath);
+			var xmlPath = SuggestedXmlDocPath(assemblyFilePath);
 			return LoadFromFilePath(xmlPath);
 		}
 
-		public static FileInfo SuggestedXmlDocPaths(FileInfo assemblyFilePath) {
+		public FileInfo SuggestedXmlDocPath(FileInfo assemblyFilePath) {
 			if(null == assemblyFilePath) throw new ArgumentNullException("assemblyFilePath");
 			Contract.Ensures(Contract.Result<FileInfo>() != null);
 			Contract.EndContractBlock();
-			return new FileInfo(Path.ChangeExtension(assemblyFilePath.FullName, "XML"));
+
+			var fileName = Path.ChangeExtension(assemblyFilePath.Name, "XML");
+
+			if (!String.IsNullOrEmpty(XmlSearchPath)){
+				var searchPath = Path.Combine(XmlSearchPath, fileName);
+				if(File.Exists(searchPath))
+					return new FileInfo(searchPath);
+			}
+
+			var basePath = Path.ChangeExtension(assemblyFilePath.FullName, "XML");
+			if(File.Exists(basePath))
+				return new FileInfo(basePath);
+
+			var baseFolderPath = Path.GetDirectoryName(assemblyFilePath.FullName);
+			var baseBinFolderPath = Path.Combine(baseFolderPath, "bin");
+			var baseBinXmlPath = Path.Combine(baseBinFolderPath, fileName);
+			if(File.Exists(baseBinXmlPath))
+				return new FileInfo(baseBinXmlPath);
+
+			return new FileInfo(basePath);
 		}
 
 		public static XmlDocument LoadFromFilePath(FileInfo xmlFilePath) {

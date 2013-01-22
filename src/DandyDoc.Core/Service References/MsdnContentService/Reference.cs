@@ -438,7 +438,7 @@ namespace DandyDoc.MsdnContentService {
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
     [System.ServiceModel.ServiceContractAttribute(Namespace="urn:msdn-com:public-content-syndication", ConfigurationName="MsdnContentService.ContentServicePortType")]
-    internal interface ContentServicePortType {
+    public interface ContentServicePortType {
         
         // CODEGEN: Generating message contract since the operation GetContent is neither RPC nor document wrapped.
         [System.ServiceModel.OperationContractAttribute(Action="urn:msdn-com:public-content-syndication/GetContent", ReplyAction="*")]
@@ -451,9 +451,6 @@ namespace DandyDoc.MsdnContentService {
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(feature[]))]
         DandyDoc.MsdnContentService.GetContentResponse1 GetContent(DandyDoc.MsdnContentService.GetContentRequest1 request);
         
-        [System.ServiceModel.OperationContractAttribute(Action="urn:msdn-com:public-content-syndication/GetContent", ReplyAction="*")]
-        System.Threading.Tasks.Task<DandyDoc.MsdnContentService.GetContentResponse1> GetContentAsync(DandyDoc.MsdnContentService.GetContentRequest1 request);
-        
         // CODEGEN: Generating message contract since the operation GetNavigationPaths is neither RPC nor document wrapped.
         [System.ServiceModel.OperationContractAttribute(Action="urn:msdn-com:public-content-syndication/GetNavigationPaths", ReplyAction="*")]
         [System.ServiceModel.FaultContractAttribute(typeof(DandyDoc.MsdnContentService.mtpsFaultDetailType), Action="urn:msdn-com:public-content-syndication/GetNavigationPaths", Name="mtpsFaultDetail")]
@@ -464,9 +461,6 @@ namespace DandyDoc.MsdnContentService {
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(common[]))]
         [System.ServiceModel.ServiceKnownTypeAttribute(typeof(feature[]))]
         DandyDoc.MsdnContentService.GetNavigationPathsResponse1 GetNavigationPaths(DandyDoc.MsdnContentService.GetNavigationPathsRequest1 request);
-        
-        [System.ServiceModel.OperationContractAttribute(Action="urn:msdn-com:public-content-syndication/GetNavigationPaths", ReplyAction="*")]
-        System.Threading.Tasks.Task<DandyDoc.MsdnContentService.GetNavigationPathsResponse1> GetNavigationPathsAsync(DandyDoc.MsdnContentService.GetNavigationPathsRequest1 request);
     }
     
     /// <remarks/>
@@ -743,7 +737,7 @@ namespace DandyDoc.MsdnContentService {
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
     [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
     [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
-    internal partial class GetContentRequest1 {
+    public partial class GetContentRequest1 {
         
         [System.ServiceModel.MessageHeaderAttribute(Namespace="urn:msdn-com:public-content-syndication/2006/09/common")]
         public DandyDoc.MsdnContentService.appId appId;
@@ -764,7 +758,7 @@ namespace DandyDoc.MsdnContentService {
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
     [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
     [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
-    internal partial class GetContentResponse1 {
+    public partial class GetContentResponse1 {
         
         [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn:msdn-com:public-content-syndication", Order=0)]
         public DandyDoc.MsdnContentService.getContentResponse getContentResponse;
@@ -1041,7 +1035,7 @@ namespace DandyDoc.MsdnContentService {
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
     [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
     [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
-    internal partial class GetNavigationPathsRequest1 {
+    public partial class GetNavigationPathsRequest1 {
         
         [System.ServiceModel.MessageHeaderAttribute(Namespace="urn:msdn-com:public-content-syndication/2006/09/common")]
         public DandyDoc.MsdnContentService.appId appId;
@@ -1062,7 +1056,7 @@ namespace DandyDoc.MsdnContentService {
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
     [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
     [System.ServiceModel.MessageContractAttribute(IsWrapped=false)]
-    internal partial class GetNavigationPathsResponse1 {
+    public partial class GetNavigationPathsResponse1 {
         
         [System.ServiceModel.MessageBodyMemberAttribute(Namespace="urn:msdn-com:public-content-syndication", Order=0)]
         public DandyDoc.MsdnContentService.getNavigationPathsResponse getNavigationPathsResponse;
@@ -1076,12 +1070,12 @@ namespace DandyDoc.MsdnContentService {
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    internal interface ContentServicePortTypeChannel : DandyDoc.MsdnContentService.ContentServicePortType, System.ServiceModel.IClientChannel {
+    public interface ContentServicePortTypeChannel : DandyDoc.MsdnContentService.ContentServicePortType, System.ServiceModel.IClientChannel {
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    internal partial class ContentServicePortTypeClient : System.ServiceModel.ClientBase<DandyDoc.MsdnContentService.ContentServicePortType>, DandyDoc.MsdnContentService.ContentServicePortType {
+    public partial class ContentServicePortTypeClient : System.ServiceModel.ClientBase<DandyDoc.MsdnContentService.ContentServicePortType>, DandyDoc.MsdnContentService.ContentServicePortType {
         
         public ContentServicePortTypeClient() {
         }
@@ -1116,18 +1110,6 @@ namespace DandyDoc.MsdnContentService {
         }
         
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-        System.Threading.Tasks.Task<DandyDoc.MsdnContentService.GetContentResponse1> DandyDoc.MsdnContentService.ContentServicePortType.GetContentAsync(DandyDoc.MsdnContentService.GetContentRequest1 request) {
-            return base.Channel.GetContentAsync(request);
-        }
-        
-        public System.Threading.Tasks.Task<DandyDoc.MsdnContentService.GetContentResponse1> GetContentAsync(DandyDoc.MsdnContentService.appId appId, DandyDoc.MsdnContentService.getContentRequest getContentRequest) {
-            DandyDoc.MsdnContentService.GetContentRequest1 inValue = new DandyDoc.MsdnContentService.GetContentRequest1();
-            inValue.appId = appId;
-            inValue.getContentRequest = getContentRequest;
-            return ((DandyDoc.MsdnContentService.ContentServicePortType)(this)).GetContentAsync(inValue);
-        }
-        
-        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
         DandyDoc.MsdnContentService.GetNavigationPathsResponse1 DandyDoc.MsdnContentService.ContentServicePortType.GetNavigationPaths(DandyDoc.MsdnContentService.GetNavigationPathsRequest1 request) {
             return base.Channel.GetNavigationPaths(request);
         }
@@ -1138,18 +1120,6 @@ namespace DandyDoc.MsdnContentService {
             inValue.getNavigationPathsRequest = getNavigationPathsRequest;
             DandyDoc.MsdnContentService.GetNavigationPathsResponse1 retVal = ((DandyDoc.MsdnContentService.ContentServicePortType)(this)).GetNavigationPaths(inValue);
             return retVal.getNavigationPathsResponse;
-        }
-        
-        [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
-        System.Threading.Tasks.Task<DandyDoc.MsdnContentService.GetNavigationPathsResponse1> DandyDoc.MsdnContentService.ContentServicePortType.GetNavigationPathsAsync(DandyDoc.MsdnContentService.GetNavigationPathsRequest1 request) {
-            return base.Channel.GetNavigationPathsAsync(request);
-        }
-        
-        public System.Threading.Tasks.Task<DandyDoc.MsdnContentService.GetNavigationPathsResponse1> GetNavigationPathsAsync(DandyDoc.MsdnContentService.appId appId, DandyDoc.MsdnContentService.getNavigationPathsRequest getNavigationPathsRequest) {
-            DandyDoc.MsdnContentService.GetNavigationPathsRequest1 inValue = new DandyDoc.MsdnContentService.GetNavigationPathsRequest1();
-            inValue.appId = appId;
-            inValue.getNavigationPathsRequest = getNavigationPathsRequest;
-            return ((DandyDoc.MsdnContentService.ContentServicePortType)(this)).GetNavigationPathsAsync(inValue);
         }
     }
 }

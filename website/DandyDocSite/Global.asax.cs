@@ -12,7 +12,7 @@ namespace DandyDocSite
 		protected void Application_Start() {
 			AreaRegistration.RegisterAllAreas();
 			DependencyResolver.SetResolver(new StructureMapConfig.Resolver(StructureMapConfig.Init()));
-			WebApiConfig.Register(GlobalConfiguration.Configuration);
+			//WebApiConfig.Register(GlobalConfiguration.Configuration);
 			FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
 			RouteConfig.RegisterRoutes(RouteTable.Routes);
 			BundleConfig.RegisterBundles(BundleTable.Bundles);

@@ -1,14 +1,7 @@
 ﻿@using System.Web.Optimization
+@using DandyDocSite.Infrastructure
 @{Layout = null;}
 @functions{
-
-	private static bool IsDebug(){
-		#if DEBUG
-			return true;
-		#endif
-		return System.Diagnostics.Debugger.IsAttached
-			|| HttpContext.Current.IsDebuggingEnabled;
-	}
 
 	protected bool IsAction(string actionName, string controllerName) {
 		var currentAction = ViewContext.Controller.ValueProvider.GetValue("action").RawValue;
@@ -54,7 +47,7 @@
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>@ViewBag.Title</title>
-	@Styles.Render("~/css/bootstrap","~/css/sh","~/css/site")
+	@Styles.Render("~/bootstrap","~/css/sh","~/css/site")
 </head>
 	<body>
 		<div class="container">
@@ -86,7 +79,7 @@
 			</div>
 		</div>
 		@Scripts.Render("~/bundles/jquery","~/bundles/bootstrap", "~/bundles/site")
-		@if (!IsDebug()){
+		@if (!DebugFlag.IsDebug()) {
 			Html.RenderPartial("GoogleAnalytics");
 		}
 	</body>
