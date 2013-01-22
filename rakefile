@@ -11,6 +11,17 @@ def extract_assembly_version(filePath)
 	nil
 end
 
+def extract_cecil_version(filePath)
+	File.open(filePath,'r') do |file|
+		file.each_line do |line|
+			current_line = line.strip
+			line_match = /.*<package id=\"Mono.Cecil\" version=\"([^\"]+)\".*/.match(current_line)
+			if(line_match) then return line_match[1] end
+		end
+	end
+	nil
+end
+
 task :default => [:build,:make_nupkg]
 
 task :make_nupkg => [:make_nupkg_core,:make_nupkg_simplemodel]
@@ -23,9 +34,12 @@ end
 
 exec :make_nupkg_core do |cmd|
 	asmVersion3 = extract_assembly_version "./CommonAssemblyInfo.cs"
+	cecilVersion = extract_cecil_version "./src/DandyDoc.Core/packages.config"
 	puts "Version: #{asmVersion3}"
+	puts "Cecil Version: #{cecilVersion}"
 	cmd.command = "./.nuget/nuget.exe"
-	cmd.parameters = "pack build/DandyDoc.Core.nuspec -Verbosity detailed -Version #{asmVersion3} -Symbols -OutputDirectory ./build/packed/ -Properties Configuration=Release"
+	cmd.parameters = "pack build/DandyDoc.Core.nuspec -Verbosity detailed -Version #{asmVersion3} -Symbols -OutputDirectory ./build/packed/ -Properties Configuration=Release;cecilVersion=#{cecilVersion}"
+	puts cmd.parameters
 end
 
 exec :make_nupkg_simplemodel do |cmd|

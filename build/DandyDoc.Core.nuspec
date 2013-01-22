@@ -9,6 +9,9 @@
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<tags>documentation</tags>
 		<projectUrl>http://mediocresoft.com/dandydoc/</projectUrl>
+    <dependencies>
+      <dependency id="Mono.Cecil" version="$cecilVersion$"/>
+    </dependencies>
 		<references>
 			<reference file="DandyDoc.Core.dll" />
 		</references>

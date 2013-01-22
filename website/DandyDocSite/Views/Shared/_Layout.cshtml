@@ -2,6 +2,14 @@
 @{Layout = null;}
 @functions{
 
+	private static bool IsDebug(){
+		#if DEBUG
+			return true;
+		#endif
+		return System.Diagnostics.Debugger.IsAttached
+			|| HttpContext.Current.IsDebuggingEnabled;
+	}
+
 	protected bool IsAction(string actionName, string controllerName) {
 		var currentAction = ViewContext.Controller.ValueProvider.GetValue("action").RawValue;
 		if (!String.Equals(actionName, currentAction as string, StringComparison.OrdinalIgnoreCase))
@@ -19,7 +27,7 @@
 @{
 	var menuItems = new[] {
 		new{Id = "Index", Title= "Index", Icon="icon-home", Url = Url.Action("Index","Home")},
-		new{Id = "Get", Title="Get It", Icon="icon-download-alt", Url = Url.Action("Get","Home")},
+		//new{Id = "Get", Title="Get It", Icon="icon-download-alt", Url = Url.Action("Get","Home")},
 		new{Id = "DocsIndex", Title="Get Started", Icon="icon-play", Url = Url.Action("Index","Docs")},
 		new{Id = "DocsApi", Title = "API Reference", Icon="icon-book", Url = Url.Action("Api","Docs")},
 		new{Id = "Project", Title="Project", Icon="icon-pencil", Url = "http://github.com/aarondandy/dandy-doc/"}
@@ -72,16 +80,14 @@
 		<div class="container">
 			<div class="row">
 				<footer class="span12">
-					<div class="container">
-						<div class="row">
-							<div class="span4">footer</div>
-							<div class="span4">footer</div>
-							<div class="span4">footer</div>
-						</div>
-					</div>
+					<div>Icons by <a href="http://glyphicons.com/">Glyphicons</a>.</div>
+					<div><a href="http://mediocresoft.com/Tracking">Tracking policy</a>.</div>
 				</footer>
 			</div>
 		</div>
 		@Scripts.Render("~/bundles/jquery","~/bundles/bootstrap", "~/bundles/site")
+		@if (!IsDebug()){
+			Html.RenderPartial("GoogleAnalytics");
+		}
 	</body>
 </html>
