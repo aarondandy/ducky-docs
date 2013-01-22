@@ -17,8 +17,8 @@
 		</references>
 	</metadata>
 	<files>
-		<file src="..\bin\$configuration$\DandyDoc.Core.dll" target="lib\net-45" />
-		<file src="..\bin\$configuration$\CodeContracts\DandyDoc.Core.Contracts.dll" target="lib\net-45\CodeContracts" />
+		<file src="..\bin\$configuration$\DandyDoc.Core.dll" target="lib\net-40" />
+		<file src="..\bin\$configuration$\CodeContracts\DandyDoc.Core.Contracts.dll" target="lib\net-40\CodeContracts" />
 		<file src="..\src\DandyDoc.Core\**.cs" target="src" />
 	</files>
 </package>
