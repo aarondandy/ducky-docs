@@ -23,12 +23,12 @@ namespace QuickStartSample
 				Console.WriteLine("NAMESPACE: {0}", namespaceModel.Title);
 
 				// You can quickly get the types (and delegates) within the namespace.
-				foreach (var types in namespaceModel.Types){
+				foreach (var typeModel in namespaceModel.Types){
 
 					// As an example we can get the flair tags associated with a type.
-					var flairTags = String.Join(",", types.FlairTags.Select(x => x.IconId));
+					var flairTags = String.Join(",", typeModel.FlairTags.Select(x => x.IconId));
 
-					Console.WriteLine("\t{0}: {1}", types.Title, flairTags);
+					Console.WriteLine("\t{0}: {1}", typeModel.Title, flairTags);
 				}
 			}
 
