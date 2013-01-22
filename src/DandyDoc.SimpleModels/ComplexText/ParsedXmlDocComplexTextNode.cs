@@ -100,7 +100,7 @@ namespace DandyDoc.SimpleModels.ComplexText
 
 		public static IComplexTextNode ConvertToSingleComplexNode(IList<IComplexTextNode> items){
 			if (items == null || items.Count == 0)
-				return null;
+				return new StandardComplexText(String.Empty);
 			if (items.Count == 1)
 				return items[0];
 			return new ComplexTextList(items);
