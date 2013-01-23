@@ -15,8 +15,8 @@
 		}
 	}
 	var memberSets = new MemberSet[]{
-		MemberSet.Create("NestedTypes", regularTypes),
-		MemberSet.Create("NestedDelegates", delegateTypes)
+		MemberSet.Create("Types", regularTypes),
+		MemberSet.Create("Delegates", delegateTypes)
 	}.Where(x => x.HasModels);
 }
 @foreach (var memberSet in memberSets) {
