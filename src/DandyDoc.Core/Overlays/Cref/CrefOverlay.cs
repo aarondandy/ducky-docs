@@ -10,6 +10,7 @@ namespace DandyDoc.Overlays.Cref
 	/// <summary>
 	/// A documentation overlay which can translate between Cecil references and XML documentation cref hyperlinks.
 	/// </summary>
+	[Obsolete]
 	public class CRefOverlay
 	{
 

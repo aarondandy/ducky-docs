@@ -5,6 +5,8 @@ using System.Text.RegularExpressions;
 
 namespace DandyDoc.Overlays.Cref
 {
+
+	[Obsolete]
 	public class ParsedCref
 	{
 

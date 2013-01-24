@@ -7,7 +7,7 @@ using NUnit.Framework;
 
 namespace TestLibrary1.Test
 {
-
+	[Obsolete]
 	[TestFixture]
 	public class CrefNormalTests
 	{

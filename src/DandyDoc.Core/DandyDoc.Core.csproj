@@ -175,6 +175,10 @@
     </Compile>
     <Compile Include="AssemblyDefinitionCollection.cs" />
     <Compile Include="CecilExtensions.cs" />
+    <Compile Include="CRef\CecilCRefGenerator.cs" />
+    <Compile Include="CRef\CRefGeneratorBase.cs" />
+    <Compile Include="CRef\ICRefGenerator.cs" />
+    <Compile Include="CRef\ReflectionCRefGenerator.cs" />
     <Compile Include="Overlays\CodeSignature\CodeSignatureGeneratorBase.cs" />
     <Compile Include="Overlays\CodeSignature\CodeSignatureGeneratorCSharp.cs" />
     <Compile Include="Overlays\Cref\CrefOverlay.cs" />
