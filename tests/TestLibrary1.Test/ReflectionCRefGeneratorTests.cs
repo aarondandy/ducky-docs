@@ -1,201 +1,189 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
 using DandyDoc.CRef;
-using Mono.Cecil;
 using NUnit.Framework;
 
 namespace TestLibrary1.Test
 {
 	[TestFixture]
-	public class CecilCRefGeneratorTests
+	public class ReflectionCRefGeneratorTests
 	{
 
-		private AssemblyDefinition GetAssembly() {
-			var assemblyDefinition = AssemblyDefinition.ReadAssembly("./TestLibrary1.dll");
-			Assert.IsNotNull(assemblyDefinition);
-			return assemblyDefinition;
-		}
-
-		private TypeDefinition GetType(string typeName) {
-			return GetType(GetAssembly(), typeName);
-		}
-
-		private TypeDefinition GetType(AssemblyDefinition assemblyDefinition, string typeName) {
-			var type = assemblyDefinition.Modules.SelectMany(x => x.Types).FirstOrDefault(t => t.Name == typeName);
-			Assert.IsNotNull(type);
-			return type;
-		}
-
-		public CecilCRefGenerator Generator {
+		public ReflectionCRefGenerator Generator {
 			get {
-				return new CecilCRefGenerator();
+				return new ReflectionCRefGenerator();
 			}
 		}
 
 		[Test]
 		public void normal_class() {
-			var type = GetType("Class1");
+			var type = typeof(Class1);
 			Assert.AreEqual("T:TestLibrary1.Class1", Generator.GetCRef(type));
 		}
 
 		[Test]
 		public void normal_method_no_params() {
-			var member = GetType("Class1").Methods.First(x => x.Name == "BlankStatic");
+			var member = typeof(Class1).GetMethod("BlankStatic");
 			Assert.AreEqual("M:TestLibrary1.Class1.BlankStatic", Generator.GetCRef(member));
 		}
 
 		[Test]
 		public void normal_method_one_param() {
-			var member = GetType("Class1").Methods.First(x => x.Name == "DoubleStatic" && x.ReturnType.Name.EndsWith("Double"));
+			var member = typeof(Class1).GetMethods().First(x => x.Name == "DoubleStatic" && x.ReturnType == typeof(double));
 			Assert.AreEqual("M:TestLibrary1.Class1.DoubleStatic(System.Double)", Generator.GetCRef(member));
 		}
 
 		[Test]
 		public void normal_property() {
-			var member = GetType("Class1").Properties.First(x => x.Name == "SomeProperty");
+			var member = typeof(Class1).GetProperty("SomeProperty");
 			Assert.AreEqual("P:TestLibrary1.Class1.SomeProperty", Generator.GetCRef(member));
 		}
 
 		[Test]
 		public void normal_field() {
-			var member = GetType("Class1").Fields.First(x => x.Name == "SomeField");
+			var member = typeof(Class1).GetField("SomeField");
 			Assert.AreEqual("F:TestLibrary1.Class1.SomeField", Generator.GetCRef(member));
 		}
 
 		[Test]
 		public void normal_const() {
-			var member = GetType("Class1").Fields.First(x => x.Name == "MyConst");
+			var member = typeof(Class1).GetField("MyConst");
 			Assert.AreEqual("F:TestLibrary1.Class1.MyConst", Generator.GetCRef(member));
 		}
 
 		[Test]
 		public void normal_delegate() {
-			var member = GetType("Class1").NestedTypes.First(x => x.Name == "MyFunc");
+			var member = typeof(Class1).GetNestedTypes().First(x => x.Name == "MyFunc");
 			Assert.AreEqual("T:TestLibrary1.Class1.MyFunc", Generator.GetCRef(member));
 		}
 
 		[Test]
 		public void normal_event() {
-			var member = GetType("Class1").Events.First(x => x.Name == "DoStuff");
+			var member = typeof(Class1).GetEvent("DoStuff");
 			Assert.AreEqual("E:TestLibrary1.Class1.DoStuff", Generator.GetCRef(member));
 		}
 
 		[Test]
 		public void normal_operator() {
-			var member = GetType("Class1").Methods.First(x => x.Name.Contains("Addition"));
+			var member = typeof(Class1).GetMethods().First(x => x.Name.Contains("Addition"));
 			Assert.AreEqual("M:TestLibrary1.Class1.op_Addition(TestLibrary1.Class1,TestLibrary1.Class1)", Generator.GetCRef(member));
 		}
 
 		[Test]
 		public void normal_indexer() {
-			var member = GetType("Class1").Properties.First(x => x.Name == "Item");
+			var member = typeof(Class1).GetProperties().First(x => x.Name == "Item");
 			Assert.AreEqual("P:TestLibrary1.Class1.Item(System.Int32)", Generator.GetCRef(member));
 		}
 
 		[Test]
 		public void normal_static_constructor_no_params() {
-			var member = GetType("Class1").Methods.First(x => x.IsConstructor && x.Parameters.Count == 0);
+			var member = typeof(Class1).GetConstructors(BindingFlags.NonPublic | BindingFlags.Static).First();
 			Assert.AreEqual("M:TestLibrary1.Class1.#cctor", Generator.GetCRef(member));
 		}
 
 		[Test]
 		public void normal_constructor_one_param() {
-			var member = GetType("Class1").Methods.First(x => x.IsConstructor && x.Parameters.Count == 1);
+			var member = typeof(Class1).GetConstructors().First(x => x.GetParameters().Length == 1);
 			Assert.AreEqual("M:TestLibrary1.Class1.#ctor(System.String)", Generator.GetCRef(member));
 		}
 
 		[Test]
 		public void normal_constructor_two_param() {
-			var member = GetType("Class1").Methods.First(x => x.IsConstructor && x.Parameters.Count == 2);
+			var member = typeof(Class1).GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance).First();
 			Assert.AreEqual("M:TestLibrary1.Class1.#ctor(System.String,System.String)", Generator.GetCRef(member));
 		}
 
 		[Test]
 		public void normal_finalizer() {
-			var member = GetType("Class1").Methods.First(x => x.Name == "Finalize");
+			var member = typeof(Class1).GetMethods(BindingFlags.NonPublic | BindingFlags.Instance).First(x => x.Name == "Finalize");
 			Assert.AreEqual("M:TestLibrary1.Class1.Finalize", Generator.GetCRef(member));
 		}
 
 		[Test]
 		public void normal_nested_type() {
-			var member = GetType("Class1").NestedTypes.First(x => x.Name == "Inner");
+			var member = typeof(Class1).GetNestedTypes().First(x => x.Name == "Inner");
 			Assert.AreEqual("T:TestLibrary1.Class1.Inner", Generator.GetCRef(member));
 		}
 
 		[Test]
 		public void normal_nested_property() {
-			var member = GetType("Class1").NestedTypes.First(x => x.Name == "Inner").Properties.First(x => x.Name == "Name");
+			var member = typeof(Class1).GetNestedTypes().First(x => x.Name == "Inner").GetProperties().First(x => x.Name == "Name");
 			Assert.AreEqual("P:TestLibrary1.Class1.Inner.Name", Generator.GetCRef(member));
 		}
 
 		[Test]
 		public void normal_global_namespace_type() {
-			var member = GetType("InGlobal");
+			var member = typeof(InGlobal);
 			Assert.AreEqual("T:InGlobal", Generator.GetCRef(member));
 		}
 
 		[Test]
 		public void generic_class() {
-			var member = GetType("Generic1`2");
+			var member = typeof(Generic1<,>);
 			Assert.AreEqual("T:TestLibrary1.Generic1`2", Generator.GetCRef(member));
 		}
 
 		[Test]
 		public void generic_method_one_param() {
-			var member = GetType("Generic1`2").Methods.First(x => x.Name == "Junk1");
+			var member = typeof(Generic1<,>).GetMethods().First(x => x.Name == "Junk1");
 			Assert.AreEqual("M:TestLibrary1.Generic1`2.Junk1``1(``0)", Generator.GetCRef(member));
 		}
 
 		[Test]
 		public void generic_property() {
-			var member = GetType("Generic1`2").Properties.First(x => x.Name == "A");
+			var member = typeof(Generic1<,>).GetProperties().First(x => x.Name == "A");
 			Assert.AreEqual("P:TestLibrary1.Generic1`2.A", Generator.GetCRef(member));
 		}
 
 		[Test]
 		public void generic_field() {
-			var member = GetType("Generic1`2").Fields.First(x => x.Name == "B");
+			var member = typeof(Generic1<,>).GetFields().First(x => x.Name == "B");
 			Assert.AreEqual("F:TestLibrary1.Generic1`2.B", Generator.GetCRef(member));
 		}
 
 		[Test]
 		public void generic_with_nested_delegate() {
-			var member = GetType("Generic1`2").NestedTypes.First(x => x.Name == "MyFunc");
+			var member = typeof(Generic1<,>).GetNestedTypes().First(x => x.Name == "MyFunc");
 			Assert.AreEqual("T:TestLibrary1.Generic1`2.MyFunc", Generator.GetCRef(member));
 		}
 
 		[Test]
 		public void generic_delegate_within_generic() {
-			var member = GetType("Generic1`2").NestedTypes.First(x => x.Name == "MyFunc`1");
+			var member = typeof(Generic1<,>).GetNestedTypes().First(x => x.Name == "MyFunc`1");
 			Assert.AreEqual("T:TestLibrary1.Generic1`2.MyFunc`1", Generator.GetCRef(member));
 		}
 
 		[Test]
 		public void generic_event() {
-			var member = GetType("Generic1`2").Events.First(x => x.Name == "E");
+			var member = typeof(Generic1<,>).GetEvents().First(x => x.Name == "E");
 			Assert.AreEqual("E:TestLibrary1.Generic1`2.E", Generator.GetCRef(member));
 		}
 
 		[Test]
 		public void crazy_generic_operator() {
-			var member = GetType("Generic1`2").Methods.First(x => x.Name.Contains("Addition"));
+			var member = typeof(Generic1<,>).GetMethods().First(x => x.Name.Contains("Addition"));
 			Assert.AreEqual("M:TestLibrary1.Generic1`2.op_Addition(TestLibrary1.Generic1{System.Int32,System.Int32[]},TestLibrary1.Generic1{`0,`1})", Generator.GetCRef(member));
 		}
 
 		[Test]
 		public void generic_nested_mixed_params() {
-			var member = GetType("Generic1`2").NestedTypes.First(x => x.Name == "Inner`1").Methods.First(x => x.Name.StartsWith("Junk3"));
+			var member = typeof(Generic1<,>).GetNestedTypes().First(x => x.Name == "Inner`1").GetMethods().First(x => x.Name.StartsWith("Junk3"));
 			Assert.AreEqual("M:TestLibrary1.Generic1`2.Inner`1.Junk3``1(`2,`1,`0,``0)", Generator.GetCRef(member));
 		}
 
 		[Test]
 		public void generic_nested_class_generic_params() {
-			var member = GetType("Generic1`2").NestedTypes.First(x => x.Name == "Inner`1").Methods.First(x => x.Name.StartsWith("Junk4"));
+			var member = typeof(Generic1<,>).GetNestedTypes().First(x => x.Name == "Inner`1").GetMethods().First(x => x.Name.StartsWith("Junk4"));
 			Assert.AreEqual("M:TestLibrary1.Generic1`2.Inner`1.Junk4(`2,`1,`0)", Generator.GetCRef(member));
 		}
 
 		[Test]
 		public void generic_crazy_constructor() {
-			var member = GetType("Generic1`2").Methods.First(x => x.IsConstructor && x.Parameters.Count == 4);
+			var member = typeof(Generic1<,>).GetConstructors().First(x => x.GetParameters().Length == 4);
 			Assert.AreEqual("M:TestLibrary1.Generic1`2.#ctor(`0,`1,System.Collections.Generic.IEnumerable{`0},System.String)", Generator.GetCRef(member));
 		}
 

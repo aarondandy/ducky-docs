@@ -31,73 +31,6 @@ namespace DandyDoc.CRef
 			return null;
 		}
 
-		protected virtual string GetCRef(TypeReference reference) {
-			if(null == reference) throw new ArgumentNullException("reference");
-			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
-
-			if (reference.IsGenericParameter)
-				return GetGenericParameterName((GenericParameter)reference);
-
-			return GetReferenceFullName(reference);
-		}
-
-		protected virtual string GetGenericParameterName(GenericParameter parameter) {
-			if(parameter == null) throw new ArgumentNullException("parameter");
-			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
-			var paramIndex = parameter.Owner.GenericParameters.IndexOf(parameter);
-			if (paramIndex < 0)
-				paramIndex = 0;
-			return String.Concat(
-				parameter.Owner is TypeDefinition ? "`" : "``",
-				paramIndex
-			);
-		}
-
-		protected virtual string GetReferenceFullName(TypeReference reference) {
-			if(null == reference) throw new ArgumentNullException("reference");
-			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
-			var typeParts = new List<string>();
-			var currentType = reference;
-			while (true) {
-				var currentTypeName = currentType.Name;
-				if (currentType.IsGenericInstance) {
-					var genericInstanceType = currentType as GenericInstanceType;
-					Contract.Assume(null != genericInstanceType);
-					var tickIndex = currentTypeName.LastIndexOf('`');
-					if (tickIndex >= 0)
-						currentTypeName = currentTypeName.Substring(0, tickIndex);
-
-					currentTypeName = String.Concat(
-						currentTypeName,
-						'{',
-						String.Join(",", genericInstanceType.GenericArguments.Select(NoPrefix.GetCRef)),
-						'}'
-					);
-				}
-
-				typeParts.Insert(0, currentTypeName);
-				if (!currentType.IsNested)
-					break;
-
-				currentType = currentType.DeclaringType;
-				Contract.Assume(null != currentType);
-			}
-
-			var ns = currentType.Namespace;
-			var cref = typeParts.Count == 1
-				? typeParts[0]
-				: String.Join(".", typeParts);
-			Contract.Assume(!String.IsNullOrEmpty(cref));
-
-			if (!String.IsNullOrEmpty(ns))
-				cref = ns + '.' + cref;
-
-			if (IncludeTypePrefix)
-				cref = "T:" + cref;
-
-			return cref;
-		}
-
 		protected virtual string GetCRef(MemberReference reference) {
 			if(reference == null) throw new ArgumentNullException("reference");
 			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
@@ -151,6 +84,73 @@ namespace DandyDoc.CRef
 			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
 			Contract.Assume(null != parameterDefinition.ParameterType);
 			return NoPrefix.GetCRef(parameterDefinition.ParameterType);
+		}
+
+		protected virtual string GetCRef(TypeReference reference) {
+			if (null == reference) throw new ArgumentNullException("reference");
+			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
+
+			if (reference.IsGenericParameter)
+				return GetGenericParameterName((GenericParameter)reference);
+
+			return GetFullName(reference);
+		}
+
+		protected virtual string GetGenericParameterName(GenericParameter parameter) {
+			if (parameter == null) throw new ArgumentNullException("parameter");
+			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
+			var paramIndex = parameter.Owner.GenericParameters.IndexOf(parameter);
+			if (paramIndex < 0)
+				paramIndex = 0;
+			return String.Concat(
+				parameter.Owner is TypeDefinition ? "`" : "``",
+				paramIndex
+			);
+		}
+
+		protected virtual string GetFullName(TypeReference reference) {
+			if (null == reference) throw new ArgumentNullException("reference");
+			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
+			var typeParts = new List<string>();
+			var currentType = reference;
+			while (true) {
+				var currentTypeName = currentType.Name;
+				if (currentType.IsGenericInstance) {
+					var genericInstanceType = currentType as GenericInstanceType;
+					Contract.Assume(null != genericInstanceType);
+					var tickIndex = currentTypeName.LastIndexOf('`');
+					if (tickIndex >= 0)
+						currentTypeName = currentTypeName.Substring(0, tickIndex);
+
+					currentTypeName = String.Concat(
+						currentTypeName,
+						'{',
+						String.Join(",", genericInstanceType.GenericArguments.Select(NoPrefix.GetCRef)),
+						'}'
+					);
+				}
+
+				typeParts.Insert(0, currentTypeName);
+				if (!currentType.IsNested)
+					break;
+
+				currentType = currentType.DeclaringType;
+				Contract.Assume(null != currentType);
+			}
+
+			var ns = currentType.Namespace;
+			var cref = typeParts.Count == 1
+				? typeParts[0]
+				: String.Join(".", typeParts);
+			Contract.Assume(!String.IsNullOrEmpty(cref));
+
+			if (!String.IsNullOrEmpty(ns))
+				cref = ns + '.' + cref;
+
+			if (IncludeTypePrefix)
+				cref = "T:" + cref;
+
+			return cref;
 		}
 
 	}
