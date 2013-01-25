@@ -70,6 +70,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyDefinition.cs" />
+    <Compile Include="CecilCRefLookupTests.cs" />
     <Compile Include="CodeContractXmlDocOverlayTest.cs" />
     <Compile Include="CodeSignatureCsharpTests.cs" />
     <Compile Include="CecilCRefGeneratorTests.cs" />
