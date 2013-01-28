@@ -1,10 +1,13 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Xml;
 using Mono.Cecil;
 
 namespace DandyDoc.Overlays.XmlDoc
 {
+
+	[Obsolete]
 	public class ParsedXmlParamrefElement : ParsedXmlElementBase
 	{
 

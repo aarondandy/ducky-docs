@@ -8,6 +8,8 @@ using DandyDoc.Utility;
 
 namespace DandyDoc.Overlays.XmlDoc
 {
+
+	[Obsolete]
 	public abstract class ParsedXmlNodeBase
 	{
 

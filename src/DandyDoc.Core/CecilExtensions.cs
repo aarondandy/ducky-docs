@@ -7,6 +7,7 @@ using System.Collections.ObjectModel;
 
 namespace DandyDoc
 {
+	[Obsolete]
 	public static class CecilExtensions
 	{
 

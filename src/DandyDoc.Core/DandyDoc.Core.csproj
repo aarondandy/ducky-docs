@@ -175,6 +175,7 @@
     </Compile>
     <Compile Include="AssemblyDefinitionCollection.cs" />
     <Compile Include="CecilExtensions.cs" />
+    <Compile Include="Cecil\CecilUtilities.cs" />
     <Compile Include="CRef\CecilCRefGenerator.cs" />
     <Compile Include="CRef\CecilCRefLookup.cs" />
     <Compile Include="CRef\CRef.cs" />
@@ -220,6 +221,7 @@
     <Compile Include="Overlays\XmlDoc\TypeDefinitionXmlDoc.cs" />
     <Compile Include="Overlays\XmlDoc\XmlDocOverlay.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reflection\ReflectionUtilities.cs" />
     <Compile Include="Service References\MsdnContentService\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -229,6 +231,18 @@
     <Compile Include="Utility\NameUtility.cs" />
     <Compile Include="Utility\TextUtility.cs" />
     <Compile Include="Utility\XmlUtility.cs" />
+    <Compile Include="XmlDoc\XmlAssemblyDocumentation.cs" />
+    <Compile Include="XmlDoc\XmlDocCodeElement.cs" />
+    <Compile Include="XmlDoc\XmlDocContractElement.cs" />
+    <Compile Include="XmlDoc\XmlDocDefinitionList.cs" />
+    <Compile Include="XmlDoc\XmlDocDefinitionListItem.cs" />
+    <Compile Include="XmlDoc\XmlDocElement.cs" />
+    <Compile Include="XmlDoc\XmlDocMember.cs" />
+    <Compile Include="XmlDoc\XmlDocNameElement.cs" />
+    <Compile Include="XmlDoc\XmlDocNode.cs" />
+    <Compile Include="XmlDoc\XmlDocParser.cs" />
+    <Compile Include="XmlDoc\XmlDocRefElement.cs" />
+    <Compile Include="XmlDoc\XmlDocTextNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

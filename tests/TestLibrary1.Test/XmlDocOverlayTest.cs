@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using DandyDoc;
 using DandyDoc.Overlays.Cref;
 using DandyDoc.Overlays.XmlDoc;
@@ -7,6 +8,7 @@ using NUnit.Framework;
 
 namespace TestLibrary1.Test
 {
+	[Obsolete]
 	[TestFixture]
 	public class XmlDocOverlayTest
 	{

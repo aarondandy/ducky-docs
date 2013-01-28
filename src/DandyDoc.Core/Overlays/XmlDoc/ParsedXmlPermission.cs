@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
+using System.Diagnostics.Contracts;
 using System.Xml;
 
 namespace DandyDoc.Overlays.XmlDoc
@@ -7,6 +8,7 @@ namespace DandyDoc.Overlays.XmlDoc
 	/// A parsed permission node referencing a permission member or type.
 	/// </summary>
 	/// <seealso href="http://msdn.microsoft.com/en-us/library/h9df2kfb.aspx"/>
+	[Obsolete]
 	public class ParsedXmlPermission : ParsedCrefXmlElementBase
 	{
 

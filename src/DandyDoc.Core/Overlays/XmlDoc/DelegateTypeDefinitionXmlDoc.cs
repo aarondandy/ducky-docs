@@ -8,6 +8,7 @@ using Mono.Cecil;
 
 namespace DandyDoc.Overlays.XmlDoc
 {
+	[Obsolete]
 	public class DelegateTypeDefinitionXmlDoc : TypeDefinitionXmlDoc
 	{
 

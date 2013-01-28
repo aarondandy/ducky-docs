@@ -1,8 +1,11 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
+using System.Diagnostics.Contracts;
 using System.Xml;
 
 namespace DandyDoc.Overlays.XmlDoc
 {
+
+	[Obsolete]
 	public class ParsedXmlParagraphElement : ParsedXmlElementBase
 	{
 

@@ -10,6 +10,8 @@ using System.IO;
 
 namespace DandyDoc.Overlays.XmlDoc
 {
+
+	[Obsolete]
 	public class XmlDocOverlay
 	{
 

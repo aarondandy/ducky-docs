@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Xml;
 using DandyDoc.Utility;
 
 namespace DandyDoc.Overlays.XmlDoc
 {
+
+	[Obsolete]
 	public class ParsedXmlException : ParsedCrefXmlElementBase
 	{
 

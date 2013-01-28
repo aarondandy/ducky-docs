@@ -8,6 +8,8 @@ using System.Xml;
 
 namespace DandyDoc.Overlays.XmlDoc
 {
+
+	[Obsolete]
 	public class ParsedXmlListItemElement : ParsedXmlElementBase
 	{
 

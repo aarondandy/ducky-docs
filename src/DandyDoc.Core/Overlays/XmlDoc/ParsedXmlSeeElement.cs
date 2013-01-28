@@ -1,11 +1,14 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
+using System.Diagnostics.Contracts;
 using System.Xml;
 
 namespace DandyDoc.Overlays.XmlDoc
 {
+
 	/// <summary>
 	/// A parsed cref hyperlink element used to refer a documentation reader to another type or member.
 	/// </summary>
+	[Obsolete]
 	public class ParsedXmlSeeElement : ParsedCrefXmlElementBase
 	{
 
