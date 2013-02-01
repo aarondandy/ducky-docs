@@ -101,7 +101,7 @@ namespace DandyDoc.CRef
 			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
 			var paramIndex = parameter.Owner.GenericParameters.IndexOf(parameter);
 			if (paramIndex < 0)
-				paramIndex = 0;
+				return parameter.Name;
 			return String.Concat(
 				parameter.Owner is TypeDefinition ? "`" : "``",
 				paramIndex

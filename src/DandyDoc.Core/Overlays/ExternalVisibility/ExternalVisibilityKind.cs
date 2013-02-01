@@ -1,9 +1,12 @@
-﻿namespace DandyDoc.Overlays.ExternalVisibility
+﻿using System;
+
+namespace DandyDoc.Overlays.ExternalVisibility
 {
 	/// <summary>
 	/// Specifies the level of external visibility for a member.
 	/// </summary>
 	/// <seealso cref="DandyDoc.Overlays.ExternalVisibility.ExternalVisibilityOverlay"/>
+	[Obsolete]
 	public enum ExternalVisibilityKind
 	{
 		/// <summary>

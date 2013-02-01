@@ -8,6 +8,7 @@ using Mono.Cecil;
 
 namespace DandyDoc
 {
+	[Obsolete]
 	public class AssemblyDefinitionCollection : Collection<AssemblyDefinition>
 	{
 

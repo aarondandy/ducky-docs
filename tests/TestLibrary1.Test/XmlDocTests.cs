@@ -174,5 +174,162 @@ namespace TestLibrary1.Test
 			Assert.That(docs.ExceptionElements.Select(x => x.CRef), Has.All.EqualTo("T:System.NotImplementedException"));
 		}
 
+		[Test]
+		public void read_inline_code_from_method() {
+			var docs = Docs.GetMember("M:TestLibrary1.Class1.DoubleStatic(System.Double)");
+			Assert.IsNotNull(docs);
+			var codeElement = docs.SummaryContents.OfType<XmlDocCodeElement>().Single();
+			Assert.IsTrue(codeElement.IsInline);
+			Assert.AreEqual("result = value + value", codeElement.Children[0].Node.OuterXml);
+		}
+
+		[Test]
+		public void read_text_nodes_from_method() {
+			var docs = Docs.GetMember("M:TestLibrary1.Class1.DoubleStatic(System.Double)");
+			Assert.IsNotNull(docs);
+			var codeElement = docs.SummaryContents.OfType<XmlDocTextNode>().ToList();
+			Assert.AreEqual(2, codeElement.Count);
+			Assert.AreEqual("Doubles the given value like so: ", codeElement[0].HtmlDecoded);
+			Assert.AreEqual(".", codeElement[1].HtmlDecoded);
+		}
+
+		[Test]
+		public void read_code_block_from_method() {
+			var docs = Docs.GetMember("M:TestLibrary1.Class1.DoubleStatic(System.Int32)");
+			Assert.IsNotNull(docs);
+			var codeBlock = docs.RemarksElements
+				.First()
+				.Children
+				.OfType<XmlDocCodeElement>()
+				.FirstOrDefault();
+			Assert.IsNotNull(codeBlock);
+			Assert.IsFalse(codeBlock.IsInline);
+			Assert.AreEqual("This\n is\n  some\n   text.", codeBlock.Node.InnerXml);
+		}
+
+		[Test]
+		public void read_examples_from_method() {
+			var docs = Docs.GetMember("M:TestLibrary1.Class1.DoubleStatic(System.Int32)");
+			Assert.IsNotNull(docs);
+			var examples = docs.ExampleElements;
+			Assert.IsNotNull(examples);
+			Assert.AreEqual(2, examples.Count);
+			Assert.AreEqual("Example 1", examples[0].Node.InnerXml);
+			Assert.AreEqual("Example 2", examples[1].Node.InnerXml);
+		}
+
+		[Test]
+		public void read_list_from_method() {
+			var docs = Docs.GetMember("M:TestLibrary1.Class1.DoubleStatic(System.Int32)");
+			Assert.IsNotNull(docs);
+			Assert.IsNotNull(docs.SummaryElement);
+			Assert.IsTrue(docs.HasSummaryContents);
+			var list = docs.SummaryContents.OfType<XmlDocDefinitionList>().Single();
+			Assert.IsNotNull(list);
+			Assert.That("bullet".Equals(list.ListType, StringComparison.OrdinalIgnoreCase));
+			var items = list.Items.ToList();
+			Assert.AreEqual(2, items.Count);
+			Assert.AreEqual("Col 1", items[0].TermContents.First().Node.OuterXml);
+			Assert.AreEqual("Col 2", items[0].DescriptionContents.First().Node.OuterXml);
+			Assert.IsTrue(items[0].IsHeader);
+			Assert.AreEqual("A term.", items[1].TermContents.First().Node.OuterXml);
+			Assert.AreEqual("A description.", items[1].DescriptionContents.First().Node.OuterXml);
+			Assert.IsFalse(items[1].IsHeader);
+		}
+
+		[Test]
+		public void read_para_from_method() {
+			var docs = Docs.GetMember("M:TestLibrary1.Class1.Finalize");
+			Assert.IsNotNull(docs);
+			var paragraphs = docs.RemarksElements.First()
+				.Children
+				.OfType<XmlDocElement>()
+				.Where(x => "PARA".Equals(x.Name, StringComparison.OrdinalIgnoreCase))
+				.ToList();
+			Assert.AreEqual(3, paragraphs.Count);
+			Assert.AreEqual("a paragraph", paragraphs[0].Node.InnerXml.Trim());
+			Assert.AreEqual("and another", paragraphs[1].Node.InnerXml.Trim());
+			Assert.AreEqual("a third", paragraphs[2].Node.InnerXml.Trim());
+		}
+
+		[Test]
+		public void paramref_from_property() {
+			var docs = Docs.GetMember("P:TestLibrary1.Class1.Item(System.Int32)");
+			Assert.IsNotNull(docs);
+			var paramref = docs.RemarksElements.First().Children.OfType<XmlDocNameElement>().Single();
+			Assert.AreEqual("index", paramref.Node.InnerXml);
+			Assert.AreEqual("n", paramref.TargetName);
+		}
+
+		[Test]
+		public void paramref_from_method() {
+			var docs = Docs.GetMember("M:TestLibrary1.Class1.#ctor(System.String,System.String)");
+			Assert.IsNotNull(docs);
+			var paramref = docs.RemarksElements.First().Children.OfType<XmlDocNameElement>().Single();
+			Assert.AreEqual("crap", paramref.TargetName);
+		}
+
+		[Test]
+		public void paramref_from_delegate() {
+			var docs = Docs.GetMember("T:TestLibrary1.Class1.MyFunc");
+			Assert.IsNotNull(docs);
+			var paramref = docs.RemarksElements.First().Children.OfType<XmlDocNameElement>().Single();
+			Assert.AreEqual("a", paramref.TargetName);
+		}
+
+		[Test]
+		public void permission_from_field() {
+			var docs = Docs.GetMember("F:TestLibrary1.Class1.MyConst");
+			Assert.AreEqual(1, docs.PermissionElements.Count);
+			Assert.AreEqual("T:System.Security.PermissionSet", docs.PermissionElements[0].CRef);
+			Assert.AreEqual("I have no idea what this is for.", docs.PermissionElements[0].Node.InnerXml);
+		}
+
+		[Test]
+		public void see_and_seealso_from_event() {
+			var docs = Docs.GetMember("E:TestLibrary1.Class1.DoStuff");
+			var see = docs.RemarksElements.First().Children.OfType<XmlDocRefElement>().Single();
+			Assert.AreEqual("T:TestLibrary1.Class1", see.CRef);
+			Assert.AreEqual(2, docs.SeeAlsoElements.Count);
+			Assert.AreEqual("T:TestLibrary1.Class1.MyFunc", docs.SeeAlsoElements[0].CRef);
+			Assert.AreEqual("The delegate.", docs.SeeAlsoElements[0].Node.InnerXml);
+			Assert.AreEqual("M:TestLibrary1.Class1.DoubleStatic(System.Int32)", docs.SeeAlsoElements[1].CRef);
+		}
+
+		[Test]
+		public void typeparamref_on_self_class() {
+			var docs = Docs.GetMember("T:TestLibrary1.Generic1`2");
+			var typeparamref = docs.SummaryContents.OfType<XmlDocNameElement>().Single();
+			Assert.AreEqual("TA", typeparamref.TargetName);
+		}
+
+		[Test]
+		public void typeparamref_to_parent_class() {
+			var docs = Docs.GetMember(
+				"M:TestLibrary1.Generic1`2.op_Addition(TestLibrary1.Generic1{System.Int32,System.Int32[]},TestLibrary1.Generic1{`0,`1})");
+			var typeparamref = docs.SummaryContents.OfType<XmlDocNameElement>().Single();
+			Assert.AreEqual("TA", typeparamref.TargetName);
+		}
+
+		[Test]
+		public void typeparamref_to_delegate_generic() {
+			var docs = Docs.GetMember("T:TestLibrary1.Generic1`2.MyFunc`1");
+			var typeparamref = docs.SummaryContents.OfType<XmlDocNameElement>().Single();
+			Assert.AreEqual("TX", typeparamref.TargetName);
+		}
+
+		[Test]
+		public void typeparam_on_generic_class() {
+			var docs = Docs.GetMember("T:TestLibrary1.Generic1`2");
+			Assert.AreEqual(2, docs.TypeParameterSummaries.Count);
+			Assert.AreEqual("TA", docs.TypeParameterSummaries[0].TargetName);
+			Assert.AreEqual("TB", docs.TypeParameterSummaries[1].TargetName);
+			Assert.AreEqual("B", docs.TypeParameterSummaries[1].Node.InnerXml);
+			var tbParam = docs.GetTypeParameterSummary("TB");
+			Assert.AreEqual("TB", tbParam.TargetName);
+			Assert.AreEqual("B", tbParam.Node.InnerXml);
+			Assert.IsNull(docs.GetTypeParameterSummary("XYZ"));
+		}
+
 	}
 }

@@ -4,6 +4,7 @@ using Mono.Cecil;
 
 namespace DandyDoc.Overlays.ExternalVisibility
 {
+	[Obsolete]
 	public static class ExternalVisibilityOverlay
 	{
 

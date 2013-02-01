@@ -4,6 +4,7 @@ using Mono.Cecil;
 
 namespace DandyDoc.Overlays.CodeSignature
 {
+	[Obsolete]
 	public abstract class CodeSignatureGeneratorBase
 	{
 

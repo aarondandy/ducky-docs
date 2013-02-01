@@ -13,10 +13,31 @@ namespace TestLibrary1.Test
 	public class ReflectionCRefGeneratorTests
 	{
 
+		private class DoABunchOfHorribleNullStuff : ReflectionCRefGenerator
+		{
+
+			public void DoNullStuff() {
+				Assert.IsNull(GetCRef((object)null));
+				Assert.IsNull(GetCRef("hot dog!"));
+				Assert.Throws<ArgumentNullException>(() => GetCRef((MemberInfo)null));
+				Assert.Throws<ArgumentNullException>(() => GetCRef((Type)null));
+				Assert.Throws<ArgumentNullException>(() => GetGenericParameterName(null));
+				Assert.Throws<ArgumentNullException>(() => GetFullName(null));
+
+			}
+
+		}
+
 		public ReflectionCRefGenerator Generator {
 			get {
 				return new ReflectionCRefGenerator();
 			}
+		}
+
+		[Test]
+		public void null_cref_object_generation() {
+			var doNulls = new DoABunchOfHorribleNullStuff();
+			doNulls.DoNullStuff();
 		}
 
 		[Test]

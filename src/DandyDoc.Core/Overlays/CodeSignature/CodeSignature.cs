@@ -3,6 +3,7 @@ using System.Diagnostics.Contracts;
 
 namespace DandyDoc.Overlays.CodeSignature
 {
+	[Obsolete]
 	public class CodeSignature
 	{
 

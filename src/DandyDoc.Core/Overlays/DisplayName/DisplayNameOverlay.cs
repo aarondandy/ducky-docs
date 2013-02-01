@@ -21,6 +21,7 @@ namespace DandyDoc.Overlays.DisplayName
 	/// identifying name is required.
 	/// </para>
 	/// </remarks>
+	[Obsolete]
 	public class DisplayNameOverlay
 	{
 

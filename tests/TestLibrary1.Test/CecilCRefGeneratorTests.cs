@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using DandyDoc.CRef;
 using Mono.Cecil;
 using NUnit.Framework;
@@ -8,6 +9,21 @@ namespace TestLibrary1.Test
 	[TestFixture]
 	public class CecilCRefGeneratorTests
 	{
+
+		private class DoABunchOfHorribleNullStuff : CecilCRefGenerator
+		{
+
+			public void DoNullStuff() {
+				Assert.IsNull(GetCRef((object)null));
+				Assert.IsNull(GetCRef("hot dog!"));
+				Assert.Throws<ArgumentNullException>(() => GetCRef((MemberReference)null));
+				Assert.Throws<ArgumentNullException>(() => GetCRef((TypeReference)null));
+				Assert.Throws<ArgumentNullException>(() => GetGenericParameterName(null));
+				Assert.Throws<ArgumentNullException>(() => GetFullName(null));
+
+			}
+
+		}
 
 		private AssemblyDefinition GetAssembly() {
 			var assemblyDefinition = AssemblyDefinition.ReadAssembly("./TestLibrary1.dll");
@@ -29,6 +45,12 @@ namespace TestLibrary1.Test
 			get {
 				return new CecilCRefGenerator();
 			}
+		}
+
+		[Test]
+		public void null_cref_object_generation() {
+			var doNulls = new DoABunchOfHorribleNullStuff();
+			doNulls.DoNullStuff();
 		}
 
 		[Test]

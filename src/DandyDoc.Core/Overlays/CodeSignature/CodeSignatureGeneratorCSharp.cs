@@ -8,6 +8,7 @@ using Mono.Cecil;
 
 namespace DandyDoc.Overlays.CodeSignature
 {
+	[Obsolete]
 	public class CodeSignatureGeneratorCSharp : CodeSignatureGeneratorBase
 	{
 
