@@ -7,10 +7,11 @@ using System.Collections.ObjectModel;
 
 namespace DandyDoc
 {
-	[Obsolete]
+	[Obsolete("Need to move this stuff.")]
 	public static class CecilExtensions
 	{
 
+		[Obsolete]
 		[Pure]
 		public static IList<EventDefinition> GetAllEvents(this TypeDefinition definition) {
 			if (null == definition) throw new ArgumentNullException("definition");
@@ -29,6 +30,7 @@ namespace DandyDoc
 			return result;
 		}
 
+		[Obsolete]
 		[Pure]
 		private static void AppendNeededBaseEvents(TypeDefinition definition, List<EventDefinition> baseMembers) {
 			var newAdditions = new List<EventDefinition>();
@@ -51,6 +53,7 @@ namespace DandyDoc
 			}
 		}
 
+		[Obsolete]
 		[Pure]
 		public static IList<PropertyDefinition> GetAllProperties(this TypeDefinition definition) {
 			if (null == definition) throw new ArgumentNullException("definition");
@@ -69,6 +72,7 @@ namespace DandyDoc
 			return result;
 		}
 
+		[Obsolete]
 		[Pure]
 		private static void AppendNeededBaseProperties(TypeDefinition definition, List<PropertyDefinition> baseMembers) {
 			var newAdditions = new List<PropertyDefinition>();
@@ -91,6 +95,7 @@ namespace DandyDoc
 			}
 		}
 
+		[Obsolete]
 		[Pure]
 		public static IList<FieldDefinition> GetAllFields(this TypeDefinition definition) {
 			if(null == definition) throw new ArgumentNullException("definition");
@@ -109,6 +114,7 @@ namespace DandyDoc
 			return result;
 		}
 
+		[Obsolete]
 		[Pure]
 		private static void AppendNeededBaseFields(TypeDefinition definition, List<FieldDefinition> baseMembers) {
 			var newAdditions = new List<FieldDefinition>();
@@ -130,7 +136,8 @@ namespace DandyDoc
 				}
 			}
 		}
-		
+
+		[Obsolete]
 		[Pure] public static IList<MethodDefinition> GetAllMethods(this TypeDefinition definition) {
 			if(null == definition) throw new ArgumentNullException("definition");
 			Contract.Ensures(Contract.Result<IList<MethodDefinition>>() != null);
@@ -148,6 +155,7 @@ namespace DandyDoc
 			return result;
 		}
 
+		[Obsolete]
 		[Pure] private static void AppendNeededBaseMethods(TypeDefinition definition, List<MethodDefinition> baseMembers) {
 			var newAdditions = new List<MethodDefinition>();
 			foreach (var method in definition.Methods) {
@@ -172,6 +180,7 @@ namespace DandyDoc
 			}
 		}
 
+		[Obsolete]
 		public static bool SignaturesEqual(MethodDefinition a, MethodDefinition b) {
 			if (null == a)
 				return null == b;
@@ -191,6 +200,7 @@ namespace DandyDoc
 			return true;
 		}
 
+		[Obsolete]
 		[Pure] public static bool IsDelegateType(this TypeDefinition typeDefinition){
 			if (null == typeDefinition)
 				return false;
@@ -205,10 +215,12 @@ namespace DandyDoc
 			return typeDefinition.HasMethods && typeDefinition.Methods.Any(x => "Invoke".Equals(x.Name));
 		}
 
+		[Obsolete]
 		private static readonly ReadOnlyCollection<ParameterDefinition> EmptyParameterDefinitionCollection = Array.AsReadOnly(new ParameterDefinition[0]);
 
+		[Obsolete]
 		public static IList<ParameterDefinition> GetDelegateTypeParameters(this TypeDefinition typeDefinition){
-			Contract.Ensures(Contract.Result<IEnumerable<ParameterDefinition>>() != null);
+			Contract.Ensures(Contract.Result<IList<ParameterDefinition>>() != null);
 			if (!IsDelegateType(typeDefinition))
 				return EmptyParameterDefinitionCollection;
 
@@ -219,6 +231,7 @@ namespace DandyDoc
 				: method.Parameters;
 		}
 
+		[Obsolete]
 		public static TypeReference GetDelegateReturnType(this TypeDefinition definition) {
 			if(null == definition) throw new ArgumentNullException("definition");
 			if(!definition.IsDelegateType()) throw new ArgumentException("Definition must be a delegate type.", "delegate");
@@ -231,6 +244,7 @@ namespace DandyDoc
 			return method.ReturnType;
 		}
 
+		[Obsolete]
 		private static readonly HashSet<string> OperatorMethodNames = new HashSet<string>{
 			"op_Implicit",
 			"op_explicit",
@@ -272,6 +286,7 @@ namespace DandyDoc
 			"op_OnesComplement"
 		};
 
+		[Obsolete]
 		public static bool IsOperatorOverload(this MethodDefinition methodDefinition){
 			if(null == methodDefinition) throw new ArgumentNullException("methodDefinition");
 			Contract.EndContractBlock();
@@ -281,12 +296,14 @@ namespace DandyDoc
 			return OperatorMethodNames.Contains(methodDefinition.Name);
 		}
 
+		[Obsolete]
 		public static bool IsItemIndexerProperty(this PropertyDefinition definition) {
 			if(null == definition) throw new ArgumentNullException("definition");
 			Contract.EndContractBlock();
 			return definition.HasParameters && "Item".Equals(definition.Name);
 		}
 
+		[Obsolete]
 		public static bool IsFinalizer(this MethodDefinition methodDefinition){
 			if (null == methodDefinition) throw new ArgumentNullException("methodDefinition");
 			Contract.EndContractBlock();
@@ -295,6 +312,7 @@ namespace DandyDoc
 				&& "Finalize".Equals(methodDefinition.Name);
 		}
 
+		[Obsolete]
 		public static bool IsStatic(this PropertyDefinition definition) {
 			if(null == definition) throw new ArgumentNullException("definition");
 			Contract.EndContractBlock();
@@ -302,6 +320,7 @@ namespace DandyDoc
 			return null != method && method.IsStatic;
 		}
 
+		[Obsolete]
 		public static bool IsStatic(this EventDefinition definition) {
 			if (null == definition) throw new ArgumentNullException("definition");
 			Contract.EndContractBlock();
@@ -309,12 +328,14 @@ namespace DandyDoc
 			return null != method && method.IsStatic;
 		}
 
+		[Obsolete]
 		public static bool IsStatic(this TypeDefinition definition) {
 			if (null == definition) throw new ArgumentNullException("definition");
 			Contract.EndContractBlock();
 			return definition.IsAbstract && definition.IsSealed;
 		}
 
+		[Obsolete]
 		public static bool IsStatic(this IMemberDefinition definition) {
 			if (null == definition) throw new ArgumentNullException("definition");
 			Contract.EndContractBlock();
@@ -331,6 +352,7 @@ namespace DandyDoc
 			throw new NotSupportedException();
 		}
 
+		[Obsolete]
 		public static bool IsFinal(this PropertyDefinition definition) {
 			if (null == definition) throw new ArgumentNullException("definition");
 			Contract.EndContractBlock();
@@ -338,6 +360,7 @@ namespace DandyDoc
 				|| (null != definition.SetMethod && definition.SetMethod.IsFinal);
 		}
 
+		[Obsolete]
 		public static bool IsAbstract(this PropertyDefinition definition) {
 			if (null == definition) throw new ArgumentNullException("definition");
 			Contract.EndContractBlock();
@@ -345,6 +368,7 @@ namespace DandyDoc
 				|| (null != definition.SetMethod && definition.SetMethod.IsAbstract);
 		}
 
+		[Obsolete]
 		public static bool IsVirtual(this PropertyDefinition definition) {
 			if (null == definition) throw new ArgumentNullException("definition");
 			Contract.EndContractBlock();
@@ -352,6 +376,7 @@ namespace DandyDoc
 				|| (null != definition.SetMethod && definition.SetMethod.IsVirtual);
 		}
 
+		[Obsolete]
 		public static bool IsOverride(this PropertyDefinition definition) {
 			if (null == definition) throw new ArgumentNullException("definition");
 			Contract.EndContractBlock();
@@ -359,6 +384,7 @@ namespace DandyDoc
 				|| (null != definition.SetMethod && definition.SetMethod.IsOverride());
 		}
 
+		[Obsolete]
 		public static bool IsSealed(this PropertyDefinition definition) {
 			if (null == definition) throw new ArgumentNullException("definition");
 			Contract.EndContractBlock();
@@ -366,6 +392,7 @@ namespace DandyDoc
 				|| (null != definition.SetMethod && definition.SetMethod.IsSealed());
 		}
 
+		[Obsolete]
 		public static bool IsNewSlot(this PropertyDefinition definition) {
 			if (null == definition) throw new ArgumentNullException("definition");
 			Contract.EndContractBlock();
@@ -373,18 +400,21 @@ namespace DandyDoc
 				|| (null != definition.SetMethod && definition.SetMethod.IsNewSlot);
 		}
 
+		[Obsolete]
 		public static bool IsOverride(this MethodDefinition definition) {
 			if(null == definition) throw new ArgumentNullException("definition");
 			Contract.EndContractBlock();
 			return definition.IsVirtual && definition.IsReuseSlot;
 		}
 
+		[Obsolete]
 		public static bool IsSealed(this MethodDefinition definition) {
 			if (null == definition) throw new ArgumentNullException("definition");
 			Contract.EndContractBlock();
 			return definition.IsFinal && definition.IsOverride();
 		}
 
+		[Obsolete]
 		public static bool IsExtensionMethod(this MethodDefinition definition){
 			if (null == definition) throw new ArgumentNullException("definition");
 			Contract.EndContractBlock();
@@ -394,24 +424,28 @@ namespace DandyDoc
 			return definition.CustomAttributes.Any(x => x.AttributeType.FullName == "System.Runtime.CompilerServices.ExtensionAttribute");
 		}
 
+		[Obsolete]
 		public static bool HasPureAttribute(this ICustomAttributeProvider definition) {
 			if (null == definition) throw new ArgumentNullException("definition");
 			Contract.EndContractBlock();
 			return HasAttributeMatchingShortName(definition, "PureAttribute");
 		}
 
+		[Obsolete]
 		public static bool HasFlagsAttribute(this ICustomAttributeProvider definition){
 			if (null == definition) throw new ArgumentNullException("definition");
 			Contract.EndContractBlock();
 			return HasAttributeMatchingFullName(definition, "System.FlagsAttribute");
 		}
 
+		[Obsolete]
 		public static bool HasObsoleteAttribute(this ICustomAttributeProvider definition) {
 			if(null == definition) throw new ArgumentNullException("definition");
 			Contract.EndContractBlock();
 			return HasAttributeMatchingFullName(definition, "System.ObsoleteAttribute");
 		}
 
+		[Obsolete]
 		public static bool HasAttributeMatchingName(this ICustomAttributeProvider definition, string name) {
 			if (null == definition) throw new ArgumentNullException("definition");
 			Contract.EndContractBlock();
@@ -420,6 +454,7 @@ namespace DandyDoc
 				&& definition.CustomAttributes.Select(a => a.AttributeType).Any(t => t.FullName == name || t.Name == name);
 		}
 
+		[Obsolete]
 		public static bool HasAttributeMatchingShortName(this ICustomAttributeProvider definition, string name){
 			if (null == definition) throw new ArgumentNullException("definition");
 			if (String.IsNullOrEmpty(name)) throw new ArgumentException("Valid name is required.", name);
@@ -429,6 +464,7 @@ namespace DandyDoc
 				&& definition.CustomAttributes.Any(a => a.AttributeType.Name == name);
 		}
 
+		[Obsolete]
 		public static bool HasAttributeMatchingFullName(this ICustomAttributeProvider definition, string name) {
 			if (null == definition) throw new ArgumentNullException("definition");
 			if (String.IsNullOrEmpty(name)) throw new ArgumentException("Valid name is required.", name);

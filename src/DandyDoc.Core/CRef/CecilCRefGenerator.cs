@@ -10,6 +10,7 @@ namespace DandyDoc.CRef
 	{
 
 		public static readonly CecilCRefGenerator Default = new CecilCRefGenerator();
+
 		public static readonly CecilCRefGenerator NoPrefix = new CecilCRefGenerator(false);
 
 		public CecilCRefGenerator()
@@ -25,10 +26,7 @@ namespace DandyDoc.CRef
 				: null == Contract.Result<string>()
 			);
 			var memberReference = entity as MemberReference;
-			if (memberReference != null) {
-				return GetCRef(memberReference);
-			}
-			return null;
+			return memberReference != null ? GetCRef(memberReference) : null;
 		}
 
 		protected virtual string GetCRef(MemberReference reference) {

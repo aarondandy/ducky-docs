@@ -69,8 +69,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyDefinition.cs" />
     <Compile Include="CecilCRefLookupTests.cs" />
+    <Compile Include="CecilDisplayNameGeneratorTests.cs" />
     <Compile Include="CodeContractXmlDocOverlayTest.cs" />
     <Compile Include="CodeSignatureCsharpTests.cs" />
     <Compile Include="CecilCRefGeneratorTests.cs" />
@@ -81,6 +81,8 @@
     <Compile Include="MsdnDynamicLinkOverlayTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReflectionCRefGeneratorTests.cs" />
+    <Compile Include="ReflectionCRefLookupTests.cs" />
+    <Compile Include="ReflectionDisplayNameGeneratorTests.cs" />
     <Compile Include="XmlDocOverlayTest.cs" />
     <Compile Include="XmlDocTests.cs" />
   </ItemGroup>

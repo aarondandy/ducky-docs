@@ -11,7 +11,7 @@ namespace DandyDoc.CRef
 
 		public static readonly ReflectionCRefGenerator NoPrefix = new ReflectionCRefGenerator(false);
 
-		protected static readonly ReflectionCRefGenerator NoPrefixForceGenericExpansion = new ReflectionCRefGenerator(false){
+		public static readonly ReflectionCRefGenerator NoPrefixForceGenericExpansion = new ReflectionCRefGenerator(false){
 			ForceGenericExpansion = true
 		};
 
@@ -33,10 +33,7 @@ namespace DandyDoc.CRef
 				: null == Contract.Result<string>()
 			);
 			var memberInfo = entity as MemberInfo;
-			if (memberInfo != null) {
-				return GetCRef(memberInfo);
-			}
-			return null;
+			return memberInfo != null ? GetCRef(memberInfo) : null;
 		}
 
 		protected virtual string GetCRef(MemberInfo info){

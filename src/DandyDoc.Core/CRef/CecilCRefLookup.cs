@@ -25,12 +25,14 @@ namespace DandyDoc.CRef
 			}
 		}
 
+		[Obsolete("More generic name.")]
 		public virtual MemberReference GetMemberReference(string cRef) {
 			if (String.IsNullOrEmpty(cRef)) throw new ArgumentException("CRef is not valid.", "cRef");
 			Contract.EndContractBlock();
 			return GetMemberReference(new CRef(cRef));
 		}
 
+		[Obsolete("More generic name.")]
 		public virtual MemberReference GetMemberReference(CRef cRef) {
 			if(cRef == null) throw new ArgumentNullException("cRef");
 			Contract.EndContractBlock();
@@ -39,6 +41,7 @@ namespace DandyDoc.CRef
 				.FirstOrDefault(x => null != x);
 		}
 
+		[Obsolete("More generic name.")]
 		public static MemberReference GetMemberReference(AssemblyDefinition assembly, CRef cRef) {
 			if(assembly == null) throw new ArgumentNullException("assembly");
 			if(cRef == null) throw new ArgumentNullException("cRef");
@@ -110,12 +113,9 @@ namespace DandyDoc.CRef
 
 			var otherNamePart = typeName.Substring(offset);
 
-			foreach (var nestedType in type.NestedTypes) {
-				var result = ResolveTypeByName(nestedType, otherNamePart);
-				if (null != result)
-					return result;
-			}
-			return null;
+			return type.NestedTypes
+				.Select(nestedType => ResolveTypeByName(nestedType, otherNamePart))
+				.FirstOrDefault(result => result != null);
 		}
 
 		private static MemberReference GetNonTypeMemberDefinition(AssemblyDefinition assembly, CRef cRef) {

@@ -8,7 +8,7 @@ using Mono.Cecil;
 
 namespace DandyDoc
 {
-	[Obsolete]
+	[Obsolete("To be moved.")]
 	public class AssemblyDefinitionCollection : Collection<AssemblyDefinition>
 	{
 
@@ -115,6 +115,7 @@ namespace DandyDoc
 			base.SetItem(index, item);
 		}
 
+		[Obsolete("Bad name.")]
 		public bool ContainsDefinition(MemberReference reference){
 			if (null == reference)
 				return false;

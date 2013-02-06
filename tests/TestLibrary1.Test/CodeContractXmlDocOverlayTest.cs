@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using DandyDoc;
 using DandyDoc.Overlays.Cref;
 using DandyDoc.Overlays.XmlDoc;
@@ -7,6 +8,7 @@ using NUnit.Framework;
 
 namespace TestLibrary1.Test
 {
+	[Obsolete("Need to replicate these tests for new XMl doc code.")]
 	[TestFixture]
 	public class CodeContractXmlDocOverlayTest
 	{

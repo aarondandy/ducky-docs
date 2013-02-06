@@ -8,6 +8,7 @@ using NUnit.Framework;
 
 namespace TestLibrary1.Test
 {
+	[Obsolete("Need to refactor after a move to another library maybe? or at least another namespace?")]
 	[TestFixture]
 	public class MsdnDynamicLinkOverlayTests
 	{

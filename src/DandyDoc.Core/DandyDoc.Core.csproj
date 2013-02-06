@@ -182,6 +182,9 @@
     <Compile Include="CRef\CRefGeneratorBase.cs" />
     <Compile Include="CRef\ICRefGenerator.cs" />
     <Compile Include="CRef\ReflectionCRefGenerator.cs" />
+    <Compile Include="CRef\ReflectionCRefLookup.cs" />
+    <Compile Include="DisplayName\StandardCecilDisplayNameGenerator.cs" />
+    <Compile Include="DisplayName\StandardReflectionDisplayNameGenerator.cs" />
     <Compile Include="Overlays\CodeSignature\CodeSignatureGeneratorBase.cs" />
     <Compile Include="Overlays\CodeSignature\CodeSignatureGeneratorCSharp.cs" />
     <Compile Include="Overlays\Cref\CrefOverlay.cs" />
@@ -228,6 +231,7 @@
       <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
     <Compile Include="Utility\CollectionUtility.cs" />
+    <Compile Include="Utility\CSharpOperatorNameSymbolMap.cs" />
     <Compile Include="Utility\NameUtility.cs" />
     <Compile Include="Utility\TextUtility.cs" />
     <Compile Include="Utility\XmlUtility.cs" />

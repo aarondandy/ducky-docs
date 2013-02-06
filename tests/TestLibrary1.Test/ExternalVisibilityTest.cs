@@ -9,6 +9,7 @@ using NUnit.Framework;
 
 namespace TestLibrary1.Test
 {
+	[Obsolete("Need to refactor these when the stuff is moved.")]
 	[TestFixture]
 	public class ExternalVisibilityTest
 	{

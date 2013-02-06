@@ -11,6 +11,7 @@ using NUnit.Framework;
 
 namespace TestLibrary1.Test
 {
+	[Obsolete("Need to refactor these for new C# signatures.")]
 	[TestFixture]
 	public class CodeSignatureCsharpTests
 	{
