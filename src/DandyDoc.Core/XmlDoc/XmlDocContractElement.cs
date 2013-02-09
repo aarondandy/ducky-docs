@@ -33,5 +33,19 @@ namespace DandyDoc.XmlDoc
 			get { return Element.GetAttribute("vb"); }
 		}
 
+		public string ExceptionCRef {
+			get { return Element.GetAttribute("exception"); }
+		}
+
+		public override string CRef {
+			get {
+				var result = base.CRef;
+				if (String.IsNullOrEmpty(result))
+					result = ExceptionCRef;
+
+				return result;
+			}
+		}
+
 	}
 }

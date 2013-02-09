@@ -32,11 +32,11 @@ namespace TestLibrary1.Test
 		public ReflectionCRefLookup Lookup { get; private set; }
 
 		public Type GetType(string cRef) {
-			return Lookup.GetMemberInfo(cRef) as Type;
+			return Lookup.GetMember(cRef) as Type;
 		}
 
 		public MemberInfo GetMember(string cRef) {
-			return Lookup.GetMemberInfo(cRef);
+			return Lookup.GetMember(cRef);
 		}
 
 		[Test]

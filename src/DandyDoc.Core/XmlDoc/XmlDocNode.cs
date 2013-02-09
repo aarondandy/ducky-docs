@@ -55,5 +55,42 @@ namespace DandyDoc.XmlDoc
 			Contract.Invariant(Children != null);
 			Contract.Invariant(Contract.ForAll(Children, child => child != null));
 		}
+
+		public IEnumerable<XmlDocNode> PriorSiblings {
+			get {
+				if (Parent == null || !Parent.HasChildren)
+					yield break;
+
+				var siblings = Parent.Children;
+				for (int i = siblings.IndexOf(this) - 1; i >= 0; i--) {
+					yield return siblings[i];
+				}
+			}
+		}
+
+		public IEnumerable<XmlDocNode> NextSiblings {
+			get {
+				if (Parent == null || !Parent.HasChildren)
+					yield break;
+
+				var siblings = Parent.Children;
+				var i = siblings.IndexOf(this);
+				if (i < 0)
+					yield break;
+
+				for (i++; i < siblings.Count; i++) {
+					yield return siblings[i];
+				}
+			}
+		} 
+
+		public XmlDocNode PriorSibling {
+			get { return PriorSiblings.FirstOrDefault(); }
+		}
+
+		public XmlDocNode NextSibling {
+			get { return NextSiblings.FirstOrDefault(); }
+		}
+
 	}
 }

@@ -55,8 +55,8 @@ namespace DandyDoc.XmlDoc
 				return new XmlDocElement(element, GetChildren(element));
 			}
 
-			if(node is XmlText)
-				return new XmlDocTextNode((XmlText)node);
+			if (node is XmlCharacterData)
+				return new XmlDocTextNode((XmlCharacterData)node);
 
 			return new XmlDocNode(node, GetChildren(node));
 		}

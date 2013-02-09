@@ -14,15 +14,15 @@ namespace DandyDoc.XmlDoc
 			Contract.Requires(children == null || Contract.ForAll(children, x => x != null));
 		}
 
-		public string CRef {
+		public virtual string CRef {
 			get { return Element.GetAttribute("cref"); }
 		}
 
-		public string HRef {
+		public virtual string HRef {
 			get { return Element.GetAttribute("href"); }
 		}
 
-		public string LangWord {
+		public virtual string LangWord {
 			get { return Element.GetAttribute("langword"); }
 		}
 

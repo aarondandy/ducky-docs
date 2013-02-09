@@ -33,11 +33,11 @@ namespace TestLibrary1.Test
 		public CecilCRefLookup Lookup { get; private set; }
 
 		public TypeDefinition GetType(string cRef) {
-			return Lookup.GetMemberReference(cRef) as TypeDefinition;
+			return Lookup.GetMember(cRef) as TypeDefinition;
 		}
 
 		public IMemberDefinition GetMember(string cRef) {
-			return Lookup.GetMemberReference(cRef) as IMemberDefinition;
+			return Lookup.GetMember(cRef) as IMemberDefinition;
 		}
 
 		[Test]

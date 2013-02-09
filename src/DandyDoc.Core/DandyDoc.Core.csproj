@@ -180,6 +180,7 @@
     <Compile Include="CRef\CecilCRefLookup.cs" />
     <Compile Include="CRef\CRef.cs" />
     <Compile Include="CRef\CRefGeneratorBase.cs" />
+    <Compile Include="CRef\CRefLookupBase.cs" />
     <Compile Include="CRef\ICRefGenerator.cs" />
     <Compile Include="CRef\ReflectionCRefGenerator.cs" />
     <Compile Include="CRef\ReflectionCRefLookup.cs" />

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Xml;
 
 namespace DandyDoc.XmlDoc
@@ -61,6 +62,22 @@ namespace DandyDoc.XmlDoc
 					return String.Empty;
 				return outer.Substring(innerIndex + inner.Length);
 			}
+		}
+
+		public IEnumerable<XmlDocElement> PriorElements {
+			get { return PriorSiblings.OfType<XmlDocElement>(); }
+		}
+
+		public XmlDocElement PriorElement {
+			get { return PriorElements.FirstOrDefault(); }
+		}
+
+		public IEnumerable<XmlDocElement> NextElements {
+			get { return NextSiblings.OfType<XmlDocElement>(); }
+		}
+
+		public XmlDocElement NextElement {
+			get { return NextElements.FirstOrDefault(); }
 		}
 
 	}

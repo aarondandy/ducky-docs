@@ -25,12 +25,33 @@ namespace DandyDoc.XmlDoc
 			public IList<XmlDocRefElement> SeeAlsoElements;
 			public IList<XmlDocNameElement> ParameterSummaries;
 			public IList<XmlDocNameElement> TypeParameterSummaries;
+			public XmlDocMember Getter;
+			public XmlDocMember Setter;
+			
+			public XmlDocElement PureElement;
+			public IList<XmlDocContractElement> RequiresElements;
+			public IList<XmlDocContractElement> EnsuresElements;
+			public IList<XmlDocContractElement> InvariantElements;
+		}
+
+		private static XmlDocNode Substitute(XmlDocNode node) {
+			Contract.Requires(node != null);
+			Contract.Ensures(Contract.Result<XmlDocNode>() != null);
+			var xmlDocElement = node as XmlDocElement;
+			if (xmlDocElement != null) {
+				var elementName = xmlDocElement.Node.Name;
+				if ("GETTER".Equals(elementName, StringComparison.OrdinalIgnoreCase)
+					|| "SETTER".Equals(elementName, StringComparison.OrdinalIgnoreCase)) {
+					return new XmlDocMember(xmlDocElement.Element, node.Children);
+				}
+			}
+			return node;
 		}
 
 		private readonly GutsData _guts;
 
 		public XmlDocMember(XmlElement element, IEnumerable<XmlDocNode> children)
-			: base(element, children)
+			: base(element, children.Select(Substitute))
 		{
 			Contract.Requires(element != null);
 			Contract.Requires(children == null || Contract.ForAll(children, x => x != null));
@@ -49,6 +70,9 @@ namespace DandyDoc.XmlDoc
 			var seeAlsoElements = new List<XmlDocRefElement>();
 			var parameterSummaries = new List<XmlDocNameElement>();
 			var typeParameterSummaries = new List<XmlDocNameElement>();
+			var requiresElements = new List<XmlDocContractElement>();
+			var ensuresElements = new List<XmlDocContractElement>();
+			var invariantElements = new List<XmlDocContractElement>();
 			foreach (var child in Children.OfType<XmlDocElement>()) {
 				if ("SUMMARY".Equals(child.Name, StringComparison.OrdinalIgnoreCase)) {
 					if (child.HasChildren) {
@@ -79,6 +103,31 @@ namespace DandyDoc.XmlDoc
 					if(child.HasChildren)
 						examplesElements.Add(child);
 				}
+				else if ("PURE".Equals(child.Name, StringComparison.OrdinalIgnoreCase)) {
+					if (result.PureElement == null)
+						result.PureElement = child;
+				}
+				else if (child is XmlDocMember) {
+					if ("GETTER".Equals(child.Name, StringComparison.OrdinalIgnoreCase)) {
+						if (child.HasChildren && result.Getter == null)
+							result.Getter = (XmlDocMember)child;
+					}
+					else if ("SETTER".Equals(child.Name, StringComparison.OrdinalIgnoreCase)) {
+						if (child.HasChildren && result.Setter == null)
+							result.Setter = (XmlDocMember)child;
+					}
+				}
+				else if (child is XmlDocContractElement) {
+					if ("REQUIRES".Equals(child.Name, StringComparison.OrdinalIgnoreCase)) {
+						requiresElements.Add((XmlDocContractElement)child);
+					}
+					else if ("ENSURES".Equals(child.Name, StringComparison.OrdinalIgnoreCase)) {
+						ensuresElements.Add((XmlDocContractElement)child);
+					}
+					else if ("INVARIANT".Equals(child.Name, StringComparison.OrdinalIgnoreCase)) {
+						invariantElements.Add((XmlDocContractElement)child);
+					}
+				}
 				else if (child is XmlDocRefElement) {
 					if ("EXCEPTION".Equals(child.Name, StringComparison.OrdinalIgnoreCase))
 						exceptionElements.Add((XmlDocRefElement)child);
@@ -104,6 +153,9 @@ namespace DandyDoc.XmlDoc
 			result.SeeAlsoElements = new ReadOnlyCollection<XmlDocRefElement>(seeAlsoElements.ToArray());
 			result.ParameterSummaries = new ReadOnlyCollection<XmlDocNameElement>(parameterSummaries.ToArray());
 			result.TypeParameterSummaries = new ReadOnlyCollection<XmlDocNameElement>(typeParameterSummaries.ToArray());
+			result.RequiresElements = new ReadOnlyCollection<XmlDocContractElement>(requiresElements.ToArray());
+			result.EnsuresElements = new ReadOnlyCollection<XmlDocContractElement>(ensuresElements.ToArray());
+			result.InvariantElements = new ReadOnlyCollection<XmlDocContractElement>(invariantElements.ToArray());
 			return result;
 		}
 
@@ -121,6 +173,14 @@ namespace DandyDoc.XmlDoc
 
 		public bool HasSummaryContents {
 			get { return SummaryContents.Count > 0; }
+		}
+
+		public XmlDocElement PureElement {
+			get { return _guts.PureElement; }
+		}
+
+		public bool HasPureElement {
+			get { return PureElement != null; }
 		}
 
 		public XmlDocElement ReturnsElement {
@@ -235,6 +295,52 @@ namespace DandyDoc.XmlDoc
 			if (String.IsNullOrEmpty(parameterName)) throw new ArgumentException("Invalid parameter name.", "parameterName");
 			Contract.EndContractBlock();
 			return TypeParameterSummaries.FirstOrDefault(x => x.TargetName == parameterName);
+		}
+
+		public IList<XmlDocContractElement> RequiresElements {
+			get {
+				Contract.Ensures(Contract.Result<IList<XmlDocElement>>() != null);
+				Contract.Ensures(Contract.ForAll(Contract.Result<IList<XmlDocElement>>(), x => x != null));
+				return _guts.RequiresElements;
+			}
+		}
+
+		public bool HasRequiresElements { get { return RequiresElements.Count > 0; } }
+
+		public IList<XmlDocContractElement> EnsuresElements {
+			get {
+				Contract.Ensures(Contract.Result<IList<XmlDocElement>>() != null);
+				Contract.Ensures(Contract.ForAll(Contract.Result<IList<XmlDocElement>>(), x => x != null));
+				return _guts.EnsuresElements;
+			}
+		}
+
+		public bool HasEnsuresElements { get { return EnsuresElements.Count > 0; } }
+
+		public IList<XmlDocContractElement> InvariantElements {
+			get {
+				Contract.Ensures(Contract.Result<IList<XmlDocElement>>() != null);
+				Contract.Ensures(Contract.ForAll(Contract.Result<IList<XmlDocElement>>(), x => x != null));
+				return _guts.InvariantElements;
+			}
+		}
+
+		public bool HasInvariantElements { get { return InvariantElements.Count > 0; } }
+
+		public XmlDocMember GetterElement {
+			get { return _guts.Getter; }
+		}
+
+		public bool HasGetterElement {
+			get { return GetterElement != null; }
+		}
+
+		public XmlDocMember SetterElement {
+			get { return _guts.Setter; }
+		}
+
+		public bool HasSetterElement {
+			get { return SetterElement != null; }
 		}
 
 	}

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
@@ -9,41 +8,30 @@ using DandyDoc.Reflection;
 namespace DandyDoc.CRef
 {
 
-	public class ReflectionCRefLookup
+	public class ReflectionCRefLookup : CRefLookupBase<Assembly,MemberInfo>
 	{
 
-		private readonly ReadOnlyCollection<Assembly> _assemblies;
-
-		public ReflectionCRefLookup(IEnumerable<Assembly> assemblies) {
+		public ReflectionCRefLookup(IEnumerable<Assembly> assemblies)
+			: base(assemblies)
+		{
 			if (assemblies == null) throw new ArgumentNullException("assemblies");
 			Contract.EndContractBlock();
-			_assemblies = new ReadOnlyCollection<Assembly>(assemblies.ToArray());
 		}
 
-		public IList<Assembly> Assemblies {
-			get {
-				Contract.Ensures(Contract.Result<IList<Assembly>>() != null);
-				return _assemblies;
-			}
-		}
-
-		[Obsolete("More generic name.")]
-		public virtual MemberInfo GetMemberInfo(string cRef) {
+		public override MemberInfo GetMember(string cRef) {
 			if (String.IsNullOrEmpty(cRef)) throw new ArgumentException("CRef is not valid.", "cRef");
 			Contract.EndContractBlock();
-			return GetMemberInfo(new CRef(cRef));
+			return GetMember(new CRef(cRef));
 		}
 
-		[Obsolete("More generic name.")]
-		public virtual MemberInfo GetMemberInfo(CRef cRef) {
+		public override MemberInfo GetMember(CRef cRef) {
 			if (cRef == null) throw new ArgumentNullException("cRef");
 			Contract.EndContractBlock();
-			return _assemblies
+			return Assemblies
 				.Select(x => GetMemberInfo(x, cRef))
 				.FirstOrDefault(x => null != x);
 		}
 
-		[Obsolete("More generic name.")]
 		public static MemberInfo GetMemberInfo(Assembly assembly, CRef cRef) {
 			if (assembly == null) throw new ArgumentNullException("assembly");
 			if (cRef == null) throw new ArgumentNullException("cRef");

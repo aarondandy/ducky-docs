@@ -46,9 +46,7 @@ namespace DandyDoc.DisplayName
 				return GetDisplayName((MethodDefinition)reference);
 			if (reference is PropertyDefinition)
 				return GetDisplayName((PropertyDefinition)reference);
-			if (reference is IMemberDefinition)
-				return GetGenericDisplayName((IMemberDefinition)reference);
-			throw new NotSupportedException();
+			return GetGenericDisplayName(reference);
 		}
 
 		public string GetDisplayName(MethodDefinition definition) {
@@ -250,13 +248,13 @@ namespace DandyDoc.DisplayName
 				: String.Join(".", typeParts);
 		}
 
-		private string GetGenericDisplayName(IMemberDefinition definition) {
-			Contract.Requires(null != definition);
+		private string GetGenericDisplayName(MemberReference reference) {
+			Contract.Requires(null != reference);
 			Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
-			var name = definition.Name;
+			var name = reference.Name;
 			if (ShowTypeNameForMembers) {
-				Contract.Assume(null != definition.DeclaringType);
-				name = String.Concat(GetDisplayName(definition.DeclaringType), '.', name);
+				Contract.Assume(null != reference.DeclaringType);
+				name = String.Concat(GetDisplayName(reference.DeclaringType), '.', name);
 			}
 			return name;
 		}

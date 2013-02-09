@@ -3,45 +3,33 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using Mono.Cecil;
-using Mono.Collections.Generic;
 
 namespace DandyDoc.CRef
 {
-	public class CecilCRefLookup
+	public class CecilCRefLookup : CRefLookupBase<AssemblyDefinition, MemberReference>
 	{
 
-		private readonly ReadOnlyCollection<AssemblyDefinition> _assemblies;
-
-		public CecilCRefLookup(IEnumerable<AssemblyDefinition> assemblies) {
+		public CecilCRefLookup(IEnumerable<AssemblyDefinition> assemblies)
+			: base(assemblies)
+		{
 			if(assemblies == null) throw new ArgumentNullException("assemblies");
 			Contract.EndContractBlock();
-			_assemblies = new ReadOnlyCollection<AssemblyDefinition>(assemblies.ToArray());
 		}
 
-		public IList<AssemblyDefinition> Assemblies {
-			get {
-				Contract.Ensures(Contract.Result<IList<AssemblyDefinition>>() != null);
-				return _assemblies;
-			}
-		}
-
-		[Obsolete("More generic name.")]
-		public virtual MemberReference GetMemberReference(string cRef) {
+		public override MemberReference GetMember(string cRef) {
 			if (String.IsNullOrEmpty(cRef)) throw new ArgumentException("CRef is not valid.", "cRef");
 			Contract.EndContractBlock();
-			return GetMemberReference(new CRef(cRef));
+			return GetMember(new CRef(cRef));
 		}
 
-		[Obsolete("More generic name.")]
-		public virtual MemberReference GetMemberReference(CRef cRef) {
+		public override MemberReference GetMember(CRef cRef) {
 			if(cRef == null) throw new ArgumentNullException("cRef");
 			Contract.EndContractBlock();
-			return _assemblies
+			return Assemblies
 				.Select(x => GetMemberReference(x, cRef))
 				.FirstOrDefault(x => null != x);
 		}
 
-		[Obsolete("More generic name.")]
 		public static MemberReference GetMemberReference(AssemblyDefinition assembly, CRef cRef) {
 			if(assembly == null) throw new ArgumentNullException("assembly");
 			if(cRef == null) throw new ArgumentNullException("cRef");

@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.Contracts;
+﻿using System;
+using System.Diagnostics.Contracts;
 using System.Web;
 using System.Xml;
 
@@ -7,13 +8,13 @@ namespace DandyDoc.XmlDoc
 	public class XmlDocTextNode : XmlDocNode
 	{
 
-		public XmlDocTextNode(XmlText text)
+		public XmlDocTextNode(XmlCharacterData text)
 			: base(text)
 		{
 			Contract.Requires(text != null);
 		}
 
-		public XmlText TextNode {
+		public XmlCharacterData CharacterData {
 			get {
 				Contract.Ensures(Contract.Result<XmlText>() != null);
 				return Node as XmlText;
@@ -23,8 +24,12 @@ namespace DandyDoc.XmlDoc
 		public string Text {
 			get {
 				Contract.Ensures(Contract.Result<string>() != null);
-				return TextNode.OuterXml;
+				return CharacterData.OuterXml;
 			}
+		}
+
+		public bool IsWhitespace {
+			get { return String.IsNullOrWhiteSpace(Text); }
 		}
 
 		public string HtmlDecoded {
