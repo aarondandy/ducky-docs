@@ -41,7 +41,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{4CAD
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickStartSample", "samples\QuickStartSample\QuickStartSample.csproj", "{8F17003E-6B29-4BD4-856C-0E7003C737F6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DandyDoc.Cecil.Core", "src\DandyDoc.Cecil.Core\DandyDoc.Cecil.Core.csproj", "{D231F05E-033A-4666-8C40-6837BFC8A989}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DandyDoc.Core.Cecil", "src\DandyDoc.Core.Cecil\DandyDoc.Core.Cecil.csproj", "{D231F05E-033A-4666-8C40-6837BFC8A989}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
