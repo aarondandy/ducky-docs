@@ -93,6 +93,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\DandyDoc.Cecil.Core\DandyDoc.Cecil.Core.csproj">
+      <Project>{d231f05e-033a-4666-8c40-6837bfc8a989}</Project>
+      <Name>DandyDoc.Cecil.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\DandyDoc.Core\DandyDoc.Core.csproj">
       <Project>{a09f4dac-290c-4abe-b053-071ec966008f}</Project>
       <Name>DandyDoc.Core</Name>

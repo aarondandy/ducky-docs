@@ -23,6 +23,11 @@ namespace TestLibrary1.Test
 		public XmlAssemblyDocumentation Docs { get; private set; }
 
 		[Test]
+		public void cant_get_path_from_null_assembly_definition(){
+			Assert.Throws<ArgumentNullException>(() => CecilUtilities.GetFilePath(null));
+		}
+
+		[Test]
 		public void can_load_xml_from_assembly_definition() {
 			var assembly = AssemblyDefinition.ReadAssembly("./TestLibrary1.dll");
 			var xmlDoc = new XmlAssemblyDocumentation(Path.ChangeExtension(CecilUtilities.GetFilePath(assembly), "XML"));
