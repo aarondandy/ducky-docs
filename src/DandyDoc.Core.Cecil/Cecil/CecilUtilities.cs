@@ -11,6 +11,7 @@ namespace DandyDoc.Cecil
 		public static string GetFilePath(AssemblyDefinition assembly) {
 			if(assembly == null) throw new ArgumentNullException("assembly");
 			Contract.EndContractBlock();
+			Contract.Assume(assembly.MainModule.FullyQualifiedName != null);
 			return new FileInfo(assembly.MainModule.FullyQualifiedName).FullName;
 		}
 

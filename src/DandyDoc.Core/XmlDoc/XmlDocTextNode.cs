@@ -16,7 +16,7 @@ namespace DandyDoc.XmlDoc
 
 		public XmlCharacterData CharacterData {
 			get {
-				Contract.Ensures(Contract.Result<XmlText>() != null);
+				Contract.Ensures(Contract.Result<XmlCharacterData>() != null);
 				return Node as XmlText;
 			}
 		}

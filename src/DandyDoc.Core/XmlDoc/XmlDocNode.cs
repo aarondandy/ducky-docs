@@ -50,6 +50,7 @@ namespace DandyDoc.XmlDoc
 			}
 		}
 
+		[ContractInvariantMethod]
 		private void CodeContractInvariant() {
 			Contract.Invariant(Node != null);
 			Contract.Invariant(Children != null);
