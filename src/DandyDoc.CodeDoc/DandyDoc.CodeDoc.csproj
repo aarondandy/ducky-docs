@@ -153,6 +153,23 @@
     <Compile Include="..\..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="ICodeDocAssembly.cs" />
+    <Compile Include="ICodeDocContractCondition.cs" />
+    <Compile Include="ICodeDocDelegate.cs" />
+    <Compile Include="ICodeDocEntity.cs" />
+    <Compile Include="ICodeDocEvent.cs" />
+    <Compile Include="ICodeDocException.cs" />
+    <Compile Include="ICodeDocField.cs" />
+    <Compile Include="ICodeDocGenericDefinition.cs" />
+    <Compile Include="ICodeDocGenericParameter.cs" />
+    <Compile Include="ICodeDocGenericParameterConstraint.cs" />
+    <Compile Include="ICodeDocInvokable.cs" />
+    <Compile Include="ICodeDocMethod.cs" />
+    <Compile Include="ICodeDocNamespace.cs" />
+    <Compile Include="ICodeDocParameter.cs" />
+    <Compile Include="ICodeDocProperty.cs" />
+    <Compile Include="ICodeDocType.cs" />
+    <Compile Include="ICodeDocValueEntity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
