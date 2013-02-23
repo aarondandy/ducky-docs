@@ -1,11 +1,13 @@
-﻿namespace DandyDoc.CodeDoc
+﻿using DandyDoc.CRef;
+
+namespace DandyDoc.CodeDoc
 {
 	public interface ICodeDocParameter
 	{
 
 		string Name { get; }
 
-		string TypeCRef { get; }
+        CRefIdentifier TypeCRef { get; }
 
 		bool HasSummary { get; }
 

@@ -26,7 +26,7 @@ namespace DandyDoc.CRef
 
 		public abstract TMember GetMember(string cRef);
 
-		public abstract TMember GetMember(CRef cRef);
+		public abstract TMember GetMember(CRefIdentifier cRef);
 
 	}
 }

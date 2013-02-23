@@ -1,9 +1,11 @@
-﻿namespace DandyDoc.CodeDoc
+﻿using DandyDoc.CRef;
+
+namespace DandyDoc.CodeDoc
 {
 	public interface ICodeDocEvent : ICodeDocEntity
 	{
 
-		string DelegateCRef { get; }
+        CRefIdentifier DelegateCRef { get; }
 
 	}
 }

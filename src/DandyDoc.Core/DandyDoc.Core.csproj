@@ -175,7 +175,7 @@
     </Compile>
     <Compile Include="AssemblyDefinitionCollection.cs" />
     <Compile Include="CecilExtensions.cs" />
-    <Compile Include="CRef\CRef.cs" />
+    <Compile Include="CRef\CRefIdentifier.cs" />
     <Compile Include="CRef\CRefGeneratorBase.cs" />
     <Compile Include="CRef\CRefLookupBase.cs" />
     <Compile Include="CRef\ICRefGenerator.cs" />
@@ -233,6 +233,7 @@
     <Compile Include="Utility\TextUtility.cs" />
     <Compile Include="Utility\XmlUtility.cs" />
     <Compile Include="XmlDoc\XmlAssemblyDocumentation.cs" />
+    <Compile Include="XmlDoc\XmlAssemblyDocumentationCollection.cs" />
     <Compile Include="XmlDoc\XmlDocCodeElement.cs" />
     <Compile Include="XmlDoc\XmlDocContractElement.cs" />
     <Compile Include="XmlDoc\XmlDocDefinitionList.cs" />

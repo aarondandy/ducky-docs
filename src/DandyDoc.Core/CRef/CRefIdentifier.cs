@@ -5,14 +5,14 @@ using System.Text.RegularExpressions;
 
 namespace DandyDoc.CRef
 {
-	public class CRef
+	public class CRefIdentifier
 	{
 
 		protected static readonly Regex CrefRegex = new Regex(
 			@"((?<targetType>\w)[:])?(?<coreName>[^():]+)([(](?<params>.*)[)])?",
 			RegexOptions.Compiled);
 
-		public CRef(string cRef) {
+		public CRefIdentifier(string cRef) {
 			if(String.IsNullOrEmpty(cRef)) throw new ArgumentException("CRef is not valid.", "cRef");
 			Contract.EndContractBlock();
 

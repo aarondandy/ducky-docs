@@ -1,11 +1,12 @@
 ﻿using System.Xml;
+using DandyDoc.CRef;
 
 namespace DandyDoc.CodeDoc
 {
 	public interface ICodeDocContractCondition
 	{
 
-		string ExceptionCRef { get; }
+        CRefIdentifier ExceptionCRef { get; }
 
 		bool HasExceptionDescription { get; }
 

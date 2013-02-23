@@ -21,10 +21,10 @@ namespace DandyDoc.CRef
 		public override MemberInfo GetMember(string cRef) {
 			if (String.IsNullOrEmpty(cRef)) throw new ArgumentException("CRef is not valid.", "cRef");
 			Contract.EndContractBlock();
-			return GetMember(new CRef(cRef));
+			return GetMember(new CRefIdentifier(cRef));
 		}
 
-		public override MemberInfo GetMember(CRef cRef) {
+		public override MemberInfo GetMember(CRefIdentifier cRef) {
 			if (cRef == null) throw new ArgumentNullException("cRef");
 			Contract.EndContractBlock();
 			return Assemblies
@@ -32,7 +32,7 @@ namespace DandyDoc.CRef
 				.FirstOrDefault(x => null != x);
 		}
 
-		public static MemberInfo GetMemberInfo(Assembly assembly, CRef cRef) {
+		public static MemberInfo GetMemberInfo(Assembly assembly, CRefIdentifier cRef) {
 			if (assembly == null) throw new ArgumentNullException("assembly");
 			if (cRef == null) throw new ArgumentNullException("cRef");
 			Contract.EndContractBlock();
@@ -74,7 +74,7 @@ namespace DandyDoc.CRef
 			return null;
 		}
 
-		private static Type GetType(Assembly assembly, CRef cRef) {
+		private static Type GetType(Assembly assembly, CRefIdentifier cRef) {
 			Contract.Requires(assembly != null);
 			Contract.Requires(cRef != null);
 			var typeName = cRef.CoreName;
@@ -108,7 +108,7 @@ namespace DandyDoc.CRef
 				.FirstOrDefault(result => result != null);
 		}
 
-		private static MemberInfo GetNonTypeMemberInfo(Assembly assembly, CRef cRef) {
+		private static MemberInfo GetNonTypeMemberInfo(Assembly assembly, CRefIdentifier cRef) {
 			Contract.Requires(assembly != null);
 			Contract.Requires(cRef != null);
 

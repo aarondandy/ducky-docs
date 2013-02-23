@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Xml;
+using DandyDoc.CRef;
 
 namespace DandyDoc.CodeDoc
 {
@@ -14,7 +15,7 @@ namespace DandyDoc.CodeDoc
 
 		string FullName { get; }
 
-		string CRef { get; }
+        CRefIdentifier CRef { get; }
 
 		string NamespaceName { get; }
 

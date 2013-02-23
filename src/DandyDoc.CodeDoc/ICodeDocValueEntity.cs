@@ -1,9 +1,11 @@
-﻿namespace DandyDoc.CodeDoc
+﻿using DandyDoc.CRef;
+
+namespace DandyDoc.CodeDoc
 {
 	public interface ICodeDocValueEntity
 	{
 
-		string ValueTypeCRef { get; }
+        CRefIdentifier ValueTypeCRef { get; }
 
 		bool HasValueDescription { get; }
 
