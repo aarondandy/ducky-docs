@@ -36,6 +36,35 @@ namespace DandyDoc.CodeDoc.Tests
                 () => TestLibrary1Repository.GetEntity((CRefIdentifier)null));
         }
 
+        [Test]
+        public void type_test_for_Class1(){
+            var model = TestLibrary1Repository.GetEntity("TestLibrary1.Class1");
+            Assert.AreEqual("Class1", model.ShortName);
+            Assert.AreEqual("TestLibrary1.Class1", model.FullName);
+            Assert.AreEqual("T:TestLibrary1.Class1", model.CRef.FullCRef);
+            Assert.AreEqual("Class1", model.Title);
+            Assert.AreEqual("Class", model.SubTitle);
+        }
+
+        [Test]
+        public void type_test_for_FlagsEnum() {
+            var model = TestLibrary1Repository.GetEntity("TestLibrary1.FlagsEnum");
+            Assert.AreEqual("FlagsEnum", model.ShortName);
+            Assert.AreEqual("TestLibrary1.FlagsEnum", model.FullName);
+            Assert.AreEqual("T:TestLibrary1.FlagsEnum", model.CRef.FullCRef);
+            Assert.AreEqual("FlagsEnum", model.Title);
+            Assert.AreEqual("Enumeration", model.SubTitle);
+        }
+
+        [Test]
+        public void type_test_for_Class1_Inner() {
+            var model = TestLibrary1Repository.GetEntity("TestLibrary1.Class1.Inner");
+            Assert.AreEqual("Inner", model.ShortName);
+            Assert.AreEqual("TestLibrary1.Class1.Inner", model.FullName);
+            Assert.AreEqual("T:TestLibrary1.Class1.Inner", model.CRef.FullCRef);
+            Assert.AreEqual("Inner", model.Title);
+            Assert.AreEqual("Class", model.SubTitle);
+        }
 
     }
 }
