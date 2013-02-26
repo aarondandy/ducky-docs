@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using DandyDoc.CRef;
 using DandyDoc.DisplayName;
+using DandyDoc.Reflection;
 using DandyDoc.XmlDoc;
 
 namespace DandyDoc.CodeDoc
@@ -83,23 +84,35 @@ namespace DandyDoc.CodeDoc
             Contract.Requires(type != null);
             Contract.Ensures(Contract.Result<CodeDocType>() != null);
             var result = new CodeDocType(GetCRefIdentifier(type));
+            ApplyTypeAttributes(result, type);
+            return result;
+        }
 
-            result.ShortName = RegularTypeDisplayNameOverlay.GetDisplayName(type);
-            result.FullName = FullTypeDisplayNameOverlay.GetDisplayName(type);
-            result.Title = result.ShortName;
+        private void ApplyTypeAttributes(CodeDocType model, Type type){
+            Contract.Requires(model != null);
+            Contract.Requires(type != null);
+            Contract.Ensures(!String.IsNullOrEmpty(model.ShortName));
+            Contract.Ensures(!String.IsNullOrEmpty(model.FullName));
+            Contract.Ensures(!String.IsNullOrEmpty(model.Title));
+            Contract.Ensures(model.Title == model.ShortName);
+            Contract.Ensures(!String.IsNullOrEmpty(model.SubTitle));
+
+            model.ShortName = RegularTypeDisplayNameOverlay.GetDisplayName(type);
+            model.FullName = FullTypeDisplayNameOverlay.GetDisplayName(type);
+            model.Title = model.ShortName;
 
             if (type.IsEnum)
-                result.SubTitle = "Enumeration";
+                model.SubTitle = "Enumeration";
             else if (type.IsValueType)
-                result.SubTitle = "Structure";
+                model.SubTitle = "Structure";
             else if (type.IsInterface)
-                result.SubTitle = "Interface";
+                model.SubTitle = "Interface";
+            else if (type.IsDelegateType())
+                model.SubTitle = "Delegate";
             else
-                result.SubTitle = "Class";
+                model.SubTitle = "Class";
 
             ; // TODO: details of the type
-
-            return result;
         }
 
     }
