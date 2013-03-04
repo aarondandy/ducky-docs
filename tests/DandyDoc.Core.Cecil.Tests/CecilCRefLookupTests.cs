@@ -1,24 +1,23 @@
-﻿using System;
-using System.Linq;
-using System.Reflection;
+﻿using System.Linq;
 using DandyDoc.CRef;
+using Mono.Cecil;
 using NUnit.Framework;
 
-namespace TestLibrary1.Test
+namespace DandyDoc.Core.Cecil.Tests
 {
 	[TestFixture]
-	public class ReflectionCRefLookupTests
+	public class CecilCRefLookupTests
 	{
 
-		public ReflectionCRefLookupTests() {
-			Assembly = typeof(Class1).Assembly;
+		public CecilCRefLookupTests() {
+			Assembly = AssemblyDefinition.ReadAssembly("./TestLibrary1.dll");
 		}
 
-		private Assembly Assembly { get; set; }
+		private AssemblyDefinition Assembly { get; set; }
 
-		public ReflectionCRefLookup Lookup {
+		public CecilCRefLookup Lookup {
 			get {
-				return new ReflectionCRefLookup(new[] { Assembly });
+				return new CecilCRefLookup(new[]{Assembly});
 			}
 		}
 
@@ -54,22 +53,22 @@ namespace TestLibrary1.Test
 		public void normal_method_one_param() {
 			var member = Lookup.GetMember("M:TestLibrary1.Class1.DoubleStatic(System.Double)");
 			Assert.IsNotNull(member);
-			var method = member as MethodInfo;
+			var method = member as MethodDefinition;
 			Assert.IsNotNull(method);
 			Assert.AreEqual("DoubleStatic", method.Name);
-			Assert.AreEqual(1, method.GetParameters().Length);
-			Assert.AreEqual("System.Double", method.GetParameters()[0].ParameterType.FullName);
+			Assert.AreEqual(1, method.Parameters.Count);
+			Assert.AreEqual("System.Double", method.Parameters[0].ParameterType.FullName);
 		}
 
 		[Test]
 		public void normal_method_one_param_guess_type() {
 			var member = Lookup.GetMember("TestLibrary1.Class1.DoubleStatic(System.Double)");
 			Assert.IsNotNull(member);
-			var method = member as MethodInfo;
+			var method = member as MethodDefinition;
 			Assert.IsNotNull(method);
 			Assert.AreEqual("DoubleStatic", method.Name);
-			Assert.AreEqual(1, method.GetParameters().Length);
-			Assert.AreEqual("System.Double", method.GetParameters()[0].ParameterType.FullName);
+			Assert.AreEqual(1, method.Parameters.Count);
+			Assert.AreEqual("System.Double", method.Parameters[0].ParameterType.FullName);
 		}
 
 		[Test]
@@ -104,52 +103,51 @@ namespace TestLibrary1.Test
 		public void normal_const() {
 			var member = Lookup.GetMember("F:TestLibrary1.Class1.MyConst");
 			Assert.IsNotNull(member);
-			var field = member as FieldInfo;
+			var field = member as FieldDefinition;
 			Assert.IsNotNull(field);
 			Assert.AreEqual("MyConst", field.Name);
-			Assert.IsNotNull(field.GetRawConstantValue());
+			Assert.IsNotNull(field.Constant);
 		}
 
 		[Test]
 		public void normal_const_guess_type() {
 			var member = Lookup.GetMember("TestLibrary1.Class1.MyConst");
 			Assert.IsNotNull(member);
-			var field = member as FieldInfo;
+			var field = member as FieldDefinition;
 			Assert.IsNotNull(field);
 			Assert.AreEqual("MyConst", field.Name);
-			Assert.IsNotNull(field.GetRawConstantValue());
+			Assert.IsNotNull(field.Constant);
 		}
 
 		[Test]
 		public void normal_event() {
 			var member = Lookup.GetMember("E:TestLibrary1.Class1.DoStuff");
 			Assert.IsNotNull(member);
-			var e = member as EventInfo;
+			var e = member as EventDefinition;
 			Assert.IsNotNull(e);
 			Assert.AreEqual("DoStuff", e.Name);
-			Assert.AreEqual("MyFunc", e.EventHandlerType.Name);
+			Assert.AreEqual("MyFunc", e.EventType.Name);
 		}
 
 		[Test]
 		public void normal_event_guess_type() {
 			var member = Lookup.GetMember("TestLibrary1.Class1.DoStuff");
 			Assert.IsNotNull(member);
-			var e = member as EventInfo;
+			var e = member as EventDefinition;
 			Assert.IsNotNull(e);
 			Assert.AreEqual("DoStuff", e.Name);
-			Assert.AreEqual("MyFunc", e.EventHandlerType.Name);
+			Assert.AreEqual("MyFunc", e.EventType.Name);
 		}
 
 		[Test]
 		public void normal_operator() {
-			var op = Lookup.GetMember("M:TestLibrary1.Class1.op_Addition(TestLibrary1.Class1,TestLibrary1.Class1)")
-				as MethodInfo;
+			var op = Lookup.GetMember("M:TestLibrary1.Class1.op_Addition(TestLibrary1.Class1,TestLibrary1.Class1)") as MethodDefinition;
 			Assert.IsNotNull(op);
 			Assert.AreEqual("op_Addition", op.Name);
 			Assert.That(op.IsStatic);
-			Assert.AreEqual(2, op.GetParameters().Length);
+			Assert.AreEqual(2, op.Parameters.Count);
 			Assert.That(
-				op.GetParameters().Select(x => x.ParameterType.FullName),
+				op.Parameters.Select(x => x.ParameterType.FullName),
 				Has.All.EqualTo("TestLibrary1.Class1"));
 		}
 
@@ -157,52 +155,50 @@ namespace TestLibrary1.Test
 		public void normal_indexer() {
 			var member = Lookup.GetMember("P:TestLibrary1.Class1.Item(System.Int32)");
 			Assert.IsNotNull(member);
-			var indexer = member as PropertyInfo;
+			var indexer = member as PropertyDefinition;
 			Assert.IsNotNull(indexer);
 			Assert.AreEqual("Item", indexer.Name);
-			Assert.AreEqual(1, indexer.GetIndexParameters().Length);
+			Assert.AreEqual(1, indexer.Parameters.Count);
 		}
 
 		[Test]
 		public void normal_constructor_one_param() {
 			var member = Lookup.GetMember("M:TestLibrary1.Class1.#ctor(System.String)");
 			Assert.IsNotNull(member);
-			var ctor = member as ConstructorInfo;
+			var ctor = member as MethodDefinition;
 			Assert.IsNotNull(ctor);
 			Assert.IsFalse(ctor.IsStatic);
-			Assert.IsTrue(ctor.GetParameters().Length > 0);
-			Assert.AreEqual(1, ctor.GetParameters().Length);
-			Assert.AreEqual("System.String", ctor.GetParameters()[0].ParameterType.FullName);
+			Assert.IsTrue(ctor.HasParameters);
+			Assert.AreEqual(1, ctor.Parameters.Count);
+			Assert.AreEqual("System.String", ctor.Parameters[0].ParameterType.FullName);
 		}
 
 		[Test]
 		public void normal_constructor_two_param() {
 			var member = Lookup.GetMember("M:TestLibrary1.Class1.#ctor(System.String,System.String)");
 			Assert.IsNotNull(member);
-			var ctor = member as ConstructorInfo;
+			var ctor = member as MethodDefinition;
 			Assert.IsNotNull(ctor);
 			Assert.IsFalse(ctor.IsStatic);
-			Assert.AreEqual(2, ctor.GetParameters().Length);
-			Assert.That(
-				ctor.GetParameters().Select(x => x.ParameterType.FullName),
-				Has.All.EqualTo("System.String"));
+			Assert.IsTrue(ctor.HasParameters);
+			Assert.AreEqual(2, ctor.Parameters.Count);
+			Assert.That(ctor.Parameters.Select(x => x.ParameterType.FullName), Has.All.EqualTo("System.String"));
 		}
 
 		[Test]
 		public void normal_finalizer() {
 			var member = Lookup.GetMember("M:TestLibrary1.Class1.Finalize");
 			Assert.IsNotNull(member);
-			var finalizer = member as MethodInfo;
+			var finalizer = member as MethodDefinition;
 			Assert.IsNotNull(finalizer);
 			Assert.AreEqual("Finalize", finalizer.Name);
 			Assert.IsFalse(finalizer.IsStatic);
-			Assert.IsFalse(finalizer.GetParameters().Length > 0);
+			Assert.IsFalse(finalizer.HasParameters);
 		}
 
 		[Test]
 		public void normal_inner() {
-			var inner = Lookup.GetMember("T:TestLibrary1.Class1.Inner")
-				as Type;
+			var inner = Lookup.GetMember("T:TestLibrary1.Class1.Inner") as TypeDefinition;
 			Assert.IsNotNull(inner);
 			Assert.AreEqual("Inner", inner.Name);
 			Assert.IsTrue(inner.IsNested);
@@ -271,24 +267,22 @@ namespace TestLibrary1.Test
 			var member = Lookup.GetMember("M:TestLibrary1.Generic1`2.Junk1``1(``0)");
 			Assert.IsNotNull(member);
 			Assert.AreEqual("Junk1", member.Name);
-			var method = member as MethodInfo;
+			var method = member as MethodDefinition;
 			Assert.IsNotNull(method);
-			Assert.AreEqual(1, method.GetParameters().Length);
-			Assert.IsTrue(method.GetParameters()[0].ParameterType.IsGenericParameter);
+			Assert.AreEqual(1, method.Parameters.Count);
+			Assert.IsTrue(method.Parameters[0].ParameterType.IsGenericParameter);
 		}
 
 		[Test]
 		public void generic_property() {
-			var member = Lookup.GetMember("P:TestLibrary1.Generic1`2.A")
-				as PropertyInfo;
+			var member = Lookup.GetMember("P:TestLibrary1.Generic1`2.A") as PropertyDefinition;
 			Assert.IsNotNull(member);
 			Assert.AreEqual("A", member.Name);
 		}
 
 		[Test]
 		public void generic_field() {
-			var member = Lookup.GetMember("F:TestLibrary1.Generic1`2.B")
-				as FieldInfo;
+			var member = Lookup.GetMember("F:TestLibrary1.Generic1`2.B") as FieldDefinition;
 			Assert.IsNotNull(member);
 			Assert.AreEqual("B", member.Name);
 		}
@@ -304,49 +298,46 @@ namespace TestLibrary1.Test
 		public void delegate_with_own_generic() {
 			var member = Lookup.GetMember("T:TestLibrary1.Generic1`2.MyFunc`1");
 			Assert.IsNotNull(member);
-			var method = member as Type;
+			var method = member as TypeDefinition;
 			Assert.IsNotNull(method);
 			Assert.AreEqual("MyFunc`1", method.Name);
-			Assert.AreEqual(3, method.GetGenericArguments().Length);
+			Assert.IsTrue(method.HasGenericParameters);
+			Assert.AreEqual(3, method.GenericParameters.Count);
 		}
 
 		[Test]
 		public void generic_event() {
-			var e = Lookup.GetMember("E:TestLibrary1.Generic1`2.E")
-				as EventInfo;
+			var e = Lookup.GetMember("E:TestLibrary1.Generic1`2.E") as EventDefinition;
 			Assert.IsNotNull(e);
 			Assert.AreEqual("E", e.Name);
 		}
 
 		[Test]
 		public void generic_operator() {
-			var op = Lookup.GetMember("M:TestLibrary1.Generic1`2.op_Addition(TestLibrary1.Generic1{System.Int32,System.Int32[]},TestLibrary1.Generic1{`0,`1})")
-				as MethodInfo;
+			var op = Lookup.GetMember("M:TestLibrary1.Generic1`2.op_Addition(TestLibrary1.Generic1{System.Int32,System.Int32[]},TestLibrary1.Generic1{`0,`1})") as MethodDefinition;
 			Assert.IsNotNull(op);
 			Assert.AreEqual("op_Addition", op.Name);
 			Assert.That(op.IsStatic);
-			Assert.AreEqual(2, op.GetParameters().Length);
+			Assert.AreEqual(2, op.Parameters.Count);
 			Assert.That(
-				op.GetParameters().Select(x => x.ParameterType.FullName),
+				op.Parameters.Select(x => x.ParameterType.FullName),
 				Has.All.StartsWith("TestLibrary1.Generic1"));
 		}
 
 		[Test]
 		public void generic_inner_mixed_params() {
-			var m = Lookup.GetMember("M:TestLibrary1.Generic1`2.Inner`1.Junk3``1(`2,`1,`0,``0)")
-				as MethodInfo;
+			var m = Lookup.GetMember("M:TestLibrary1.Generic1`2.Inner`1.Junk3``1(`2,`1,`0,``0)") as MethodDefinition;
 			Assert.IsNotNull(m);
 			Assert.That(m.Name.StartsWith("Junk3"));
-			Assert.AreEqual(4, m.GetParameters().Length);
+			Assert.AreEqual(4, m.Parameters.Count);
 		}
 
 		[Test]
 		public void generic_inner_method_with_only_class_generics() {
-			var m = Lookup.GetMember("M:TestLibrary1.Generic1`2.Inner`1.Junk4(`2,`1,`0)")
-				as MethodInfo;
+			var m = Lookup.GetMember("M:TestLibrary1.Generic1`2.Inner`1.Junk4(`2,`1,`0)") as MethodDefinition;
 			Assert.IsNotNull(m);
 			Assert.That(m.Name.StartsWith("Junk4"));
-			Assert.AreEqual(3, m.GetParameters().Length);
+			Assert.AreEqual(3, m.Parameters.Count);
 		}
 
 	}

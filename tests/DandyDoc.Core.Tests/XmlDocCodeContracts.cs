@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using DandyDoc.XmlDoc;
-using Mono.Cecil;
 using NUnit.Framework;
 
-namespace TestLibrary1.Test
+namespace DandyDoc.Core.Tests
 {
 	[TestFixture]
 	public class XmlDocCodeContracts

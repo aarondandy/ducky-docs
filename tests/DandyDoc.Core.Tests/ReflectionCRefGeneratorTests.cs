@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using DandyDoc.CRef;
 using NUnit.Framework;
+using TestLibrary1;
 
-namespace TestLibrary1.Test
+namespace DandyDoc.Core.Tests
 {
 	[TestFixture]
 	public class ReflectionCRefGeneratorTests

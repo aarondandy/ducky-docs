@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using DandyDoc.Cecil;
 using DandyDoc.Utility;
 using Mono.Cecil;
 

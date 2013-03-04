@@ -145,18 +145,6 @@
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Mono.Cecil">
-      <HintPath>..\..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Mdb">
-      <HintPath>..\..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Mdb.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Pdb">
-      <HintPath>..\..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Pdb.dll</HintPath>
-    </Reference>
-    <Reference Include="Mono.Cecil.Rocks">
-      <HintPath>..\..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Caching" />
@@ -173,8 +161,6 @@
     <Compile Include="..\..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="AssemblyDefinitionCollection.cs" />
-    <Compile Include="CecilExtensions.cs" />
     <Compile Include="CRef\CRefIdentifier.cs" />
     <Compile Include="CRef\CRefGeneratorBase.cs" />
     <Compile Include="CRef\CRefLookupBase.cs" />
@@ -182,44 +168,9 @@
     <Compile Include="CRef\ReflectionCRefGenerator.cs" />
     <Compile Include="CRef\ReflectionCRefLookup.cs" />
     <Compile Include="DisplayName\StandardReflectionDisplayNameGenerator.cs" />
-    <Compile Include="Overlays\CodeSignature\CodeSignatureGeneratorBase.cs" />
-    <Compile Include="Overlays\CodeSignature\CodeSignatureGeneratorCSharp.cs" />
-    <Compile Include="Overlays\Cref\CrefOverlay.cs" />
-    <Compile Include="Overlays\Cref\ParsedCref.cs" />
-    <Compile Include="Overlays\DisplayName\DisplayNameOverlay.cs" />
-    <Compile Include="Overlays\ExternalVisibility\ExternalVisibilityKind.cs" />
-    <Compile Include="Overlays\ExternalVisibility\ExternalVisibilityOverlay.cs" />
-    <Compile Include="Overlays\MsdnLinks\IMsdnLinkOverlay.cs" />
-    <Compile Include="Overlays\MsdnLinks\MsdnDynamicLinkOverlay.cs" />
-    <Compile Include="Overlays\MsdnLinks\MtpsNodeCore.cs" />
-    <Compile Include="Overlays\MsdnLinks\MtpsIdentifier.cs" />
-    <Compile Include="Overlays\MsdnLinks\MtpsNavigationNode.cs" />
-    <Compile Include="Overlays\CodeSignature\CodeSignature.cs" />
-    <Compile Include="Overlays\CodeSignature\CodeSignatureOverlay.cs" />
-    <Compile Include="Overlays\XmlDoc\DefinitionXmlDocBase.cs" />
-    <Compile Include="Overlays\XmlDoc\DelegateTypeDefinitionXmlDoc.cs" />
-    <Compile Include="Overlays\XmlDoc\EventDefinitionXmlDoc.cs" />
-    <Compile Include="Overlays\XmlDoc\FieldDefinitionXmlDoc.cs" />
-    <Compile Include="Overlays\XmlDoc\MethodDefinitionXmlDoc.cs" />
-    <Compile Include="Overlays\XmlDoc\ParameterizedXmlDocBase.cs" />
-    <Compile Include="Overlays\XmlDoc\ParsedCrefXmlElementBase.cs" />
-    <Compile Include="Overlays\XmlDoc\ParsedXmlCode.cs" />
-    <Compile Include="Overlays\XmlDoc\ParsedXmlContractCondition.cs" />
-    <Compile Include="Overlays\XmlDoc\ParsedXmlElement.cs" />
-    <Compile Include="Overlays\XmlDoc\ParsedXmlElementBase.cs" />
-    <Compile Include="Overlays\XmlDoc\ParsedXmlException.cs" />
-    <Compile Include="Overlays\XmlDoc\ParsedXmlListElement.cs" />
-    <Compile Include="Overlays\XmlDoc\ParsedXmlListItemElement.cs" />
-    <Compile Include="Overlays\XmlDoc\ParsedXmlNodeBase.cs" />
-    <Compile Include="Overlays\XmlDoc\ParsedXmlParagraphElement.cs" />
-    <Compile Include="Overlays\XmlDoc\ParsedXmlParamrefElement.cs" />
-    <Compile Include="Overlays\XmlDoc\ParsedXmlPermission.cs" />
-    <Compile Include="Overlays\XmlDoc\ParsedXmlSeeElement.cs" />
-    <Compile Include="Overlays\XmlDoc\ParsedXmlTextNode.cs" />
-    <Compile Include="Overlays\XmlDoc\ParsedXmlTypeparamrefElement.cs" />
-    <Compile Include="Overlays\XmlDoc\PropertyDefinitionXmlDoc.cs" />
-    <Compile Include="Overlays\XmlDoc\TypeDefinitionXmlDoc.cs" />
-    <Compile Include="Overlays\XmlDoc\XmlDocOverlay.cs" />
+    <Compile Include="ExternalVisibility\ExternalVisibilityKind.cs" />
+    <Compile Include="ExternalVisibility\ExternalVisibilityKindOperations.cs" />
+    <Compile Include="ExternalVisibility\ReflectionExternalVisibility.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reflection\ReflectionUtilities.cs" />
     <Compile Include="Service References\MsdnContentService\Reference.cs">
@@ -248,7 +199,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="packages.config" />
     <None Include="Service References\MsdnContentService\atoms.xsd">
       <SubType>Designer</SubType>
     </None>

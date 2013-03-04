@@ -4,26 +4,25 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{800519B7-8F27-4F5D-94CC-9868ADD9559F}</ProjectGuid>
+    <ProjectGuid>{B537DE61-22CB-4672-BBB7-966E72E1CEA0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DandyDoc.CodeDoc</RootNamespace>
-    <AssemblyName>DandyDoc.CodeDoc.Cecil</AssemblyName>
+    <RootNamespace>DandyDoc.Core.Cecil.Tests</RootNamespace>
+    <AssemblyName>DandyDoc.Core.Cecil.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <CodeContractsAssemblyMode>0</CodeContractsAssemblyMode>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
+    <CodeContractsAssemblyMode>0</CodeContractsAssemblyMode>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\bin\Debug\</OutputPath>
+    <OutputPath>..\..\bin\Debug\tests\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\bin\Debug\DandyDoc.CodeDoc.Cecil.XML</DocumentationFile>
     <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
     <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
     <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
@@ -60,8 +59,8 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\bin\Release\</OutputPath>
-    <DefineConstants>TRACE;CODE_ANALYSIS</DefineConstants>
+    <OutputPath>..\..\bin\Release\tests\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
@@ -85,7 +84,7 @@
     <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
     <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
     <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
-    <CodeContractsEmitXMLDocs>True</CodeContractsEmitXMLDocs>
+    <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
     <CodeContractsCustomRewriterAssembly />
     <CodeContractsCustomRewriterClass />
     <CodeContractsLibPaths />
@@ -94,25 +93,23 @@
     <CodeContractsBaseLineFile />
     <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
-    <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
+    <CodeContractsReferenceAssembly>DoNotBuild</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
-    <DocumentationFile>..\..\bin\Release\DandyDoc.CodeDoc.Cecil.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugCC|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\bin\DebugCC\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS;CODE_ANALYSIS</DefineConstants>
+    <OutputPath>..\..\bin\DebugCC\tests\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
+    <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
     <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
     <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
     <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
     <CodeContractsRuntimeSkipQuantifiers>False</CodeContractsRuntimeSkipQuantifiers>
-    <CodeContractsRunCodeAnalysis>True</CodeContractsRunCodeAnalysis>
+    <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
     <CodeContractsNonNullObligations>False</CodeContractsNonNullObligations>
     <CodeContractsBoundsObligations>False</CodeContractsBoundsObligations>
     <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
@@ -128,7 +125,7 @@
     <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
     <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
     <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
-    <CodeContractsEmitXMLDocs>True</CodeContractsEmitXMLDocs>
+    <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
     <CodeContractsCustomRewriterAssembly />
     <CodeContractsCustomRewriterClass />
     <CodeContractsLibPaths />
@@ -137,10 +134,8 @@
     <CodeContractsBaseLineFile />
     <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
-    <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
+    <CodeContractsReferenceAssembly>DoNotBuild</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
-    <DocumentationFile>..\..\bin\DebugCC\DandyDoc.CodeDoc.Cecil.XML</DocumentationFile>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Cecil, Version=0.9.5.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
@@ -159,6 +154,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
     </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -168,27 +166,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\CommonAssemblyInfo.cs">
-      <Link>Properties\CommonAssemblyInfo.cs</Link>
-    </Compile>
+    <Compile Include="CecilCRefGeneratorTests.cs" />
+    <Compile Include="CecilCRefLookupTests.cs" />
+    <Compile Include="CecilDisplayNameGeneratorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DandyDoc.CodeDoc\DandyDoc.CodeDoc.csproj">
-      <Project>{01cce4b1-8bd1-4c4f-8080-9a9bb19f05a9}</Project>
-      <Name>DandyDoc.CodeDoc</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DandyDoc.Core.Cecil\DandyDoc.Core.Cecil.csproj">
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\DandyDoc.Core.Cecil\DandyDoc.Core.Cecil.csproj">
       <Project>{d231f05e-033a-4666-8c40-6837bfc8a989}</Project>
       <Name>DandyDoc.Core.Cecil</Name>
     </ProjectReference>
-    <ProjectReference Include="..\DandyDoc.Core\DandyDoc.Core.csproj">
+    <ProjectReference Include="..\..\src\DandyDoc.Core\DandyDoc.Core.csproj">
       <Project>{a09f4dac-290c-4abe-b053-071ec966008f}</Project>
       <Name>DandyDoc.Core</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
+    <ProjectReference Include="..\TestLibrary1\TestLibrary1.csproj">
+      <Project>{f83f4c52-a886-4b9e-8164-e95e1f22f929}</Project>
+      <Name>TestLibrary1</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

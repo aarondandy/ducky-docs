@@ -5,6 +5,7 @@ using System.Text;
 using System.Xml;
 using DandyDoc.CRef;
 using System.Diagnostics.Contracts;
+using DandyDoc.XmlDoc;
 
 namespace DandyDoc.CodeDoc
 {
@@ -31,47 +32,47 @@ namespace DandyDoc.CodeDoc
 
 		public bool HasExamples { get { return Examples.Count > 0; } }
 
-		public IList<XmlNodeList> Examples {
+        public IList<XmlDocNode> Examples {
 			get{
 				Contract.Ensures(Contract.Result<IList<XmlNodeList>>() != null);
-				Contract.Ensures(Contract.ForAll(Contract.Result<IList<XmlNodeList>>(), x => x.Count > 0));
+                Contract.Ensures(Contract.ForAll(Contract.Result<IList<XmlDocNode>>(), x => x != null));
 				throw new NotImplementedException();
 			}
 		}
 
 		public bool HasPermissions { get { return Permissions.Count > 0; } }
 
-		public IList<XmlNodeList> Permissions {
+        public IList<XmlDocNode> Permissions {
 			get{
 				Contract.Ensures(Contract.Result<IList<XmlNodeList>>() != null);
-				Contract.Ensures(Contract.ForAll(Contract.Result<IList<XmlNodeList>>(), x => x.Count > 0));
+                Contract.Ensures(Contract.ForAll(Contract.Result<IList<XmlDocNode>>(), x => x != null));
 				throw new NotImplementedException();
 			}
 		}
 
 		public bool HasRemarks { get { return Remarks.Count > 0; } }
 
-		public IList<XmlNodeList> Remarks {
+        public IList<XmlDocNode> Remarks {
 			get{
 				Contract.Ensures(Contract.Result<IList<XmlNodeList>>() != null);
-				Contract.Ensures(Contract.ForAll(Contract.Result<IList<XmlNodeList>>(), x => x.Count > 0));
+                Contract.Ensures(Contract.ForAll(Contract.Result<IList<XmlDocNode>>(), x => x != null));
 				throw new NotImplementedException();
 			}
 		}
 
 		public bool HasSeeAlso { get { return SeeAlso.Count > 0; } }
 
-		public IList<XmlNodeList> SeeAlso {
+        public IList<XmlDocNode> SeeAlso {
 			get{
 				Contract.Ensures(Contract.Result<IList<XmlNodeList>>() != null);
-				Contract.Ensures(Contract.ForAll(Contract.Result<IList<XmlNodeList>>(), x => x.Count > 0));
+                Contract.Ensures(Contract.ForAll(Contract.Result<IList<XmlDocNode>>(), x => x != null));
 				throw new NotImplementedException();
 			}
 		}
 
-		public bool HasSummary { get { return Summary != null && Summary.Count > 0; } }
+		public bool HasSummary { get { return Summary != null && Summary.HasChildren; } }
 
-		public XmlNodeList Summary {
+        public XmlDocNode Summary {
 			get {
 				throw new NotImplementedException();
 			}

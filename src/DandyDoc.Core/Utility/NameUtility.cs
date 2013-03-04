@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Mono.Cecil;
 
 namespace DandyDoc.Utility
 {
@@ -68,24 +67,5 @@ namespace DandyDoc.Utility
 			return match.Groups[1].Value;
 		}
 
-		public static string GetCref(TypeReference type) {
-			if (type.IsGenericParameter) {
-				var genericType = type as GenericParameter;
-				if (null != genericType) {
-					var owner = genericType.Owner;
-					var i = owner.GenericParameters.IndexOf(genericType);
-					if (i >= 0) {
-						if (owner is MethodDefinition) {
-							return "``" + i;
-						}
-						if (owner is TypeDefinition) {
-							return "`" + i;
-						}
-						throw new NotImplementedException();
-					}
-				}
-			}
-			return type.FullName;
-		}
 	}
 }

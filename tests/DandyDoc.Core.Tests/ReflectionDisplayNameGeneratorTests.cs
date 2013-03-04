@@ -1,57 +1,47 @@
-﻿using DandyDoc;
-using DandyDoc.Overlays.Cref;
-using DandyDoc.Overlays.DisplayName;
-using Mono.Cecil;
+﻿using System;
+using System.Reflection;
+using DandyDoc.CRef;
+using DandyDoc.DisplayName;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using TestLibrary1;
 
-namespace TestLibrary1.Test
+namespace DandyDoc.Core.Tests
 {
-	[Obsolete]
+
 	[TestFixture]
-	public class DisplayNameTests
+	public class ReflectionDisplayNameGeneratorTests
 	{
 
-		private AssemblyDefinition GetAssembly() {
-			var assemblyDefinition = AssemblyDefinition.ReadAssembly("./TestLibrary1.dll");
-			Assert.IsNotNull(assemblyDefinition);
-			return assemblyDefinition;
+		private static Assembly GetAssembly() {
+			return typeof(Class1).Assembly;
 		}
 
-		public DisplayNameTests() {
-			AssemblyDefinitionCollection = new AssemblyDefinitionCollection{GetAssembly()};
-			CRefOverlay = new CRefOverlay(AssemblyDefinitionCollection);
-			Default = new DisplayNameOverlay();
-			Full = new DisplayNameOverlay(){
+		public ReflectionDisplayNameGeneratorTests() {
+			Default = new StandardReflectionDisplayNameGenerator();
+			Full = new StandardReflectionDisplayNameGenerator {
 				IncludeNamespaceForTypes = true,
 				ShowGenericParametersOnDefinition = true,
 				ShowTypeNameForMembers = true
 			};
-			Full.ParameterTypeDisplayNameOverlay = Full;
+			Lookup = new ReflectionCRefLookup(new[] { GetAssembly() });
 		}
 
-		public AssemblyDefinitionCollection AssemblyDefinitionCollection { get; private set; }
+		public StandardReflectionDisplayNameGenerator Default { get; private set; }
 
-		public CRefOverlay CRefOverlay { get; private set; }
+		public StandardReflectionDisplayNameGenerator Full { get; private set; }
 
-		public DisplayNameOverlay Default { get; private set; }
+		public ReflectionCRefLookup Lookup { get; private set; }
 
-		public DisplayNameOverlay Full { get; private set; }
-
-		public TypeDefinition GetType(string cref){
-			return CRefOverlay.GetTypeDefinition(cref);
+		public Type GetType(string cRef) {
+			return Lookup.GetMember(cRef) as Type;
 		}
 
-		public IMemberDefinition GetMember(string cref){
-			return CRefOverlay.GetMemberDefinition(cref);
+		public MemberInfo GetMember(string cRef) {
+			return Lookup.GetMember(cRef);
 		}
 
 		[Test]
-		public void normal_type(){
+		public void normal_type() {
 			Assert.AreEqual("Class1", Default.GetDisplayName(GetType("T:TestLibrary1.Class1")));
 			Assert.AreEqual("TestLibrary1.Class1", Full.GetDisplayName(GetType("T:TestLibrary1.Class1")));
 		}
@@ -63,7 +53,7 @@ namespace TestLibrary1.Test
 		}
 
 		[Test]
-		public void generic_type(){
+		public void generic_type() {
 			Assert.AreEqual("Generic1<TA, TB>", Default.GetDisplayName(GetType("T:TestLibrary1.Generic1`2")));
 			Assert.AreEqual("TestLibrary1.Generic1<TA, TB>", Full.GetDisplayName(GetType("T:TestLibrary1.Generic1`2")));
 		}
@@ -75,7 +65,7 @@ namespace TestLibrary1.Test
 		}
 
 		[Test]
-		public void normal_constructor(){
+		public void normal_constructor() {
 			Assert.AreEqual("Class1(String)", Default.GetDisplayName(GetMember("M:TestLibrary1.Class1.#ctor(System.String)")));
 			Assert.AreEqual("TestLibrary1.Class1.Class1(System.String)", Full.GetDisplayName(GetMember("M:TestLibrary1.Class1.#ctor(System.String)")));
 		}
@@ -87,21 +77,73 @@ namespace TestLibrary1.Test
 		}
 
 		[Test]
-		public void normal_method(){
+		public void normal_method() {
 			Assert.AreEqual("DoubleStatic(Int32)", Default.GetDisplayName(GetMember("M:TestLibrary1.Class1.DoubleStatic(System.Int32)")));
 			Assert.AreEqual("TestLibrary1.Class1.DoubleStatic(System.Int32)", Full.GetDisplayName(GetMember("M:TestLibrary1.Class1.DoubleStatic(System.Int32)")));
 		}
 
 		[Test]
-		public void generic_method(){
+		public void generic_method() {
 			Assert.AreEqual("AMix<TOther>(TA, TOther)", Default.GetDisplayName(GetMember("M:TestLibrary1.Generic1`2.AMix``1(`0,``0)")));
 			Assert.AreEqual("TestLibrary1.Generic1<TA, TB>.AMix<TOther>(TA, TOther)", Full.GetDisplayName(GetMember("M:TestLibrary1.Generic1`2.AMix``1(`0,``0)")));
 		}
 
 		[Test]
-		public void generic_operator(){
+		public void generic_operator() {
 			Assert.AreEqual("operator +(Generic1<Int32, Int32[]>, Generic1<TA, TB>)", Default.GetDisplayName(GetMember("M:TestLibrary1.Generic1`2.op_Addition(TestLibrary1.Generic1{System.Int32,System.Int32[]},TestLibrary1.Generic1{`0,`1})")));
 		}
 
+		[Test]
+		public void normal_property() {
+			var member = GetMember("P:TestLibrary1.Class1.SomeProperty");
+			Assert.AreEqual("SomeProperty", Default.GetDisplayName(member));
+			Assert.AreEqual("TestLibrary1.Class1.SomeProperty", Full.GetDisplayName(member));
+		}
+
+		[Test]
+		public void indexer_property() {
+			var member = GetMember("P:TestLibrary1.Class1.Item(System.Int32)");
+			Assert.AreEqual("Item[Int32]", Default.GetDisplayName(member));
+			Assert.AreEqual("TestLibrary1.Class1.Item[System.Int32]", Full.GetDisplayName(member));
+		}
+
+		[Test]
+		public void normal_field() {
+			var member = GetMember("F:TestLibrary1.Class1.SomeField");
+			Assert.AreEqual("SomeField", Default.GetDisplayName(member));
+			Assert.AreEqual("TestLibrary1.Class1.SomeField", Full.GetDisplayName(member));
+		}
+
+		[Test]
+		public void null_type_test() {
+			Assert.Throws<ArgumentNullException>(() => Default.GetDisplayName((Type)null));
+		}
+
+		[Test]
+		public void null_member_test() {
+			Assert.Throws<ArgumentNullException>(() => Default.GetDisplayName((MemberInfo)null));
+		}
+
+		[Test]
+		public void null_method_test() {
+			Assert.Throws<ArgumentNullException>(() => Default.GetDisplayName((MethodInfo)null));
+		}
+
+		[Test]
+		public void null_property_test() {
+			Assert.Throws<ArgumentNullException>(() => Default.GetDisplayName((PropertyInfo)null));
+		}
+
+		[Test]
+		public void null_field_test() {
+			Assert.Throws<ArgumentNullException>(() => Default.GetDisplayName((FieldInfo)null));
+		}
+
+		[Test]
+		public void null_event_test() {
+			Assert.Throws<ArgumentNullException>(() => Default.GetDisplayName((EventInfo)null));
+		}
+
 	}
+
 }

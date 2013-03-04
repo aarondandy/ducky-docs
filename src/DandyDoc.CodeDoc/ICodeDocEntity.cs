@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Xml;
 using DandyDoc.CRef;
+using DandyDoc.XmlDoc;
 
 namespace DandyDoc.CodeDoc
 {
@@ -21,23 +22,23 @@ namespace DandyDoc.CodeDoc
 
 		bool HasExamples { get; }
 
-		IList<XmlNodeList> Examples { get; }
+        IList<XmlDocNode> Examples { get; }
 
 		bool HasPermissions { get; }
 
-		IList<XmlNodeList> Permissions { get; }
+        IList<XmlDocNode> Permissions { get; }
 
 		bool HasRemarks { get; }
 
-		IList<XmlNodeList> Remarks { get; }
+        IList<XmlDocNode> Remarks { get; }
 
 		bool HasSeeAlso { get; }
 
-		IList<XmlNodeList> SeeAlso { get; }
+        IList<XmlDocNode> SeeAlso { get; }
 
 		bool HasSummary { get; }
 
-		XmlNodeList Summary { get; }
+        XmlDocNode Summary { get; }
 
 	}
 }

@@ -4,7 +4,7 @@ using DandyDoc.DisplayName;
 using Mono.Cecil;
 using NUnit.Framework;
 
-namespace TestLibrary1.Test
+namespace DandyDoc.Core.Cecil.Tests
 {
 	[TestFixture]
 	public class CecilDisplayNameGeneratorTests
