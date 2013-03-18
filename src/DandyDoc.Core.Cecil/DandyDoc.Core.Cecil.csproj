@@ -175,6 +175,7 @@
     <Compile Include="CRef\CecilCRefGenerator.cs" />
     <Compile Include="CRef\CecilCRefLookup.cs" />
     <Compile Include="DisplayName\StandardCecilDisplayNameGenerator.cs" />
+    <Compile Include="ExternalVisibility\CecilExternalVisibility.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

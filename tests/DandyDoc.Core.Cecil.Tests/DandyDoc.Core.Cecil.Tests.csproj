@@ -169,6 +169,7 @@
     <Compile Include="CecilCRefGeneratorTests.cs" />
     <Compile Include="CecilCRefLookupTests.cs" />
     <Compile Include="CecilDisplayNameGeneratorTests.cs" />
+    <Compile Include="CecilExternalVisibilityTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

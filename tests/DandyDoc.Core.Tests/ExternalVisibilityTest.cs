@@ -1,33 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using DandyDoc;
+using System.Reflection;
+using DandyDoc.CRef;
 using DandyDoc.ExternalVisibility;
-using DandyDoc.Overlays.Cref;
-using Mono.Cecil;
+using DandyDoc.Reflection;
 using NUnit.Framework;
+using TestLibrary1;
 
-namespace TestLibrary1.Test
+namespace DandyDoc.Core.Tests
 {
-	[Obsolete("Need to refactor these when the stuff is moved.")]
 	[TestFixture]
 	public class ExternalVisibilityTest
 	{
 
-		private static AssemblyDefinition GetAssembly() {
-			var assemblyDefinition = AssemblyDefinition.ReadAssembly("./TestLibrary1.dll");
-			Assert.IsNotNull(assemblyDefinition);
-			return assemblyDefinition;
+        public ExternalVisibilityTest() {
+			Assembly = typeof(Class1).Assembly;
 		}
 
-		private ExternalVisibilityKind GetVisibility(string cref) {
-			var memberDefinition = CRefOverlay.GetMemberDefinition(cref);
-			return GetVisibility(memberDefinition);
+		private Assembly Assembly { get; set; }
+
+		public ReflectionCRefLookup Lookup {
+			get {
+				return new ReflectionCRefLookup(new[] { Assembly });
+			}
 		}
 
-		private ExternalVisibilityKind GetVisibility(IMemberDefinition memberDefinition) {
-			return ExternalVisibilityOverlay.Get(memberDefinition);
+		private ExternalVisibilityKind GetVisibility(string cRef) {
+            var memberInfo = Lookup.GetMember(cRef);
+		    return GetVisibility(memberInfo);
 		}
+
+        private ExternalVisibilityKind GetVisibility(MemberInfo memberInfo) {
+            return memberInfo.GetExternalVisibility();
+        }
 
 		public static IEnumerable<Tuple<ExternalVisibilityKind, string>> AllClasses {
 			get {
@@ -46,39 +52,30 @@ namespace TestLibrary1.Test
 			}
 		}
 
-		public ExternalVisibilityTest() {
-			AssemblyDefinitionCollection = new AssemblyDefinitionCollection{GetAssembly()};
-			CRefOverlay = new CRefOverlay(AssemblyDefinitionCollection);
-		}
-
-		public AssemblyDefinitionCollection AssemblyDefinitionCollection { get; private set; }
-
-		public CRefOverlay CRefOverlay { get; private set; }
-
 		[Test]
 		public void min_kind() {
-			Assert.AreEqual(ExternalVisibilityKind.Hidden, ExternalVisibilityOverlay.Min(ExternalVisibilityKind.Hidden, ExternalVisibilityKind.Hidden));
-			Assert.AreEqual(ExternalVisibilityKind.Hidden, ExternalVisibilityOverlay.Min(ExternalVisibilityKind.Hidden, ExternalVisibilityKind.Protected));
-			Assert.AreEqual(ExternalVisibilityKind.Hidden, ExternalVisibilityOverlay.Min(ExternalVisibilityKind.Hidden, ExternalVisibilityKind.Public));
-			Assert.AreEqual(ExternalVisibilityKind.Hidden, ExternalVisibilityOverlay.Min(ExternalVisibilityKind.Protected, ExternalVisibilityKind.Hidden));
-			Assert.AreEqual(ExternalVisibilityKind.Protected, ExternalVisibilityOverlay.Min(ExternalVisibilityKind.Protected, ExternalVisibilityKind.Protected));
-			Assert.AreEqual(ExternalVisibilityKind.Protected, ExternalVisibilityOverlay.Min(ExternalVisibilityKind.Protected, ExternalVisibilityKind.Public));
-			Assert.AreEqual(ExternalVisibilityKind.Hidden, ExternalVisibilityOverlay.Min(ExternalVisibilityKind.Public, ExternalVisibilityKind.Hidden));
-			Assert.AreEqual(ExternalVisibilityKind.Protected, ExternalVisibilityOverlay.Min(ExternalVisibilityKind.Public, ExternalVisibilityKind.Protected));
-			Assert.AreEqual(ExternalVisibilityKind.Public, ExternalVisibilityOverlay.Min(ExternalVisibilityKind.Public, ExternalVisibilityKind.Public));
+            Assert.AreEqual(ExternalVisibilityKind.Hidden, ExternalVisibilityKindOperations.Min(ExternalVisibilityKind.Hidden, ExternalVisibilityKind.Hidden));
+            Assert.AreEqual(ExternalVisibilityKind.Hidden, ExternalVisibilityKindOperations.Min(ExternalVisibilityKind.Hidden, ExternalVisibilityKind.Protected));
+            Assert.AreEqual(ExternalVisibilityKind.Hidden, ExternalVisibilityKindOperations.Min(ExternalVisibilityKind.Hidden, ExternalVisibilityKind.Public));
+            Assert.AreEqual(ExternalVisibilityKind.Hidden, ExternalVisibilityKindOperations.Min(ExternalVisibilityKind.Protected, ExternalVisibilityKind.Hidden));
+            Assert.AreEqual(ExternalVisibilityKind.Protected, ExternalVisibilityKindOperations.Min(ExternalVisibilityKind.Protected, ExternalVisibilityKind.Protected));
+            Assert.AreEqual(ExternalVisibilityKind.Protected, ExternalVisibilityKindOperations.Min(ExternalVisibilityKind.Protected, ExternalVisibilityKind.Public));
+            Assert.AreEqual(ExternalVisibilityKind.Hidden, ExternalVisibilityKindOperations.Min(ExternalVisibilityKind.Public, ExternalVisibilityKind.Hidden));
+            Assert.AreEqual(ExternalVisibilityKind.Protected, ExternalVisibilityKindOperations.Min(ExternalVisibilityKind.Public, ExternalVisibilityKind.Protected));
+            Assert.AreEqual(ExternalVisibilityKind.Public, ExternalVisibilityKindOperations.Min(ExternalVisibilityKind.Public, ExternalVisibilityKind.Public));
 		}
 
 		[Test]
 		public void max_kind() {
-			Assert.AreEqual(ExternalVisibilityKind.Hidden, ExternalVisibilityOverlay.Max(ExternalVisibilityKind.Hidden, ExternalVisibilityKind.Hidden));
-			Assert.AreEqual(ExternalVisibilityKind.Protected, ExternalVisibilityOverlay.Max(ExternalVisibilityKind.Hidden, ExternalVisibilityKind.Protected));
-			Assert.AreEqual(ExternalVisibilityKind.Public, ExternalVisibilityOverlay.Max(ExternalVisibilityKind.Hidden, ExternalVisibilityKind.Public));
-			Assert.AreEqual(ExternalVisibilityKind.Protected, ExternalVisibilityOverlay.Max(ExternalVisibilityKind.Protected, ExternalVisibilityKind.Hidden));
-			Assert.AreEqual(ExternalVisibilityKind.Protected, ExternalVisibilityOverlay.Max(ExternalVisibilityKind.Protected, ExternalVisibilityKind.Protected));
-			Assert.AreEqual(ExternalVisibilityKind.Public, ExternalVisibilityOverlay.Max(ExternalVisibilityKind.Protected, ExternalVisibilityKind.Public));
-			Assert.AreEqual(ExternalVisibilityKind.Public, ExternalVisibilityOverlay.Max(ExternalVisibilityKind.Public, ExternalVisibilityKind.Hidden));
-			Assert.AreEqual(ExternalVisibilityKind.Public, ExternalVisibilityOverlay.Max(ExternalVisibilityKind.Public, ExternalVisibilityKind.Protected));
-			Assert.AreEqual(ExternalVisibilityKind.Public, ExternalVisibilityOverlay.Max(ExternalVisibilityKind.Public, ExternalVisibilityKind.Public));
+            Assert.AreEqual(ExternalVisibilityKind.Hidden, ExternalVisibilityKindOperations.Max(ExternalVisibilityKind.Hidden, ExternalVisibilityKind.Hidden));
+            Assert.AreEqual(ExternalVisibilityKind.Protected, ExternalVisibilityKindOperations.Max(ExternalVisibilityKind.Hidden, ExternalVisibilityKind.Protected));
+            Assert.AreEqual(ExternalVisibilityKind.Public, ExternalVisibilityKindOperations.Max(ExternalVisibilityKind.Hidden, ExternalVisibilityKind.Public));
+            Assert.AreEqual(ExternalVisibilityKind.Protected, ExternalVisibilityKindOperations.Max(ExternalVisibilityKind.Protected, ExternalVisibilityKind.Hidden));
+            Assert.AreEqual(ExternalVisibilityKind.Protected, ExternalVisibilityKindOperations.Max(ExternalVisibilityKind.Protected, ExternalVisibilityKind.Protected));
+            Assert.AreEqual(ExternalVisibilityKind.Public, ExternalVisibilityKindOperations.Max(ExternalVisibilityKind.Protected, ExternalVisibilityKind.Public));
+            Assert.AreEqual(ExternalVisibilityKind.Public, ExternalVisibilityKindOperations.Max(ExternalVisibilityKind.Public, ExternalVisibilityKind.Hidden));
+            Assert.AreEqual(ExternalVisibilityKind.Public, ExternalVisibilityKindOperations.Max(ExternalVisibilityKind.Public, ExternalVisibilityKind.Protected));
+            Assert.AreEqual(ExternalVisibilityKind.Public, ExternalVisibilityKindOperations.Max(ExternalVisibilityKind.Public, ExternalVisibilityKind.Public));
 		}
 
 		[Test]
@@ -97,11 +94,11 @@ namespace TestLibrary1.Test
 				new {Vis = ExternalVisibilityKind.Protected, Name = "ProtectedInternalField"}
 			};
 			foreach (var typeTuple in AllClasses) {
-				var type = CRefOverlay.GetTypeDefinition(typeTuple.Item2);
+				var type = Lookup.GetMember(typeTuple.Item2) as Type;
 				var typeVis = typeTuple.Item1;
 				foreach (var fieldSet in fields) {
-					var fieldDefinition = type.Fields.Single(x => x.Name == fieldSet.Name);
-					var expectedVis = ExternalVisibilityOverlay.Min(typeVis, fieldSet.Vis);
+					var fieldDefinition = type.GetAllFields().Single(x => x.Name == fieldSet.Name);
+					var expectedVis = ExternalVisibilityKindOperations.Min(typeVis, fieldSet.Vis);
 					Assert.AreEqual(expectedVis, GetVisibility(fieldDefinition));
 				}
 			}
@@ -117,11 +114,11 @@ namespace TestLibrary1.Test
 				new {Vis = ExternalVisibilityKind.Protected, Name = "ProtectedInternalMethod"}
 			};
 			foreach (var typeTuple in AllClasses) {
-				var type = CRefOverlay.GetTypeDefinition(typeTuple.Item2);
+				var type = Lookup.GetMember(typeTuple.Item2) as Type;
 				var typeVis = typeTuple.Item1;
 				foreach (var methodSet in methods) {
-					var methodDefinition = type.Methods.Single(x => x.Name == methodSet.Name);
-					var expectedVis = ExternalVisibilityOverlay.Min(typeVis, methodSet.Vis);
+					var methodDefinition = type.GetAllMethods().Single(x => x.Name == methodSet.Name);
+					var expectedVis = ExternalVisibilityKindOperations.Min(typeVis, methodSet.Vis);
 					Assert.AreEqual(expectedVis, GetVisibility(methodDefinition));
 				}
 			}
@@ -137,11 +134,11 @@ namespace TestLibrary1.Test
 				new {Vis = ExternalVisibilityKind.Protected, Name = "ProtectedInternalDelegate"}
 			};
 			foreach (var typeTuple in AllClasses) {
-				var type = CRefOverlay.GetTypeDefinition(typeTuple.Item2);
+				var type = Lookup.GetMember(typeTuple.Item2) as Type;
 				var typeVis = typeTuple.Item1;
 				foreach (var delegateSet in delegates) {
-					var delegateDefinition = type.NestedTypes.Single(x => x.Name == delegateSet.Name);
-					var expectedVis = ExternalVisibilityOverlay.Min(typeVis, delegateSet.Vis);
+					var delegateDefinition = type.GetAllNestedTypes().Single(x => x.Name == delegateSet.Name);
+					var expectedVis = ExternalVisibilityKindOperations.Min(typeVis, delegateSet.Vis);
 					Assert.AreEqual(expectedVis, GetVisibility(delegateDefinition));
 				}
 			}
@@ -157,11 +154,11 @@ namespace TestLibrary1.Test
 				new {Vis = ExternalVisibilityKind.Protected, Name = "ProtectedInternalEvent"}
 			};
 			foreach (var typeTuple in AllClasses) {
-				var type = CRefOverlay.GetTypeDefinition(typeTuple.Item2);
+				var type = Lookup.GetMember(typeTuple.Item2) as Type;
 				var typeVis = typeTuple.Item1;
 				foreach (var eventSet in events) {
-					var eventDefinition = type.Events.Single(x => x.Name == eventSet.Name);
-					var expectedVis = ExternalVisibilityOverlay.Min(typeVis, eventSet.Vis);
+					var eventDefinition = type.GetAllEvents().Single(x => x.Name == eventSet.Name);
+					var expectedVis = ExternalVisibilityKindOperations.Min(typeVis, eventSet.Vis);
 					Assert.AreEqual(expectedVis, GetVisibility(eventDefinition));
 				}
 			}
@@ -193,15 +190,15 @@ namespace TestLibrary1.Test
 				new{Name = "PropPinPin", Get = ExternalVisibilityKind.Protected, Set = ExternalVisibilityKind.Protected}
 			};
 			foreach (var typeTuple in AllClasses) {
-				var type = CRefOverlay.GetTypeDefinition(typeTuple.Item2);
+				var type = Lookup.GetMember(typeTuple.Item2) as Type;
 				var typeVis = typeTuple.Item1;
 				foreach (var propSet in props) {
-					var propDef = type.Properties.Single(x => x.Name == propSet.Name);
-					var expectedGetVis = ExternalVisibilityOverlay.Min(typeVis, propSet.Get);
-					var expectedSetVis = ExternalVisibilityOverlay.Min(typeVis, propSet.Set);
-					var expectedPropVis = ExternalVisibilityOverlay.Min(typeVis, ExternalVisibilityOverlay.Max(propSet.Get, propSet.Set));
-					Assert.AreEqual(expectedGetVis, GetVisibility(propDef.GetMethod));
-					Assert.AreEqual(expectedSetVis, GetVisibility(propDef.SetMethod));
+					var propDef = type.GetAllProperties().Single(x => x.Name == propSet.Name);
+					var expectedGetVis = ExternalVisibilityKindOperations.Min(typeVis, propSet.Get);
+                    var expectedSetVis = ExternalVisibilityKindOperations.Min(typeVis, propSet.Set);
+                    var expectedPropVis = ExternalVisibilityKindOperations.Min(typeVis, ExternalVisibilityKindOperations.Max(propSet.Get, propSet.Set));
+					Assert.AreEqual(expectedGetVis, GetVisibility(propDef.GetGetMethod(true)));
+					Assert.AreEqual(expectedSetVis, GetVisibility(propDef.GetSetMethod(true)));
 					Assert.AreEqual(expectedPropVis, GetVisibility(propDef));
 				}
 			}
