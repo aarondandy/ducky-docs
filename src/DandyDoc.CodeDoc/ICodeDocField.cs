@@ -1,6 +1,6 @@
 ﻿namespace DandyDoc.CodeDoc
 {
-	public interface ICodeDocField : ICodeDocEntity, ICodeDocValueEntity
+    public interface ICodeDocField : ICodeDocEntityContent, ICodeDocValueEntity
 	{
 
 	}

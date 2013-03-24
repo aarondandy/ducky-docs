@@ -1,5 +1,5 @@
-﻿using System.Xml;
-using DandyDoc.CRef;
+﻿using DandyDoc.CRef;
+using DandyDoc.XmlDoc;
 
 namespace DandyDoc.CodeDoc
 {
@@ -10,11 +10,11 @@ namespace DandyDoc.CodeDoc
 
 		bool HasExceptionDescription { get; }
 
-		XmlNodeList ExceptionDescription { get; }
+		XmlDocNode ExceptionDescription { get; }
 
 		bool HasContractDescription { get; }
 
-		XmlNodeList ContractDescription { get; }
+		XmlDocNode ContractDescription { get; }
 
 	}
 }

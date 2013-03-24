@@ -1,17 +1,18 @@
 ﻿using System.Collections.Generic;
+using DandyDoc.CRef;
 
 namespace DandyDoc.CodeDoc
 {
-	public interface ICodeDocType : ICodeDocEntity, ICodeDocGenericDefinition
+    public interface ICodeDocType : ICodeDocEntityContent, ICodeDocGenericDefinition
 	{
 
 		bool HasBaseChain { get; }
 
-		IList<string> BaseChainCRefs { get; }
+		IList<CRefIdentifier> BaseChainCRefs { get; }
 
 		bool HasDirectInterfaces { get; }
 
-		IList<string> DirectInterfaceCRefs { get; }
+        IList<CRefIdentifier> DirectInterfaceCRefs { get; }
 
 	}
 }

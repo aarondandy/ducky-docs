@@ -153,9 +153,10 @@
     <Compile Include="..\..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="CodeDocEntityBase.cs" />
+    <Compile Include="CodeDocEntityContentBase.cs" />
     <Compile Include="CodeDocType.cs" />
     <Compile Include="ICodeDocAssembly.cs" />
+    <Compile Include="ICodeDocEntityContent.cs" />
     <Compile Include="ICodeDocContractCondition.cs" />
     <Compile Include="ICodeDocDelegate.cs" />
     <Compile Include="ICodeDocEntity.cs" />

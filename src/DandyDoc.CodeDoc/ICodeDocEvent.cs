@@ -2,7 +2,7 @@
 
 namespace DandyDoc.CodeDoc
 {
-	public interface ICodeDocEvent : ICodeDocEntity
+    public interface ICodeDocEvent : ICodeDocEntityContent
 	{
 
         CRefIdentifier DelegateCRef { get; }

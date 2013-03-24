@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Linq;
-using System.Text;
 using DandyDoc.CRef;
 
 namespace DandyDoc.CodeDoc
 {
-	public class CodeDocType : CodeDocEntityBase, ICodeDocType
+	public class CodeDocType : CodeDocEntityContentBase, ICodeDocType
 	{
 
 		public CodeDocType(CRefIdentifier cRef) : base(cRef){
@@ -16,18 +14,18 @@ namespace DandyDoc.CodeDoc
 
 		public bool HasBaseChain { get { return BaseChainCRefs.Count > 0; } }
 
-		public IList<string> BaseChainCRefs {
+        public IList<CRefIdentifier> BaseChainCRefs {
 			get{
-				Contract.Ensures(Contract.Result<IList<string>>() != null);
+                Contract.Ensures(Contract.Result<IList<CRefIdentifier>>() != null);
 				throw new NotImplementedException();
 			}
 		}
 
 		public bool HasDirectInterfaces { get { return DirectInterfaceCRefs.Count > 0; } }
 
-		public IList<string> DirectInterfaceCRefs {
+        public IList<CRefIdentifier> DirectInterfaceCRefs {
 			get{
-				Contract.Ensures(Contract.Result<IList<string>>() != null);
+                Contract.Ensures(Contract.Result<IList<CRefIdentifier>>() != null);
 				throw new NotImplementedException();
 			}
 		}

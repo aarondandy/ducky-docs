@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Xml;
 using DandyDoc.CRef;
+using DandyDoc.XmlDoc;
 
 namespace DandyDoc.CodeDoc
 {
@@ -11,11 +13,12 @@ namespace DandyDoc.CodeDoc
 
 		bool HasConditions { get; }
 
-		IList<XmlNodeList> Conditions { get; } 
+		IList<XmlDocNode> Conditions { get; } 
 
 		bool HasEnsures { get; }
 
-		IList<XmlNodeList> Ensures { get; }
+        [Obsolete("Should this be an ICodeDocContractCondition?")]
+		IList<XmlDocNode> Ensures { get; }
 
 	}
 }

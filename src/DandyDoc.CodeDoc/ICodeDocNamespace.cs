@@ -1,15 +1,16 @@
 ﻿using System.Collections.Generic;
+using DandyDoc.CRef;
 
 namespace DandyDoc.CodeDoc
 {
-	public interface ICodeDocNamespace : ICodeDocEntity
+    public interface ICodeDocNamespace : ICodeDocEntityContent
 	{
 
-		IList<ICodeDocType> RootTypes { get; }
+        IList<CRefIdentifier> RootTypes { get; }
 
-		IList<ICodeDocType> AllTypes { get; }
+        IList<CRefIdentifier> AllTypes { get; }
 
-		IList<ICodeDocAssembly> Assemblies { get; }
+        IList<CRefIdentifier> Assemblies { get; }
 
 	}
 }

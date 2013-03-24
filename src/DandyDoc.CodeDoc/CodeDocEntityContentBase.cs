@@ -9,10 +9,10 @@ using DandyDoc.XmlDoc;
 
 namespace DandyDoc.CodeDoc
 {
-	public abstract class CodeDocEntityBase : ICodeDocEntity
+    public abstract class CodeDocEntityContentBase : ICodeDocEntityContent
 	{
 
-		protected CodeDocEntityBase(CRefIdentifier cRef){
+		protected CodeDocEntityContentBase(CRefIdentifier cRef){
 			if(cRef == null) throw new ArgumentNullException("cRef");
 			Contract.EndContractBlock();
 			CRef = cRef;

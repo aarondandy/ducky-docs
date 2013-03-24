@@ -1,6 +1,6 @@
 ﻿namespace DandyDoc.CodeDoc
 {
-	public interface ICodeDocProperty : ICodeDocEntity, ICodeDocInvokable, ICodeDocValueEntity
+    public interface ICodeDocProperty : ICodeDocEntityContent, ICodeDocInvokable, ICodeDocValueEntity
 	{
 
 		bool HasGetter { get; }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using DandyDoc.CRef;
 
 namespace DandyDoc.CodeDoc
 {
@@ -7,9 +8,9 @@ namespace DandyDoc.CodeDoc
 
 		string AssemblyFileName { get; }
 
-		IList<ICodeDocType> RootTypes { get; }
+        IList<CRefIdentifier> RootTypes { get; }
 
-		IList<ICodeDocType> AllTypes { get; }
+        IList<CRefIdentifier> AllTypes { get; }
 
 	}
 }
