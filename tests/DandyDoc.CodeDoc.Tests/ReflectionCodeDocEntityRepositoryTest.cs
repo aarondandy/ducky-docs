@@ -44,6 +44,19 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual("T:TestLibrary1.Class1", model.CRef.FullCRef);
             Assert.AreEqual("Class1", model.Title);
             Assert.AreEqual("Class", model.SubTitle);
+            Assert.AreEqual("TestLibrary1", model.NamespaceName);
+
+            Assert.IsTrue(model.HasSummary);
+            Assert.AreEqual("This class is just for testing and has no real use outside of generating some documentation.", model.Summary.Node.InnerText);
+            Assert.IsTrue(model.HasExamples);
+            Assert.AreEqual(2, model.Examples.Count);
+            Assert.AreEqual("Example 1", model.Examples[0].Node.InnerText);
+            Assert.AreEqual("Example 2", model.Examples[1].Node.InnerText);
+            Assert.IsFalse(model.HasPermissions);
+            Assert.IsTrue(model.HasRemarks);
+            Assert.AreEqual(1, model.Remarks.Count);
+            Assert.AreEqual("These are some remarks.", model.Remarks[0].Node.InnerText);
+            Assert.IsFalse(model.HasSeeAlso);
         }
 
         [Test]
@@ -54,6 +67,16 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual("T:TestLibrary1.FlagsEnum", model.CRef.FullCRef);
             Assert.AreEqual("FlagsEnum", model.Title);
             Assert.AreEqual("Enumeration", model.SubTitle);
+            Assert.AreEqual("TestLibrary1", model.NamespaceName);
+
+            Assert.IsTrue(model.HasSummary);
+            Assert.AreEqual("An enumeration to check detection of the flags attribute.", model.Summary.Node.InnerText);
+            Assert.IsTrue(model.HasExamples);
+            Assert.AreEqual(1, model.Examples.Count);
+            Assert.AreEqual("FlagsEnum.AB == FlagsEnum.A | FlagsEnum.B;", model.Examples[0].Node.InnerText);
+            Assert.IsFalse(model.HasPermissions);
+            Assert.IsFalse(model.HasRemarks);
+            Assert.IsFalse(model.HasSeeAlso);
         }
 
         [Test]
@@ -64,6 +87,15 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual("T:TestLibrary1.Class1.Inner", model.CRef.FullCRef);
             Assert.AreEqual("Inner", model.Title);
             Assert.AreEqual("Class", model.SubTitle);
+            Assert.AreEqual("TestLibrary1", model.NamespaceName);
+
+            Assert.IsFalse(model.HasSummary);
+            Assert.IsFalse(model.HasExamples);
+            Assert.IsFalse(model.HasPermissions);
+            Assert.IsFalse(model.HasSeeAlso);
+            Assert.IsTrue(model.HasRemarks);
+            Assert.AreEqual(1, model.Remarks.Count);
+            Assert.AreEqual("This is just some class.", model.Remarks[0].Node.InnerText);
         }
 
     }

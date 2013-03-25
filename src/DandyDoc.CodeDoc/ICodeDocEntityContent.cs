@@ -8,19 +8,19 @@ namespace DandyDoc.CodeDoc
 
         bool HasExamples { get; }
 
-        IList<XmlDocNode> Examples { get; }
+        IList<XmlDocElement> Examples { get; }
 
         bool HasPermissions { get; }
 
-        IList<XmlDocNode> Permissions { get; }
+        IList<XmlDocRefElement> Permissions { get; }
 
         bool HasRemarks { get; }
 
-        IList<XmlDocNode> Remarks { get; }
+        IList<XmlDocElement> Remarks { get; }
 
         bool HasSeeAlso { get; }
 
-        IList<XmlDocNode> SeeAlso { get; }
+        IList<XmlDocRefElement> SeeAlso { get; }
 
     }
 }

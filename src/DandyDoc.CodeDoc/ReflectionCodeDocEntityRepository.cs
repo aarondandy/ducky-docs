@@ -55,21 +55,21 @@ namespace DandyDoc.CodeDoc
             Contract.Invariant(XmlDocs != null);
         }
 
-        public ICodeDocEntity GetEntity(string cRef) {
+        public ICodeDocEntityContent GetEntity(string cRef) {
             if(String.IsNullOrEmpty(cRef)) throw new ArgumentException("CRef is not valid.", "cRef");
             Contract.EndContractBlock();
             var memberInfo = CRefLookup.GetMember(cRef);
             return memberInfo == null ? null : ConvertToEntity(memberInfo);
         }
 
-        public ICodeDocEntity GetEntity(CRefIdentifier cRef) {
+        public ICodeDocEntityContent GetEntity(CRefIdentifier cRef) {
             if(cRef == null) throw new ArgumentNullException("cRef");
             Contract.EndContractBlock();
             var memberInfo = CRefLookup.GetMember(cRef);
             return memberInfo == null ? null : ConvertToEntity(memberInfo);
         }
 
-        protected virtual ICodeDocEntity ConvertToEntity(MemberInfo memberInfo) {
+        protected virtual ICodeDocEntityContent ConvertToEntity(MemberInfo memberInfo) {
             if(memberInfo == null) throw new ArgumentNullException("memberInfo");
             Contract.Ensures(Contract.Result<ICodeDocEntity>() != null);
 
@@ -84,8 +84,15 @@ namespace DandyDoc.CodeDoc
             Contract.Requires(type != null);
             Contract.Ensures(Contract.Result<CodeDocType>() != null);
             var result = new CodeDocType(GetCRefIdentifier(type));
+            ApplyStandardXmlDocs(result, result.CRef.FullCRef);
             ApplyTypeAttributes(result, type);
             return result;
+        }
+
+        private void ApplyStandardXmlDocs(CodeDocEntityContentBase model, string cRef){
+            Contract.Requires(model != null);
+            Contract.Requires(!String.IsNullOrEmpty(cRef));
+            model.XmlDocs = XmlDocs.GetMember(cRef);
         }
 
         private void ApplyTypeAttributes(CodeDocType model, Type type){
@@ -100,6 +107,7 @@ namespace DandyDoc.CodeDoc
             model.ShortName = RegularTypeDisplayNameOverlay.GetDisplayName(type);
             model.FullName = FullTypeDisplayNameOverlay.GetDisplayName(type);
             model.Title = model.ShortName;
+            model.NamespaceName = type.Namespace;
 
             if (type.IsEnum)
                 model.SubTitle = "Enumeration";
