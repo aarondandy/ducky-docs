@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace DandyDoc.CRef
 {
-	public class CRefIdentifier
+	public class CRefIdentifier : IEquatable<CRefIdentifier>
 	{
 
 		protected static readonly Regex CrefRegex = new Regex(
@@ -105,6 +105,26 @@ namespace DandyDoc.CRef
 		}
 
 		public string FullCRef { get; private set; }
+
+        public override string ToString() {
+            return FullCRef;
+        }
+
+        public override int GetHashCode() {
+            return FullCRef.GetHashCode();
+        }
+
+        public override bool Equals(object obj) {
+            return Equals(obj as CRefIdentifier);
+        }
+
+        public bool Equals(CRefIdentifier obj) {
+            if (obj == null)
+                return false;
+            if (ReferenceEquals(this, obj))
+                return true;
+            return obj.FullCRef == FullCRef;
+        }
 
 		[ContractInvariantMethod]
 		private void CodeContractInvariant() {

@@ -12,10 +12,10 @@ namespace TestLibrary1
 	/// <typeparam name="TB">B</typeparam>
 	public class Generic1<TA,TB>
 		where TA:struct
-		where TB:IEnumerable<TA>
+		where TB:class, IEnumerable<TA>
 	{
 
-		public interface Variance<in TIn, out TOut>
+		public interface IVariance<in TIn, out TOut>
 		{
 			TOut Get();
 

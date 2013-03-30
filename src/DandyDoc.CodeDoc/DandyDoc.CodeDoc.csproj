@@ -154,6 +154,7 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="CodeDocEntityContentBase.cs" />
+    <Compile Include="CodeDocGenericParameter.cs" />
     <Compile Include="CodeDocType.cs" />
     <Compile Include="ICodeDocAssembly.cs" />
     <Compile Include="ICodeDocEntityContent.cs" />
@@ -166,7 +167,6 @@
     <Compile Include="ICodeDocField.cs" />
     <Compile Include="ICodeDocGenericDefinition.cs" />
     <Compile Include="ICodeDocGenericParameter.cs" />
-    <Compile Include="ICodeDocGenericParameterConstraint.cs" />
     <Compile Include="ICodeDocInvokable.cs" />
     <Compile Include="ICodeDocMethod.cs" />
     <Compile Include="ICodeDocNamespace.cs" />
