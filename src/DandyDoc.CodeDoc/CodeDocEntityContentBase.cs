@@ -1,36 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using DandyDoc.CRef;
 using System.Diagnostics.Contracts;
 using DandyDoc.XmlDoc;
 
 namespace DandyDoc.CodeDoc
 {
-    public abstract class CodeDocEntityContentBase : ICodeDocEntityContent
+    public abstract class CodeDocEntityContentBase : CodeDocSimpleEntity, ICodeDocEntityContent
     {
 
         private static readonly XmlDocElement[] EmptyXmlDocElementArray = new XmlDocElement[0];
         private static readonly XmlDocRefElement[] EmptyXmlDocRefElementArray = new XmlDocRefElement[0];
 
-        protected CodeDocEntityContentBase(CRefIdentifier cRef) {
-            if (cRef == null) throw new ArgumentNullException("cRef");
-            Contract.EndContractBlock();
-            CRef = cRef;
+        public CodeDocEntityContentBase(CRefIdentifier cRef) : base(cRef) {
+            Contract.Requires(cRef != null);
         }
-
-        public string Title { get; set; }
-
-        public string SubTitle { get; set; }
-
-        public string ShortName { get; set; }
-
-        public string FullName { get; set; }
-
-        public CRefIdentifier CRef { get; protected set; }
-
-        public string NamespaceName { get; set; }
-
-        public XmlDocMember XmlDocs { get; set; }
 
         public bool HasExamples { get { return Examples.Count > 0; } }
 
@@ -81,11 +64,6 @@ namespace DandyDoc.CodeDoc
 
         public XmlDocNode Summary {
             get { return XmlDocs == null ? null : XmlDocs.SummaryElement; }
-        }
-
-        [ContractInvariantMethod]
-        private void CodeContractInvariants() {
-            Contract.Invariant(CRef != null);
         }
 
     }

@@ -19,8 +19,8 @@ namespace DandyDoc.CodeDoc.Tests
             var testLib1AsmPath = ReflectionUtilities.GetFilePath(testLib1Asm);
             var testLib1XmlPath = Path.ChangeExtension(testLib1AsmPath, "XML");
             TestLibrary1Repository = new ReflectionCodeDocEntityRepository(
-                new ReflectionCRefLookup(new[] { testLib1Asm }),
-                new[]{new XmlAssemblyDocumentation(testLib1XmlPath)}
+                new ReflectionCRefLookup(testLib1Asm),
+                new XmlAssemblyDocumentation(testLib1XmlPath)
             );
         }
 
@@ -29,14 +29,15 @@ namespace DandyDoc.CodeDoc.Tests
         [Test]
         public void invalid_requests() {
             Assert.Throws<ArgumentException>(
-                () => TestLibrary1Repository.GetEntity(String.Empty));
+                () => TestLibrary1Repository.GetContentEntity(String.Empty));
             Assert.Throws<ArgumentNullException>(
-                () => TestLibrary1Repository.GetEntity((CRefIdentifier)null));
+                () => TestLibrary1Repository.GetContentEntity((CRefIdentifier)null));
         }
 
         [Test]
         public void type_test_for_Class1(){
-            var model = TestLibrary1Repository.GetEntity("TestLibrary1.Class1") as CodeDocType;
+            var model = TestLibrary1Repository
+                .GetContentEntity("TestLibrary1.Class1") as CodeDocType;
             Assert.AreEqual("Class1", model.ShortName);
             Assert.AreEqual("TestLibrary1.Class1", model.FullName);
             Assert.AreEqual("T:TestLibrary1.Class1", model.CRef.FullCRef);
@@ -61,11 +62,41 @@ namespace DandyDoc.CodeDoc.Tests
                 new[] { new CRefIdentifier("T:System.Object") },
                 model.BaseChainCRefs);
             Assert.IsFalse(model.HasDirectInterfaces);
+
+            Assert.IsTrue(model.HasNestedTypes);
+            Assert.AreEqual(6, model.NestedTypes.Count);
+            Assert.Contains("Inherits", model.NestedTypes.Select(x => x.ShortName).ToList());
+            Assert.Contains("Inner", model.NestedTypes.Select(x => x.ShortName).ToList());
+            Assert.Contains("NoRemarks", model.NestedTypes.Select(x => x.ShortName).ToList());
+            Assert.Contains("NoDocs", model.NestedTypes.Select(x => x.ShortName).ToList());
+            Assert.Contains("ProtectedStruct", model.NestedTypes.Select(x => x.ShortName).ToList());
+            Assert.Contains("IThing", model.NestedTypes.Select(x => x.ShortName).ToList());
+
+            Assert.AreEqual(
+                "no remarks here",
+                model.NestedTypes
+                    .First(x => x.ShortName == "NoRemarks")
+                    .Summary.Node.InnerText);
+
+            Assert.IsTrue(model.HasNestedDelegates);
+            Assert.AreEqual(1, model.NestedDelegates.Count);
+            Assert.AreEqual("T:TestLibrary1.Class1.MyFunc", model.NestedDelegates.Single().CRef.FullCRef);
+
+            Assert.IsTrue(model.HasConstructors);
+            Assert.AreEqual(2, model.Constructors.Count);
+            
+            Assert.IsTrue(model.HasMethods);
+            Assert.Less(5, model.Methods.Count);
+
+            Assert.IsTrue(model.HasOperators);
+            Assert.AreEqual(1, model.Operators.Count);
+
         }
 
         [Test]
         public void type_test_for_FlagsEnum() {
-            var model = TestLibrary1Repository.GetEntity("TestLibrary1.FlagsEnum") as CodeDocType;
+            var model = TestLibrary1Repository
+                .GetContentEntity("TestLibrary1.FlagsEnum") as CodeDocType;
             Assert.AreEqual("FlagsEnum", model.ShortName);
             Assert.AreEqual("TestLibrary1.FlagsEnum", model.FullName);
             Assert.AreEqual("T:TestLibrary1.FlagsEnum", model.CRef.FullCRef);
@@ -99,7 +130,8 @@ namespace DandyDoc.CodeDoc.Tests
 
         [Test]
         public void type_test_for_Class1_Inner() {
-            var model = TestLibrary1Repository.GetEntity("TestLibrary1.Class1.Inner") as CodeDocType;
+            var model = TestLibrary1Repository
+                .GetContentEntity("TestLibrary1.Class1.Inner") as CodeDocType;
             Assert.IsNotNull(model);
             Assert.AreEqual("Inner", model.ShortName);
             Assert.AreEqual("TestLibrary1.Class1.Inner", model.FullName);
@@ -125,7 +157,8 @@ namespace DandyDoc.CodeDoc.Tests
 
         [Test]
         public void type_test_for_Generic1() {
-            var model = TestLibrary1Repository.GetEntity("TestLibrary1.Generic1`2") as CodeDocType;
+            var model = TestLibrary1Repository
+                .GetContentEntity("TestLibrary1.Generic1`2") as CodeDocType;
             Assert.IsNotNull(model);
             Assert.AreEqual("Generic1<TA, TB>", model.ShortName);
             
@@ -165,7 +198,7 @@ namespace DandyDoc.CodeDoc.Tests
         [Test]
         public void type_test_for_generic_variance() {
             var model = TestLibrary1Repository
-                .GetEntity("T:TestLibrary1.Generic1`2.IVariance`2") as CodeDocType;
+                .GetContentEntity("T:TestLibrary1.Generic1`2.IVariance`2") as CodeDocType;
             Assert.IsNotNull(model);
             Assert.IsTrue(model.HasGenericParameters);
             Assert.AreEqual(2, model.GenericParameters.Count);
@@ -180,7 +213,7 @@ namespace DandyDoc.CodeDoc.Tests
         [Test]
         public void type_generic_contraint_test() {
             var model = TestLibrary1Repository
-                .GetEntity("TestLibrary1.Generic1`2.Constraints`1") as CodeDocType;
+                .GetContentEntity("TestLibrary1.Generic1`2.Constraints`1") as CodeDocType;
             Assert.IsNotNull(model);
             Assert.IsTrue(model.HasGenericParameters);
             Assert.AreEqual(1, model.GenericParameters.Count);

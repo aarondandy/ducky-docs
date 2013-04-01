@@ -11,6 +11,12 @@ namespace DandyDoc.CRef
 	public class ReflectionCRefLookup : CRefLookupBase<Assembly,MemberInfo>
 	{
 
+        public ReflectionCRefLookup(params Assembly[] assemblies)
+            : this((IEnumerable<Assembly>) assemblies)
+        {
+            Contract.Requires(assemblies != null);
+        }
+
 		public ReflectionCRefLookup(IEnumerable<Assembly> assemblies)
 			: base(assemblies)
 		{

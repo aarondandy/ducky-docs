@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using DandyDoc.CRef;
 using DandyDoc.DisplayName;
+using DandyDoc.ExternalVisibility;
 using DandyDoc.Reflection;
 using DandyDoc.XmlDoc;
 
@@ -39,6 +40,12 @@ namespace DandyDoc.CodeDoc
             Contract.Requires(cRefLookup != null);
         }
 
+        public ReflectionCodeDocEntityRepository(ReflectionCRefLookup cRefLookup, params XmlAssemblyDocumentation[] xmlDocs)
+            : this(cRefLookup, (IEnumerable<XmlAssemblyDocumentation>)xmlDocs)
+        {
+            Contract.Requires(cRefLookup != null);
+        }
+
         public ReflectionCodeDocEntityRepository(ReflectionCRefLookup cRefLookup, IEnumerable<XmlAssemblyDocumentation> xmlDocs) {
             if(cRefLookup == null) throw new ArgumentNullException("cRefLookup");
             Contract.EndContractBlock();
@@ -56,21 +63,69 @@ namespace DandyDoc.CodeDoc
             Contract.Invariant(XmlDocs != null);
         }
 
-        public ICodeDocEntityContent GetEntity(string cRef) {
+        public ICodeDocEntity GetSimpleEntity(string cRef){
             if(String.IsNullOrEmpty(cRef)) throw new ArgumentException("CRef is not valid.", "cRef");
             Contract.EndContractBlock();
             var memberInfo = CRefLookup.GetMember(cRef);
-            return memberInfo == null ? null : ConvertToEntity(memberInfo);
+            if (memberInfo == null || !MemberInfoFilter(memberInfo))
+                return null;
+            return ConvertToSimpleEntity(memberInfo);
         }
 
-        public ICodeDocEntityContent GetEntity(CRefIdentifier cRef) {
+        public ICodeDocEntityContent GetContentEntity(string cRef) {
+            if(String.IsNullOrEmpty(cRef)) throw new ArgumentException("CRef is not valid.", "cRef");
+            Contract.EndContractBlock();
+            var memberInfo = CRefLookup.GetMember(cRef);
+            if (memberInfo == null || !MemberInfoFilter(memberInfo))
+                return null;
+            return ConvertToContentEntity(memberInfo);
+        }
+
+        public ICodeDocEntity GetSimpleEntity(CRefIdentifier cRef) {
+            if (cRef == null) throw new ArgumentNullException("cRef");
+            Contract.EndContractBlock();
+            var memberInfo = CRefLookup.GetMember(cRef);
+            if (memberInfo == null || !MemberInfoFilter(memberInfo))
+                return null;
+            return ConvertToSimpleEntity(memberInfo);
+        }
+
+        public ICodeDocEntityContent GetContentEntity(CRefIdentifier cRef) {
             if(cRef == null) throw new ArgumentNullException("cRef");
             Contract.EndContractBlock();
             var memberInfo = CRefLookup.GetMember(cRef);
-            return memberInfo == null ? null : ConvertToEntity(memberInfo);
+            if (memberInfo == null || !MemberInfoFilter(memberInfo))
+                return null;
+            return ConvertToContentEntity(memberInfo);
         }
 
-        protected virtual ICodeDocEntityContent ConvertToEntity(MemberInfo memberInfo) {
+        protected virtual bool MemberInfoFilter(MemberInfo memberInfo){
+            if (memberInfo == null) throw new ArgumentNullException("memberInfo");
+            Contract.EndContractBlock();
+            return memberInfo.GetExternalVisibility() != ExternalVisibilityKind.Hidden;
+        }
+
+        protected virtual ICodeDocEntity ConvertToSimpleEntity(MemberInfo memberInfo) {
+            if (memberInfo == null) throw new ArgumentNullException("memberInfo");
+            Contract.Ensures(Contract.Result<ICodeDocEntity>() != null);
+            var cRef = GetCRefIdentifier(memberInfo);
+            var result = new CodeDocSimpleEntity(cRef);
+
+            ApplyStandardXmlDocs(result, cRef.FullCRef);
+            if (memberInfo is Type) {
+                ApplyCommonTypeAttributes(result, (Type)memberInfo);
+            }
+            else if (memberInfo is MethodBase){
+                ApplyCommonMethodAttributes(result, (MethodBase) memberInfo);
+            }
+            else{
+                throw new NotSupportedException();
+            }
+
+            return result;
+        }
+
+        protected virtual ICodeDocEntityContent ConvertToContentEntity(MemberInfo memberInfo) {
             if(memberInfo == null) throw new ArgumentNullException("memberInfo");
             Contract.Ensures(Contract.Result<ICodeDocEntity>() != null);
 
@@ -96,7 +151,13 @@ namespace DandyDoc.CodeDoc
             model.XmlDocs = XmlDocs.GetMember(cRef);
         }
 
-        private void ApplyTypeAttributes(CodeDocType model, Type type){
+        private void ApplyStandardXmlDocs(CodeDocSimpleEntity model, string cRef) {
+            Contract.Requires(model != null);
+            Contract.Requires(!String.IsNullOrEmpty(cRef));
+            model.XmlDocs = XmlDocs.GetMember(cRef);
+        }
+
+        private void ApplyCommonTypeAttributes(CodeDocSimpleEntity model, Type type){
             Contract.Requires(model != null);
             Contract.Requires(type != null);
             Contract.Ensures(!String.IsNullOrEmpty(model.ShortName));
@@ -110,23 +171,53 @@ namespace DandyDoc.CodeDoc
             model.Title = model.ShortName;
             model.NamespaceName = type.Namespace;
 
-            model.IsEnum = false;
-            if (type.IsEnum) {
+            if (type.IsEnum)
                 model.SubTitle = "Enumeration";
-                model.IsEnum = true;
-            }
-            else if (type.IsValueType) {
+            else if (type.IsValueType)
                 model.SubTitle = "Structure";
-            }
-            else if (type.IsInterface) {
+            else if (type.IsInterface)
                 model.SubTitle = "Interface";
-            }
-            else if (type.IsDelegateType()) {
+            else if (type.IsDelegateType())
                 model.SubTitle = "Delegate";
-            }
-            else {
+            else
                 model.SubTitle = "Class";
-            }
+        }
+
+        private void ApplyCommonMethodAttributes(CodeDocSimpleEntity model, MethodBase methodBase){
+            Contract.Requires(model != null);
+            Contract.Requires(methodBase != null);
+            Contract.Ensures(!String.IsNullOrEmpty(model.ShortName));
+            Contract.Ensures(!String.IsNullOrEmpty(model.FullName));
+            Contract.Ensures(!String.IsNullOrEmpty(model.Title));
+            Contract.Ensures(model.Title == model.ShortName);
+            Contract.Ensures(!String.IsNullOrEmpty(model.SubTitle));
+
+            model.ShortName = RegularTypeDisplayNameOverlay.GetDisplayName(methodBase);
+            model.FullName = FullTypeDisplayNameOverlay.GetDisplayName(methodBase);
+            model.Title = model.ShortName;
+            Contract.Assume(methodBase.DeclaringType != null);
+            model.NamespaceName = methodBase.DeclaringType.Namespace;
+
+            if (methodBase.IsConstructor)
+                model.SubTitle = "Constructor";
+            else if (methodBase.IsOperatorOverload())
+                model.SubTitle = "Operator";
+            else
+                model.SubTitle = "Method";
+        }
+
+        private void ApplyTypeAttributes(CodeDocType model, Type type){
+            Contract.Requires(model != null);
+            Contract.Requires(type != null);
+            Contract.Ensures(!String.IsNullOrEmpty(model.ShortName));
+            Contract.Ensures(!String.IsNullOrEmpty(model.FullName));
+            Contract.Ensures(!String.IsNullOrEmpty(model.Title));
+            Contract.Ensures(model.Title == model.ShortName);
+            Contract.Ensures(!String.IsNullOrEmpty(model.SubTitle));
+
+            ApplyCommonTypeAttributes(model, type);
+
+            model.IsEnum = type.IsEnum;
 
             if (!type.IsInterface) {
                 var currentBase = type.BaseType;
@@ -199,6 +290,35 @@ namespace DandyDoc.CodeDoc
                 }
             }
 
+            var nestedTypeModels = new List<ICodeDocEntity>();
+            var nestedDelegateModels = new List<ICodeDocEntity>();
+            foreach (var nestedType in type.GetAllNestedTypes().Where(MemberInfoFilter)){
+                var nestedTypeModel = ConvertToSimpleEntity(nestedType);
+                if(nestedType.IsDelegateType())
+                    nestedDelegateModels.Add(nestedTypeModel);
+                else
+                    nestedTypeModels.Add(nestedTypeModel);
+            }
+            model.NestedTypes = new ReadOnlyCollection<ICodeDocEntity>(nestedTypeModels);
+            model.NestedDelegates = new List<ICodeDocEntity>(nestedDelegateModels);
+
+            var methodModels = new List<ICodeDocEntity>();
+            var operatorModels = new List<ICodeDocEntity>();
+            foreach (var methodInfo in type.GetAllMethods().Where(MemberInfoFilter)){
+                var methodModel = ConvertToSimpleEntity(methodInfo);
+                if(methodInfo.IsOperatorOverload())
+                    operatorModels.Add(methodModel);
+                else
+                    methodModels.Add(methodModel);
+            }
+            model.Methods = new ReadOnlyCollection<ICodeDocEntity>(methodModels);
+            model.Operators = new ReadOnlyCollection<ICodeDocEntity>(operatorModels);
+
+            model.Constructors = new ReadOnlyCollection<ICodeDocEntity>(type
+                .GetAllConstructors()
+                .Where(MemberInfoFilter)
+                .Select(ConvertToSimpleEntity)
+                .ToArray());
 
 
         }

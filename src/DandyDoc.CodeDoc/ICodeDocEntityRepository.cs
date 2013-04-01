@@ -5,7 +5,9 @@ namespace DandyDoc.CodeDoc
     public interface ICodeDocEntityRepository
     {
 
-        ICodeDocEntityContent GetEntity(CRefIdentifier cRef);
+        ICodeDocEntityContent GetContentEntity(CRefIdentifier cRef);
+
+        ICodeDocEntity GetSimpleEntity(CRefIdentifier cRef);
 
     }
 }

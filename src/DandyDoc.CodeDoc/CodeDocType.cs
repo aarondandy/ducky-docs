@@ -4,16 +4,16 @@ using DandyDoc.CRef;
 
 namespace DandyDoc.CodeDoc
 {
-	public class CodeDocType : CodeDocEntityContentBase, ICodeDocType
-	{
+    public class CodeDocType : CodeDocEntityContentBase, ICodeDocType
+    {
 
-		public CodeDocType(CRefIdentifier cRef) : base(cRef){
-			Contract.Requires(cRef != null);
-		}
+        public CodeDocType(CRefIdentifier cRef) : base(cRef){
+            Contract.Requires(cRef != null);
+        }
 
         public CRefIdentifier BaseCRef { get; set; }
 
-		public bool HasBaseChain { get { return BaseChainCRefs != null && BaseChainCRefs.Count > 0; } }
+        public bool HasBaseChain { get { return BaseChainCRefs != null && BaseChainCRefs.Count > 0; } }
 
         public IList<CRefIdentifier> BaseChainCRefs { get; set; }
 

@@ -155,6 +155,7 @@
     </Compile>
     <Compile Include="CodeDocEntityContentBase.cs" />
     <Compile Include="CodeDocGenericParameter.cs" />
+    <Compile Include="CodeDocSimpleEntity.cs" />
     <Compile Include="CodeDocType.cs" />
     <Compile Include="ICodeDocAssembly.cs" />
     <Compile Include="ICodeDocEntityContent.cs" />
