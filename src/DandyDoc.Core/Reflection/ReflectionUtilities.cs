@@ -22,14 +22,27 @@ namespace DandyDoc.Reflection
             return assembly.Location;
         }
 
-        public static bool IsOperatorOverload(this MethodBase methodInfo) {
-            if (methodInfo == null)
+        public static bool IsOperatorOverload(this MethodBase methodBase) {
+            if (methodBase == null) throw new NullReferenceException("methodBase is null");
+            Contract.EndContractBlock();
+            if (!methodBase.IsStatic)
                 return false;
+            return CSharpOperatorNameSymbolMap.IsOperatorName(methodBase.Name);
+        }
 
-            if (!methodInfo.IsStatic)
-                return false;
+        public static bool IsFinalizer(this MethodBase methodBase) {
+            if (methodBase == null) throw new NullReferenceException("methodBase is null");
+            Contract.EndContractBlock();
+            return !methodBase.IsStatic
+                && "Finalize".Equals(methodBase.Name)
+                && methodBase.GetParameters().Length == 0;
+        }
 
-            return CSharpOperatorNameSymbolMap.IsOperatorName(methodInfo.Name);
+        public static bool IsItemIndexerProperty(this PropertyInfo propertyInfo) {
+            if(propertyInfo == null) throw new NullReferenceException("propertyInfo is null");
+            Contract.EndContractBlock();
+            return "Item".Equals(propertyInfo.Name)
+                && propertyInfo.GetIndexParameters().Length > 0;
         }
 
         public static bool IsDelegateType(this Type type) {
@@ -126,8 +139,10 @@ namespace DandyDoc.Reflection
             if (type == null) throw new ArgumentNullException("type");
             Contract.Ensures(Contract.Result<IList<Type>>() != null);
 
-            var result = new List<Type>(type.GetNestedTypes());
-            result.AddRange(type.GetNestedTypes(BindingFlags.NonPublic));
+            var result = type.GetNestedTypes(BindingFlags.Instance
+                | BindingFlags.Static
+                | BindingFlags.Public
+                | BindingFlags.NonPublic);
             return result;
         }
 

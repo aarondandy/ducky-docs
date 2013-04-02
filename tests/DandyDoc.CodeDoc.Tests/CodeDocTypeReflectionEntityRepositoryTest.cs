@@ -35,7 +35,7 @@ namespace DandyDoc.CodeDoc.Tests
         }
 
         [Test]
-        public void type_test_for_Class1(){
+        public void type_test_for_Class1() {
             var model = TestLibrary1Repository
                 .GetContentEntity("TestLibrary1.Class1") as CodeDocType;
             Assert.AreEqual("Class1", model.ShortName);
@@ -44,6 +44,17 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual("Class1", model.Title);
             Assert.AreEqual("Class", model.SubTitle);
             Assert.AreEqual("TestLibrary1", model.NamespaceName);
+            Assert.IsTrue(model.HasBaseChain);
+            Assert.AreEqual(
+                new[] {new CRefIdentifier("T:System.Object")},
+                model.BaseChainCRefs);
+            Assert.IsFalse(model.HasDirectInterfaces);
+        }
+
+        [Test]
+        public void type_xmldoc_test_for_Class1() {
+            var model = TestLibrary1Repository
+                .GetContentEntity("TestLibrary1.Class1") as CodeDocType;
 
             Assert.IsTrue(model.HasSummary);
             Assert.AreEqual("This class is just for testing and has no real use outside of generating some documentation.", model.Summary.Node.InnerText);
@@ -57,11 +68,12 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual("These are some remarks.", model.Remarks[0].Node.InnerText);
             Assert.IsFalse(model.HasSeeAlso);
 
-            Assert.IsTrue(model.HasBaseChain);
-            Assert.AreEqual(
-                new[] { new CRefIdentifier("T:System.Object") },
-                model.BaseChainCRefs);
-            Assert.IsFalse(model.HasDirectInterfaces);
+        }
+
+        [Test]
+        public void type_members_test_for_Class1(){
+            var model = TestLibrary1Repository
+                .GetContentEntity("TestLibrary1.Class1") as CodeDocType;
 
             Assert.IsTrue(model.HasNestedTypes);
             Assert.AreEqual(6, model.NestedTypes.Count);
@@ -84,13 +96,29 @@ namespace DandyDoc.CodeDoc.Tests
 
             Assert.IsTrue(model.HasConstructors);
             Assert.AreEqual(2, model.Constructors.Count);
+            Assert.That(model.Constructors, Has.All.Property("SubTitle").EqualTo("Constructor"));
             
             Assert.IsTrue(model.HasMethods);
             Assert.Less(5, model.Methods.Count);
+            Assert.That(model.Methods, Has.All.Property("SubTitle").EqualTo("Method"));
 
             Assert.IsTrue(model.HasOperators);
             Assert.AreEqual(1, model.Operators.Count);
+            Assert.That(model.Operators.Single().Title.Contains('+'));
+            Assert.That(model.Operators, Has.All.Property("SubTitle").EqualTo("Operator"));
 
+            Assert.IsTrue(model.HasEvents);
+            Assert.AreEqual(2, model.Events.Count);
+
+            Assert.IsTrue(model.HasFields);
+            Assert.AreEqual(5, model.Fields.Count);
+            Assert.That(model.Fields, Has.Some.Property("SubTitle").EqualTo("Constant"));
+            Assert.That(model.Fields, Has.Some.Property("SubTitle").EqualTo("Field"));
+
+            Assert.IsTrue(model.HasProperties);
+            Assert.AreEqual(3, model.Properties.Count);
+            Assert.That(model.Properties, Has.Some.Property("SubTitle").EqualTo("Indexer"));
+            Assert.That(model.Properties, Has.Some.Property("SubTitle").EqualTo("Property"));
         }
 
         [Test]
