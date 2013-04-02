@@ -8,9 +8,7 @@ namespace DandyDoc.CodeDoc
 
         IList<CRefIdentifier> RootTypes { get; }
 
-        IList<CRefIdentifier> AllTypes { get; }
-
-        IList<CRefIdentifier> Assemblies { get; }
+        IList<ICodeDocAssembly> Assemblies { get; }
 
 	}
 }

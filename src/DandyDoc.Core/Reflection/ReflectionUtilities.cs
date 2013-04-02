@@ -10,7 +10,7 @@ namespace DandyDoc.Reflection
     public static class ReflectionUtilities
     {
 
-        public static string GetFilePath(Assembly assembly) {
+        public static string GetFilePath(this Assembly assembly) {
             if (assembly == null) throw new ArgumentNullException("assembly");
             Contract.EndContractBlock();
 

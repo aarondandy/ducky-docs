@@ -51,6 +51,31 @@ namespace DandyDoc.CodeDoc
             Contract.EndContractBlock();
             CRefLookup = cRefLookup;
             XmlDocs = new XmlAssemblyDocumentationCollection(xmlDocs);
+
+            var namespaceModels = new List<ICodeDocNamespace>();
+            var assemblyModels = new List<ICodeDocAssembly>();
+            var namespaceTypeMap = new Dictionary<string, List<CRefIdentifier>>();
+
+            foreach (var assembly in CRefLookup.Assemblies){
+                var assemblyModel = new CodeDocAssembly(new CRefIdentifier(ReflectionCRefGenerator.WithPrefix.GetCRef(assembly)));
+                var allTypeCRefs = new List<CRefIdentifier>();
+                var rootTypeCRefs = new List<CRefIdentifier>();
+                var namespaceNames = new HashSet<string>();
+                foreach (var type in assembly.GetTypes().Where(TypeFilter)){
+                    var typeCRef = GetCRefIdentifier(type);
+                    allTypeCRefs.Add(typeCRef);
+                    if (!type.IsNested){
+                        rootTypeCRefs.Add(typeCRef);
+                        var namespaceName = type.Namespace;
+                        namespaceNames.Add(namespaceName ?? String.Empty);
+
+                    }
+                }
+                assemblyModel.RootTypes = new ReadOnlyCollection<CRefIdentifier>(rootTypeCRefs.ToArray());
+                assemblyModel.AllTypes = new ReadOnlyCollection<CRefIdentifier>(allTypeCRefs.ToArray());
+
+                assemblyModels.Add(assemblyModel);
+            }
         }
 
         public XmlAssemblyDocumentationCollection XmlDocs { get; private set; }
@@ -63,43 +88,7 @@ namespace DandyDoc.CodeDoc
             Contract.Invariant(XmlDocs != null);
         }
 
-        public ICodeDocEntity GetSimpleEntity(string cRef){
-            if(String.IsNullOrEmpty(cRef)) throw new ArgumentException("CRef is not valid.", "cRef");
-            Contract.EndContractBlock();
-            var memberInfo = CRefLookup.GetMember(cRef);
-            if (memberInfo == null || !MemberInfoFilter(memberInfo))
-                return null;
-            return ConvertToSimpleEntity(memberInfo);
-        }
-
-        public ICodeDocEntityContent GetContentEntity(string cRef) {
-            if(String.IsNullOrEmpty(cRef)) throw new ArgumentException("CRef is not valid.", "cRef");
-            Contract.EndContractBlock();
-            var memberInfo = CRefLookup.GetMember(cRef);
-            if (memberInfo == null || !MemberInfoFilter(memberInfo))
-                return null;
-            return ConvertToContentEntity(memberInfo);
-        }
-
-        public ICodeDocEntity GetSimpleEntity(CRefIdentifier cRef) {
-            if (cRef == null) throw new ArgumentNullException("cRef");
-            Contract.EndContractBlock();
-            var memberInfo = CRefLookup.GetMember(cRef);
-            if (memberInfo == null || !MemberInfoFilter(memberInfo))
-                return null;
-            return ConvertToSimpleEntity(memberInfo);
-        }
-
-        public ICodeDocEntityContent GetContentEntity(CRefIdentifier cRef) {
-            if(cRef == null) throw new ArgumentNullException("cRef");
-            Contract.EndContractBlock();
-            var memberInfo = CRefLookup.GetMember(cRef);
-            if (memberInfo == null || !MemberInfoFilter(memberInfo))
-                return null;
-            return ConvertToContentEntity(memberInfo);
-        }
-
-        protected bool MemberInfoFilter(MemberInfo memberInfo){
+        protected bool MemberInfoFilter(MemberInfo memberInfo) {
             if (memberInfo == null) throw new ArgumentNullException("memberInfo");
             Contract.EndContractBlock();
             if (memberInfo.GetExternalVisibility() == ExternalVisibilityKind.Hidden)
@@ -116,7 +105,7 @@ namespace DandyDoc.CodeDoc
         }
 
         protected virtual bool TypeFilter(Type type) {
-            if(type == null) throw new ArgumentNullException("type");
+            if (type == null) throw new ArgumentNullException("type");
             Contract.EndContractBlock();
             return type.GetExternalVisibility() != ExternalVisibilityKind.Hidden;
         }
@@ -167,6 +156,40 @@ namespace DandyDoc.CodeDoc
             if (propertyInfo.IsSpecialName)
                 return false;
             return true;
+        }
+
+        public IList<ICodeDocAssembly> Assemblies { get; private set; }
+
+        public IList<ICodeDocNamespace> Namespaces { get; private set; }
+
+        public ICodeDocEntity GetSimpleEntity(string cRef){
+            if(String.IsNullOrEmpty(cRef)) throw new ArgumentException("CRef is not valid.", "cRef");
+            Contract.EndContractBlock();
+            return GetSimpleEntity(new CRefIdentifier(cRef));
+        }
+
+        public ICodeDocEntityContent GetContentEntity(string cRef) {
+            if(String.IsNullOrEmpty(cRef)) throw new ArgumentException("CRef is not valid.", "cRef");
+            Contract.EndContractBlock();
+            return GetContentEntity(new CRefIdentifier(cRef));
+        }
+
+        public ICodeDocEntity GetSimpleEntity(CRefIdentifier cRef) {
+            if (cRef == null) throw new ArgumentNullException("cRef");
+            Contract.EndContractBlock();
+            var memberInfo = CRefLookup.GetMember(cRef);
+            if (memberInfo == null || !MemberInfoFilter(memberInfo))
+                return null;
+            return ConvertToSimpleEntity(memberInfo);
+        }
+
+        public ICodeDocEntityContent GetContentEntity(CRefIdentifier cRef) {
+            if(cRef == null) throw new ArgumentNullException("cRef");
+            Contract.EndContractBlock();
+            var memberInfo = CRefLookup.GetMember(cRef);
+            if (memberInfo == null || !MemberInfoFilter(memberInfo))
+                return null;
+            return ConvertToContentEntity(memberInfo);
         }
 
         protected virtual ICodeDocEntity ConvertToSimpleEntity(MemberInfo memberInfo) {
