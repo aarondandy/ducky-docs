@@ -35,6 +35,17 @@ namespace DandyDoc.CodeDoc.Tests
         }
 
         [Test]
+        public void namespace_assembly_test() {
+            Assert.AreEqual(1, TestLibrary1Repository.Assemblies.Count);
+            Assert.AreEqual(5, TestLibrary1Repository.Namespaces.Count);
+            Assert.Less(0, TestLibrary1Repository.Assemblies.Single().TypeCRefs.Count);
+            Assert.AreEqual(
+                TestLibrary1Repository.Assemblies.Sum(x => x.TypeCRefs.Count),
+                TestLibrary1Repository.Namespaces.Sum(x => x.Types.Count)
+            );
+        }
+
+        [Test]
         public void type_test_for_Class1() {
             var model = TestLibrary1Repository
                 .GetContentEntity("TestLibrary1.Class1") as CodeDocType;

@@ -156,8 +156,10 @@
     <Compile Include="CodeDocAssembly.cs" />
     <Compile Include="CodeDocEntityContentBase.cs" />
     <Compile Include="CodeDocGenericParameter.cs" />
+    <Compile Include="CodeDocNamespace.cs" />
     <Compile Include="CodeDocSimpleEntity.cs" />
     <Compile Include="CodeDocType.cs" />
+    <Compile Include="CRefKeyedCollection.cs" />
     <Compile Include="ICodeDocAssembly.cs" />
     <Compile Include="ICodeDocEntityContent.cs" />
     <Compile Include="ICodeDocContractCondition.cs" />

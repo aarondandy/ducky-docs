@@ -15,11 +15,8 @@ namespace DandyDoc.CodeDoc
 
         public string AssemblyFileName { get; set; }
 
-        public IList<CRefIdentifier> RootTypes { get; set; }
-
-        public IList<CRefIdentifier> AllTypes { get; set; }
-
         public IList<ICodeDocNamespace> Namespaces { get; set; }
 
+        public IList<CRefIdentifier> TypeCRefs { get; set; }
     }
 }

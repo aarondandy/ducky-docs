@@ -3,10 +3,10 @@ using DandyDoc.CRef;
 
 namespace DandyDoc.CodeDoc
 {
-    public interface ICodeDocNamespace : ICodeDocEntityContent
+    public interface ICodeDocNamespace : ICodeDocEntity
 	{
 
-        IList<CRefIdentifier> RootTypes { get; }
+        IList<ICodeDocEntity> Types { get; }
 
         IList<ICodeDocAssembly> Assemblies { get; }
 

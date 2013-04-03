@@ -3,16 +3,14 @@ using DandyDoc.CRef;
 
 namespace DandyDoc.CodeDoc
 {
-	public interface ICodeDocAssembly
-	{
+    public interface ICodeDocAssembly : ICodeDocEntity
+    {
 
-		string AssemblyFileName { get; }
+        string AssemblyFileName { get; }
 
-        IList<CRefIdentifier> RootTypes { get; }
-
-        IList<CRefIdentifier> AllTypes { get; }
+        IList<CRefIdentifier> TypeCRefs { get; }
 
         IList<ICodeDocNamespace> Namespaces { get; }
 
-	}
+    }
 }

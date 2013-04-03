@@ -52,31 +52,75 @@ namespace DandyDoc.CodeDoc
             CRefLookup = cRefLookup;
             XmlDocs = new XmlAssemblyDocumentationCollection(xmlDocs);
 
-            var namespaceModels = new List<ICodeDocNamespace>();
-            var assemblyModels = new List<ICodeDocAssembly>();
-            var namespaceTypeMap = new Dictionary<string, List<CRefIdentifier>>();
+            var assemblyModels = new CRefKeyedCollection<CodeDocAssembly>();
+            var namespaceModels = new Dictionary<string, CodeDocNamespace>();
 
             foreach (var assembly in CRefLookup.Assemblies){
+
                 var assemblyModel = new CodeDocAssembly(new CRefIdentifier(ReflectionCRefGenerator.WithPrefix.GetCRef(assembly)));
-                var allTypeCRefs = new List<CRefIdentifier>();
-                var rootTypeCRefs = new List<CRefIdentifier>();
-                var namespaceNames = new HashSet<string>();
-                foreach (var type in assembly.GetTypes().Where(TypeFilter)){
+                assemblyModel.AssemblyFileName = assembly.GetFilePath();
+                assemblyModel.Title = assembly.GetName().Name;
+                assemblyModel.ShortName = assemblyModel.Title;
+                assemblyModel.FullName = assembly.FullName;
+                assemblyModel.NamespaceName = assemblyModel.ShortName;
+                assemblyModel.SubTitle = "Assembly";
+                assemblyModel.Namespaces = new List<ICodeDocNamespace>();
+
+                var assemblyTypeCRefs = new List<CRefIdentifier>();
+                var assemblyNamespaceNames = new HashSet<string>();
+                foreach (var type in assembly
+                    .GetTypes()
+                    .Where(t => !t.IsNested)
+                    .Where(TypeFilter)
+                ){
                     var typeCRef = GetCRefIdentifier(type);
-                    allTypeCRefs.Add(typeCRef);
-                    if (!type.IsNested){
-                        rootTypeCRefs.Add(typeCRef);
-                        var namespaceName = type.Namespace;
-                        namespaceNames.Add(namespaceName ?? String.Empty);
-
+                    assemblyTypeCRefs.Add(typeCRef);
+                    var namespaceName = type.Namespace ?? String.Empty;
+                    CodeDocNamespace namespaceModel;
+                    if (!namespaceModels.TryGetValue(namespaceName, out namespaceModel)) {
+                        namespaceModel = new CodeDocNamespace(new CRefIdentifier("N:" + namespaceName));
+                        namespaceModel.Title = String.IsNullOrWhiteSpace(namespaceName) ? "global" : namespaceName;
+                        namespaceModel.ShortName = namespaceModel.Title;
+                        namespaceModel.FullName = namespaceModel.Title;
+                        namespaceModel.NamespaceName = namespaceModel.Title;
+                        namespaceModel.SubTitle = "Namespace";
+                        namespaceModel.Types = new List<ICodeDocEntity>();
+                        namespaceModel.Assemblies = new List<ICodeDocAssembly>();
+                        namespaceModels.Add(namespaceName, namespaceModel);
                     }
-                }
-                assemblyModel.RootTypes = new ReadOnlyCollection<CRefIdentifier>(rootTypeCRefs.ToArray());
-                assemblyModel.AllTypes = new ReadOnlyCollection<CRefIdentifier>(allTypeCRefs.ToArray());
 
+                    var simpleEntity = GetSimpleEntity(typeCRef);
+                    namespaceModel.Types.Add(simpleEntity);
+
+                    if (assemblyNamespaceNames.Add(namespaceName)) {
+                        // this is the first time this assembly has seen this namespace
+                        namespaceModel.Assemblies.Add(assemblyModel);
+                        assemblyModel.Namespaces.Add(namespaceModel);
+                    }
+
+                }
+
+                assemblyModel.TypeCRefs = new ReadOnlyCollection<CRefIdentifier>(assemblyTypeCRefs);
                 assemblyModels.Add(assemblyModel);
             }
+
+            // freeze the namespace & assembly collections
+            foreach (var namespaceModel in namespaceModels.Values) {
+                namespaceModel.Types = new ReadOnlyCollection<ICodeDocEntity>(namespaceModel.Types);
+                namespaceModel.Assemblies = new ReadOnlyCollection<ICodeDocAssembly>(namespaceModel.Assemblies);
+            }
+            foreach (var assemblyModel in assemblyModels) {
+                assemblyModel.Namespaces = new ReadOnlyCollection<ICodeDocNamespace>(assemblyModel.Namespaces);
+            }
+
+            Assemblies = new ReadOnlyCollection<ICodeDocAssembly>(assemblyModels.OrderBy(x => x.Title).ToArray());
+            Namespaces = new ReadOnlyCollection<ICodeDocNamespace>(namespaceModels.Values.OrderBy(x => x.Title).ToArray());
+
         }
+
+        public IList<ICodeDocAssembly> Assemblies { get; private set; }
+
+        public IList<ICodeDocNamespace> Namespaces { get; private set; }
 
         public XmlAssemblyDocumentationCollection XmlDocs { get; private set; }
 
@@ -157,10 +201,6 @@ namespace DandyDoc.CodeDoc
                 return false;
             return true;
         }
-
-        public IList<ICodeDocAssembly> Assemblies { get; private set; }
-
-        public IList<ICodeDocNamespace> Namespaces { get; private set; }
 
         public ICodeDocEntity GetSimpleEntity(string cRef){
             if(String.IsNullOrEmpty(cRef)) throw new ArgumentException("CRef is not valid.", "cRef");
