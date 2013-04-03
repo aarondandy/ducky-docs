@@ -3,24 +3,26 @@ using DandyDoc.XmlDoc;
 
 namespace DandyDoc.CodeDoc
 {
-	public interface ICodeDocEntity
-	{
+    public interface ICodeDocEntity
+    {
 
-		string Title { get; }
+        string Title { get; }
 
-		string SubTitle { get; }
+        string SubTitle { get; }
 
-		string ShortName { get; }
+        string ShortName { get; }
 
-		string FullName { get; }
+        string FullName { get; }
 
         CRefIdentifier CRef { get; }
 
-		string NamespaceName { get; }
+        string NamespaceName { get; }
 
-		bool HasSummary { get; }
+        bool HasSummary { get; }
 
-        XmlDocNode Summary { get; }
+        XmlDocElement Summary { get; }
 
-	}
+        bool IsStatic { get; }
+
+    }
 }

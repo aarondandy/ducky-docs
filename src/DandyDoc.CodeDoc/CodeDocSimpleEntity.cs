@@ -33,11 +33,13 @@ namespace DandyDoc.CodeDoc
             }
         }
 
-        public XmlDocNode Summary {
+        public XmlDocElement Summary {
             get { return XmlDocs == null ? null : XmlDocs.SummaryElement; }
         }
 
         public XmlDocMember XmlDocs { get; set; }
+
+        public bool IsStatic { get; set; }
 
         [ContractInvariantMethod]
         private void CodeContractInvariants() {

@@ -52,19 +52,20 @@ namespace DandyDoc.CodeDoc
             CRefLookup = cRefLookup;
             XmlDocs = new XmlAssemblyDocumentationCollection(xmlDocs);
 
-            var assemblyModels = new CRefKeyedCollection<CodeDocAssembly>();
+            var assemblyModels = new List<CodeDocAssembly>();
             var namespaceModels = new Dictionary<string, CodeDocNamespace>();
 
             foreach (var assembly in CRefLookup.Assemblies){
-
-                var assemblyModel = new CodeDocAssembly(new CRefIdentifier(ReflectionCRefGenerator.WithPrefix.GetCRef(assembly)));
-                assemblyModel.AssemblyFileName = assembly.GetFilePath();
-                assemblyModel.Title = assembly.GetName().Name;
-                assemblyModel.ShortName = assemblyModel.Title;
-                assemblyModel.FullName = assembly.FullName;
-                assemblyModel.NamespaceName = assemblyModel.ShortName;
-                assemblyModel.SubTitle = "Assembly";
-                assemblyModel.Namespaces = new List<ICodeDocNamespace>();
+                var assemblyShortName = assembly.GetName().Name;
+                var assemblyModel = new CodeDocAssembly(new CRefIdentifier(ReflectionCRefGenerator.WithPrefix.GetCRef(assembly))){
+                    AssemblyFileName = assembly.GetFilePath(),
+                    Title = assemblyShortName,
+                    ShortName = assemblyShortName,
+                    FullName = assembly.FullName,
+                    NamespaceName = assemblyShortName,
+                    SubTitle = "Assembly",
+                    Namespaces = new List<ICodeDocNamespace>()
+                };
 
                 var assemblyTypeCRefs = new List<CRefIdentifier>();
                 var assemblyNamespaceNames = new HashSet<string>();
@@ -78,14 +79,16 @@ namespace DandyDoc.CodeDoc
                     var namespaceName = type.Namespace ?? String.Empty;
                     CodeDocNamespace namespaceModel;
                     if (!namespaceModels.TryGetValue(namespaceName, out namespaceModel)) {
-                        namespaceModel = new CodeDocNamespace(new CRefIdentifier("N:" + namespaceName));
-                        namespaceModel.Title = String.IsNullOrWhiteSpace(namespaceName) ? "global" : namespaceName;
-                        namespaceModel.ShortName = namespaceModel.Title;
-                        namespaceModel.FullName = namespaceModel.Title;
-                        namespaceModel.NamespaceName = namespaceModel.Title;
-                        namespaceModel.SubTitle = "Namespace";
-                        namespaceModel.Types = new List<ICodeDocEntity>();
-                        namespaceModel.Assemblies = new List<ICodeDocAssembly>();
+                        var namespaceTitle = String.IsNullOrWhiteSpace(namespaceName) ? "global" : namespaceName;
+                        namespaceModel = new CodeDocNamespace(new CRefIdentifier("N:" + namespaceName)){
+                            Title = namespaceTitle,
+                            ShortName = namespaceTitle,
+                            FullName = namespaceTitle,
+                            NamespaceName = namespaceTitle,
+                            SubTitle = "Namespace",
+                            Types = new List<ICodeDocEntity>(),
+                            Assemblies = new List<ICodeDocAssembly>()
+                        };
                         namespaceModels.Add(namespaceName, namespaceModel);
                     }
 
@@ -115,7 +118,6 @@ namespace DandyDoc.CodeDoc
 
             Assemblies = new ReadOnlyCollection<ICodeDocAssembly>(assemblyModels.OrderBy(x => x.Title).ToArray());
             Namespaces = new ReadOnlyCollection<ICodeDocNamespace>(namespaceModels.Values.OrderBy(x => x.Title).ToArray());
-
         }
 
         public IList<ICodeDocAssembly> Assemblies { get; private set; }
@@ -268,17 +270,11 @@ namespace DandyDoc.CodeDoc
             if (memberInfo is Type){
                 return ConvertToTypeEntity((Type)memberInfo);
             }
+            if (memberInfo is FieldInfo){
+                return ConvertToFieldEntity((FieldInfo)memberInfo);
+            }
 
             throw new NotSupportedException();
-        }
-
-        private CodeDocType ConvertToTypeEntity(Type type){
-            Contract.Requires(type != null);
-            Contract.Ensures(Contract.Result<CodeDocType>() != null);
-            var result = new CodeDocType(GetCRefIdentifier(type));
-            ApplyStandardXmlDocs(result, result.CRef.FullCRef);
-            ApplyTypeAttributes(result, type);
-            return result;
         }
 
         private void ApplyStandardXmlDocs(CodeDocEntityContentBase model, string cRef){
@@ -308,6 +304,19 @@ namespace DandyDoc.CodeDoc
             Contract.Assume(eventInfo.DeclaringType != null);
             model.NamespaceName = eventInfo.DeclaringType.Namespace;
             model.SubTitle = "Event";
+            model.IsStatic = eventInfo.IsStatic();
+        }
+
+        private CodeDocField ConvertToFieldEntity(FieldInfo fieldInfo) {
+            Contract.Requires(fieldInfo != null);
+            Contract.Ensures(Contract.Result<CodeDocField>() != null);
+            var result = new CodeDocField(GetCRefIdentifier(fieldInfo));
+            ApplyStandardXmlDocs(result, result.CRef.FullCRef);
+            ApplyCommonFieldAttributes(result, fieldInfo);
+            result.ValueTypeCRef = GetCRefIdentifier(fieldInfo.FieldType);
+            result.IsLiteral = fieldInfo.IsLiteral;
+            result.IsInitOnly = fieldInfo.IsInitOnly;
+            return result;
         }
 
         private void ApplyCommonFieldAttributes(CodeDocSimpleEntity model, FieldInfo fieldInfo) {
@@ -324,6 +333,8 @@ namespace DandyDoc.CodeDoc
             model.Title = model.ShortName;
             Contract.Assume(fieldInfo.DeclaringType != null);
             model.NamespaceName = fieldInfo.DeclaringType.Namespace;
+            model.IsStatic = fieldInfo.IsStatic;
+
             if (fieldInfo.IsLiteral)
                 model.SubTitle = "Constant";
             else
@@ -344,6 +355,7 @@ namespace DandyDoc.CodeDoc
             model.Title = model.ShortName;
             Contract.Assume(propertyInfo.DeclaringType != null);
             model.NamespaceName = propertyInfo.DeclaringType.Namespace;
+            model.IsStatic = propertyInfo.IsStatic();
 
             if (propertyInfo.IsItemIndexerProperty())
                 model.SubTitle = "Indexer";
@@ -365,6 +377,7 @@ namespace DandyDoc.CodeDoc
             model.Title = model.ShortName;
             Contract.Assume(methodBase.DeclaringType != null);
             model.NamespaceName = methodBase.DeclaringType.Namespace;
+            model.IsStatic = methodBase.IsStatic;
 
             if (methodBase.IsConstructor)
                 model.SubTitle = "Constructor";
@@ -372,6 +385,15 @@ namespace DandyDoc.CodeDoc
                 model.SubTitle = "Operator";
             else
                 model.SubTitle = "Method";
+        }
+
+        private CodeDocType ConvertToTypeEntity(Type type) {
+            Contract.Requires(type != null);
+            Contract.Ensures(Contract.Result<CodeDocType>() != null);
+            var result = new CodeDocType(GetCRefIdentifier(type));
+            ApplyStandardXmlDocs(result, result.CRef.FullCRef);
+            ApplyTypeAttributes(result, type);
+            return result;
         }
 
         private void ApplyCommonTypeAttributes(CodeDocSimpleEntity model, Type type){
@@ -387,6 +409,7 @@ namespace DandyDoc.CodeDoc
             model.FullName = FullTypeDisplayNameOverlay.GetDisplayName(type);
             model.Title = model.ShortName;
             model.NamespaceName = type.Namespace;
+            model.IsStatic = type.IsStatic();
 
             if (type.IsEnum)
                 model.SubTitle = "Enumeration";

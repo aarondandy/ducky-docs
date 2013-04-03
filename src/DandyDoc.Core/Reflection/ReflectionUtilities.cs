@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
@@ -20,6 +19,26 @@ namespace DandyDoc.Reflection
                 return uri.AbsolutePath;
 
             return assembly.Location;
+        }
+
+        public static bool IsStatic(this PropertyInfo propertyInfo){
+            if(propertyInfo == null) throw new NullReferenceException("propertyInfo is null");
+            Contract.EndContractBlock();
+            var method = propertyInfo.GetGetMethod(true) ?? propertyInfo.GetSetMethod(true);
+            return method != null && method.IsStatic;
+        }
+
+        public static bool IsStatic(this EventInfo eventInfo){
+            if(eventInfo == null) throw new NullReferenceException("eventInfo is null");
+            Contract.EndContractBlock();
+            var method = eventInfo.GetAddMethod(true) ?? eventInfo.GetRaiseMethod(true);
+            return method != null && method.IsStatic;
+        }
+
+        public static bool IsStatic(this Type type){
+            if(type == null) throw new NullReferenceException("type is null");
+            Contract.EndContractBlock();
+            return type.IsAbstract && type.IsSealed;
         }
 
         public static bool IsOperatorOverload(this MethodBase methodBase) {
@@ -56,7 +75,7 @@ namespace DandyDoc.Reflection
             if (!"System.MulticastDelegate".Equals(baseType.FullName))
                 return false;
 
-            var methods = type.GetMethods();
+            var methods = type.GetAllMethods();
             return methods.Length > 0
                 && methods.Any(x => "Invoke".Equals(x.Name));
         }
@@ -85,9 +104,9 @@ namespace DandyDoc.Reflection
             return invokeMethod.ReturnType;
         }
 
-        public static IEnumerable<ConstructorInfo> GetAllConstructors(this Type type) {
+        public static ConstructorInfo[] GetAllConstructors(this Type type) {
             if (type == null) throw new ArgumentNullException("type");
-            Contract.Ensures(Contract.Result<IEnumerable<ConstructorInfo>>() != null);
+            Contract.Ensures(Contract.Result<ConstructorInfo[]>() != null);
             return type.GetConstructors(
                 BindingFlags.Instance
                 | BindingFlags.Static
@@ -95,9 +114,9 @@ namespace DandyDoc.Reflection
                 | BindingFlags.NonPublic);
         }
 
-        public static IEnumerable<MethodInfo> GetAllMethods(this Type type) {
+        public static MethodInfo[] GetAllMethods(this Type type) {
             if (type == null) throw new ArgumentNullException("type");
-            Contract.Ensures(Contract.Result<IEnumerable<MethodInfo>>() != null);
+            Contract.Ensures(Contract.Result<MethodInfo[]>() != null);
             return type.GetMethods(
                 BindingFlags.Instance
                 | BindingFlags.Static
@@ -105,9 +124,9 @@ namespace DandyDoc.Reflection
                 | BindingFlags.NonPublic);
         }
 
-        public static IEnumerable<PropertyInfo> GetAllProperties(this Type type) {
+        public static PropertyInfo[] GetAllProperties(this Type type) {
             if (type == null) throw new ArgumentNullException("type");
-            Contract.Ensures(Contract.Result<IEnumerable<PropertyInfo>>() != null);
+            Contract.Ensures(Contract.Result<PropertyInfo[]>() != null);
             return type.GetProperties(
                 BindingFlags.Instance
                 | BindingFlags.Static
@@ -115,9 +134,9 @@ namespace DandyDoc.Reflection
                 | BindingFlags.NonPublic);
         }
 
-        public static IEnumerable<FieldInfo> GetAllFields(this Type type) {
+        public static FieldInfo[] GetAllFields(this Type type) {
             if (type == null) throw new ArgumentNullException("type");
-            Contract.Ensures(Contract.Result<IEnumerable<FieldInfo>>() != null);
+            Contract.Ensures(Contract.Result<FieldInfo[]>() != null);
             return type.GetFields(
                 BindingFlags.Instance
                 | BindingFlags.Static
@@ -125,9 +144,9 @@ namespace DandyDoc.Reflection
                 | BindingFlags.NonPublic);
         }
 
-        public static IEnumerable<EventInfo> GetAllEvents(this Type type) {
+        public static EventInfo[] GetAllEvents(this Type type) {
             if (type == null) throw new ArgumentNullException("type");
-            Contract.Ensures(Contract.Result<IEnumerable<EventInfo>>() != null);
+            Contract.Ensures(Contract.Result<EventInfo[]>() != null);
             return type.GetEvents(
                 BindingFlags.Instance
                 | BindingFlags.Static
@@ -135,9 +154,9 @@ namespace DandyDoc.Reflection
                 | BindingFlags.NonPublic);
         }
 
-        public static IList<Type> GetAllNestedTypes(this Type type) {
+        public static Type[] GetAllNestedTypes(this Type type) {
             if (type == null) throw new ArgumentNullException("type");
-            Contract.Ensures(Contract.Result<IList<Type>>() != null);
+            Contract.Ensures(Contract.Result<Type[]>() != null);
 
             var result = type.GetNestedTypes(BindingFlags.Instance
                 | BindingFlags.Static

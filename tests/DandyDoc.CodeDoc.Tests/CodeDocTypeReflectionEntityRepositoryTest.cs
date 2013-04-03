@@ -231,6 +231,7 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.IsTrue(model.GenericParameters[1].HasTypeConstraints);
             Assert.AreEqual(1, model.GenericParameters[1].TypeConstraints.Count);
             // TODO: this CRef could be a problem, need a solution... without context what is `0?
+            // TODO: perhaps this would be better as an ICodeDocEntity
             Assert.AreEqual("T:System.Collections.Generic.IEnumerable{`0}", model.GenericParameters[1].TypeConstraints[0].FullCRef);
         }
 
@@ -266,6 +267,83 @@ namespace DandyDoc.CodeDoc.Tests
                     new CRefIdentifier("T:System.IDisposable")
                 },
                 model.GenericParameters[0].TypeConstraints);
+        }
+
+        [Test]
+        public void field_array_of_ref_type_tests() {
+            var field = TestLibrary1Repository
+                .GetContentEntity("TestLibrary1.Class1.SomeClasses") as CodeDocField;
+            Assert.IsNotNull(field);
+            Assert.AreEqual(new CRefIdentifier("F:TestLibrary1.Class1.SomeClasses"), field.CRef);
+            Assert.AreEqual("SomeClasses", field.ShortName);
+            Assert.AreEqual("Field", field.SubTitle);
+            Assert.AreEqual(new CRefIdentifier("T:TestLibrary1.Class1[]"), field.ValueTypeCRef);
+            Assert.IsFalse(field.HasValueDescription);
+            Assert.IsFalse(field.IsLiteral);
+            Assert.IsFalse(field.IsInitOnly);
+            Assert.IsFalse(field.IsStatic);
+        }
+
+        [Test]
+        public void field_nullable_int_test(){
+            var field = TestLibrary1Repository
+                .GetContentEntity("TestLibrary1.Class1.SomeNullableInt") as CodeDocField;
+            Assert.IsNotNull(field);
+            Assert.AreEqual(new CRefIdentifier("F:TestLibrary1.Class1.SomeNullableInt"), field.CRef);
+            Assert.AreEqual("SomeNullableInt", field.ShortName);
+            Assert.AreEqual("Field", field.SubTitle);
+            Assert.AreEqual(new CRefIdentifier("T:System.Nullable{System.Int32}"), field.ValueTypeCRef);
+            Assert.IsFalse(field.HasValueDescription);
+            Assert.IsFalse(field.IsLiteral);
+            Assert.IsFalse(field.IsInitOnly);
+            Assert.IsFalse(field.IsStatic);
+        }
+
+        [Test]
+        public void field_const_int_test() {
+            var field = TestLibrary1Repository
+                .GetContentEntity("TestLibrary1.Class1.MyConst") as CodeDocField;
+            Assert.IsNotNull(field);
+            Assert.AreEqual(new CRefIdentifier("F:TestLibrary1.Class1.MyConst"), field.CRef);
+            Assert.AreEqual("MyConst", field.ShortName);
+            Assert.AreEqual("Constant", field.SubTitle);
+            Assert.AreEqual(new CRefIdentifier("T:System.Int32"), field.ValueTypeCRef);
+            Assert.IsTrue(field.HasValueDescription);
+            Assert.AreEqual("1", field.ValueDescription.Node.InnerText.Trim());
+            Assert.IsTrue(field.IsLiteral);
+            Assert.IsFalse(field.IsInitOnly);
+            Assert.IsTrue(field.IsStatic);
+        }
+
+        [Test]
+        public void field_static_double(){
+            var field = TestLibrary1Repository
+                .GetContentEntity("TestLibrary1.Class1.SomeField") as CodeDocField;
+            Assert.IsNotNull(field);
+            Assert.AreEqual(new CRefIdentifier("F:TestLibrary1.Class1.SomeField"), field.CRef);
+            Assert.AreEqual("SomeField", field.ShortName);
+            Assert.AreEqual("Field", field.SubTitle);
+            Assert.AreEqual(new CRefIdentifier("T:System.Double"), field.ValueTypeCRef);
+            Assert.IsTrue(field.HasValueDescription);
+            Assert.AreEqual("A double value.", field.ValueDescription.Node.InnerText);
+            Assert.IsFalse(field.IsLiteral);
+            Assert.IsFalse(field.IsInitOnly);
+            Assert.IsTrue(field.IsStatic);
+        }
+
+        [Test]
+        public void field_readonly_int(){
+            var field = TestLibrary1Repository
+                .GetContentEntity("TestLibrary1.Class1.ReadonlyField") as CodeDocField;
+            Assert.IsNotNull(field);
+            Assert.AreEqual(new CRefIdentifier("F:TestLibrary1.Class1.ReadonlyField"), field.CRef);
+            Assert.AreEqual("ReadonlyField", field.ShortName);
+            Assert.AreEqual("Field", field.SubTitle);
+            Assert.AreEqual(new CRefIdentifier("T:System.Int32"), field.ValueTypeCRef);
+            Assert.IsFalse(field.HasValueDescription);
+            Assert.IsFalse(field.IsLiteral);
+            Assert.IsTrue(field.IsInitOnly);
+            Assert.IsFalse(field.IsStatic);
         }
 
     }

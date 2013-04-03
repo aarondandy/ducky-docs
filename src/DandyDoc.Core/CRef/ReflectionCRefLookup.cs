@@ -98,7 +98,7 @@ namespace DandyDoc.CRef
 				return type.Name == typeName ? type : null;
 
 			var nestedTypes = type.GetAllNestedTypes();
-			if (nestedTypes.Count == 0)
+			if (nestedTypes.Length == 0)
 				return null;
 			var thisNamePart = typeName.Substring(0, firstDotIndex);
 			if (type.Name != thisNamePart)
