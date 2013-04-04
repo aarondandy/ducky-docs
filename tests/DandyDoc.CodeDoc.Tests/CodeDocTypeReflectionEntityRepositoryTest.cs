@@ -346,5 +346,23 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.IsFalse(field.IsStatic);
         }
 
+        [Test]
+        public void method_strange_test(){
+            var method = TestLibrary1Repository.GetContentEntity(
+                "TestLibrary1.Class1.HasStrangeParams(System.Nullable{System.Int32},TestLibrary1.Class1[])") as CodeDocMethod;
+            Assert.IsNotNull(method);
+            Assert.AreEqual("M:TestLibrary1.Class1.HasStrangeParams(System.Nullable{System.Int32},TestLibrary1.Class1[])", method.CRef.FullCRef);
+            Assert.AreEqual("HasStrangeParams(Nullable<Int32>, Class1[])", method.ShortName);
+            Assert.AreEqual("Method", method.SubTitle);
+            Assert.IsFalse(method.IsStatic);
+            Assert.IsFalse(method.HasReturn);
+            Assert.IsTrue(method.HasParameters);
+            Assert.AreEqual(2, method.Parameters.Count);
+            Assert.AreEqual("a", method.Parameters[0].Name);
+            Assert.AreEqual("T:System.Nullable{System.Int32}", method.Parameters[0].TypeCRef.FullCRef);
+            Assert.AreEqual("someClass", method.Parameters[1].Name);
+            Assert.AreEqual("T:TestLibrary1.Class1[]", method.Parameters[1].TypeCRef.FullCRef);
+        }
+
     }
 }

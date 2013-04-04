@@ -157,7 +157,9 @@
     <Compile Include="CodeDocEntityContentBase.cs" />
     <Compile Include="CodeDocField.cs" />
     <Compile Include="CodeDocGenericParameter.cs" />
+    <Compile Include="CodeDocMethod.cs" />
     <Compile Include="CodeDocNamespace.cs" />
+    <Compile Include="CodeDocParameter.cs" />
     <Compile Include="CodeDocSimpleEntity.cs" />
     <Compile Include="CodeDocType.cs" />
     <Compile Include="CRefKeyedCollection.cs" />

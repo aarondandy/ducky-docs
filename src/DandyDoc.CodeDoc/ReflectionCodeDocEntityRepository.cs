@@ -273,6 +273,9 @@ namespace DandyDoc.CodeDoc
             if (memberInfo is FieldInfo){
                 return ConvertToFieldEntity((FieldInfo)memberInfo);
             }
+            if (memberInfo is MethodBase){
+                return ConvertToMethodEntity((MethodBase) memberInfo);
+            }
 
             throw new NotSupportedException();
         }
@@ -361,6 +364,35 @@ namespace DandyDoc.CodeDoc
                 model.SubTitle = "Indexer";
             else
                 model.SubTitle = "Property";
+        }
+
+        private CodeDocMethod ConvertToMethodEntity(MethodBase methodBase){
+            Contract.Requires(methodBase != null);
+            Contract.Ensures(Contract.Result<CodeDocMethod>() != null);
+            var result = new CodeDocMethod(GetCRefIdentifier(methodBase));
+            ApplyStandardXmlDocs(result, result.CRef.FullCRef);
+            ApplyCommonMethodAttributes(result, methodBase);
+
+
+            var parameterModels = methodBase
+                .GetParameters()
+                .Select(parameter => {
+                    var parameterSummaryElement = result.XmlDocs != null
+                        ? result.XmlDocs.GetParameterSummary(parameter.Name)
+                        : null;
+                    return new CodeDocParameter(
+                        parameter.Name,
+                        GetCRefIdentifier(parameter.ParameterType),
+                        parameterSummaryElement
+                    ){
+                        IsOut = parameter.IsOut,
+                        IsByRef = parameter.ParameterType.IsByRef
+                    };
+                })
+                .ToArray();
+            result.Parameters = new ReadOnlyCollection<ICodeDocParameter>(parameterModels);
+
+            return result;
         }
 
         private void ApplyCommonMethodAttributes(CodeDocSimpleEntity model, MethodBase methodBase) {
