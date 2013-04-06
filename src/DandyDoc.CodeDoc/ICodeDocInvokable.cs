@@ -1,47 +1,52 @@
 ﻿using System.Collections.Generic;
+using DandyDoc.XmlDoc;
 
 namespace DandyDoc.CodeDoc
 {
-	public interface ICodeDocInvokable
-	{
+    public interface ICodeDocInvokable
+    {
 
-		/*
-		TODO: Is there a way to handle these outside of implementations of this class? 
+        /*
+        TODO: Is there a way to handle these outside of implementations of this class? 
 
-		bool AllReferenceParamsAndReturnNotNull { get; }
+        bool AllReferenceParamsAndReturnNotNull { get; }
 
-		bool EnsuresResultNotNull { get; }
+        bool EnsuresResultNotNull { get; }
 
-		bool EnsuresResultNotNullOrEmpty { get; }
+        bool EnsuresResultNotNullOrEmpty { get; }
 
-		bool RequiresParameterNotNull(string parameterName);
+        bool RequiresParameterNotNull(string parameterName);
 
-		bool RequiresParameterNotNullOrEmpty(string parameterName);
+        bool RequiresParameterNotNullOrEmpty(string parameterName);
 
-		bool IsPure { get; }
+        bool IsPure { get; }
 
-		bool CanReturnNull { get; }
-		*/
+        bool CanReturnNull { get; }
+        */
 
-		bool HasParameters { get; }
+        bool HasParameters { get; }
 
-		IList<ICodeDocParameter> Parameters { get; }
+        IList<ICodeDocParameter> Parameters { get; }
 
-		bool HasReturn { get; }
+        bool HasReturn { get; }
 
-		ICodeDocParameter Return { get; }
+        ICodeDocParameter Return { get; }
 
-		bool HasExceptions { get; }
+        bool HasExceptions { get; }
 
-		IList<ICodeDocException> Exceptions { get; }
+        IList<ICodeDocException> Exceptions { get; }
 
-		bool HasEnsures { get; }
+        bool HasEnsures { get; }
 
-		IList<ICodeDocContractCondition> Ensures { get; }
+        IList<XmlDocContractElement> Ensures { get; }
 
-		bool HasRequires { get; }
+        bool HasNormalTerminationEnsures { get; }
 
-		IList<ICodeDocContractCondition> Requires { get; }
+        IList<XmlDocContractElement> NormalTerminationEnsures { get; }
 
-	}
+        bool HasRequires { get; }
+
+        IList<XmlDocContractElement> Requires { get; }
+
+    }
 }

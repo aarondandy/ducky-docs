@@ -81,12 +81,9 @@ namespace TestLibrary1
 		}
 
 		[ContractInvariantMethod]
-		private void CodeContractInvariant(){
+		private void CodeContractInvariant() {
 			Contract.Invariant(!String.IsNullOrEmpty(Text));
 		}
-
-		
-
 
 	}
 }

@@ -411,5 +411,69 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual("The value to double.", method.Parameters[0].Summary.Node.InnerText);
         }
 
+        [Test]
+        public void code_contract_constructor(){
+            var method = TestLibrary1Repository.GetContentEntity(
+                "TestLibrary1.ClassWithContracts.#ctor(System.String)") as CodeDocMethod;
+            Assert.IsNotNull(method);
+            Assert.IsTrue(method.HasExceptions);
+            Assert.AreEqual(1, method.Exceptions.Count);
+            Assert.AreEqual("T:System.ArgumentException", method.Exceptions[0].ExceptionCRef.FullCRef);
+            Assert.AreEqual(2, method.Exceptions[0].Conditions.Count);
+            Assert.That(method.Exceptions[0].Conditions[0].Node.InnerText.Contains("IsNullOrEmpty(text)"));
+            Assert.That(method.Exceptions[0].Conditions[1].Node.InnerText.Contains("text.Equals(\"nope\")"));
+            Assert.AreEqual(2, method.Exceptions[0].Ensures.Count);
+            Assert.That(method.Exceptions[0].Ensures[0].Node.InnerText.Contains("Text == null"));
+            Assert.That(method.Exceptions[0].Ensures[1].Node.InnerText.Contains("Text != \"nope!\""));
+
+            Assert.IsTrue(method.HasEnsures);
+            Assert.AreEqual(2, method.Ensures.Count);
+            Assert.IsFalse(method.HasNormalTerminationEnsures);
+            Assert.IsTrue(method.HasRequires);
+            Assert.AreEqual(2, method.Requires.Count);
+        }
+
+        [Test]
+        public void code_contract_simple_ensures_method(){
+            var method = TestLibrary1Repository.GetContentEntity(
+                "M:TestLibrary1.ClassWithContracts.SomeStuff") as CodeDocMethod;
+            Assert.IsNotNull(method);
+
+            Assert.IsFalse(method.HasRequires);
+            Assert.IsTrue(method.HasEnsures);
+            Assert.AreEqual(1, method.Ensures.Count);
+            Assert.IsTrue(method.HasNormalTerminationEnsures);
+            Assert.AreEqual(1, method.NormalTerminationEnsures.Count);
+            Assert.That(method.NormalTerminationEnsures[0].Node.InnerText.Contains("IsNullOrEmpty"));
+        }
+
+        [Test]
+        public void method_generic(){
+            var method = TestLibrary1Repository.GetContentEntity(
+                "M:TestLibrary1.Generic1`2.AMix``1(`0,``0)") as CodeDocMethod;
+            Assert.IsNotNull(method);
+
+            Assert.IsTrue(method.HasGenericParameters);
+            Assert.AreEqual(1, method.GenericParameters.Count);
+            Assert.AreEqual("TOther", method.GenericParameters[0].Name);
+            Assert.IsFalse(method.GenericParameters[0].HasSummary);
+            Assert.IsFalse(method.GenericParameters[0].HasTypeConstraints);
+        }
+
+        [Test]
+        public void method_generic_constraints(){
+            var method = TestLibrary1Repository.GetContentEntity(
+                "M:TestLibrary1.Generic1`2.Constraints`1.GetStuff``1(`2,``0)") as CodeDocMethod;
+            Assert.IsNotNull(method);
+
+            Assert.IsTrue(method.HasGenericParameters);
+            Assert.AreEqual(1, method.GenericParameters.Count);
+            Assert.AreEqual("TStuff", method.GenericParameters[0].Name);
+            Assert.AreEqual("some stuff", method.GenericParameters[0].Summary.Node.InnerText);
+            Assert.IsTrue(method.GenericParameters[0].HasTypeConstraints);
+            Assert.AreEqual(1, method.GenericParameters[0].TypeConstraints.Count);
+            Assert.AreEqual("T:System.IConvertible", method.GenericParameters[0].TypeConstraints[0].FullCRef);
+        }
+
     }
 }

@@ -55,16 +55,5 @@ namespace DandyDoc.CodeDoc
             }
         }
 
-        public bool HasSummary {
-            get {
-                var summary = Summary;
-                return summary != null && summary.HasChildren;
-            }
-        }
-
-        public XmlDocNode Summary {
-            get { return XmlDocs == null ? null : XmlDocs.SummaryElement; }
-        }
-
     }
 }

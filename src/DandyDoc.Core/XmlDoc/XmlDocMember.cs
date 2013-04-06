@@ -121,7 +121,7 @@ namespace DandyDoc.XmlDoc
 					if ("REQUIRES".Equals(child.Name, StringComparison.OrdinalIgnoreCase)) {
 						requiresElements.Add((XmlDocContractElement)child);
 					}
-					else if ("ENSURES".Equals(child.Name, StringComparison.OrdinalIgnoreCase)) {
+					else if ("ENSURES".Equals(child.Name, StringComparison.OrdinalIgnoreCase) || "ENSURESONTHROW".Equals(child.Name, StringComparison.OrdinalIgnoreCase)) {
 						ensuresElements.Add((XmlDocContractElement)child);
 					}
 					else if ("INVARIANT".Equals(child.Name, StringComparison.OrdinalIgnoreCase)) {

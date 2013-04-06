@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
+using System.Xml;
 using DandyDoc.CRef;
 using DandyDoc.DisplayName;
 using DandyDoc.ExternalVisibility;
@@ -414,12 +415,24 @@ namespace DandyDoc.CodeDoc
                         CodeDocException exceptionModel;
                         if (!exceptionLookup.TryGetValue(exceptionCRef, out exceptionModel)) {
                             exceptionModel = new CodeDocException(exceptionCRef);
+                            exceptionModel.Ensures = new List<XmlDocNode>();
+                            exceptionModel.Conditions = new List<XmlDocNode>();
                             exceptionLookup.Add(exceptionCRef, exceptionModel);
                         }
-                        if (xmlDocException.HasChildren) {
-                            if(exceptionModel.Conditions == null)
-                                exceptionModel.Conditions = new List<XmlDocNode>();
-                            exceptionModel.Conditions.Add(xmlDocException);
+                        var priorElement = xmlDocException.PriorElement;
+                        if (
+                            null != priorElement
+                            && String.Equals("ensuresOnThrow",priorElement.Name, StringComparison.OrdinalIgnoreCase)
+                            && priorElement.Element.GetAttribute("exception") == exceptionCRef.FullCRef
+                        ) {
+                            if (priorElement.HasChildren){
+                                exceptionModel.Ensures.Add(priorElement);
+                            }
+                        }
+                        else {
+                            if (xmlDocException.HasChildren) {
+                                exceptionModel.Conditions.Add(xmlDocException);
+                            }
                         }
                     }
 
@@ -429,10 +442,58 @@ namespace DandyDoc.CodeDoc
 
                     foreach (var exceptionModel in exceptionModels) {
                         // freeze collections
-                        exceptionModel.Conditions = new ReadOnlyCollection<XmlDocNode>(exceptionModel.Conditions);
+                        exceptionModel.Ensures = new List<XmlDocNode>(exceptionModel.Ensures.ToArray());
+                        exceptionModel.Conditions = new ReadOnlyCollection<XmlDocNode>(exceptionModel.Conditions.ToArray());
                     }
 
                     result.Exceptions = new ReadOnlyCollection<ICodeDocException>(exceptionModels);
+                }
+
+                if (result.XmlDocs.HasEnsuresElements){
+                    result.Ensures = new ReadOnlyCollection<XmlDocContractElement>(result.XmlDocs.EnsuresElements.ToArray());
+                }
+                if (result.XmlDocs.HasRequiresElements){
+                    result.Requires = new ReadOnlyCollection<XmlDocContractElement>(result.XmlDocs.RequiresElements.ToArray());
+                }
+            }
+
+            if (methodBase.IsGenericMethod){
+                var genericDefinition = methodBase.IsGenericMethodDefinition
+                    ? methodBase
+                    : methodInfo == null ? null : methodInfo.GetGenericMethodDefinition();
+                if (genericDefinition != null){
+                    var genericArguments = genericDefinition.GetGenericArguments();
+                    if (genericArguments.Length > 0){
+                        var xmlDocs = XmlDocs.GetMember(GetCRefIdentifier(methodBase).FullCRef);
+                        var genericModels = new List<ICodeDocGenericParameter>();
+                        foreach (var genericArgument in genericArguments){
+                            var argumentName = genericArgument.Name;
+                            var typeConstraints = genericArgument.GetGenericParameterConstraints();
+                            var genericModel = new CodeDocGenericParameter{
+                                Name = argumentName
+                            };
+
+                            if (xmlDocs != null)
+                                genericModel.Summary = xmlDocs.GetTypeParameterSummary(argumentName);
+                            if (typeConstraints.Length > 0)
+                                genericModel.TypeConstraints = Array.AsReadOnly(Array.ConvertAll(typeConstraints, GetCRefIdentifier));
+
+                            genericModel.IsContravariant = genericArgument.GenericParameterAttributes.HasFlag(
+                                GenericParameterAttributes.Contravariant);
+                            genericModel.IsCovariant = genericArgument.GenericParameterAttributes.HasFlag(
+                                GenericParameterAttributes.Covariant);
+                            genericModel.HasDefaultConstructorConstraint = genericArgument.GenericParameterAttributes.HasFlag(
+                                GenericParameterAttributes.DefaultConstructorConstraint);
+                            genericModel.HasNotNullableValueTypeConstraint = genericArgument.GenericParameterAttributes.HasFlag(
+                                GenericParameterAttributes.NotNullableValueTypeConstraint);
+                            genericModel.HasReferenceTypeConstraint = genericArgument.GenericParameterAttributes.HasFlag(
+                                GenericParameterAttributes.ReferenceTypeConstraint);
+
+                            genericModels.Add(genericModel);
+
+                        }
+                        result.GenericParameters = new ReadOnlyCollection<ICodeDocGenericParameter>(genericModels);
+                    }
                 }
             }
 

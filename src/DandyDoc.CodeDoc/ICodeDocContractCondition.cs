@@ -1,20 +1,23 @@
-﻿using DandyDoc.CRef;
+﻿using System;
+using DandyDoc.CRef;
 using DandyDoc.XmlDoc;
 
 namespace DandyDoc.CodeDoc
 {
-	public interface ICodeDocContractCondition
-	{
+
+    [Obsolete]
+    public interface ICodeDocContractCondition
+    {
 
         CRefIdentifier ExceptionCRef { get; }
 
-		bool HasExceptionDescription { get; }
+        bool HasExceptionDescription { get; }
 
-		XmlDocNode ExceptionDescription { get; }
+        XmlDocNode ExceptionDescription { get; }
 
-		bool HasContractDescription { get; }
+        bool HasContractDescription { get; }
 
-		XmlDocNode ContractDescription { get; }
+        XmlDocNode ContractDescription { get; }
 
-	}
+    }
 }

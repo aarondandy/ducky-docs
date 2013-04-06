@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using DandyDoc.CRef;
+using DandyDoc.XmlDoc;
 
 namespace DandyDoc.CodeDoc
 {
@@ -23,13 +26,29 @@ namespace DandyDoc.CodeDoc
 
         public IList<ICodeDocException> Exceptions { get; set; }
 
-        public bool HasEnsures { get { return Ensures != null & Ensures.Count > 0; } }
+        public bool HasEnsures { get { return Ensures != null && Ensures.Count > 0; } }
 
-        public IList<ICodeDocContractCondition> Ensures { get; set; }
+        public IList<XmlDocContractElement> Ensures { get; set; }
+
+        public bool HasNormalTerminationEnsures {
+            get {
+                return Ensures != null
+                    && Ensures.Count > 0
+                    && NormalTerminationEnsures.Any(x => "ENSURES".Equals(x.Name, StringComparison.OrdinalIgnoreCase));
+            }
+        }
+
+        public IList<XmlDocContractElement> NormalTerminationEnsures {
+            get {
+                return Ensures == null
+                    ? null
+                    : Ensures.Where(x => "ENSURES".Equals(x.Name, StringComparison.OrdinalIgnoreCase)).ToArray();
+            }
+        }
 
         public bool HasRequires { get { return Requires != null && Requires.Count > 0; } }
 
-        public IList<ICodeDocContractCondition> Requires { get; set; }
+        public IList<XmlDocContractElement> Requires { get; set; }
 
         public bool HasGenericParameters { get { return GenericParameters != null && GenericParameters.Count > 0; } }
 
