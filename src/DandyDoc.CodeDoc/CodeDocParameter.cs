@@ -7,7 +7,7 @@ namespace DandyDoc.CodeDoc
     public class CodeDocParameter : ICodeDocParameter
     {
 
-        public CodeDocParameter(string name, CRefIdentifier typeCRef, XmlDocNameElement summary) {
+        public CodeDocParameter(string name, CRefIdentifier typeCRef, XmlDocElement summary = null) {
             Name = name;
             TypeCRef = typeCRef;
             Summary = summary;
@@ -25,7 +25,7 @@ namespace DandyDoc.CodeDoc
             }
         }
 
-        public XmlDocNameElement Summary { get; private set; }
+        public XmlDocElement Summary { get; private set; }
 
         public bool IsOut { get; set; }
 

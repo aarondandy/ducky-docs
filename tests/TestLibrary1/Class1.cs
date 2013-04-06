@@ -66,6 +66,7 @@ namespace TestLibrary1
 
 		public Int32? SomeNullableInt;
 
+		/// <exception cref="System.NotImplementedException">Too lazy to implement.</exception>
 		public void HasStrangeParams(Int32? a, Class1[] someClass) {
 			throw new NotImplementedException();
 		}

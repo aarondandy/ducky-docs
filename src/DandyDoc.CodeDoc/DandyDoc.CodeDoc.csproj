@@ -155,6 +155,7 @@
     </Compile>
     <Compile Include="CodeDocAssembly.cs" />
     <Compile Include="CodeDocEntityContentBase.cs" />
+    <Compile Include="CodeDocException.cs" />
     <Compile Include="CodeDocField.cs" />
     <Compile Include="CodeDocGenericParameter.cs" />
     <Compile Include="CodeDocMethod.cs" />

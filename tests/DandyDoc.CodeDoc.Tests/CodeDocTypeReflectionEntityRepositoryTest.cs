@@ -356,12 +356,59 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual("Method", method.SubTitle);
             Assert.IsFalse(method.IsStatic);
             Assert.IsFalse(method.HasReturn);
+            
             Assert.IsTrue(method.HasParameters);
             Assert.AreEqual(2, method.Parameters.Count);
             Assert.AreEqual("a", method.Parameters[0].Name);
             Assert.AreEqual("T:System.Nullable{System.Int32}", method.Parameters[0].TypeCRef.FullCRef);
             Assert.AreEqual("someClass", method.Parameters[1].Name);
             Assert.AreEqual("T:TestLibrary1.Class1[]", method.Parameters[1].TypeCRef.FullCRef);
+
+            Assert.IsTrue(method.HasExceptions);
+            Assert.AreEqual(1, method.Exceptions.Count);
+            Assert.AreEqual("T:System.NotImplementedException", method.Exceptions[0].ExceptionCRef.FullCRef);
+            Assert.IsTrue(method.Exceptions[0].HasConditions);
+            Assert.AreEqual(1, method.Exceptions[0].Conditions.Count);
+            Assert.AreEqual("Too lazy to implement.", method.Exceptions[0].Conditions[0].Node.InnerText);
+        }
+
+        [Test]
+        public void method_one_param_ctor() {
+            var method = TestLibrary1Repository.GetContentEntity(
+                "TestLibrary1.Class1.#ctor(System.String)") as CodeDocMethod;
+            Assert.IsNotNull(method);
+            Assert.AreEqual("M:TestLibrary1.Class1.#ctor(System.String)", method.CRef.FullCRef);
+            Assert.AreEqual("Class1(String)", method.ShortName);
+            Assert.AreEqual("Constructor", method.SubTitle);
+            Assert.IsFalse(method.IsStatic);
+            Assert.IsFalse(method.HasReturn);
+
+            Assert.IsTrue(method.HasParameters);
+            Assert.AreEqual(1, method.Parameters.Count);
+            Assert.AreEqual("crap", method.Parameters[0].Name);
+            Assert.AreEqual("T:System.String", method.Parameters[0].TypeCRef.FullCRef);
+        }
+
+        [Test]
+        public void method_DoubleStatic() {
+            var method = TestLibrary1Repository.GetContentEntity(
+                "TestLibrary1.Class1.DoubleStatic(System.Double)") as CodeDocMethod;
+            Assert.IsNotNull(method);
+            Assert.AreEqual("M:TestLibrary1.Class1.DoubleStatic(System.Double)", method.CRef.FullCRef);
+            Assert.AreEqual("DoubleStatic(Double)", method.ShortName);
+            Assert.AreEqual("Method", method.SubTitle);
+            Assert.IsTrue(method.IsStatic);
+            Assert.IsTrue(method.HasReturn);
+            Assert.AreEqual("T:System.Double", method.Return.TypeCRef.FullCRef);
+            Assert.IsTrue(method.Return.HasSummary);
+            Assert.AreEqual("The result of doubling the value.", method.Return.Summary.Node.InnerText);
+
+            Assert.IsTrue(method.HasParameters);
+            Assert.AreEqual(1, method.Parameters.Count);
+            Assert.AreEqual("n", method.Parameters[0].Name);
+            Assert.AreEqual("T:System.Double", method.Parameters[0].TypeCRef.FullCRef);
+            Assert.IsTrue(method.Parameters[0].HasSummary);
+            Assert.AreEqual("The value to double.", method.Parameters[0].Summary.Node.InnerText);
         }
 
     }

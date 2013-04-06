@@ -9,7 +9,7 @@ namespace DandyDoc.CodeDoc
     {
 
         private static readonly XmlDocElement[] EmptyXmlDocElementArray = new XmlDocElement[0];
-        private static readonly XmlDocRefElement[] EmptyXmlDocRefElementArray = new XmlDocRefElement[0];
+        protected static readonly XmlDocRefElement[] EmptyXmlDocRefElementArray = new XmlDocRefElement[0];
 
         public CodeDocEntityContentBase(CRefIdentifier cRef) : base(cRef) {
             Contract.Requires(cRef != null);

@@ -372,7 +372,7 @@ namespace DandyDoc.CodeDoc
             var result = new CodeDocMethod(GetCRefIdentifier(methodBase));
             ApplyStandardXmlDocs(result, result.CRef.FullCRef);
             ApplyCommonMethodAttributes(result, methodBase);
-
+            var methodInfo = methodBase as MethodInfo;
 
             var parameterModels = methodBase
                 .GetParameters()
@@ -391,6 +391,50 @@ namespace DandyDoc.CodeDoc
                 })
                 .ToArray();
             result.Parameters = new ReadOnlyCollection<ICodeDocParameter>(parameterModels);
+
+            if (methodInfo != null) {
+                if (methodInfo.ReturnParameter != null && methodInfo.ReturnType != typeof(void)) {
+                    var returnSummaryElement = result.XmlDocs != null
+                        ? result.XmlDocs.ReturnsElement
+                        : null;
+                    result.Return = new CodeDocParameter(
+                        String.Empty,
+                        GetCRefIdentifier(methodInfo.ReturnType),
+                        returnSummaryElement);
+                }
+            }
+
+            if (result.XmlDocs != null) {
+                if (result.XmlDocs.HasExceptionElements) {
+                    var exceptionLookup = new Dictionary<CRefIdentifier, CodeDocException>();
+                    foreach (var xmlDocException in result.XmlDocs.ExceptionElements) {
+                        var exceptionCRef = String.IsNullOrWhiteSpace(xmlDocException.CRef)
+                            ? new CRefIdentifier("T:")
+                            : new CRefIdentifier(xmlDocException.CRef);
+                        CodeDocException exceptionModel;
+                        if (!exceptionLookup.TryGetValue(exceptionCRef, out exceptionModel)) {
+                            exceptionModel = new CodeDocException(exceptionCRef);
+                            exceptionLookup.Add(exceptionCRef, exceptionModel);
+                        }
+                        if (xmlDocException.HasChildren) {
+                            if(exceptionModel.Conditions == null)
+                                exceptionModel.Conditions = new List<XmlDocNode>();
+                            exceptionModel.Conditions.Add(xmlDocException);
+                        }
+                    }
+
+                    var exceptionModels = exceptionLookup.Values
+                        .OrderBy(x => x.ExceptionCRef.FullCRef)
+                        .ToArray();
+
+                    foreach (var exceptionModel in exceptionModels) {
+                        // freeze collections
+                        exceptionModel.Conditions = new ReadOnlyCollection<XmlDocNode>(exceptionModel.Conditions);
+                    }
+
+                    result.Exceptions = new ReadOnlyCollection<ICodeDocException>(exceptionModels);
+                }
+            }
 
             return result;
         }

@@ -12,7 +12,7 @@ namespace DandyDoc.CodeDoc
 
         bool HasSummary { get; }
 
-        XmlDocNameElement Summary { get; }
+        XmlDocElement Summary { get; }
 
         bool IsOut { get; }
 
