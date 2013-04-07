@@ -1,15 +1,21 @@
-﻿namespace DandyDoc.CodeDoc
+﻿using System.Collections.Generic;
+
+namespace DandyDoc.CodeDoc
 {
-    public interface ICodeDocProperty : ICodeDocEntityContent, ICodeDocInvokable, ICodeDocValueEntity
-	{
+    public interface ICodeDocProperty : ICodeDocEntityContent, ICodeDocValueEntity
+    {
 
-		bool HasGetter { get; }
+        bool HasParameters { get; }
 
-		ICodeDocMethod Getter { get; }
+        IList<ICodeDocParameter> Parameters { get; }
 
-		bool HasSetter { get; }
+        bool HasGetter { get; }
 
-		ICodeDocMethod Setter { get; }
+        ICodeDocMethod Getter { get; }
 
-	}
+        bool HasSetter { get; }
+
+        ICodeDocMethod Setter { get; }
+
+    }
 }

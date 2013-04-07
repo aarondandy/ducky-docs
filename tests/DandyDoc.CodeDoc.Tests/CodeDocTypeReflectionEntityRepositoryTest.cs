@@ -527,5 +527,43 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.That(evt.Remarks[0].Node.InnerText.Contains("stuff"));
         }
 
+        [Test]
+        public void property_test(){
+            var prop = TestLibrary1Repository.GetContentEntity(
+                "TestLibrary1.Class1.HasTableInRemarks") as CodeDocProperty;
+            Assert.IsNotNull(prop);
+            Assert.AreEqual("HasTableInRemarks", prop.Title);
+            Assert.AreEqual("HasTableInRemarks", prop.ShortName);
+            Assert.AreEqual("Property", prop.SubTitle);
+            Assert.AreEqual("TestLibrary1.Class1.HasTableInRemarks", prop.FullName);
+            Assert.AreEqual("P:TestLibrary1.Class1.HasTableInRemarks", prop.CRef.FullCRef);
+            Assert.IsTrue(prop.HasSummary);
+            Assert.That(prop.Summary.Node.InnerText.Contains("This has a table in the remarks section."));
+            Assert.IsTrue(prop.HasRemarks);
+            Assert.IsFalse(prop.HasGetter);
+            Assert.IsTrue(prop.HasSetter);
+            Assert.IsNotNull(prop.Setter);
+        }
+
+        [Test]
+        public void property_indexer_test(){
+            var prop = TestLibrary1Repository.GetContentEntity(
+                "TestLibrary1.Class1.Item(System.Int32)") as CodeDocProperty;
+            Assert.IsNotNull(prop);
+
+            Assert.AreEqual("T:System.Int32", prop.ValueTypeCRef.FullCRef);
+            Assert.IsTrue(prop.HasSummary);
+            Assert.IsTrue(prop.HasValueDescription);
+            Assert.AreEqual("Some number.", prop.ValueDescription.Node.InnerText);
+
+            Assert.IsTrue(prop.HasParameters);
+            Assert.AreEqual(1, prop.Parameters.Count);
+            Assert.AreEqual("n", prop.Parameters[0].Name);
+            Assert.AreEqual("T:System.Int32", prop.Parameters[0].TypeCRef.FullCRef);
+            Assert.IsTrue(prop.Parameters[0].HasSummary);
+            Assert.AreEqual("an index", prop.Parameters[0].Summary.Node.InnerText);
+
+        }
+
     }
 }

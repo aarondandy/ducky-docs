@@ -163,6 +163,7 @@
     <Compile Include="CodeDocMethod.cs" />
     <Compile Include="CodeDocNamespace.cs" />
     <Compile Include="CodeDocParameter.cs" />
+    <Compile Include="CodeDocProperty.cs" />
     <Compile Include="CodeDocSimpleEntity.cs" />
     <Compile Include="CodeDocType.cs" />
     <Compile Include="CRefKeyedCollection.cs" />

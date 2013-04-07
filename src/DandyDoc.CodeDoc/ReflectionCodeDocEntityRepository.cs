@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
-using System.Xml;
 using DandyDoc.CRef;
 using DandyDoc.DisplayName;
 using DandyDoc.ExternalVisibility;
@@ -136,8 +135,8 @@ namespace DandyDoc.CodeDoc
         }
 
         protected bool MemberInfoFilter(MemberInfo memberInfo) {
-            if (memberInfo == null) throw new ArgumentNullException("memberInfo");
-            Contract.EndContractBlock();
+            if (memberInfo == null)
+                return false;
             if (memberInfo.GetExternalVisibility() == ExternalVisibilityKind.Hidden)
                 return false;
             if (memberInfo is MethodBase)
@@ -152,20 +151,23 @@ namespace DandyDoc.CodeDoc
         }
 
         protected virtual bool TypeFilter(Type type) {
-            if (type == null) throw new ArgumentNullException("type");
-            Contract.EndContractBlock();
-            return type.GetExternalVisibility() != ExternalVisibilityKind.Hidden;
+            return type != null
+                && type.GetExternalVisibility() != ExternalVisibilityKind.Hidden;
         }
 
-        protected virtual bool MethodBaseFilter(MethodBase methodBase) {
-            if (methodBase == null) throw new ArgumentNullException("methodBase");
-            Contract.EndContractBlock();
+        protected bool MethodBaseFilter(MethodBase methodBase){
+            return MethodBaseFilter(methodBase, false);
+        }
+
+        protected virtual bool MethodBaseFilter(MethodBase methodBase, bool isPropertyMethod) {
+            if (methodBase == null)
+                return false;
             if (methodBase.GetExternalVisibility() == ExternalVisibilityKind.Hidden)
                 return false;
             var name = methodBase.Name;
             if (name.Length >= 2 && (name[0] == '$' || name[name.Length - 1] == '$'))
                 return false;
-            if (methodBase.IsSpecialName && !methodBase.IsConstructor && !methodBase.IsOperatorOverload())
+            if (methodBase.IsSpecialName && !isPropertyMethod && !methodBase.IsConstructor && !methodBase.IsOperatorOverload())
                 return false;
             if (methodBase.IsFinalizer())
                 return false;
@@ -173,8 +175,8 @@ namespace DandyDoc.CodeDoc
         }
 
         protected virtual bool FieldInfoFilter(FieldInfo fieldInfo) {
-            if (fieldInfo == null) throw new ArgumentNullException("fieldInfo");
-            Contract.EndContractBlock();
+            if (fieldInfo == null)
+                return false;
             if (fieldInfo.GetExternalVisibility() == ExternalVisibilityKind.Hidden)
                 return false;
             var name = fieldInfo.Name;
@@ -186,8 +188,8 @@ namespace DandyDoc.CodeDoc
         }
 
         protected virtual bool EventInfoFilter(EventInfo eventInfo) {
-            if (eventInfo == null) throw new ArgumentNullException("eventInfo");
-            Contract.EndContractBlock();
+            if (eventInfo == null)
+                return false;
             if (eventInfo.GetExternalVisibility() == ExternalVisibilityKind.Hidden)
                 return false;
             if (eventInfo.IsSpecialName)
@@ -196,8 +198,8 @@ namespace DandyDoc.CodeDoc
         }
 
         protected virtual bool PropertyInfoFilter(PropertyInfo propertyInfo) {
-            if (propertyInfo == null) throw new ArgumentNullException("propertyInfo");
-            Contract.EndContractBlock();
+            if (propertyInfo == null)
+                return false;
             if (propertyInfo.GetExternalVisibility() == ExternalVisibilityKind.Hidden)
                 return false;
             if (propertyInfo.IsSpecialName)
@@ -280,6 +282,9 @@ namespace DandyDoc.CodeDoc
             if (memberInfo is EventInfo){
                 return ConvertToEventEntity((EventInfo) memberInfo);
             }
+            if (memberInfo is PropertyInfo){
+                return ConvertToPropertyEntity((PropertyInfo) memberInfo);
+            }
 
             throw new NotSupportedException();
         }
@@ -357,6 +362,46 @@ namespace DandyDoc.CodeDoc
                 model.SubTitle = "Constant";
             else
                 model.SubTitle = "Field";
+        }
+
+        private CodeDocProperty ConvertToPropertyEntity(PropertyInfo propertyInfo){
+            Contract.Requires(propertyInfo != null);
+            Contract.Ensures(Contract.Result<CodeDocProperty>() != null);
+            var result = new CodeDocProperty(GetCRefIdentifier(propertyInfo));
+            ApplyStandardXmlDocs(result, result.CRef.FullCRef);
+            ApplyCommonPropertyAttributes(result, propertyInfo);
+
+            var parameters = propertyInfo.GetIndexParameters();
+            if (parameters.Length > 0){
+                result.Parameters = new ReadOnlyCollection<ICodeDocParameter>(Array.ConvertAll(parameters,
+                    parameter => {
+                        var parameterSummaryElement = result.XmlDocs != null
+                        ? result.XmlDocs.GetParameterSummary(parameter.Name)
+                        : null;
+                        return new CodeDocParameter(
+                            parameter.Name,
+                            GetCRefIdentifier(parameter.ParameterType),
+                            parameterSummaryElement
+                        ) {
+                            IsOut = parameter.IsOut,
+                            IsByRef = parameter.ParameterType.IsByRef
+                        };
+                    }));
+            }
+
+            var getterMethodInfo = propertyInfo.GetGetMethod(true);
+            if (getterMethodInfo != null && MethodBaseFilter(getterMethodInfo, true)) {
+                result.Getter = ConvertToMethodEntity(getterMethodInfo);
+            }
+
+            var setterMethodInfo = propertyInfo.GetSetMethod(true);
+            if (setterMethodInfo != null && MethodBaseFilter(setterMethodInfo, true)) {
+                result.Setter = ConvertToMethodEntity(setterMethodInfo);
+            }
+
+            result.ValueTypeCRef = GetCRefIdentifier(propertyInfo.PropertyType);
+
+            return result;
         }
 
         private void ApplyCommonPropertyAttributes(CodeDocSimpleEntity model, PropertyInfo propertyInfo) {
