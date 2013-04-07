@@ -154,7 +154,9 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="CodeDocAssembly.cs" />
+    <Compile Include="CodeDocDelegate.cs" />
     <Compile Include="CodeDocEntityContentBase.cs" />
+    <Compile Include="CodeDocEvent.cs" />
     <Compile Include="CodeDocException.cs" />
     <Compile Include="CodeDocField.cs" />
     <Compile Include="CodeDocGenericParameter.cs" />

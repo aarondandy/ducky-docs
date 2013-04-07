@@ -475,5 +475,57 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual("T:System.IConvertible", method.GenericParameters[0].TypeConstraints[0].FullCRef);
         }
 
+        [Test]
+        public void delegate_with_comments(){
+            var type = TestLibrary1Repository.GetContentEntity(
+                "T:TestLibrary1.Class1.MyFunc") as CodeDocDelegate;
+            Assert.IsNotNull(type);
+            Assert.IsTrue(type.HasSummary);
+            Assert.That(type.Summary.Node.InnerText.Contains("My delegate."));
+            Assert.IsTrue(type.HasRemarks);
+
+            Assert.IsFalse(type.HasGenericParameters);
+            Assert.IsTrue(type.HasParameters);
+            Assert.AreEqual(2, type.Parameters.Count);
+            Assert.AreEqual("a", type.Parameters[0].Name);
+            Assert.AreEqual("param a", type.Parameters[0].Summary.Node.InnerText);
+            Assert.AreEqual("T:System.Int32", type.Parameters[0].TypeCRef.FullCRef);
+            Assert.AreEqual("b", type.Parameters[1].Name);
+            Assert.AreEqual("param b", type.Parameters[1].Summary.Node.InnerText);
+            Assert.AreEqual("T:System.Int32", type.Parameters[1].TypeCRef.FullCRef);
+            Assert.IsTrue(type.HasReturn);
+            Assert.AreEqual("T:System.Int32", type.Return.TypeCRef.FullCRef);
+            Assert.AreEqual("some int", type.Return.Summary.Node.InnerText);
+        }
+
+        [Test]
+        public void delegate_with_generic_arg(){
+            var type = TestLibrary1Repository.GetContentEntity(
+                "TestLibrary1.Generic1`2.MyFunc`1") as CodeDocDelegate;
+            Assert.IsNotNull(type);
+
+            Assert.IsTrue(type.HasGenericParameters);
+            Assert.AreEqual(1, type.GenericParameters.Count);
+            Assert.AreEqual("TX", type.GenericParameters[0].Name);
+        }
+
+        [Test]
+        public void event_test(){
+            var evt = TestLibrary1Repository.GetContentEntity(
+                "TestLibrary1.Class1.DoStuff") as CodeDocEvent;
+            Assert.IsNotNull(evt);
+            Assert.AreEqual("DoStuff", evt.ShortName);
+            Assert.AreEqual("DoStuff", evt.Title);
+            Assert.AreEqual("Event", evt.SubTitle);
+            Assert.AreEqual("E:TestLibrary1.Class1.DoStuff", evt.CRef.FullCRef);
+            Assert.AreEqual("TestLibrary1.Class1.DoStuff", evt.FullName);
+            Assert.AreEqual("T:TestLibrary1.Class1.MyFunc", evt.DelegateCRef.FullCRef);
+            Assert.IsTrue(evt.HasSummary);
+            Assert.That(evt.Summary.Node.InnerText.Contains("My event!"));
+            Assert.IsTrue(evt.HasRemarks);
+            Assert.AreEqual(1, evt.Remarks.Count);
+            Assert.That(evt.Remarks[0].Node.InnerText.Contains("stuff"));
+        }
+
     }
 }

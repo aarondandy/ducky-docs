@@ -93,7 +93,7 @@ namespace DandyDoc.Reflection
             return invokeMethod.GetParameters();
         }
 
-        public static object GetDelegateReturnType(this Type type) {
+        public static Type GetDelegateReturnType(this Type type) {
             if (!IsDelegateType(type))
                 return null;
 

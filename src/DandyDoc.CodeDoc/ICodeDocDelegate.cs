@@ -1,6 +1,6 @@
 ﻿namespace DandyDoc.CodeDoc
 {
-	public interface ICodeDocDelegate : ICodeDocType, ICodeDocInvokable
-	{
-	}
+    public interface ICodeDocDelegate : ICodeDocType, ICodeDocInvokable
+    {
+    }
 }

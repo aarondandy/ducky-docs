@@ -277,6 +277,9 @@ namespace DandyDoc.CodeDoc
             if (memberInfo is MethodBase){
                 return ConvertToMethodEntity((MethodBase) memberInfo);
             }
+            if (memberInfo is EventInfo){
+                return ConvertToEventEntity((EventInfo) memberInfo);
+            }
 
             throw new NotSupportedException();
         }
@@ -291,6 +294,17 @@ namespace DandyDoc.CodeDoc
             Contract.Requires(model != null);
             Contract.Requires(!String.IsNullOrEmpty(cRef));
             model.XmlDocs = XmlDocs.GetMember(cRef);
+        }
+
+        private CodeDocEvent ConvertToEventEntity(EventInfo eventInfo){
+            Contract.Requires(eventInfo != null);
+            Contract.Ensures(Contract.Result<CodeDocEvent>() != null);
+            var cRef = GetCRefIdentifier(eventInfo);
+            var result = new CodeDocEvent(cRef);
+            ApplyStandardXmlDocs(result, cRef.FullCRef);
+            ApplyCommonEventAttributes(result, eventInfo);
+            result.DelegateCRef = GetCRefIdentifier(eventInfo.EventHandlerType);
+            return result;
         }
 
         private void ApplyCommonEventAttributes(CodeDocSimpleEntity model, EventInfo eventInfo) {
@@ -442,7 +456,7 @@ namespace DandyDoc.CodeDoc
 
                     foreach (var exceptionModel in exceptionModels) {
                         // freeze collections
-                        exceptionModel.Ensures = new List<XmlDocNode>(exceptionModel.Ensures.ToArray());
+                        exceptionModel.Ensures = new ReadOnlyCollection<XmlDocNode>(exceptionModel.Ensures.ToArray());
                         exceptionModel.Conditions = new ReadOnlyCollection<XmlDocNode>(exceptionModel.Conditions.ToArray());
                     }
 
@@ -527,71 +541,36 @@ namespace DandyDoc.CodeDoc
         private CodeDocType ConvertToTypeEntity(Type type) {
             Contract.Requires(type != null);
             Contract.Ensures(Contract.Result<CodeDocType>() != null);
-            var result = new CodeDocType(GetCRefIdentifier(type));
+
+            var cRef = GetCRefIdentifier(type);
+            var result = type.IsDelegateType()
+                ? new CodeDocDelegate(cRef)
+                : new CodeDocType(cRef);
+
             ApplyStandardXmlDocs(result, result.CRef.FullCRef);
-            ApplyTypeAttributes(result, type);
-            return result;
-        }
+            ApplyCommonTypeAttributes(result, type);
 
-        private void ApplyCommonTypeAttributes(CodeDocSimpleEntity model, Type type){
-            Contract.Requires(model != null);
-            Contract.Requires(type != null);
-            Contract.Ensures(!String.IsNullOrEmpty(model.ShortName));
-            Contract.Ensures(!String.IsNullOrEmpty(model.FullName));
-            Contract.Ensures(!String.IsNullOrEmpty(model.Title));
-            Contract.Ensures(model.Title == model.ShortName);
-            Contract.Ensures(!String.IsNullOrEmpty(model.SubTitle));
-
-            model.ShortName = RegularTypeDisplayNameOverlay.GetDisplayName(type);
-            model.FullName = FullTypeDisplayNameOverlay.GetDisplayName(type);
-            model.Title = model.ShortName;
-            model.NamespaceName = type.Namespace;
-            model.IsStatic = type.IsStatic();
-
-            if (type.IsEnum)
-                model.SubTitle = "Enumeration";
-            else if (type.IsValueType)
-                model.SubTitle = "Structure";
-            else if (type.IsInterface)
-                model.SubTitle = "Interface";
-            else if (type.IsDelegateType())
-                model.SubTitle = "Delegate";
-            else
-                model.SubTitle = "Class";
-        }
-
-        private void ApplyTypeAttributes(CodeDocType model, Type type){
-            Contract.Requires(model != null);
-            Contract.Requires(type != null);
-            Contract.Ensures(!String.IsNullOrEmpty(model.ShortName));
-            Contract.Ensures(!String.IsNullOrEmpty(model.FullName));
-            Contract.Ensures(!String.IsNullOrEmpty(model.Title));
-            Contract.Ensures(model.Title == model.ShortName);
-            Contract.Ensures(!String.IsNullOrEmpty(model.SubTitle));
-
-            ApplyCommonTypeAttributes(model, type);
-
-            model.IsEnum = type.IsEnum;
+            result.IsEnum = type.IsEnum;
 
             if (!type.IsInterface) {
                 var currentBase = type.BaseType;
                 if (null != currentBase) {
-                    model.BaseCRef = GetCRefIdentifier(currentBase);
+                    result.BaseCRef = GetCRefIdentifier(currentBase);
                     var baseChain = new List<CRefIdentifier>() {
-                        model.BaseCRef
+                        result.BaseCRef
                     };
                     currentBase = currentBase.BaseType;
                     while (currentBase != null) {
                         baseChain.Add(GetCRefIdentifier(currentBase));
                         currentBase = currentBase.BaseType;
                     }
-                    model.BaseChainCRefs = new ReadOnlyCollection<CRefIdentifier>(baseChain);
+                    result.BaseChainCRefs = new ReadOnlyCollection<CRefIdentifier>(baseChain);
                 }
             }
 
             var implementedInterfaces = type.GetInterfaces();
             if (implementedInterfaces.Length > 0) {
-                model.DirectInterfaceCRefs = Array.AsReadOnly(
+                result.DirectInterfaceCRefs = Array.AsReadOnly(
                     Array.ConvertAll(implementedInterfaces, GetCRefIdentifier));
             }
 
@@ -639,59 +618,174 @@ namespace DandyDoc.CodeDoc
 
                             genericModels.Add(genericModel);
                         }
-                        model.GenericParameters = new ReadOnlyCollection<ICodeDocGenericParameter>(genericModels);
+                        result.GenericParameters = new ReadOnlyCollection<ICodeDocGenericParameter>(genericModels);
                     }
                 }
             }
 
             var nestedTypeModels = new List<ICodeDocEntity>();
             var nestedDelegateModels = new List<ICodeDocEntity>();
-            foreach (var nestedType in type.GetAllNestedTypes().Where(TypeFilter)){
+            foreach (var nestedType in type.GetAllNestedTypes().Where(TypeFilter)) {
                 var nestedTypeModel = ConvertToSimpleEntity(nestedType);
-                if(nestedType.IsDelegateType())
+                if (nestedType.IsDelegateType())
                     nestedDelegateModels.Add(nestedTypeModel);
                 else
                     nestedTypeModels.Add(nestedTypeModel);
             }
-            model.NestedTypes = new ReadOnlyCollection<ICodeDocEntity>(nestedTypeModels);
-            model.NestedDelegates = new List<ICodeDocEntity>(nestedDelegateModels);
+            result.NestedTypes = new ReadOnlyCollection<ICodeDocEntity>(nestedTypeModels);
+            result.NestedDelegates = new List<ICodeDocEntity>(nestedDelegateModels);
 
             var methodModels = new List<ICodeDocEntity>();
             var operatorModels = new List<ICodeDocEntity>();
-            foreach (var methodInfo in type.GetAllMethods().Where(MethodBaseFilter)){
+            foreach (var methodInfo in type.GetAllMethods().Where(MethodBaseFilter)) {
                 var methodModel = ConvertToSimpleEntity(methodInfo);
-                if(methodInfo.IsOperatorOverload())
+                if (methodInfo.IsOperatorOverload())
                     operatorModels.Add(methodModel);
                 else
                     methodModels.Add(methodModel);
             }
-            model.Methods = new ReadOnlyCollection<ICodeDocEntity>(methodModels);
-            model.Operators = new ReadOnlyCollection<ICodeDocEntity>(operatorModels);
+            result.Methods = new ReadOnlyCollection<ICodeDocEntity>(methodModels);
+            result.Operators = new ReadOnlyCollection<ICodeDocEntity>(operatorModels);
 
-            model.Constructors = new ReadOnlyCollection<ICodeDocEntity>(type
+            result.Constructors = new ReadOnlyCollection<ICodeDocEntity>(type
                 .GetAllConstructors()
                 .Where(MethodBaseFilter)
                 .Select(ConvertToSimpleEntity)
                 .ToArray());
 
-            model.Properties = new ReadOnlyCollection<ICodeDocEntity>(type
+            result.Properties = new ReadOnlyCollection<ICodeDocEntity>(type
                 .GetAllProperties()
                 .Where(PropertyInfoFilter)
                 .Select(ConvertToSimpleEntity)
                 .ToArray());
 
-            model.Fields = new ReadOnlyCollection<ICodeDocEntity>(type
+            result.Fields = new ReadOnlyCollection<ICodeDocEntity>(type
                 .GetAllFields()
                 .Where(FieldInfoFilter)
                 .Select(ConvertToSimpleEntity)
                 .ToArray());
 
-            model.Events = new ReadOnlyCollection<ICodeDocEntity>(type
+            result.Events = new ReadOnlyCollection<ICodeDocEntity>(type
                 .GetAllEvents()
                 .Where(EventInfoFilter)
                 .Select(ConvertToSimpleEntity)
                 .ToArray());
 
+            if (result is CodeDocDelegate){
+                var delegateResult = (CodeDocDelegate)result;
+
+                var parameterModels = type
+                    .GetDelegateTypeParameters()
+                    .Select(parameter =>{
+                                var parameterSummaryElement = result.XmlDocs != null
+                                    ? result.XmlDocs.GetParameterSummary(parameter.Name)
+                                    : null;
+                                return new CodeDocParameter(
+                                    parameter.Name,
+                                    GetCRefIdentifier(parameter.ParameterType),
+                                    parameterSummaryElement
+                                    ){
+                                        IsOut = parameter.IsOut,
+                                        IsByRef = parameter.ParameterType.IsByRef
+                                    };
+                            })
+                    .ToArray();
+                delegateResult.Parameters = new ReadOnlyCollection<ICodeDocParameter>(parameterModels);
+
+                var returnType = type.GetDelegateReturnType();
+                if(returnType != null && returnType != typeof(void)) {
+                    var returnSummaryElement = result.XmlDocs != null
+                        ? result.XmlDocs.ReturnsElement
+                        : null;
+                    delegateResult.Return = new CodeDocParameter(
+                        String.Empty,
+                        GetCRefIdentifier(returnType),
+                        returnSummaryElement);
+                }
+
+                if (result.XmlDocs != null){
+                    if (result.XmlDocs.HasExceptionElements){
+                        var exceptionLookup = new Dictionary<CRefIdentifier, CodeDocException>();
+                        foreach (var xmlDocException in result.XmlDocs.ExceptionElements){
+                            var exceptionCRef = String.IsNullOrWhiteSpace(xmlDocException.CRef)
+                                ? new CRefIdentifier("T:")
+                                : new CRefIdentifier(xmlDocException.CRef);
+                            CodeDocException exceptionModel;
+                            if (!exceptionLookup.TryGetValue(exceptionCRef, out exceptionModel)){
+                                exceptionModel = new CodeDocException(exceptionCRef);
+                                exceptionModel.Ensures = new List<XmlDocNode>();
+                                exceptionModel.Conditions = new List<XmlDocNode>();
+                                exceptionLookup.Add(exceptionCRef, exceptionModel);
+                            }
+                            var priorElement = xmlDocException.PriorElement;
+                            if (
+                                null != priorElement
+                                && String.Equals("ensuresOnThrow", priorElement.Name, StringComparison.OrdinalIgnoreCase)
+                                && priorElement.Element.GetAttribute("exception") == exceptionCRef.FullCRef
+                            ){
+                                if (priorElement.HasChildren){
+                                    exceptionModel.Ensures.Add(priorElement);
+                                }
+                            }
+                            else{
+                                if (xmlDocException.HasChildren){
+                                    exceptionModel.Conditions.Add(xmlDocException);
+                                }
+                            }
+                        }
+
+                        var exceptionModels = exceptionLookup.Values
+                            .OrderBy(x => x.ExceptionCRef.FullCRef)
+                            .ToArray();
+
+                        foreach (var exceptionModel in exceptionModels){
+                            // freeze collections
+                            exceptionModel.Ensures = new ReadOnlyCollection<XmlDocNode>(exceptionModel.Ensures.ToArray());
+                            exceptionModel.Conditions = new ReadOnlyCollection<XmlDocNode>(exceptionModel.Conditions.ToArray());
+                        }
+
+                        delegateResult.Exceptions = new ReadOnlyCollection<ICodeDocException>(exceptionModels);
+                    }
+
+                    if (result.XmlDocs.HasEnsuresElements){
+                        delegateResult.Ensures =
+                            new ReadOnlyCollection<XmlDocContractElement>(result.XmlDocs.EnsuresElements.ToArray());
+                    }
+                    if (result.XmlDocs.HasRequiresElements){
+                        delegateResult.Requires =
+                            new ReadOnlyCollection<XmlDocContractElement>(result.XmlDocs.RequiresElements.ToArray());
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        private void ApplyCommonTypeAttributes(CodeDocSimpleEntity model, Type type){
+            Contract.Requires(model != null);
+            Contract.Requires(type != null);
+            Contract.Ensures(!String.IsNullOrEmpty(model.ShortName));
+            Contract.Ensures(!String.IsNullOrEmpty(model.FullName));
+            Contract.Ensures(!String.IsNullOrEmpty(model.Title));
+            Contract.Ensures(model.Title == model.ShortName);
+            Contract.Ensures(!String.IsNullOrEmpty(model.SubTitle));
+
+            model.ShortName = RegularTypeDisplayNameOverlay.GetDisplayName(type);
+            model.FullName = FullTypeDisplayNameOverlay.GetDisplayName(type);
+            model.Title = model.ShortName;
+            model.NamespaceName = type.Namespace;
+            model.IsStatic = type.IsStatic();
+
+            if (type.IsEnum)
+                model.SubTitle = "Enumeration";
+            else if (type.IsValueType)
+                model.SubTitle = "Structure";
+            else if (type.IsInterface)
+                model.SubTitle = "Interface";
+            else if (type.IsDelegateType())
+                model.SubTitle = "Delegate";
+            else
+                model.SubTitle = "Class";
         }
 
     }
