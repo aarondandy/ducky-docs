@@ -1,0 +1,42 @@
+﻿@using System.Text.RegularExpressions
+@using DandyDoc.CodeDoc
+@model dynamic
+@functions{
+  static readonly Regex TitleSplitRegex = new Regex(@"(?<=[.,;\<\(\[])");
+  static string[] TitleParts(string title) {
+    return TitleSplitRegex.Split(title);
+  }
+}
+@helper RenderNameParts(string nameText) {
+  var parts = TitleParts(nameText);
+  if (parts.Length == 1) {
+  @(parts[0])
+  }
+  else {
+    foreach (var part in parts) {<span>@part</span>}
+  }
+}
+@{
+  Layout = "~/Views/Shared/_Layout.cshtml";
+  ViewBag.Title = "Dandy Doc";
+  ViewBag.SubTitle = "API Reference";
+  if(Model is ICodeDocEntity){
+    ViewBag.EntityTitle = Model.Title;
+    ViewBag.EntitySubTitle = Model.SubTitle;
+  }
+}
+<div class="container">
+  <div class="row">
+    <nav class="span3 namespace-nav">
+      Nav Manu
+    </nav>
+    <div class="span9">
+      <section>
+        @if(!String.IsNullOrWhiteSpace(ViewBag.EntityTitle as string)){
+          <h1>@{foreach (var part in TitleParts(ViewBag.EntityTitle)) {<span>@part</span>} if (!String.IsNullOrEmpty(ViewBag.EntitySubTitle)) { <small>@ViewBag.EntitySubTitle</small>}}</h1>
+        }
+        @RenderBody()
+      </section>
+    </div>
+  </div>
+</div>

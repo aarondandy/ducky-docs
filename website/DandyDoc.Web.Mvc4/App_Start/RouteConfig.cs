@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using System.Web.Routing;
 
 namespace DandyDoc.Web.Mvc4
@@ -11,6 +7,11 @@ namespace DandyDoc.Web.Mvc4
     {
         public static void RegisterRoutes(RouteCollection routes) {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
+
+            routes.MapRoute(
+                name: "Docs",
+                url: "Docs/{action}",
+                defaults: new { controller = "Docs", action = "Index" });
 
             routes.MapRoute(
                 name: "Default",

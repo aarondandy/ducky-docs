@@ -1,0 +1,103 @@
+﻿@{
+  ViewBag.Title = "Dandy Doc Documentation";
+  ViewBag.SubTitle = "Getting Started";
+}
+<div class="container">
+  <div class="row">
+    <div class="span12">
+      <section>
+        <h2>Step by Step</h2>
+        <p class="lead">
+          The basic idea is to start with some data, in this case a .NET assembly.
+          Next create some models for the data you want to present.
+          Finally use the models to present some documentation.
+        </p>
+
+        <h3>Step 1: Data</h3>
+        <p>
+          First start with your data. With Dandy Doc a .NET assembly and its accompanying files are the source of your documentation data.
+        </p>
+        <pre>var assemblies = new AssemblyDefinitionCollection("QuickStartSample.exe");</pre>
+        <div class="alert alert-error">
+          <h4>Warning!</h4>
+          <p>
+            Dandy Doc is only as thread safe as Mono.Cecil and as of 0.9.5.4 it is not very thread safe!
+            When constructing an assembly definition collection you can pass <code>true</code> to the
+            immediate parameter to have the required parts of an assembly loaded during construction (I hope).
+            There are also some bad tests related to this issue: <a href="https://github.com/aarondandy/dandy-doc/blob/master/tests/TestLibrary1.SimpleModels.Test/ThreadProblemsTest.cs">ThreadProblemsTest</a>
+          </p>
+
+          <p>
+            Example: <code>new AssemblyDefinitionCollection(true, "QuickStartSample.exe");</code>
+          </p>
+        </div>
+
+        <h3>Step 2: Models</h3>
+        <p>
+          The easiest way to get started is to use the <a href="@Url.Action("Api", "Docs", new { cRef = "T:DandyDoc.SimpleModels.SimpleModelRepository" })">SimpleModelRepository</a>.
+          It provides a few properties that allow you to rummage through your assemblies organized by namespace.
+        </p>
+        <pre>
+var repository = new SimpleModelRepository(assemblies);
+foreach (var namespaceModel in repository.Namespaces){
+	foreach (var typeModel in namespaceModel.Types){
+		// stuff
+	}
+}
+</pre>
+
+        <h3>Step 3: Presentation</h3>
+        <p>
+          You are own your own for this part but that is the whole point.
+          Check out the <a href="https://github.com/aarondandy/dandy-doc/blob/master/website/DandyDocSite/Controllers/DocsController.cs">DocsController</a> for an example.
+        </p>
+
+      </section>
+      <section>
+        <h2>A Simple Sample.</h2>
+        <figure>
+          <figcaption>A simple example that outputs types to the console.</figcaption>
+          <pre>
+using System;
+using System.Linq;
+using DandyDoc;
+using DandyDoc.SimpleModels;
+
+namespace QuickStartSample
+{
+	class Program
+	{
+		static void Main(string[] args) {
+
+			// first you need some assemblies
+			var assemblies = new AssemblyDefinitionCollection("QuickStartSample.exe");
+
+			// NOTE: due to threading issues you may want to use immediate mode:
+			// new AssemblyDefinitionCollection(true, "QuickStartSample.exe");
+
+			// Next you can create the models. The SimpleModels assembly has a repository class you can use.
+			var repository = new SimpleModelRepository(assemblies);
+
+			// A good place to start is with namespaces.
+			foreach (var namespaceModel in repository.Namespaces){
+				Console.WriteLine("NAMESPACE: {0}", namespaceModel.Title);
+
+				// You can quickly get the types (and delegates) within the namespace.
+				foreach (var types in namespaceModel.Types){
+
+					// As an example we can get the flair tags associated with a type.
+					var flairTags = String.Join(",", types.FlairTags.Select(x => x.IconId));
+
+					Console.WriteLine("\t{0}: {1}", types.Title, flairTags);
+				}
+			}
+
+		}
+	}
+}
+</pre>
+        </figure>
+      </section>
+    </div>
+  </div>
+</div>
