@@ -207,6 +207,16 @@ namespace DandyDoc.CodeDoc
             return true;
         }
 
+        private ICodeDocNamespace GetCodeDocNamespace(CRefIdentifier cRef){
+            Contract.Requires(cRef != null);
+            return Namespaces.FirstOrDefault(x => cRef.Equals(x.CRef));
+        }
+
+        private ICodeDocAssembly GetCodeDocAssembly(CRefIdentifier cRef){
+            Contract.Requires(cRef != null);
+            throw new NotImplementedException();
+        }
+
         public ICodeDocEntity GetSimpleEntity(string cRef){
             if(String.IsNullOrEmpty(cRef)) throw new ArgumentException("CRef is not valid.", "cRef");
             Contract.EndContractBlock();
@@ -222,6 +232,10 @@ namespace DandyDoc.CodeDoc
         public ICodeDocEntity GetSimpleEntity(CRefIdentifier cRef) {
             if (cRef == null) throw new ArgumentNullException("cRef");
             Contract.EndContractBlock();
+
+            if ("N".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
+                return GetCodeDocNamespace(cRef);
+
             var memberInfo = CRefLookup.GetMember(cRef);
             if (memberInfo == null || !MemberInfoFilter(memberInfo))
                 return null;
@@ -231,6 +245,10 @@ namespace DandyDoc.CodeDoc
         public ICodeDocEntityContent GetContentEntity(CRefIdentifier cRef) {
             if(cRef == null) throw new ArgumentNullException("cRef");
             Contract.EndContractBlock();
+
+            if ("N".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
+                return GetCodeDocNamespace(cRef);
+
             var memberInfo = CRefLookup.GetMember(cRef);
             if (memberInfo == null || !MemberInfoFilter(memberInfo))
                 return null;

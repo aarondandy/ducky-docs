@@ -1,0 +1,26 @@
+﻿@using DandyDoc.CodeDoc
+@using DandyDoc.Web.Mvc4.Helpers
+@model ICodeDocNamespace
+@{
+  Layout = "./_Layout.cshtml";
+  var regularTypes = new List<ICodeDocEntity>();
+  var delegateTypes = new List<ICodeDocEntity>();
+  foreach (var type in Model.Types) {
+    if ("DELEGATE".Equals(type.SubTitle, StringComparison.OrdinalIgnoreCase)) {
+      delegateTypes.Add(type);
+    }
+    else {
+      regularTypes.Add(type);
+    }
+  }
+  var memberSets = new[]{
+    new { Title = "Types", Types = regularTypes},
+    new { Title = "Delegates", Types = delegateTypes}
+  };
+}
+@foreach (var memberSet in memberSets.Where(x => x.Types.Count > 0)) {
+  <section>
+    <h2>@memberSet.Title</h2>
+    @Html.CodeDocEntityTable(memberSet.Types, new {@class="table table-bordered"})
+  </section>
+}
