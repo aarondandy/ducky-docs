@@ -25,8 +25,7 @@ namespace DandyDoc.CodeDoc
 
         public ICodeDocMethod Setter { get; set; }
 
-        [Obsolete("Should be a model")]
-        public CRefIdentifier ValueTypeCRef { get; set; }
+        public ICodeDocEntity ValueType { get; set; }
 
         public bool HasValueDescription {
             get { return ValueDescription != null; }
@@ -35,5 +34,17 @@ namespace DandyDoc.CodeDoc
         public XmlDocElement ValueDescription {
             get { return XmlDocs == null ? null : XmlDocs.ValueElement; }
         }
+
+        public bool HasValueDescriptionContents { get { return XmlDocs != null && XmlDocs.HasValueContents; } }
+
+        public IList<XmlDocNode> ValueDescriptionContents {
+            get {
+                Contract.Ensures(Contract.Result<IList<XmlDocNode>>() != null);
+                return XmlDocs != null && XmlDocs.HasValueContents
+                    ? XmlDocs.ValueContents
+                    : new XmlDocNode[0];
+            }
+        }
+
     }
 }

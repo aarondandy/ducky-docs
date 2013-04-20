@@ -22,5 +22,11 @@ namespace DandyDoc.CodeDoc
 
         IList<XmlDocRefElement> SeeAlso { get; }
 
+        ICodeDocEntity DeclaringType { get; }
+
+        ICodeDocEntity Namespace { get; }
+
+        ICodeDocEntity Assembly { get; }
+
     }
 }

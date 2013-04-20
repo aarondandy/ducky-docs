@@ -1,24 +1,26 @@
-﻿@model DandyDoc.CodeDoc.ICodeDocEntityRepository
+﻿@using DandyDoc.Web.Mvc4.Helpers
+@model DandyDoc.CodeDoc.ICodeDocEntityRepository
 @{
   Layout = "./_Layout.cshtml";
-  <section>
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th><i class="icon-info-sign"></i></th>
-          <th>Namespace</th>
-          <th>Assembly</th>
-        </tr>
-      </thead>
-      <tbody>
-        @foreach (var namespaceModel in Model.Namespaces) {
-          <tr>
-            <td><i class="icon-gift"></i></td>
-            <td><a href="@Url.Action("Api", new{cRef = namespaceModel.CRef.FullCRef})">@namespaceModel.ShortName</a></td>
-            <td>@String.Join(", ", namespaceModel.Assemblies.Select(a => a.ShortName))</td>
-          </tr>
-        }
-      </tbody>
-    </table>
-  </section>
+  ViewBag.EntityTitle = "All Namespaces";
 }
+<section>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th><i class="icon-info-sign"></i></th>
+        <th>Namespace</th>
+        <th>Assembly</th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach (var namespaceModel in Model.Namespaces) {
+        <tr>
+          <td><i class="icon-gift"></i></td>
+          <td>@Html.ActionLink(namespaceModel)</td>
+          <td>@String.Join(", ", namespaceModel.Assemblies.Select(a => a.ShortName))</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</section>

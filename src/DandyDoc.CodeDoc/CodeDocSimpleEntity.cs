@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using DandyDoc.CRef;
 using DandyDoc.XmlDoc;
@@ -12,6 +13,11 @@ namespace DandyDoc.CodeDoc
             if (cRef == null) throw new ArgumentNullException("cRef");
             Contract.EndContractBlock();
             CRef = cRef;
+        }
+
+        [ContractInvariantMethod]
+        private void CodeContractInvariants() {
+            Contract.Invariant(CRef != null);
         }
 
         public CRefIdentifier CRef { get; private set; }
@@ -41,13 +47,21 @@ namespace DandyDoc.CodeDoc
 
         public bool IsStatic { get; set; }
 
-        [ContractInvariantMethod]
-        private void CodeContractInvariants() {
-            Contract.Invariant(CRef != null);
-        }
-
         public override string ToString() {
             return FullName ?? base.ToString();
+        }
+
+        public bool HasSummaryContents {
+            get { return XmlDocs != null && XmlDocs.HasSummaryContents; }
+        }
+
+        public IList<XmlDocNode> SummaryContents {
+            get {
+                Contract.Ensures(Contract.Result<IList<XmlDocNode>>() != null);
+                return XmlDocs != null && XmlDocs.HasSummaryContents
+                    ? XmlDocs.SummaryContents
+                    : new XmlDocNode[0];
+            }
         }
 
     }

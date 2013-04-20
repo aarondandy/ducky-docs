@@ -11,19 +11,29 @@ namespace DandyDoc.CodeDoc
             get { return TypeConstraints != null && TypeConstraints.Count > 0; }
         }
 
-        [Obsolete("This should be some kind of ICodeDocEntity (pointer) to keep the CRef yet generate full name & a CRef that can be linked.")]
-        public IList<CRefIdentifier> TypeConstraints { get; set; }
+        public IList<ICodeDocEntity> TypeConstraints { get; set; }
 
         public string Name { get; set; }
 
         public bool HasSummary {
             get {
-                var summary = Summary;
-                return summary != null && summary.HasChildren;
+                return Summary != null;
             }
         }
 
-        public XmlDocNode Summary { get; set; }
+        public XmlDocElement Summary { get; set; }
+
+        public bool HasSummaryContents {
+            get { return HasSummary && Summary.HasChildren; }
+        }
+
+        public IList<XmlDocNode> SummaryContents {
+            get {
+                return HasSummaryContents
+                    ? Summary.Children
+                    : new XmlDocNode[0];
+            }
+        }
 
         public bool IsContravariant { get; set; }
 
@@ -34,6 +44,15 @@ namespace DandyDoc.CodeDoc
         public bool HasNotNullableValueTypeConstraint { get; set; }
 
         public bool HasDefaultConstructorConstraint { get; set; }
+
+        public bool HasAnyConstraints {
+            get {
+                return HasTypeConstraints
+                    || HasReferenceTypeConstraint
+                    || HasNotNullableValueTypeConstraint
+                    || HasDefaultConstructorConstraint;
+            }
+        }
 
     }
 }

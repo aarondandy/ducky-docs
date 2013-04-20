@@ -11,7 +11,7 @@ namespace DandyDoc.CodeDoc
         private static readonly XmlDocElement[] EmptyXmlDocElementArray = new XmlDocElement[0];
         protected static readonly XmlDocRefElement[] EmptyXmlDocRefElementArray = new XmlDocRefElement[0];
 
-        public CodeDocEntityContentBase(CRefIdentifier cRef) : base(cRef) {
+        protected CodeDocEntityContentBase(CRefIdentifier cRef) : base(cRef) {
             Contract.Requires(cRef != null);
         }
 
@@ -54,6 +54,12 @@ namespace DandyDoc.CodeDoc
                 return XmlDocs == null ? EmptyXmlDocRefElementArray : XmlDocs.SeeAlsoElements;
             }
         }
+
+        public ICodeDocEntity DeclaringType { get; set; }
+
+        public ICodeDocEntity Namespace { get; set; }
+
+        public ICodeDocEntity Assembly { get; set; }
 
     }
 }

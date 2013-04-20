@@ -3,7 +3,7 @@ using DandyDoc.CRef;
 
 namespace DandyDoc.CodeDoc
 {
-    public interface ICodeDocAssembly : ICodeDocEntity
+    public interface ICodeDocAssembly : ICodeDocEntityContent
     {
 
         string AssemblyFileName { get; }

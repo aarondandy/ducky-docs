@@ -1,41 +1,88 @@
 ﻿@using System.Text.RegularExpressions
 @using DandyDoc.CodeDoc
+@using DandyDoc.Web.Mvc4.Helpers
 @model dynamic
-@functions{
-  static readonly Regex TitleSplitRegex = new Regex(@"(?<=[.,;\<\(\[])");
-  static string[] TitleParts(string title) {
-    return TitleSplitRegex.Split(title);
-  }
-}
-@helper RenderNameParts(string nameText) {
-  var parts = TitleParts(nameText);
-  if (parts.Length == 1) {
-  @(parts[0])
-  }
-  else {
-    foreach (var part in parts) {<span>@part</span>}
-  }
-}
 @{
   Layout = "~/Views/Shared/_Layout.cshtml";
   ViewBag.Title = "Dandy Doc";
   ViewBag.SubTitle = "API Reference";
-  if(Model is ICodeDocEntity){
-    ViewBag.EntityTitle = Model.Title;
-    ViewBag.EntitySubTitle = Model.SubTitle;
+  var entityModel = Model as ICodeDocEntity;
+  if (entityModel != null) {
+    ViewBag.EntityTitle = entityModel.Title;
+    ViewBag.EntitySubTitle = entityModel.SubTitle;
   }
+  var contentModel = Model as ICodeDocEntityContent;
 }
 <div class="container">
   <div class="row">
     <nav class="span3 namespace-nav">
-      Nav Manu
+      Nav Menu
     </nav>
     <div class="span9">
       <section>
-        @if(!String.IsNullOrWhiteSpace(ViewBag.EntityTitle as string)){
-          <h1>@{foreach (var part in TitleParts(ViewBag.EntityTitle)) {<span>@part</span>} if (!String.IsNullOrEmpty(ViewBag.EntitySubTitle)) { <small>@ViewBag.EntitySubTitle</small>}}</h1>
+        @{
+          var entityTitle = ViewBag.EntityTitle as string;
+          var entitySubTitle = ViewBag.EntitySubTitle as string;
+          if (!String.IsNullOrWhiteSpace(entityTitle)) {
+          <h1>@Html.BreakIntoCodeNamePartElements(entityTitle)
+            @if (!String.IsNullOrWhiteSpace(entitySubTitle)) {
+              <small>@entitySubTitle</small>
+            }
+          </h1>
+          }
+        }
+        @if (entityModel != null) {
+          if (entityModel.HasSummaryContents) {
+          <p class="lead">@Html.XmlDocHtml(entityModel.SummaryContents)</p>
+          }
+          <div>TODO: Flair Table</div>
+        }
+        @if (contentModel != null) {
+          if (contentModel.Namespace != null) {
+          <div>Namespace: @Html.ActionLinkFull(contentModel.Namespace)</div>
+          }
+          if (contentModel.Assembly != null) {
+          <div>Assembly: @Html.ActionLinkFull(contentModel.Assembly)</div>
+          }
+          if (contentModel.DeclaringType != null) {
+          <div>Declaring Type: @Html.ActionLinkFull(contentModel.DeclaringType)</div>
+          }
         }
         @RenderBody()
+        @if (contentModel != null) {
+          if (contentModel.HasRemarks) {
+          <section>
+            <h2>Remarks</h2>
+            @foreach (var section in contentModel.Remarks.Where(x => x.HasChildren)) {
+              <div>
+                @Html.XmlDocHtml(section.Children)
+              </div>
+            }
+          </section>
+          }
+          if (contentModel.HasExamples) {
+          <section>
+            <h2>Examples</h2>
+            @foreach (var section in contentModel.Examples.Where(x => x.HasChildren)) {
+              <div>
+                @Html.XmlDocHtml(section.Children)
+              </div>
+            }
+          </section>
+          }
+          if (Model.HasSeeAlso) {
+          <section>
+            <h2>See Also</h2>
+            <ul>
+              @foreach (var section in contentModel.SeeAlso) {
+                <li>
+                  @Html.XmlDocHtml(section)
+                </li>
+              }
+            </ul>
+          </section>
+          }
+        }
       </section>
     </div>
   </div>

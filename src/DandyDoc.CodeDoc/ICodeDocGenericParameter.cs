@@ -1,25 +1,28 @@
 ﻿using System.Collections.Generic;
-using DandyDoc.CRef;
 using DandyDoc.XmlDoc;
 
 namespace DandyDoc.CodeDoc
 {
-	public interface ICodeDocGenericParameter
-	{
+    public interface ICodeDocGenericParameter
+    {
 
-		bool HasTypeConstraints { get; }
+        bool HasTypeConstraints { get; }
 
-		IList<CRefIdentifier> TypeConstraints { get; }
+        IList<ICodeDocEntity> TypeConstraints { get; }
 
-		string Name { get; }
+        string Name { get; }
 
-		bool HasSummary { get; }
+        bool HasSummary { get; }
 
-        XmlDocNode Summary { get; }
+        XmlDocElement Summary { get; }
 
-		bool IsContravariant { get; }
+        bool HasSummaryContents { get; }
 
-		bool IsCovariant { get; }
+        IList<XmlDocNode> SummaryContents { get; }
+
+        bool IsContravariant { get; }
+
+        bool IsCovariant { get; }
 
         bool HasReferenceTypeConstraint { get; }
 
@@ -27,5 +30,7 @@ namespace DandyDoc.CodeDoc
 
         bool HasDefaultConstructorConstraint { get; }
 
-	}
+        bool HasAnyConstraints { get; }
+
+    }
 }

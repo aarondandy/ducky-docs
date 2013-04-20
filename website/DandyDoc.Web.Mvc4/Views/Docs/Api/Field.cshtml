@@ -1,0 +1,10 @@
+﻿@using DandyDoc.Web.Mvc4.Helpers;
+@model DandyDoc.CodeDoc.ICodeDocField
+@{ Layout = "./_Layout.cshtml"; }
+<section> 
+	<h2>Value</h2>
+	<p><b>Type:</b> @Html.ActionLink(Model.ValueType)</p>
+	@if (Model.HasValueDescriptionContents){
+		@Html.XmlDocHtml(Model.ValueDescriptionContents);
+	}
+</section>

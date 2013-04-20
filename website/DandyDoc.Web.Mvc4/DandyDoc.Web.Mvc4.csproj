@@ -295,6 +295,21 @@
   <ItemGroup>
     <Content Include="Views\Docs\Api\Namespace.cshtml" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Docs\Api\Type.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Docs\Api\Delegate.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Docs\Api\Enum.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Docs\Api\Event.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Docs\Api\Field.cshtml" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

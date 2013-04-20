@@ -4,7 +4,7 @@ using DandyDoc.CRef;
 
 namespace DandyDoc.CodeDoc
 {
-    public class CodeDocAssembly : CodeDocSimpleEntity, ICodeDocAssembly
+    public class CodeDocAssembly : CodeDocEntityContentBase, ICodeDocAssembly
     {
 
         public CodeDocAssembly(CRefIdentifier cRef)

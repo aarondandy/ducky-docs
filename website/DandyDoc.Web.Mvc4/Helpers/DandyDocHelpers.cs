@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using DandyDoc.CRef;
 using DandyDoc.CodeDoc;
 using System.Text;
-using System.Web.Mvc.Html;
 using DandyDoc.XmlDoc;
 
 namespace DandyDoc.Web.Mvc4.Helpers
@@ -13,19 +15,99 @@ namespace DandyDoc.Web.Mvc4.Helpers
     public static class DandyDocHelpers
     {
 
-        public static MvcHtmlString CRefActionLink(this HtmlHelper helper, MvcHtmlString innerHtml, string cRef){
+        private static readonly Regex CodeNameSplitRegex = new Regex(@"(?<=[.,;\<\(\[])");
+        
+        public static string[] CodeNameParts(string title) {
+            return CodeNameSplitRegex.Split(title);
+        }
+
+        public static MvcHtmlString BreakIntoCodeNamePartElements(this HtmlHelper helper, string name, string tagName = "span") {
+            var htmlBuilder = new StringBuilder();
+            var openTag = '<' + tagName + '>';
+            var closeTag = "</" + tagName + '>';
+            foreach (var part in CodeNameParts(name)) {
+                htmlBuilder.Append(openTag);
+                htmlBuilder.Append(HttpUtility.HtmlEncode(part));
+                htmlBuilder.Append(closeTag);
+            }
+            return new MvcHtmlString(htmlBuilder.ToString());
+        }
+
+        public static MvcHtmlString ActionLinkFull(this HtmlHelper helper, ICodeDocEntity entity) {
+            var cRef = entity.CRef;
+            if ("A".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase)) {
+                // simplify the CRef for an assembly
+                var text = entity.ShortName;
+                var cRefText = "A:" + entity.ShortName;
+                if (entity is ICodeDocAssembly) {
+                    var assemblyFileName = ((ICodeDocAssembly)entity).AssemblyFileName;
+                    if (!String.IsNullOrEmpty(assemblyFileName)) {
+                        text += '(' + assemblyFileName + ')';
+                        cRefText = "A:" + assemblyFileName;
+                    }
+                }
+                return helper.CRefActionLink(text, cRefText);
+            }
+            return helper.CRefActionLink(entity.FullName, cRef.FullCRef);
+        }
+
+        public static MvcHtmlString ActionLink(this HtmlHelper helper, ICodeDocEntity entity) {
+            var cRef = entity.CRef;
+            if ("A".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase)) {
+                // simplify the CRef for an assembly
+                return helper.CRefActionLink(entity.ShortName, "A:" + entity.ShortName);
+            }
+            return helper.CRefActionLink(entity.ShortName, cRef.FullCRef);
+        }
+
+        public static MvcHtmlString CRefActionLink(this HtmlHelper helper, string linkText, string cRef) {
+            return helper.CRefActionLink(new MvcHtmlString(HttpUtility.HtmlEncode(linkText)), cRef);
+        }
+
+        public static MvcHtmlString CRefActionLink(this HtmlHelper helper, MvcHtmlString innerHtml, string cRef) {
+            if (String.IsNullOrWhiteSpace(cRef) || cRef[0] == '`')
+                return new MvcHtmlString("<span>" + innerHtml + "</span>");
             var linkBuilder = new TagBuilder("a");
             var urlHelper = new UrlHelper(helper.ViewContext.RequestContext);
-            linkBuilder.MergeAttribute("href", urlHelper.Action("Api", new { cRef }));
+            linkBuilder.MergeAttribute("href", urlHelper.Action("Api", "Docs", new { cRef }));
             if(innerHtml != null)
                 linkBuilder.InnerHtml = innerHtml.ToString();
             return new MvcHtmlString(linkBuilder.ToString());
         }
 
+        public static MvcHtmlString ActionLinkList(this HtmlHelper helper, IEnumerable<ICodeDocEntity> entities, object ulTagAttributes = null, object liTagAttributes = null) {
+            var tagBuilder = new TagBuilder("ul");
+
+            if (ulTagAttributes == null)
+                tagBuilder.MergeAttribute("class", "unstyled");
+            else
+                tagBuilder.MergeAttributes(new RouteValueDictionary(ulTagAttributes));
+
+            var liTagAttributesDictionary = liTagAttributes != null
+                ? new RouteValueDictionary(liTagAttributes)
+                : null;
+
+            var innerHtmlBuilder = new StringBuilder();
+            foreach (var entity in entities) {
+                var liTagBuilder = new TagBuilder("li");
+                if(liTagAttributesDictionary == null)
+                    liTagBuilder.MergeAttribute("class","text-indent: -7px;");
+                else
+                    liTagBuilder.MergeAttributes(liTagAttributesDictionary);
+                liTagBuilder.InnerHtml = helper.ActionLink(entity).ToString();
+                innerHtmlBuilder.Append(liTagBuilder);
+            }
+            tagBuilder.InnerHtml = innerHtmlBuilder.ToString();
+
+            return new MvcHtmlString(tagBuilder.ToString());
+        }
+
         public static MvcHtmlString CodeDocEntityTable(this HtmlHelper helper, IEnumerable<ICodeDocEntity> entities, object tableTagAttributes = null) {
             var builder = new TagBuilder("table");
 
-            if(tableTagAttributes != null)
+            if(tableTagAttributes == null)
+                builder.MergeAttribute("class", "table table-bordered");
+            else
                 builder.MergeAttributes(new RouteValueDictionary(tableTagAttributes));
 
             var tableInnerHtmlBuilder = new StringBuilder("<thead><tr><th><i class=\"icon-info-sign\"></i></th><th>Name</th><th>Description</th></tr></thead><tbody>");
@@ -33,12 +115,10 @@ namespace DandyDoc.Web.Mvc4.Helpers
                 tableInnerHtmlBuilder.Append("<tr><td>");
                 // TODO: flair
                 tableInnerHtmlBuilder.Append("</td><td>");
-
-                tableInnerHtmlBuilder.Append(helper.CRefActionLink(new MvcHtmlString(entity.ShortName), entity.CRef.FullCRef));
-
+                tableInnerHtmlBuilder.Append(helper.ActionLink(entity));
                 tableInnerHtmlBuilder.Append("</td><td>");
-                if (entity.HasSummary)
-                    tableInnerHtmlBuilder.Append(helper.XmlDocContainedHtml(entity.Summary));
+                if (entity.HasSummaryContents)
+                    tableInnerHtmlBuilder.Append(helper.XmlDocHtml(entity.SummaryContents));
 
                 tableInnerHtmlBuilder.Append("</td></tr>");
             }
@@ -46,13 +126,6 @@ namespace DandyDoc.Web.Mvc4.Helpers
             builder.InnerHtml = tableInnerHtmlBuilder.ToString();
 
             return new MvcHtmlString(builder.ToString());
-        }
-
-        [Obsolete("This should not exist, instead a SummaryContent property for example would be better.")]
-        public static MvcHtmlString XmlDocContainedHtml(this HtmlHelper helper, XmlDocNode node){
-            if (node.HasChildren)
-                return helper.XmlDocHtml(node.Children);
-            return MvcHtmlString.Empty;
         }
 
         public static MvcHtmlString XmlDocHtml(this HtmlHelper helper, IEnumerable<XmlDocNode> nodes){
@@ -116,7 +189,15 @@ namespace DandyDoc.Web.Mvc4.Helpers
                         helper.XmlDocHtml(element.Children),
                         element.CRef);
                 }
-                // TODO: try to use the repository to get a short name
+
+                var repository = helper.ViewBag.CodeDocEntityRepository as ICodeDocEntityRepository;
+                if (repository != null) {
+                    var targetModel = repository.GetSimpleEntity(new CRefIdentifier(element.CRef));
+                    if (targetModel != null) {
+                        return helper.ActionLink(targetModel);
+                    }
+                }
+
                 return helper.CRefActionLink(
                     new MvcHtmlString(element.CRef),
                     element.CRef);
@@ -204,6 +285,86 @@ namespace DandyDoc.Web.Mvc4.Helpers
             return new MvcHtmlString(listTag.ToString());
         }
 
+        public static MvcHtmlString CodeDocParameterDetails(this HtmlHelper helper, ICodeDocParameter parameter) {
+            var htmlBuilder = new StringBuilder();
+            if (parameter.HasSummaryContents) {
+                htmlBuilder.Append("<div>");
+                htmlBuilder.Append(helper.XmlDocHtml(parameter.SummaryContents));
+                htmlBuilder.Append("</div>");
+            }
+            htmlBuilder.Append("<div>Type: ");
+            htmlBuilder.Append(helper.ActionLink(parameter.ParameterType));
+            htmlBuilder.Append("</div>");
+            // TODO: Flair
+            // TODO: Ref/Out params (taken care of by flair?)
+            return new MvcHtmlString(htmlBuilder.ToString());
+        }
+
+        public static MvcHtmlString CodeDocParameters(this HtmlHelper helper, IEnumerable<ICodeDocParameter> parameters) {
+            var tagBuilder = new TagBuilder("dl");
+            var innerHtmlBuilder = new StringBuilder();
+            foreach (var parameter in parameters) {
+                innerHtmlBuilder.Append("<dt>");
+                innerHtmlBuilder.Append(HttpUtility.HtmlEncode(parameter.Name));
+                innerHtmlBuilder.Append("</dt><dd>");
+                innerHtmlBuilder.Append(helper.CodeDocParameterDetails(parameter));
+                innerHtmlBuilder.Append("</dd>");
+
+            }
+            tagBuilder.InnerHtml = innerHtmlBuilder.ToString();
+            return new MvcHtmlString(tagBuilder.ToString());
+        }
+
+        public static MvcHtmlString CodeDocParameters(this HtmlHelper helper, IEnumerable<ICodeDocGenericParameter> parameters) {
+            var tagBuilder = new TagBuilder("dl");
+            var innerHtmlBuilder = new StringBuilder();
+            foreach (var parameter in parameters) {
+                innerHtmlBuilder.Append("<dt>");
+                innerHtmlBuilder.Append(parameter.Name);
+                innerHtmlBuilder.Append("</dt><dd>");
+
+                if (parameter.HasSummaryContents) {
+                    innerHtmlBuilder.Append("<p>");
+                    innerHtmlBuilder.Append(helper.XmlDocHtml(parameter.SummaryContents));
+                    innerHtmlBuilder.Append("</p>");
+                }
+
+                if (parameter.IsContravariant)
+                    innerHtmlBuilder.Append("<div><i class=\"icon-random\"></i>Contravariant: Type is used for input and can be used with a more specific type.</div>");
+                if (parameter.IsCovariant)
+                    innerHtmlBuilder.Append("<div><i class=\"icon-random\"></i>Covariant: Type is used for output and can be used as a more general type.</div>");
+
+                if (parameter.HasAnyConstraints) {
+                    innerHtmlBuilder.Append("<div>Constraints:<ul>");
+
+                    if (parameter.HasDefaultConstructorConstraint)
+                        innerHtmlBuilder.Append("<li>Default Constructor</li>");
+
+                    if (parameter.HasNotNullableValueTypeConstraint)
+                        ;//innerHtmlBuilder.Append("<li>Value Type</li>");
+                    else if (parameter.HasReferenceTypeConstraint)
+                        innerHtmlBuilder.Append("<li>Reference Type</li>");
+
+                    if (parameter.HasTypeConstraints) {
+                        foreach (var typeConstraint in parameter.TypeConstraints) {
+                            innerHtmlBuilder.Append("<li>");
+                            innerHtmlBuilder.Append(helper.ActionLink(typeConstraint));
+                            innerHtmlBuilder.Append("</li>");
+                        }
+                    }
+
+                    innerHtmlBuilder.Append("</ul></div>");
+                }
+
+                innerHtmlBuilder.Append("</dd>");
+            }
+            tagBuilder.InnerHtml = innerHtmlBuilder.ToString();
+            return new MvcHtmlString(tagBuilder.ToString());
+        }
+
+        public static MvcHtmlString CodeDocExceptions(this HtmlHelper helper, IEnumerable<ICodeDocException> exceptions) {
+            throw new NotImplementedException();
+        }
 
     }
 }

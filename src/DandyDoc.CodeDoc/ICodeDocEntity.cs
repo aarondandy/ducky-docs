@@ -1,4 +1,6 @@
-﻿using DandyDoc.CRef;
+﻿using System;
+using System.Collections.Generic;
+using DandyDoc.CRef;
 using DandyDoc.XmlDoc;
 
 namespace DandyDoc.CodeDoc
@@ -21,6 +23,10 @@ namespace DandyDoc.CodeDoc
         bool HasSummary { get; }
 
         XmlDocElement Summary { get; }
+
+        bool HasSummaryContents { get; }
+
+        IList<XmlDocNode> SummaryContents { get; }
 
         bool IsStatic { get; }
 

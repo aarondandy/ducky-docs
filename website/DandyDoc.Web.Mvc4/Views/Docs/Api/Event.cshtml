@@ -1,0 +1,7 @@
+﻿@using DandyDoc.Web.Mvc4.Helpers;
+@model DandyDoc.CodeDoc.ICodeDocEvent
+@{Layout = "./_Layout.cshtml";}
+<dl>
+	<dt>Type</dt>
+	<dd>@Html.ActionLink(Model.DelegateType)</dd>
+</dl>

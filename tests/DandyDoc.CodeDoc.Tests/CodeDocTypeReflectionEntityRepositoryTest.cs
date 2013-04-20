@@ -55,11 +55,16 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual("Class1", model.Title);
             Assert.AreEqual("Class", model.SubTitle);
             Assert.AreEqual("TestLibrary1", model.NamespaceName);
+            Assert.IsNotNull(model.Namespace);
+            Assert.AreEqual("N:TestLibrary1", model.Namespace.CRef.FullCRef);
+            Assert.IsNotNull(model.Assembly);
+            Assert.AreEqual("A:" + typeof(Class1).Assembly.FullName, model.Assembly.CRef.FullCRef);
             Assert.IsTrue(model.HasBaseChain);
             Assert.AreEqual(
                 new[] {new CRefIdentifier("T:System.Object")},
-                model.BaseChainCRefs);
+                model.BaseChain.Select(x => x.CRef).ToArray());
             Assert.IsFalse(model.HasDirectInterfaces);
+            Assert.IsNull(model.DeclaringType);
         }
 
         [Test]
@@ -160,11 +165,11 @@ namespace DandyDoc.CodeDoc.Tests
                     new CRefIdentifier("T:System.ValueType"),
                     new CRefIdentifier("T:System.Object")
                 },
-                model.BaseChainCRefs);
+                model.BaseChain.Select(x => x.CRef).ToArray());
             Assert.IsTrue(model.HasDirectInterfaces);
-            Assert.That(model.DirectInterfaceCRefs, Contains.Item(new CRefIdentifier("T:System.IComparable")));
-            Assert.That(model.DirectInterfaceCRefs, Contains.Item(new CRefIdentifier("T:System.IConvertible")));
-            Assert.That(model.DirectInterfaceCRefs, Contains.Item(new CRefIdentifier("T:System.IFormattable")));
+            Assert.That(model.DirectInterfaces.Select(x => x.CRef), Contains.Item(new CRefIdentifier("T:System.IComparable")));
+            Assert.That(model.DirectInterfaces.Select(x => x.CRef), Contains.Item(new CRefIdentifier("T:System.IConvertible")));
+            Assert.That(model.DirectInterfaces.Select(x => x.CRef), Contains.Item(new CRefIdentifier("T:System.IFormattable")));
         }
 
         [Test]
@@ -178,6 +183,10 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual("Inner", model.Title);
             Assert.AreEqual("Class", model.SubTitle);
             Assert.AreEqual("TestLibrary1", model.NamespaceName);
+            Assert.IsNotNull(model.Namespace);
+            Assert.AreEqual("N:TestLibrary1", model.Namespace.CRef.FullCRef);
+            Assert.IsNotNull(model.DeclaringType);
+            Assert.AreEqual("T:TestLibrary1.Class1", model.DeclaringType.CRef.FullCRef);
 
             Assert.IsFalse(model.HasSummary);
             Assert.IsFalse(model.HasExamples);
@@ -190,7 +199,7 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.IsTrue(model.HasBaseChain);
             Assert.AreEqual(
                 new[] {new CRefIdentifier("T:System.Object")},
-                model.BaseChainCRefs);
+                model.BaseChain.Select(x => x.CRef).ToArray());
             Assert.IsFalse(model.HasDirectInterfaces);
         }
 
@@ -200,6 +209,7 @@ namespace DandyDoc.CodeDoc.Tests
                 .GetContentEntity("TestLibrary1.Generic1`2") as CodeDocType;
             Assert.IsNotNull(model);
             Assert.AreEqual("Generic1<TA, TB>", model.ShortName);
+            Assert.IsNull(model.DeclaringType);
             
             Assert.IsTrue(model.HasGenericParameters);
             Assert.AreEqual(2, model.GenericParameters.Count);
@@ -216,7 +226,7 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.IsTrue(model.GenericParameters[0].HasNotNullableValueTypeConstraint);
             Assert.IsTrue(model.GenericParameters[0].HasTypeConstraints);
             Assert.AreEqual(1, model.GenericParameters[0].TypeConstraints.Count);
-            Assert.AreEqual("T:System.ValueType", model.GenericParameters[0].TypeConstraints[0].FullCRef);
+            Assert.AreEqual("T:System.ValueType", model.GenericParameters[0].TypeConstraints[0].CRef.FullCRef);
 
             Assert.AreEqual("TB", model.GenericParameters[1].Name);
             Assert.IsTrue(model.GenericParameters[1].HasSummary);
@@ -232,7 +242,7 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual(1, model.GenericParameters[1].TypeConstraints.Count);
             // TODO: this CRef could be a problem, need a solution... without context what is `0?
             // TODO: perhaps this would be better as an ICodeDocEntity
-            Assert.AreEqual("T:System.Collections.Generic.IEnumerable{`0}", model.GenericParameters[1].TypeConstraints[0].FullCRef);
+            Assert.AreEqual("T:System.Collections.Generic.IEnumerable{`0}", model.GenericParameters[1].TypeConstraints[0].CRef.FullCRef);
         }
 
         [Test]
@@ -266,7 +276,7 @@ namespace DandyDoc.CodeDoc.Tests
                     new CRefIdentifier("T:System.Collections.Generic.IEnumerable{System.Int32}"),
                     new CRefIdentifier("T:System.IDisposable")
                 },
-                model.GenericParameters[0].TypeConstraints);
+                model.GenericParameters[0].TypeConstraints.Select(x => x.CRef).ToArray());
         }
 
         [Test]
@@ -277,11 +287,13 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual(new CRefIdentifier("F:TestLibrary1.Class1.SomeClasses"), field.CRef);
             Assert.AreEqual("SomeClasses", field.ShortName);
             Assert.AreEqual("Field", field.SubTitle);
-            Assert.AreEqual(new CRefIdentifier("T:TestLibrary1.Class1[]"), field.ValueTypeCRef);
+            Assert.AreEqual(new CRefIdentifier("T:TestLibrary1.Class1[]"), field.ValueType.CRef);
             Assert.IsFalse(field.HasValueDescription);
             Assert.IsFalse(field.IsLiteral);
             Assert.IsFalse(field.IsInitOnly);
             Assert.IsFalse(field.IsStatic);
+            Assert.IsNotNull(field.DeclaringType);
+            Assert.AreEqual("T:TestLibrary1.Class1", field.DeclaringType.CRef.FullCRef);
         }
 
         [Test]
@@ -292,7 +304,11 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual(new CRefIdentifier("F:TestLibrary1.Class1.SomeNullableInt"), field.CRef);
             Assert.AreEqual("SomeNullableInt", field.ShortName);
             Assert.AreEqual("Field", field.SubTitle);
-            Assert.AreEqual(new CRefIdentifier("T:System.Nullable{System.Int32}"), field.ValueTypeCRef);
+            Assert.AreEqual(new CRefIdentifier("T:System.Nullable{System.Int32}"), field.ValueType.CRef);
+            Assert.IsNotNull(field.Namespace);
+            Assert.AreEqual("N:TestLibrary1", field.Namespace.CRef.FullCRef);
+            Assert.IsNotNull(field.Assembly);
+            Assert.AreEqual("A:" + typeof(Class1).Assembly.FullName, field.Assembly.CRef.FullCRef);
             Assert.IsFalse(field.HasValueDescription);
             Assert.IsFalse(field.IsLiteral);
             Assert.IsFalse(field.IsInitOnly);
@@ -307,7 +323,7 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual(new CRefIdentifier("F:TestLibrary1.Class1.MyConst"), field.CRef);
             Assert.AreEqual("MyConst", field.ShortName);
             Assert.AreEqual("Constant", field.SubTitle);
-            Assert.AreEqual(new CRefIdentifier("T:System.Int32"), field.ValueTypeCRef);
+            Assert.AreEqual(new CRefIdentifier("T:System.Int32"), field.ValueType.CRef);
             Assert.IsTrue(field.HasValueDescription);
             Assert.AreEqual("1", field.ValueDescription.Node.InnerText.Trim());
             Assert.IsTrue(field.IsLiteral);
@@ -323,7 +339,7 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual(new CRefIdentifier("F:TestLibrary1.Class1.SomeField"), field.CRef);
             Assert.AreEqual("SomeField", field.ShortName);
             Assert.AreEqual("Field", field.SubTitle);
-            Assert.AreEqual(new CRefIdentifier("T:System.Double"), field.ValueTypeCRef);
+            Assert.AreEqual(new CRefIdentifier("T:System.Double"), field.ValueType.CRef);
             Assert.IsTrue(field.HasValueDescription);
             Assert.AreEqual("A double value.", field.ValueDescription.Node.InnerText);
             Assert.IsFalse(field.IsLiteral);
@@ -339,7 +355,7 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual(new CRefIdentifier("F:TestLibrary1.Class1.ReadonlyField"), field.CRef);
             Assert.AreEqual("ReadonlyField", field.ShortName);
             Assert.AreEqual("Field", field.SubTitle);
-            Assert.AreEqual(new CRefIdentifier("T:System.Int32"), field.ValueTypeCRef);
+            Assert.AreEqual(new CRefIdentifier("T:System.Int32"), field.ValueType.CRef);
             Assert.IsFalse(field.HasValueDescription);
             Assert.IsFalse(field.IsLiteral);
             Assert.IsTrue(field.IsInitOnly);
@@ -356,13 +372,17 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual("Method", method.SubTitle);
             Assert.IsFalse(method.IsStatic);
             Assert.IsFalse(method.HasReturn);
+            Assert.IsNotNull(method.Namespace);
+            Assert.AreEqual("N:TestLibrary1", method.Namespace.CRef.FullCRef);
+            Assert.IsNotNull(method.Assembly);
+            Assert.AreEqual("A:" + typeof(Class1).Assembly.FullName, method.Assembly.CRef.FullCRef);
             
             Assert.IsTrue(method.HasParameters);
             Assert.AreEqual(2, method.Parameters.Count);
             Assert.AreEqual("a", method.Parameters[0].Name);
-            Assert.AreEqual("T:System.Nullable{System.Int32}", method.Parameters[0].TypeCRef.FullCRef);
+            Assert.AreEqual("T:System.Nullable{System.Int32}", method.Parameters[0].ParameterType.CRef.FullCRef);
             Assert.AreEqual("someClass", method.Parameters[1].Name);
-            Assert.AreEqual("T:TestLibrary1.Class1[]", method.Parameters[1].TypeCRef.FullCRef);
+            Assert.AreEqual("T:TestLibrary1.Class1[]", method.Parameters[1].ParameterType.CRef.FullCRef);
 
             Assert.IsTrue(method.HasExceptions);
             Assert.AreEqual(1, method.Exceptions.Count);
@@ -383,10 +403,13 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.IsFalse(method.IsStatic);
             Assert.IsFalse(method.HasReturn);
 
+            Assert.IsNotNull(method.DeclaringType);
+            Assert.AreEqual("T:TestLibrary1.Class1", method.DeclaringType.CRef.FullCRef);
+
             Assert.IsTrue(method.HasParameters);
             Assert.AreEqual(1, method.Parameters.Count);
             Assert.AreEqual("crap", method.Parameters[0].Name);
-            Assert.AreEqual("T:System.String", method.Parameters[0].TypeCRef.FullCRef);
+            Assert.AreEqual("T:System.String", method.Parameters[0].ParameterType.CRef.FullCRef);
         }
 
         [Test]
@@ -399,14 +422,14 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual("Method", method.SubTitle);
             Assert.IsTrue(method.IsStatic);
             Assert.IsTrue(method.HasReturn);
-            Assert.AreEqual("T:System.Double", method.Return.TypeCRef.FullCRef);
+            Assert.AreEqual("T:System.Double", method.Return.ParameterType.CRef.FullCRef);
             Assert.IsTrue(method.Return.HasSummary);
             Assert.AreEqual("The result of doubling the value.", method.Return.Summary.Node.InnerText);
 
             Assert.IsTrue(method.HasParameters);
             Assert.AreEqual(1, method.Parameters.Count);
             Assert.AreEqual("n", method.Parameters[0].Name);
-            Assert.AreEqual("T:System.Double", method.Parameters[0].TypeCRef.FullCRef);
+            Assert.AreEqual("T:System.Double", method.Parameters[0].ParameterType.CRef.FullCRef);
             Assert.IsTrue(method.Parameters[0].HasSummary);
             Assert.AreEqual("The value to double.", method.Parameters[0].Summary.Node.InnerText);
         }
@@ -452,6 +475,8 @@ namespace DandyDoc.CodeDoc.Tests
             var method = TestLibrary1Repository.GetContentEntity(
                 "M:TestLibrary1.Generic1`2.AMix``1(`0,``0)") as CodeDocMethod;
             Assert.IsNotNull(method);
+            Assert.IsNotNull(method.DeclaringType);
+            Assert.AreEqual("T:TestLibrary1.Generic1`2", method.DeclaringType.CRef.FullCRef);
 
             Assert.IsTrue(method.HasGenericParameters);
             Assert.AreEqual(1, method.GenericParameters.Count);
@@ -472,7 +497,7 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual("some stuff", method.GenericParameters[0].Summary.Node.InnerText);
             Assert.IsTrue(method.GenericParameters[0].HasTypeConstraints);
             Assert.AreEqual(1, method.GenericParameters[0].TypeConstraints.Count);
-            Assert.AreEqual("T:System.IConvertible", method.GenericParameters[0].TypeConstraints[0].FullCRef);
+            Assert.AreEqual("T:System.IConvertible", method.GenericParameters[0].TypeConstraints[0].CRef.FullCRef);
         }
 
         [Test]
@@ -480,6 +505,8 @@ namespace DandyDoc.CodeDoc.Tests
             var type = TestLibrary1Repository.GetContentEntity(
                 "T:TestLibrary1.Class1.MyFunc") as CodeDocDelegate;
             Assert.IsNotNull(type);
+            Assert.IsNotNull(type.DeclaringType);
+            Assert.AreEqual("T:TestLibrary1.Class1", type.DeclaringType.CRef.FullCRef);
             Assert.IsTrue(type.HasSummary);
             Assert.That(type.Summary.Node.InnerText.Contains("My delegate."));
             Assert.IsTrue(type.HasRemarks);
@@ -489,12 +516,12 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual(2, type.Parameters.Count);
             Assert.AreEqual("a", type.Parameters[0].Name);
             Assert.AreEqual("param a", type.Parameters[0].Summary.Node.InnerText);
-            Assert.AreEqual("T:System.Int32", type.Parameters[0].TypeCRef.FullCRef);
+            Assert.AreEqual("T:System.Int32", type.Parameters[0].ParameterType.CRef.FullCRef);
             Assert.AreEqual("b", type.Parameters[1].Name);
             Assert.AreEqual("param b", type.Parameters[1].Summary.Node.InnerText);
-            Assert.AreEqual("T:System.Int32", type.Parameters[1].TypeCRef.FullCRef);
+            Assert.AreEqual("T:System.Int32", type.Parameters[1].ParameterType.CRef.FullCRef);
             Assert.IsTrue(type.HasReturn);
-            Assert.AreEqual("T:System.Int32", type.Return.TypeCRef.FullCRef);
+            Assert.AreEqual("T:System.Int32", type.Return.ParameterType.CRef.FullCRef);
             Assert.AreEqual("some int", type.Return.Summary.Node.InnerText);
         }
 
@@ -514,12 +541,18 @@ namespace DandyDoc.CodeDoc.Tests
             var evt = TestLibrary1Repository.GetContentEntity(
                 "TestLibrary1.Class1.DoStuff") as CodeDocEvent;
             Assert.IsNotNull(evt);
+            Assert.IsNotNull(evt.DeclaringType);
+            Assert.IsNotNull(evt.Namespace);
+            Assert.AreEqual("N:TestLibrary1", evt.Namespace.CRef.FullCRef);
+            Assert.IsNotNull(evt.Assembly);
+            Assert.AreEqual("A:" + typeof(Class1).Assembly.FullName, evt.Assembly.CRef.FullCRef);
+            Assert.AreEqual("T:TestLibrary1.Class1", evt.DeclaringType.CRef.FullCRef);
             Assert.AreEqual("DoStuff", evt.ShortName);
             Assert.AreEqual("DoStuff", evt.Title);
             Assert.AreEqual("Event", evt.SubTitle);
             Assert.AreEqual("E:TestLibrary1.Class1.DoStuff", evt.CRef.FullCRef);
             Assert.AreEqual("TestLibrary1.Class1.DoStuff", evt.FullName);
-            Assert.AreEqual("T:TestLibrary1.Class1.MyFunc", evt.DelegateCRef.FullCRef);
+            Assert.AreEqual("T:TestLibrary1.Class1.MyFunc", evt.DelegateType.CRef.FullCRef);
             Assert.IsTrue(evt.HasSummary);
             Assert.That(evt.Summary.Node.InnerText.Contains("My event!"));
             Assert.IsTrue(evt.HasRemarks);
@@ -532,6 +565,12 @@ namespace DandyDoc.CodeDoc.Tests
             var prop = TestLibrary1Repository.GetContentEntity(
                 "TestLibrary1.Class1.HasTableInRemarks") as CodeDocProperty;
             Assert.IsNotNull(prop);
+            Assert.IsNotNull(prop.DeclaringType);
+            Assert.IsNotNull(prop.Namespace);
+            Assert.AreEqual("N:TestLibrary1", prop.Namespace.CRef.FullCRef);
+            Assert.IsNotNull(prop.Assembly);
+            Assert.AreEqual("A:" + typeof(Class1).Assembly.FullName, prop.Assembly.CRef.FullCRef);
+            Assert.AreEqual("T:TestLibrary1.Class1", prop.DeclaringType.CRef.FullCRef);
             Assert.AreEqual("HasTableInRemarks", prop.Title);
             Assert.AreEqual("HasTableInRemarks", prop.ShortName);
             Assert.AreEqual("Property", prop.SubTitle);
@@ -551,7 +590,7 @@ namespace DandyDoc.CodeDoc.Tests
                 "TestLibrary1.Class1.Item(System.Int32)") as CodeDocProperty;
             Assert.IsNotNull(prop);
 
-            Assert.AreEqual("T:System.Int32", prop.ValueTypeCRef.FullCRef);
+            Assert.AreEqual("T:System.Int32", prop.ValueType.CRef.FullCRef);
             Assert.IsTrue(prop.HasSummary);
             Assert.IsTrue(prop.HasValueDescription);
             Assert.AreEqual("Some number.", prop.ValueDescription.Node.InnerText);
@@ -559,7 +598,7 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.IsTrue(prop.HasParameters);
             Assert.AreEqual(1, prop.Parameters.Count);
             Assert.AreEqual("n", prop.Parameters[0].Name);
-            Assert.AreEqual("T:System.Int32", prop.Parameters[0].TypeCRef.FullCRef);
+            Assert.AreEqual("T:System.Int32", prop.Parameters[0].ParameterType.CRef.FullCRef);
             Assert.IsTrue(prop.Parameters[0].HasSummary);
             Assert.AreEqual("an index", prop.Parameters[0].Summary.Node.InnerText);
 

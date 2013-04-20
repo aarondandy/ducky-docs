@@ -1,4 +1,4 @@
-﻿using DandyDoc.CRef;
+﻿using System.Collections.Generic;
 using DandyDoc.XmlDoc;
 
 namespace DandyDoc.CodeDoc
@@ -8,11 +8,15 @@ namespace DandyDoc.CodeDoc
 
         string Name { get; }
 
-        CRefIdentifier TypeCRef { get; }
+        ICodeDocEntity ParameterType { get; }
 
         bool HasSummary { get; }
 
         XmlDocElement Summary { get; }
+
+        bool HasSummaryContents { get; }
+
+        IList<XmlDocNode> SummaryContents { get; }
 
         bool IsOut { get; }
 

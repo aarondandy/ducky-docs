@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using DandyDoc.CRef;
+﻿using DandyDoc.CRef;
 using System.Diagnostics.Contracts;
 
 namespace DandyDoc.CodeDoc
@@ -14,7 +10,7 @@ namespace DandyDoc.CodeDoc
             Contract.Requires(cRef != null);
         }
 
-        public CRefIdentifier DelegateCRef { get; set; }
+        public ICodeDocEntity DelegateType { get; set; }
 
     }
 }

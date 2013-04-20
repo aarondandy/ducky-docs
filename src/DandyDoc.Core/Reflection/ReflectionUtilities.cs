@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using DandyDoc.Utility;
@@ -19,6 +20,14 @@ namespace DandyDoc.Reflection
                 return uri.AbsolutePath;
 
             return assembly.Location;
+        }
+
+        public static string GetFileName(this Assembly assembly) {
+            Contract.Requires(assembly != null);
+            var assemblyFilePath = assembly.GetFilePath();
+            if (String.IsNullOrWhiteSpace(assemblyFilePath))
+                return String.Empty;
+            return Path.GetFileName(assemblyFilePath);
         }
 
         public static bool IsStatic(this PropertyInfo propertyInfo){

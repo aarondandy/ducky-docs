@@ -11,15 +11,13 @@ namespace DandyDoc.CodeDoc
             Contract.Requires(cRef != null);
         }
 
-        public CRefIdentifier BaseCRef { get; set; }
+        public bool HasBaseChain { get { return BaseChain != null && BaseChain.Count > 0; } }
 
-        public bool HasBaseChain { get { return BaseChainCRefs != null && BaseChainCRefs.Count > 0; } }
+        public IList<ICodeDocEntity> BaseChain { get; set; }
 
-        public IList<CRefIdentifier> BaseChainCRefs { get; set; }
+        public bool HasDirectInterfaces { get { return DirectInterfaces != null && DirectInterfaces.Count > 0; } }
 
-        public bool HasDirectInterfaces { get { return DirectInterfaceCRefs != null && DirectInterfaceCRefs.Count > 0; } }
-
-        public IList<CRefIdentifier> DirectInterfaceCRefs { get; set; }
+        public IList<ICodeDocEntity> DirectInterfaces { get; set; }
 
         public bool HasGenericParameters { get { return GenericParameters != null && GenericParameters.Count > 0; } }
 

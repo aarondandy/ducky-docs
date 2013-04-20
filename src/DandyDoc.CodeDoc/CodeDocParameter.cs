@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using DandyDoc.CRef;
 using DandyDoc.XmlDoc;
 
@@ -7,16 +9,15 @@ namespace DandyDoc.CodeDoc
     public class CodeDocParameter : ICodeDocParameter
     {
 
-        public CodeDocParameter(string name, CRefIdentifier typeCRef, XmlDocElement summary = null) {
+        public CodeDocParameter(string name, ICodeDocEntity parameterType, XmlDocElement summary = null) {
             Name = name;
-            TypeCRef = typeCRef;
+            ParameterType = parameterType;
             Summary = summary;
         }
 
         public string Name { get; private set; }
 
-        [Obsolete("Should be a CodeDoc model")]
-        public CRefIdentifier TypeCRef { get; private set; }
+        public ICodeDocEntity ParameterType { get; private set; }
 
         public bool HasSummary {
             get {
@@ -26,6 +27,19 @@ namespace DandyDoc.CodeDoc
         }
 
         public XmlDocElement Summary { get; private set; }
+
+        public bool HasSummaryContents {
+            get { return Summary != null && Summary.HasChildren; }
+        }
+
+        public IList<XmlDocNode> SummaryContents {
+            get {
+                Contract.Ensures(Contract.Result<IList<XmlDocNode>>() != null);
+                return HasSummaryContents
+                    ? Summary.Children
+                    : new XmlDocNode[0];
+            }
+        }
 
         public bool IsOut { get; set; }
 

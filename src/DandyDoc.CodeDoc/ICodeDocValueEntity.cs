@@ -1,5 +1,4 @@
-﻿using System;
-using DandyDoc.CRef;
+﻿using System.Collections.Generic;
 using DandyDoc.XmlDoc;
 
 namespace DandyDoc.CodeDoc
@@ -7,12 +6,15 @@ namespace DandyDoc.CodeDoc
     public interface ICodeDocValueEntity
     {
 
-        [Obsolete("Should be an ICodeDocEntity")]
-        CRefIdentifier ValueTypeCRef { get; }
+        ICodeDocEntity ValueType { get; }
 
         bool HasValueDescription { get; }
 
         XmlDocElement ValueDescription { get; }
+
+        bool HasValueDescriptionContents { get; }
+
+        IList<XmlDocNode> ValueDescriptionContents { get; }
 
     }
 }

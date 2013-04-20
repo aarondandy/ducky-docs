@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using DandyDoc.CRef;
 using DandyDoc.XmlDoc;
@@ -12,8 +12,7 @@ namespace DandyDoc.CodeDoc
             Contract.Requires(cRef != null);
         }
 
-        [Obsolete("Should be a CodeDocSimpleEntity")]
-        public CRefIdentifier ValueTypeCRef { get; set; }
+        public ICodeDocEntity ValueType { get; set; }
 
         public bool HasValueDescription{
             get {
@@ -23,6 +22,17 @@ namespace DandyDoc.CodeDoc
         }
 
         public XmlDocElement ValueDescription { get { return XmlDocs == null ? null : XmlDocs.ValueElement; } }
+
+        public bool HasValueDescriptionContents { get { return XmlDocs != null && XmlDocs.HasValueContents; } }
+
+        public IList<XmlDocNode> ValueDescriptionContents {
+            get {
+                Contract.Ensures(Contract.Result<IList<XmlDocNode>>() != null);
+                return XmlDocs != null && XmlDocs.HasValueContents
+                    ? XmlDocs.ValueContents
+                    : new XmlDocNode[0];
+            }
+        }
 
         public bool IsLiteral { get; set; }
 
