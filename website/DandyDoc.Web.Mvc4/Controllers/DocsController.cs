@@ -48,6 +48,8 @@ namespace DandyDoc.Web.Mvc4.Controllers
                 return View("Api/Field", model);
             if (model is ICodeDocMethod)
                 return View("Api/Method", model);
+            if (model is ICodeDocProperty)
+                return View("Api/Property", model);
 
             return HttpNotFound();
         }

@@ -422,7 +422,7 @@ namespace DandyDoc.Web.Mvc4.Helpers
             return new MvcHtmlString(tagBuilder.ToString());
         }
 
-        public static MvcHtmlString CodeDocSimpleEnsuresTable(this HtmlHelper helper, IEnumerable<XmlDocContractElement> ensures, object tableTagAttributes = null) {
+        public static MvcHtmlString CodeDocSimpleCodeContractTable(this HtmlHelper helper, IEnumerable<XmlDocContractElement> contracts, object tableTagAttributes = null) {
             var tagBuilder = new TagBuilder("table");
 
             if (tableTagAttributes == null)
@@ -431,11 +431,11 @@ namespace DandyDoc.Web.Mvc4.Helpers
                 tagBuilder.MergeAttributes(new RouteValueDictionary(tableTagAttributes));
 
             var innerHtmlBuilder = new StringBuilder("<thead><tr><th>Description</th><th>Code</th></tr></thead><tbody>");
-            foreach(var assurance in ensures){
+            foreach (var contract in contracts) {
                 innerHtmlBuilder.Append("<tr><td>");
-                innerHtmlBuilder.Append(helper.XmlDocHtml(assurance.Children));
+                innerHtmlBuilder.Append(helper.XmlDocHtml(contract.Children));
                 innerHtmlBuilder.Append("</td><td>");
-                var code = assurance.CSharp ?? assurance.VisualBasic;
+                var code = contract.CSharp ?? contract.VisualBasic;
                 if(!String.IsNullOrWhiteSpace(code)){
                     innerHtmlBuilder.Append("<code>");
                     innerHtmlBuilder.Append(HttpUtility.HtmlEncode(code));
@@ -446,6 +446,32 @@ namespace DandyDoc.Web.Mvc4.Helpers
             innerHtmlBuilder.Append("</tbody>");
             tagBuilder.InnerHtml = innerHtmlBuilder.ToString();
             return new MvcHtmlString(tagBuilder.ToString());
+        }
+
+        public static MvcHtmlString CodeDocAccessor(this HtmlHelper helper, ICodeDocMethod accessor) {
+            // TODO: flair
+            var htmlBuilder = new StringBuilder();
+            if (accessor.HasExceptions) {
+                htmlBuilder.Append("<section><h3>Exceptions</h3>");
+                htmlBuilder.Append(helper.CodeDocExceptions(accessor.Exceptions));
+                htmlBuilder.Append("</section>");
+            }
+            if (accessor.HasRequires) {
+                htmlBuilder.Append("<section><h3>Requires</h3>");
+                htmlBuilder.Append(helper.CodeDocSimpleCodeContractTable(accessor.Requires));
+                htmlBuilder.Append("</section>");
+            }
+            if (accessor.HasNormalTerminationEnsures) {
+                htmlBuilder.Append("<section><h3>Ensures on Successful Execution</h3>");
+                htmlBuilder.Append(helper.CodeDocSimpleCodeContractTable(accessor.NormalTerminationEnsures));
+                htmlBuilder.Append("</section>");
+            }
+            return new MvcHtmlString(htmlBuilder.ToString());
+        }
+
+        public static bool CodeDocAccessorIsWorthDisplaying(ICodeDocMethod accessor) {
+            // TODO: flair would be a reason as well
+            return accessor.HasExceptions || accessor.HasNormalTerminationEnsures || accessor.HasRequires;
         }
 
     }

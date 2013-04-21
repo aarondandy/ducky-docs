@@ -494,12 +494,22 @@ namespace DandyDoc.CodeDoc
 
             var getterMethodInfo = propertyInfo.GetGetMethod(true);
             if (getterMethodInfo != null && MethodBaseFilter(getterMethodInfo, true)) {
-                model.Getter = ConvertToMethodEntity(getterMethodInfo);
+                var accessor = ConvertToMethodEntity(getterMethodInfo);
+                if (model.XmlDocs != null && model.XmlDocs.HasGetterElement) {
+                    accessor.XmlDocs = model.XmlDocs.GetterElement;
+                    ExpandCodeDocMethodXmlDocProperties(accessor);
+                }
+                model.Getter = accessor;
             }
 
             var setterMethodInfo = propertyInfo.GetSetMethod(true);
             if (setterMethodInfo != null && MethodBaseFilter(setterMethodInfo, true)) {
-                model.Setter = ConvertToMethodEntity(setterMethodInfo);
+                var accessor = ConvertToMethodEntity(setterMethodInfo);
+                if (model.XmlDocs != null && model.XmlDocs.HasSetterElement) {
+                    accessor.XmlDocs = model.XmlDocs.SetterElement;
+                    ExpandCodeDocMethodXmlDocProperties(accessor);
+                }
+                model.Setter = accessor;
             }
 
             model.ValueType = GetSimpleEntity(propertyInfo.PropertyType);
@@ -532,6 +542,60 @@ namespace DandyDoc.CodeDoc
             else
                 model.SubTitle = "Property";
 
+        }
+
+        private void ExpandCodeDocMethodXmlDocProperties(CodeDocMethod model) {
+            if (model.XmlDocs != null) {
+                if (model.XmlDocs.HasExceptionElements) {
+                    var exceptionLookup = new Dictionary<CRefIdentifier, CodeDocException>();
+                    foreach (var xmlDocException in model.XmlDocs.ExceptionElements) {
+                        var exceptionCRef = String.IsNullOrWhiteSpace(xmlDocException.CRef)
+                            ? new CRefIdentifier("T:")
+                            : new CRefIdentifier(xmlDocException.CRef);
+                        CodeDocException exceptionModel;
+                        if (!exceptionLookup.TryGetValue(exceptionCRef, out exceptionModel)) {
+                            exceptionModel = new CodeDocException(GetSimpleEntity(exceptionCRef) ?? CreateSimpleEntityTypePlaceholder(exceptionCRef));
+                            exceptionModel.Ensures = new List<XmlDocNode>();
+                            exceptionModel.Conditions = new List<XmlDocNode>();
+                            exceptionLookup.Add(exceptionCRef, exceptionModel);
+                        }
+                        var priorElement = xmlDocException.PriorElement;
+                        if (
+                            null != priorElement
+                            && String.Equals("ensuresOnThrow", priorElement.Name, StringComparison.OrdinalIgnoreCase)
+                            && priorElement.Element.GetAttribute("exception") == exceptionCRef.FullCRef
+                        ) {
+                            if (priorElement.HasChildren) {
+                                exceptionModel.Ensures.Add(priorElement);
+                            }
+                        }
+                        else {
+                            if (xmlDocException.HasChildren) {
+                                exceptionModel.Conditions.Add(xmlDocException);
+                            }
+                        }
+                    }
+
+                    var exceptionModels = exceptionLookup.Values
+                        .OrderBy(x => x.ExceptionType.CRef.FullCRef)
+                        .ToArray();
+
+                    foreach (var exceptionModel in exceptionModels) {
+                        // freeze collections
+                        exceptionModel.Ensures = new ReadOnlyCollection<XmlDocNode>(exceptionModel.Ensures.ToArray());
+                        exceptionModel.Conditions = new ReadOnlyCollection<XmlDocNode>(exceptionModel.Conditions.ToArray());
+                    }
+
+                    model.Exceptions = new ReadOnlyCollection<ICodeDocException>(exceptionModels);
+                }
+
+                if (model.XmlDocs.HasEnsuresElements) {
+                    model.Ensures = new ReadOnlyCollection<XmlDocContractElement>(model.XmlDocs.EnsuresElements.ToArray());
+                }
+                if (model.XmlDocs.HasRequiresElements) {
+                    model.Requires = new ReadOnlyCollection<XmlDocContractElement>(model.XmlDocs.RequiresElements.ToArray());
+                }
+            }
         }
 
         private CodeDocMethod ConvertToMethodEntity(MethodBase methodBase){
@@ -577,57 +641,7 @@ namespace DandyDoc.CodeDoc
                 }
             }
 
-            if (model.XmlDocs != null) {
-                if (model.XmlDocs.HasExceptionElements) {
-                    var exceptionLookup = new Dictionary<CRefIdentifier, CodeDocException>();
-                    foreach (var xmlDocException in model.XmlDocs.ExceptionElements) {
-                        var exceptionCRef = String.IsNullOrWhiteSpace(xmlDocException.CRef)
-                            ? new CRefIdentifier("T:")
-                            : new CRefIdentifier(xmlDocException.CRef);
-                        CodeDocException exceptionModel;
-                        if (!exceptionLookup.TryGetValue(exceptionCRef, out exceptionModel)) {
-                            exceptionModel = new CodeDocException(GetSimpleEntity(exceptionCRef) ?? CreateSimpleEntityTypePlaceholder(exceptionCRef));
-                            exceptionModel.Ensures = new List<XmlDocNode>();
-                            exceptionModel.Conditions = new List<XmlDocNode>();
-                            exceptionLookup.Add(exceptionCRef, exceptionModel);
-                        }
-                        var priorElement = xmlDocException.PriorElement;
-                        if (
-                            null != priorElement
-                            && String.Equals("ensuresOnThrow",priorElement.Name, StringComparison.OrdinalIgnoreCase)
-                            && priorElement.Element.GetAttribute("exception") == exceptionCRef.FullCRef
-                        ) {
-                            if (priorElement.HasChildren){
-                                exceptionModel.Ensures.Add(priorElement);
-                            }
-                        }
-                        else {
-                            if (xmlDocException.HasChildren) {
-                                exceptionModel.Conditions.Add(xmlDocException);
-                            }
-                        }
-                    }
-
-                    var exceptionModels = exceptionLookup.Values
-                        .OrderBy(x => x.ExceptionType.CRef.FullCRef)
-                        .ToArray();
-
-                    foreach (var exceptionModel in exceptionModels) {
-                        // freeze collections
-                        exceptionModel.Ensures = new ReadOnlyCollection<XmlDocNode>(exceptionModel.Ensures.ToArray());
-                        exceptionModel.Conditions = new ReadOnlyCollection<XmlDocNode>(exceptionModel.Conditions.ToArray());
-                    }
-
-                    model.Exceptions = new ReadOnlyCollection<ICodeDocException>(exceptionModels);
-                }
-
-                if (model.XmlDocs.HasEnsuresElements){
-                    model.Ensures = new ReadOnlyCollection<XmlDocContractElement>(model.XmlDocs.EnsuresElements.ToArray());
-                }
-                if (model.XmlDocs.HasRequiresElements){
-                    model.Requires = new ReadOnlyCollection<XmlDocContractElement>(model.XmlDocs.RequiresElements.ToArray());
-                }
-            }
+            ExpandCodeDocMethodXmlDocProperties(model);
 
             if (methodBase.IsGenericMethod){
                 var genericDefinition = methodBase.IsGenericMethodDefinition
@@ -788,7 +802,8 @@ namespace DandyDoc.CodeDoc
             var nestedTypeModels = new List<ICodeDocEntity>();
             var nestedDelegateModels = new List<ICodeDocEntity>();
             foreach (var nestedType in type.GetAllNestedTypes().Where(TypeFilter)) {
-                var nestedTypeModel = ConvertToSimpleEntity(nestedType);
+                var nestedTypeModel = ConvertToContentEntity(nestedType)
+                    ?? ConvertToSimpleEntity(nestedType);
                 if (nestedType.IsDelegateType())
                     nestedDelegateModels.Add(nestedTypeModel);
                 else
@@ -800,7 +815,8 @@ namespace DandyDoc.CodeDoc
             var methodModels = new List<ICodeDocEntity>();
             var operatorModels = new List<ICodeDocEntity>();
             foreach (var methodInfo in type.GetAllMethods().Where(MethodBaseFilter)) {
-                var methodModel = ConvertToSimpleEntity(methodInfo);
+                var methodModel = ConvertToContentEntity(methodInfo)
+                    ?? ConvertToSimpleEntity(methodInfo);
                 if (methodInfo.IsOperatorOverload())
                     operatorModels.Add(methodModel);
                 else
@@ -812,25 +828,25 @@ namespace DandyDoc.CodeDoc
             model.Constructors = new ReadOnlyCollection<ICodeDocEntity>(type
                 .GetAllConstructors()
                 .Where(MethodBaseFilter)
-                .Select(ConvertToSimpleEntity)
+                .Select(x => ConvertToContentEntity(x) ?? ConvertToSimpleEntity(x))
                 .ToArray());
 
             model.Properties = new ReadOnlyCollection<ICodeDocEntity>(type
                 .GetAllProperties()
                 .Where(PropertyInfoFilter)
-                .Select(ConvertToSimpleEntity)
+                .Select(x => ConvertToContentEntity(x) ?? ConvertToSimpleEntity(x))
                 .ToArray());
 
             model.Fields = new ReadOnlyCollection<ICodeDocEntity>(type
                 .GetAllFields()
                 .Where(FieldInfoFilter)
-                .Select(ConvertToSimpleEntity)
+                .Select(x => ConvertToContentEntity(x) ?? ConvertToSimpleEntity(x))
                 .ToArray());
 
             model.Events = new ReadOnlyCollection<ICodeDocEntity>(type
                 .GetAllEvents()
                 .Where(EventInfoFilter)
-                .Select(ConvertToSimpleEntity)
+                .Select(x => ConvertToContentEntity(x) ?? ConvertToSimpleEntity(x))
                 .ToArray());
 
             if (model is CodeDocDelegate){
