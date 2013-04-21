@@ -164,6 +164,7 @@ namespace TestLibrary1
 		/// <remarks>
 		/// Parameter <paramref name="a"/> is an int.
 		/// </remarks>
+		/// <exception cref="System.Exception">This could throw an exception maybe.</exception>
 		public delegate int MyFunc(int a, int b);
 
 		/// <summary>

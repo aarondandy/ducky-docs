@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using DandyDoc.CRef;
 using DandyDoc.XmlDoc;
 
 namespace DandyDoc.CodeDoc
@@ -9,18 +8,18 @@ namespace DandyDoc.CodeDoc
     public class CodeDocException : ICodeDocException
     {
 
-        public CodeDocException(CRefIdentifier cRef) {
-            if(cRef == null) throw new ArgumentNullException("cRef");
+        public CodeDocException(ICodeDocEntity exceptionType) {
+            if (exceptionType == null) throw new ArgumentNullException("exceptionType");
             Contract.EndContractBlock();
-            ExceptionCRef = cRef;
+            ExceptionType = exceptionType;
         }
 
         [ContractInvariantMethod]
         private void CodeContractInvariant() {
-            Contract.Invariant(ExceptionCRef != null);
+            Contract.Invariant(ExceptionType != null);
         }
 
-        public CRefIdentifier ExceptionCRef { get; private set; }
+        public ICodeDocEntity ExceptionType { get; private set; }
 
         public bool HasConditions { get { return Conditions != null && Conditions.Count > 0; } }
 

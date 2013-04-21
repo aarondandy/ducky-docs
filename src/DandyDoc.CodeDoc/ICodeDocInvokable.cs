@@ -42,7 +42,7 @@ namespace DandyDoc.CodeDoc
 
         bool HasNormalTerminationEnsures { get; }
 
-        IList<XmlDocContractElement> NormalTerminationEnsures { get; }
+        IEnumerable<XmlDocContractElement> NormalTerminationEnsures { get; }
 
         bool HasRequires { get; }
 

@@ -27,6 +27,9 @@ namespace DandyDoc.Web.Mvc4.Controllers
 
             var cRefIdentifier = new CRefIdentifier(cRef);
             var model = CodeDocEntityRepository.GetContentEntity(cRefIdentifier);
+            if (model == null)
+                return HttpNotFound();
+
             if (model is ICodeDocNamespace)
                 return View("Api/Namespace", model);
 
@@ -43,8 +46,10 @@ namespace DandyDoc.Web.Mvc4.Controllers
                 return View("Api/Event", model);
             if (model is ICodeDocField)
                 return View("Api/Field", model);
+            if (model is ICodeDocMethod)
+                return View("Api/Method", model);
 
-            throw new NotImplementedException();
+            return HttpNotFound();
         }
     }
 }

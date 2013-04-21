@@ -1,42 +1,48 @@
 ﻿@model IEnumerable<DandyDoc.SimpleModels.Contracts.IExceptionSimpleModel>
 <table class="table table-bordered table-condensed">
-	<thead><tr><th>Exception</th><th>Condition</th></tr></thead>
-	<tbody>
-	@foreach (var exception in Model){
-	<tr>
-		<td>@{Html.RenderPartial("DandyDoc/Partials/TypeLink", exception.ExceptionType);}</td>
-		<td>
-			@{
-				var conditions = exception.Conditions;
-				var ensures = exception.Ensures;
-				if (conditions.Count == 1 && ensures.Count == 0) {
-					Html.RenderPartial("DandyDoc/Partials/ComplexTextRender", conditions[0]);
-				}
-				else if(conditions.Count > 0 || ensures.Count > 0) {
-					var sets = new[] {
-						new {Title = "Conditions", Items = conditions},
-						new {Title = "Ensures", Items = ensures}
-					};
-			<dl>
-				@foreach (var set in sets.Where(s => s.Items.Count > 0)) {
-					<dt>@(set.Title):</dt>
-					<dd>
-						@if (set.Items.Count == 1) {
-							Html.RenderPartial("DandyDoc/Partials/ComplexTextRender", set.Items[0]);
-						}
-						else {
-							<ul>
-								@foreach(var item in set.Items){
-									<li>@{Html.RenderPartial("DandyDoc/Partials/ComplexTextRender", item);}</li>
-								}
-							</ul>
-						}
-					</dd>
-				}
-			</dl>
-				}
-			}
-		</td>
-	</tr>
-	}
-</tbody></table>
+  <thead>
+    <tr>
+      <th>Exception</th>
+      <th>Condition</th>
+    </tr>
+  </thead>
+  <tbody>
+    @foreach (var exception in Model) {
+      <tr>
+        <td>@{Html.RenderPartial("DandyDoc/Partials/TypeLink", exception.ExceptionType);}</td>
+        <td>
+          @{
+              var conditions = exception.Conditions;
+              var ensures = exception.Ensures;
+              if (conditions.Count == 1 && ensures.Count == 0) {
+                Html.RenderPartial("DandyDoc/Partials/ComplexTextRender", conditions[0]);
+              }
+              else if (conditions.Count > 0 || ensures.Count > 0) {
+                var sets = new[] {
+                  new {Title = "Conditions", Items = conditions},
+                  new {Title = "Ensures", Items = ensures}
+                };
+                <dl>
+                  @foreach (var set in sets.Where(s => s.Items.Count > 0)) {
+                    <dt>@(set.Title):</dt>
+                    <dd>
+                      @if (set.Items.Count == 1) {
+                        Html.RenderPartial("DandyDoc/Partials/ComplexTextRender", set.Items[0]);
+                      }
+                      else {
+                        <ul>
+                          @foreach (var item in set.Items) {
+                            <li>@{Html.RenderPartial("DandyDoc/Partials/ComplexTextRender", item);}</li>
+                          }
+                        </ul>
+                      }
+                    </dd>
+                  }
+                </dl>
+              }
+          }
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>

@@ -32,17 +32,17 @@ namespace DandyDoc.CodeDoc
 
         public bool HasNormalTerminationEnsures {
             get {
-                return Ensures != null
-                    && Ensures.Count > 0
-                    && NormalTerminationEnsures.Any(x => "ENSURES".Equals(x.Name, StringComparison.OrdinalIgnoreCase));
+                return HasEnsures
+                    && NormalTerminationEnsures.Any();
             }
         }
 
-        public IList<XmlDocContractElement> NormalTerminationEnsures {
+        public IEnumerable<XmlDocContractElement> NormalTerminationEnsures {
             get {
-                return Ensures == null
-                    ? null
-                    : Ensures.Where(x => "ENSURES".Equals(x.Name, StringComparison.OrdinalIgnoreCase)).ToArray();
+                Contract.Ensures(Contract.Result<IEnumerable<XmlDocContractElement>>() != null);
+                return HasEnsures
+                    ? Ensures.Where(x => "ENSURES".Equals(x.Name, StringComparison.OrdinalIgnoreCase))
+                    : Enumerable.Empty<XmlDocContractElement>();
             }
         }
 

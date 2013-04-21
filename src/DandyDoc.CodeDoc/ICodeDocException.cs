@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using DandyDoc.CRef;
 using DandyDoc.XmlDoc;
 
 namespace DandyDoc.CodeDoc
@@ -8,7 +7,7 @@ namespace DandyDoc.CodeDoc
     public interface ICodeDocException
     {
 
-        CRefIdentifier ExceptionCRef { get; }
+        ICodeDocEntity ExceptionType { get; }
 
         bool HasConditions { get; }
 

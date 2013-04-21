@@ -240,12 +240,31 @@ namespace DandyDoc.CodeDoc
             if (MemberInfoFilter(memberInfo))
                 return ConvertToSimpleEntity(memberInfo);
 
+            return CreateSimpleEntityPlaceholder(memberInfo);
+        }
+
+        private ICodeDocEntity CreateSimpleEntityPlaceholder(MemberInfo memberInfo){
+            Contract.Requires(memberInfo != null);
+            Contract.Ensures(Contract.Result<ICodeDocEntity>() != null);
             return new CodeDocSimpleEntity(GetCRefIdentifier(memberInfo)) {
                 ShortName = memberInfo.Name,
                 Title = memberInfo.Name,
                 SubTitle = String.Empty,
                 FullName = memberInfo.Name,
                 NamespaceName = String.Empty,
+            };
+        }
+
+        private ICodeDocEntity CreateSimpleEntityTypePlaceholder(CRefIdentifier cRef){
+            Contract.Requires(cRef != null);
+            Contract.Ensures(Contract.Result<ICodeDocEntity>() != null);
+            var cRefFullName = cRef.CoreName;
+            return new CodeDocSimpleEntity(cRef) {
+                ShortName = cRefFullName,
+                Title = cRefFullName,
+                SubTitle = "Type",
+                FullName = cRefFullName,
+                NamespaceName = String.Empty
             };
         }
 
@@ -567,7 +586,7 @@ namespace DandyDoc.CodeDoc
                             : new CRefIdentifier(xmlDocException.CRef);
                         CodeDocException exceptionModel;
                         if (!exceptionLookup.TryGetValue(exceptionCRef, out exceptionModel)) {
-                            exceptionModel = new CodeDocException(exceptionCRef);
+                            exceptionModel = new CodeDocException(GetSimpleEntity(exceptionCRef) ?? CreateSimpleEntityTypePlaceholder(exceptionCRef));
                             exceptionModel.Ensures = new List<XmlDocNode>();
                             exceptionModel.Conditions = new List<XmlDocNode>();
                             exceptionLookup.Add(exceptionCRef, exceptionModel);
@@ -590,7 +609,7 @@ namespace DandyDoc.CodeDoc
                     }
 
                     var exceptionModels = exceptionLookup.Values
-                        .OrderBy(x => x.ExceptionCRef.FullCRef)
+                        .OrderBy(x => x.ExceptionType.CRef.FullCRef)
                         .ToArray();
 
                     foreach (var exceptionModel in exceptionModels) {
@@ -855,7 +874,7 @@ namespace DandyDoc.CodeDoc
                                 : new CRefIdentifier(xmlDocException.CRef);
                             CodeDocException exceptionModel;
                             if (!exceptionLookup.TryGetValue(exceptionCRef, out exceptionModel)){
-                                exceptionModel = new CodeDocException(exceptionCRef);
+                                exceptionModel = new CodeDocException(GetSimpleEntity(exceptionCRef) ?? CreateSimpleEntityTypePlaceholder(exceptionCRef));
                                 exceptionModel.Ensures = new List<XmlDocNode>();
                                 exceptionModel.Conditions = new List<XmlDocNode>();
                                 exceptionLookup.Add(exceptionCRef, exceptionModel);
@@ -878,7 +897,7 @@ namespace DandyDoc.CodeDoc
                         }
 
                         var exceptionModels = exceptionLookup.Values
-                            .OrderBy(x => x.ExceptionCRef.FullCRef)
+                            .OrderBy(x => x.ExceptionType.CRef.FullCRef)
                             .ToArray();
 
                         foreach (var exceptionModel in exceptionModels){

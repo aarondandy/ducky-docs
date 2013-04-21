@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
@@ -176,7 +177,7 @@ namespace DandyDoc.Web.Mvc4.Helpers
                 ? new TagBuilder("code")
                 : new TagBuilder("pre");
 
-            // TODO: need to do something with the language
+            // TODO: need to do something with the language? Maybe not if the google thing is used?
 
             codeTag.InnerHtml = helper.XmlDocHtml(element.Children).ToString();
             return new MvcHtmlString(codeTag.ToString());
@@ -362,8 +363,89 @@ namespace DandyDoc.Web.Mvc4.Helpers
             return new MvcHtmlString(tagBuilder.ToString());
         }
 
-        public static MvcHtmlString CodeDocExceptions(this HtmlHelper helper, IEnumerable<ICodeDocException> exceptions) {
-            throw new NotImplementedException();
+        public static MvcHtmlString CodeDocExceptions(this HtmlHelper helper, IEnumerable<ICodeDocException> exceptions, object tableTagAttributes = null) {
+            var tagBuilder = new TagBuilder("table");
+
+            if (tableTagAttributes == null)
+                tagBuilder.MergeAttribute("class", "table table-bordered table-condensed");
+            else
+                tagBuilder.MergeAttributes(new RouteValueDictionary(tableTagAttributes));
+
+            var innerHtmlBuilder = new StringBuilder("<thead><tr><th>Exception</th><th>Condition</th></tr></thead><tbody>");
+            foreach(var exception in exceptions){
+                innerHtmlBuilder.Append("<tr><td>");
+                innerHtmlBuilder.Append(helper.ActionLink(exception.ExceptionType));
+                innerHtmlBuilder.Append("</td><td>");
+
+                var conditions = exception.HasConditions ? exception.Conditions.Where(x => x.HasChildren).ToList() : new List<XmlDocNode>(0);
+                var ensures = exception.HasEnsures ? exception.Ensures.Where(x => x.HasChildren).ToList() : new List<XmlDocNode>(0);
+
+                if (conditions.Count == 1 && ensures.Count == 0) {
+                    innerHtmlBuilder.Append(helper.XmlDocHtml(conditions[0].Children));
+                }
+                else{
+                    innerHtmlBuilder.Append("<dl>");
+                    if (conditions.Count > 0) {
+                        innerHtmlBuilder.Append("<dt>Conditions</dt><dd>");
+                        innerHtmlBuilder.Append(helper.XmlDocHtmlChildListOrSingle(conditions));
+                        innerHtmlBuilder.Append("</dd>");
+                    }
+                    if (ensures.Count > 0) {
+                        innerHtmlBuilder.Append("<dt>Ensures</dt><dd>");
+                        innerHtmlBuilder.Append(helper.XmlDocHtmlChildListOrSingle(ensures));
+                        innerHtmlBuilder.Append("</dd>");
+                    }
+                    innerHtmlBuilder.Append("</dl>");
+                }
+                innerHtmlBuilder.Append("</td></tr>");
+            }
+            innerHtmlBuilder.Append("</tbody>");
+            tagBuilder.InnerHtml = innerHtmlBuilder.ToString();
+
+            return new MvcHtmlString(tagBuilder.ToString());
+        }
+
+        private static MvcHtmlString XmlDocHtmlChildListOrSingle(this HtmlHelper helper, IList<XmlDocNode> nodes){
+            Contract.Requires(nodes != null);
+            if (nodes.Count == 0)
+                return MvcHtmlString.Empty;
+            if (nodes.Count == 1)
+                return helper.XmlDocHtml(nodes[0].Children);
+            var tagBuilder = new TagBuilder("ul");
+            var innerHtmlBuilder = new StringBuilder();
+            foreach(var node in nodes){
+                innerHtmlBuilder.Append("<li>");
+                innerHtmlBuilder.Append(helper.XmlDocHtml(node.Children));
+                innerHtmlBuilder.Append("</li>");
+            }
+            tagBuilder.InnerHtml = innerHtmlBuilder.ToString();
+            return new MvcHtmlString(tagBuilder.ToString());
+        }
+
+        public static MvcHtmlString CodeDocSimpleEnsuresTable(this HtmlHelper helper, IEnumerable<XmlDocContractElement> ensures, object tableTagAttributes = null) {
+            var tagBuilder = new TagBuilder("table");
+
+            if (tableTagAttributes == null)
+                tagBuilder.MergeAttribute("class", "table table-bordered table-condensed");
+            else
+                tagBuilder.MergeAttributes(new RouteValueDictionary(tableTagAttributes));
+
+            var innerHtmlBuilder = new StringBuilder("<thead><tr><th>Description</th><th>Code</th></tr></thead><tbody>");
+            foreach(var assurance in ensures){
+                innerHtmlBuilder.Append("<tr><td>");
+                innerHtmlBuilder.Append(helper.XmlDocHtml(assurance.Children));
+                innerHtmlBuilder.Append("</td><td>");
+                var code = assurance.CSharp ?? assurance.VisualBasic;
+                if(!String.IsNullOrWhiteSpace(code)){
+                    innerHtmlBuilder.Append("<code>");
+                    innerHtmlBuilder.Append(HttpUtility.HtmlEncode(code));
+                    innerHtmlBuilder.Append("</code>");
+                }
+                innerHtmlBuilder.Append("</td></tr>");
+            }
+            innerHtmlBuilder.Append("</tbody>");
+            tagBuilder.InnerHtml = innerHtmlBuilder.ToString();
+            return new MvcHtmlString(tagBuilder.ToString());
         }
 
     }

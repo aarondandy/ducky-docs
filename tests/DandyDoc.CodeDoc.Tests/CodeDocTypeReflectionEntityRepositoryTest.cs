@@ -386,7 +386,7 @@ namespace DandyDoc.CodeDoc.Tests
 
             Assert.IsTrue(method.HasExceptions);
             Assert.AreEqual(1, method.Exceptions.Count);
-            Assert.AreEqual("T:System.NotImplementedException", method.Exceptions[0].ExceptionCRef.FullCRef);
+            Assert.AreEqual("T:System.NotImplementedException", method.Exceptions[0].ExceptionType.CRef.FullCRef);
             Assert.IsTrue(method.Exceptions[0].HasConditions);
             Assert.AreEqual(1, method.Exceptions[0].Conditions.Count);
             Assert.AreEqual("Too lazy to implement.", method.Exceptions[0].Conditions[0].Node.InnerText);
@@ -441,7 +441,7 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.IsNotNull(method);
             Assert.IsTrue(method.HasExceptions);
             Assert.AreEqual(1, method.Exceptions.Count);
-            Assert.AreEqual("T:System.ArgumentException", method.Exceptions[0].ExceptionCRef.FullCRef);
+            Assert.AreEqual("T:System.ArgumentException", method.Exceptions[0].ExceptionType.CRef.FullCRef);
             Assert.AreEqual(2, method.Exceptions[0].Conditions.Count);
             Assert.That(method.Exceptions[0].Conditions[0].Node.InnerText.Contains("IsNullOrEmpty(text)"));
             Assert.That(method.Exceptions[0].Conditions[1].Node.InnerText.Contains("text.Equals(\"nope\")"));
@@ -466,8 +466,8 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.IsTrue(method.HasEnsures);
             Assert.AreEqual(1, method.Ensures.Count);
             Assert.IsTrue(method.HasNormalTerminationEnsures);
-            Assert.AreEqual(1, method.NormalTerminationEnsures.Count);
-            Assert.That(method.NormalTerminationEnsures[0].Node.InnerText.Contains("IsNullOrEmpty"));
+            Assert.AreEqual(1, method.NormalTerminationEnsures.Count());
+            Assert.That(method.NormalTerminationEnsures.First().Node.InnerText.Contains("IsNullOrEmpty"));
         }
 
         [Test]
