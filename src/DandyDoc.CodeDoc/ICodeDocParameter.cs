@@ -22,5 +22,7 @@ namespace DandyDoc.CodeDoc
 
         bool IsByRef { get; }
 
+        bool NullRestricted { get; }
+
     }
 }

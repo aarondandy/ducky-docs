@@ -48,5 +48,7 @@ namespace DandyDoc.CodeDoc
 
         IList<XmlDocContractElement> Requires { get; }
 
+        bool IsPure { get; }
+
     }
 }

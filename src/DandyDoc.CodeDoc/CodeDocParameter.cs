@@ -45,5 +45,7 @@ namespace DandyDoc.CodeDoc
 
         public bool IsByRef { get; set; }
 
+        public bool NullRestricted { get; set; }
+
     }
 }

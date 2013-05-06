@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using DandyDoc.CRef;
+using DandyDoc.ExternalVisibility;
 using DandyDoc.XmlDoc;
 
 namespace DandyDoc.CodeDoc
@@ -31,6 +32,10 @@ namespace DandyDoc.CodeDoc
         public string FullName { get; set; }
 
         public string NamespaceName { get; set; }
+
+        public ExternalVisibilityKind ExternalVisibility { get; set; }
+
+        public bool IsObsolete { get; set; }
 
         public bool HasSummary {
             get {

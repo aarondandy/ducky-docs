@@ -50,6 +50,22 @@ namespace DandyDoc.Reflection
             return type.IsAbstract && type.IsSealed;
         }
 
+        public static bool IsStatic(this MemberInfo memberInfo){
+            if(memberInfo == null) throw new NullReferenceException("memberInfo is null");
+            Contract.EndContractBlock();
+            if (memberInfo is Type)
+                return ((Type)memberInfo).IsStatic();
+            if (memberInfo is MethodBase)
+                return ((MethodBase)memberInfo).IsStatic;
+            if (memberInfo is FieldInfo)
+                return ((FieldInfo)memberInfo).IsStatic;
+            if (memberInfo is PropertyInfo)
+                return ((PropertyInfo)memberInfo).IsStatic();
+            if (memberInfo is EventInfo)
+                return ((EventInfo)memberInfo).IsStatic();
+            return false;
+        }
+
         public static bool IsOperatorOverload(this MethodBase methodBase) {
             if (methodBase == null) throw new NullReferenceException("methodBase is null");
             Contract.EndContractBlock();
@@ -172,6 +188,47 @@ namespace DandyDoc.Reflection
                 | BindingFlags.Public
                 | BindingFlags.NonPublic);
             return result;
+        }
+
+        public static bool HasAttribute(this ICustomAttributeProvider memberInfo, Func<Type, bool> predicate, bool inherit = false) {
+            if (memberInfo == null) throw new NullReferenceException("memberInfo is null");
+            if (predicate == null) throw new ArgumentNullException("predicate");
+            Contract.EndContractBlock();
+            return memberInfo.GetCustomAttributes(inherit)
+                .Select(a => a.GetType())
+                .Any(predicate);
+        }
+
+        public static bool HasAttribute(this ICustomAttributeProvider memberInfo, Func<object, bool> predicate, bool inherit = false) {
+            if (memberInfo == null) throw new NullReferenceException("memberInfo is null");
+            if (predicate == null) throw new ArgumentNullException("predicate");
+            Contract.EndContractBlock();
+            return memberInfo.GetCustomAttributes(inherit)
+                .Any(predicate);
+        }
+
+        public static bool HasAttribute(this ICustomAttributeProvider memberInfo, Type type, bool inherit = false) {
+            if (memberInfo == null) throw new NullReferenceException("memberInfo is null");
+            if (type == null) throw new ArgumentNullException("type");
+            Contract.EndContractBlock();
+            return memberInfo.GetCustomAttributes(type, inherit).Length > 0;
+        }
+
+        public static bool HasAttribute(this ICustomAttributeProvider memberInfo, Type type, Func<Type, bool> predicate, bool inherit = false) {
+            if (memberInfo == null) throw new NullReferenceException("memberInfo is null");
+            if (predicate == null) throw new ArgumentNullException("predicate");
+            Contract.EndContractBlock();
+            return memberInfo.GetCustomAttributes(type, inherit)
+                .Select(a => a.GetType())
+                .Any(predicate);
+        }
+
+        public static bool HasAttribute(this ICustomAttributeProvider memberInfo, Type type, Func<object, bool> predicate, bool inherit = false) {
+            if (memberInfo == null) throw new NullReferenceException("memberInfo is null");
+            if (predicate == null) throw new ArgumentNullException("predicate");
+            Contract.EndContractBlock();
+            return memberInfo.GetCustomAttributes(type, inherit)
+                .Any(predicate);
         }
 
     }

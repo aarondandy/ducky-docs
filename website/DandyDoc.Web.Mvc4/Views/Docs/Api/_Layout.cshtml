@@ -35,7 +35,7 @@
           if (entityModel.HasSummaryContents) {
           <p class="lead">@Html.XmlDocHtml(entityModel.SummaryContents)</p>
           }
-          <div>TODO: Flair Table</div>
+          @Html.FlairTable(Model)
         }
         @if (contentModel != null) {
           if (contentModel.Namespace != null) {

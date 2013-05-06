@@ -6,68 +6,67 @@ using DandyDoc.Utility;
 
 namespace DandyDoc.XmlDoc
 {
-	public class XmlAssemblyDocumentation
-	{
+    public class XmlAssemblyDocumentation
+    {
 
-		private static XmlDocument Load(string filePath) {
-			if (String.IsNullOrEmpty(filePath)) throw new ArgumentException("File path is not valid.", "filePath");
-			Contract.Ensures(Contract.Result<XmlDocument>() != null);
-			var doc = new XmlDocument();
-			doc.Load(filePath);
-			return doc;
-		}
+        private static XmlDocument Load(string filePath) {
+            if (String.IsNullOrEmpty(filePath)) throw new ArgumentException("File path is not valid.", "filePath");
+            Contract.Ensures(Contract.Result<XmlDocument>() != null);
+            var doc = new XmlDocument();
+            doc.Load(filePath);
+            return doc;
+        }
 
-		public XmlAssemblyDocumentation(string filePath)
-			: this(Load(filePath))
-		{
-			Contract.Requires(!String.IsNullOrEmpty(filePath));
-			Parser = XmlDocParser.Default;
-		}
+        public XmlAssemblyDocumentation(string filePath)
+            : this(Load(filePath)) {
+            Contract.Requires(!String.IsNullOrEmpty(filePath));
+            Parser = XmlDocParser.Default;
+        }
 
-		protected XmlAssemblyDocumentation(XmlDocument xmlDocument) {
-			if (xmlDocument == null) throw new ArgumentNullException("xmlDocument");
-			Contract.EndContractBlock();
-			
-			var members = xmlDocument.SelectNodes("/doc/members/member");
-			if (null != members) {
-				foreach (var member in members.Cast<XmlElement>()) {
-					var subElements = member.ChildNodes.OfType<XmlElement>().ToList();
-					foreach (var subElement in subElements) {
-						var replacement = xmlDocument.CreateDocumentFragment();
-						replacement.InnerXml = TextUtility.NormalizeAndUnindentElement(subElement.OuterXml) + "\n";
-						Contract.Assume(null != subElement.ParentNode);
-						subElement.ParentNode.ReplaceChild(replacement, subElement);
-					}
-				}
-			}
-			XmlDocument = xmlDocument;
-		}
+        protected XmlAssemblyDocumentation(XmlDocument xmlDocument) {
+            if (xmlDocument == null) throw new ArgumentNullException("xmlDocument");
+            Contract.EndContractBlock();
 
-		protected XmlDocument XmlDocument { get; private set; }
+            var members = xmlDocument.SelectNodes("/doc/members/member");
+            if (null != members) {
+                foreach (var member in members.Cast<XmlElement>()) {
+                    var subElements = member.ChildNodes.OfType<XmlElement>().ToList();
+                    foreach (var subElement in subElements) {
+                        var replacement = xmlDocument.CreateDocumentFragment();
+                        replacement.InnerXml = TextUtility.NormalizeAndUnindentElement(subElement.OuterXml) + "\n";
+                        Contract.Assume(null != subElement.ParentNode);
+                        subElement.ParentNode.ReplaceChild(replacement, subElement);
+                    }
+                }
+            }
+            XmlDocument = xmlDocument;
+        }
 
-		public XmlDocParser Parser { get; protected set; }
+        protected XmlDocument XmlDocument { get; private set; }
 
-		[ContractInvariantMethod]
-		private void CodeContractInvariant() {
-			Contract.Invariant(XmlDocument != null);
-		}
+        public XmlDocParser Parser { get; protected set; }
 
-		public XmlElement GetMemberRawElement(string cRef) {
-			if(String.IsNullOrEmpty(cRef)) throw new ArgumentException("Invalid CRef.", "cRef");
-			Contract.EndContractBlock();
+        [ContractInvariantMethod]
+        private void CodeContractInvariant() {
+            Contract.Invariant(XmlDocument != null);
+        }
 
-			return XmlDocument.SelectSingleNode(String.Format(
-				"/doc/members/member[@name=\"{0}\"]", cRef)) as XmlElement;
-		}
+        public XmlElement GetMemberRawElement(string cRef) {
+            if (String.IsNullOrEmpty(cRef)) throw new ArgumentException("Invalid CRef.", "cRef");
+            Contract.EndContractBlock();
 
-		public virtual XmlDocMember GetMember(string cRef) {
-			if (String.IsNullOrEmpty(cRef)) throw new ArgumentException("Invalid CRef.", "cRef");
-			Contract.EndContractBlock();
-			var node = GetMemberRawElement(cRef);
-			if (node == null)
-				return null;
-			return new XmlDocMember(node, node.ChildNodes.Cast<XmlNode>().Select(Parser.Parse));
-		}
+            return XmlDocument.SelectSingleNode(String.Format(
+                "/doc/members/member[@name=\"{0}\"]", cRef)) as XmlElement;
+        }
 
-	}
+        public virtual XmlDocMember GetMember(string cRef) {
+            if (String.IsNullOrEmpty(cRef)) throw new ArgumentException("Invalid CRef.", "cRef");
+            Contract.EndContractBlock();
+            var node = GetMemberRawElement(cRef);
+            if (node == null)
+                return null;
+            return new XmlDocMember(node, node.ChildNodes.Cast<XmlNode>().Select(Parser.Parse));
+        }
+
+    }
 }
