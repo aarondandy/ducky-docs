@@ -43,7 +43,7 @@ namespace DandyDoc.Web.Mvc4.Helpers
                 if (entity is ICodeDocAssembly) {
                     var assemblyFileName = ((ICodeDocAssembly)entity).AssemblyFileName;
                     if (!String.IsNullOrEmpty(assemblyFileName)) {
-                        text += '(' + assemblyFileName + ')';
+                        text += " (" + assemblyFileName + ')';
                         cRefText = "A:" + assemblyFileName;
                     }
                 }
