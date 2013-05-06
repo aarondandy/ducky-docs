@@ -17,8 +17,7 @@ namespace DandyDoc.XmlDoc
             : this(null == items ? new List<XmlAssemblyDocumentation>() : items.ToList()) { }
 
         public XmlAssemblyDocumentationCollection(IList<XmlAssemblyDocumentation> items)
-            : base(items)
-        {
+            : base(items) {
             Contract.Requires(items != null);
         }
 

@@ -1,6 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using DandyDoc.CRef;
+using DandyDoc.ExternalVisibility;
 using DandyDoc.XmlDoc;
 
 namespace DandyDoc.CodeDoc
@@ -29,6 +29,10 @@ namespace DandyDoc.CodeDoc
         IList<XmlDocNode> SummaryContents { get; }
 
         bool IsStatic { get; }
+
+        ExternalVisibilityKind ExternalVisibility { get; }
+
+        bool IsObsolete { get; } 
 
     }
 }

@@ -449,8 +449,10 @@ namespace DandyDoc.Web.Mvc4.Helpers
         }
 
         public static MvcHtmlString CodeDocAccessor(this HtmlHelper helper, ICodeDocMethod accessor) {
-            // TODO: flair
             var htmlBuilder = new StringBuilder();
+
+            htmlBuilder.Append(helper.FlairTable(accessor));
+
             if (accessor.HasExceptions) {
                 htmlBuilder.Append("<section><h3>Exceptions</h3>");
                 htmlBuilder.Append(helper.CodeDocExceptions(accessor.Exceptions));
@@ -470,8 +472,54 @@ namespace DandyDoc.Web.Mvc4.Helpers
         }
 
         public static bool CodeDocAccessorIsWorthDisplaying(ICodeDocMethod accessor) {
-            // TODO: flair would be a reason as well
-            return accessor.HasExceptions || accessor.HasNormalTerminationEnsures || accessor.HasRequires;
+            return GetFlair(accessor).Any()
+                || accessor.HasExceptions
+                || accessor.HasNormalTerminationEnsures
+                || accessor.HasRequires;
+        }
+
+        public static MvcHtmlString FlairIconList(this HtmlHelper helper, ICodeDocEntity entity){
+            var flair = GetFlair(entity).ToList();
+            if (flair.Count == 0)
+                return MvcHtmlString.Empty;
+            throw new NotImplementedException();
+        }
+
+        public static MvcHtmlString FlairTable(this HtmlHelper helper, ICodeDocEntity entity){
+            var flair = GetFlair(entity).ToList();
+            if (flair.Count == 0)
+                return MvcHtmlString.Empty;
+            throw new NotImplementedException();
+        }
+
+        private class FlairItem
+        {
+            MvcHtmlString Icon;
+            MvcHtmlString Description;
+        }
+
+        private static IEnumerable<FlairItem> GetFlair(ICodeDocEntity entity){
+            throw new NotImplementedException();
+        }
+
+        private static IEnumerable<FlairItem> GetFlair(ICodeDocParameter parameter){
+            /*
+            if (Parameter.HasAttributeMatchingName("CanBeNullAttribute")){
+					tags.Add(DefaultCanBeNullTag);
+				}
+				else{
+					var name = Parameter.Name;
+					Contract.Assume(!String.IsNullOrEmpty(name));
+					if (Parent.RequiresParameterNotNullOrEmpty(name))
+						tags.Add(DefaultParamNotNullAndNotEmptyTag);
+					else if (Parent.RequiresParameterNotNull(name))
+						tags.Add(DefaultParamNotNullTag);
+				}
+
+				if (Parameter.HasAttributeMatchingName("InstantHandleAttribute"))
+					tags.Add(DefaultInstantHandleTag);
+            */
+            throw new NotImplementedException();
         }
 
     }

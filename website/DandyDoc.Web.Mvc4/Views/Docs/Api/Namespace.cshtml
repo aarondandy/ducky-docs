@@ -18,6 +18,15 @@
     new { Title = "Delegates", Types = delegateTypes}
   };
 }
+@if(Model.Assemblies.Count > 0){
+  <section>
+    @if(Model.Assemblies.Count == 1){
+      <div>Assembly: @Html.ActionLinkFull(Model.Assemblies[0])</div>
+    }else{
+      <div>Assemblies: @Html.ActionLinkList(Model.Assemblies, new{@class="inline"})</div>
+    }
+  </section>
+}
 @foreach (var memberSet in memberSets.Where(x => x.Types.Count > 0)) {
   <section>
     <h2>@memberSet.Title</h2>

@@ -49,5 +49,7 @@ namespace DandyDoc.CodeDoc
         public bool HasRequires { get { return Requires != null && Requires.Count > 0; } }
 
         public IList<XmlDocContractElement> Requires { get; set; }
+
+        public bool IsPure { get; set; }
     }
 }

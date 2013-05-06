@@ -54,5 +54,7 @@ namespace DandyDoc.CodeDoc
 
         public IList<ICodeDocGenericParameter> GenericParameters { get; set; }
 
+        public bool IsPure { get; set; }
+
     }
 }
