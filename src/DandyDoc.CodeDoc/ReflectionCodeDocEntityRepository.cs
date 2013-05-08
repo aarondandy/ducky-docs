@@ -483,39 +483,42 @@ namespace DandyDoc.CodeDoc
                 model.SubTitle = "Field";
         }
 
-        private void ApplyParameterEntityAttributes(CodeDocParameter model, ParameterInfo parameterInfo = null){
+        private void ApplyParameterEntityAttributes(CodeDocParameter model, ParameterInfo parameterInfo){
             Contract.Requires(model != null);
             if (parameterInfo != null) {
                 model.IsOut = parameterInfo.IsOut;
                 model.IsByRef = parameterInfo.ParameterType.IsByRef;
 
-                if (parameterInfo.HasAttribute(t => t.Name == "CanBeNullAttribute"))
+                if (parameterInfo.HasAttribute(t => t.Constructor.Name == "CanBeNullAttribute"))
                     model.NullRestricted = false;
-                else if (parameterInfo.HasAttribute(t => t.Name == "NotNullAttribute"))
+                else if (parameterInfo.HasAttribute(t => t.Constructor.Name == "NotNullAttribute"))
                     model.NullRestricted = true;
                 else
-                    model.NullRestricted = false;
+                    model.NullRestricted = null;
             }
         }
 
-        private void ApplyReturnEntityAttributes(CodeDocParameter model, XmlDocMember xmlDocs){
+        private void ApplyReturnEntityAttributes(CodeDocParameter model, Type returnType, XmlDocMember xmlDocs) {
             Contract.Requires(model != null);
-            ApplyParameterEntityAttributes(model);
-            if (!model.NullRestricted && xmlDocs != null) {
-                if(xmlDocs.HasEnsuresElements){
-                    foreach(var ensuresElement in xmlDocs.EnsuresElements.Where(x => String.Equals(x.Name, "ensures", StringComparison.OrdinalIgnoreCase))){
-                        throw new NotImplementedException();
-                    }
-                }
-                ; // TODO: see if there is documentation describing the null restriction
+            ApplyParameterEntityAttributes(model, null);
+            if (!model.NullRestricted.HasValue && xmlDocs != null) {
+                if (xmlDocs.HasEnsuresElements && xmlDocs.EnsuresElements.Any(c => c.EnsuresResultNotEverNull))
+                    model.NullRestricted = true;
+            }
+            if (returnType != null) {
+                model.IsReferenceType = !returnType.IsValueType;
             }
         }
 
         private void ApplyArgumentEntityAttributes(CodeDocParameter model, ParameterInfo parameterInfo, XmlDocMember xmlDocs) {
             Contract.Requires(model != null);
             ApplyParameterEntityAttributes(model, parameterInfo);
-            if (!model.NullRestricted && xmlDocs != null) {
-                ; // TODO: see if there is documentation describing the null restriction
+            if (!model.NullRestricted.HasValue && xmlDocs != null) {
+                if(xmlDocs.HasRequiresElements && xmlDocs.RequiresElements.Any(c => c.RequiresParameterNotEverNull(parameterInfo.Name)))
+                    model.NullRestricted = true;
+            }
+            if (parameterInfo != null) {
+                model.IsReferenceType = !parameterInfo.ParameterType.IsValueType;
             }
         }
 
@@ -665,8 +668,18 @@ namespace DandyDoc.CodeDoc
             model.Namespace = GetCodeDocNamespaceByName(methodBase.DeclaringType.Namespace);
             model.Assembly = GetCodeDocAssembly(methodBase.DeclaringType.Assembly);
             model.DeclaringType = GetSimpleEntity(methodBase.DeclaringType);
+            model.IsOperatorOverload = methodBase.IsOperatorOverload();
+            model.IsExtensionMethod = methodBase.IsExtensionMethod();
+            model.IsSealed = methodBase.IsSealed();
+            
+            if (methodBase.DeclaringType != null && !methodBase.DeclaringType.IsInterface) {
+                if (methodBase.IsAbstract)
+                    model.IsAbstract = true;
+                else if (methodBase.IsVirtual && !methodBase.IsFinal && methodBase.Attributes.HasFlag(MethodAttributes.NewSlot))
+                    model.IsVirtual = true;
+            }
 
-            model.IsPure = methodBase.HasAttribute(t => t.Name == "PureAttribute");
+            model.IsPure = methodBase.HasAttribute(t => t.Constructor.Name == "PureAttribute");
 
             var parameterModels = methodBase
                 .GetParameters()
@@ -695,7 +708,7 @@ namespace DandyDoc.CodeDoc
                         GetSimpleEntity(methodInfo.ReturnType),
                         returnSummaryElement
                     );
-                    ApplyReturnEntityAttributes(paramModel, model.XmlDocs);
+                    ApplyReturnEntityAttributes(paramModel, methodInfo.ReturnParameter.ParameterType, model.XmlDocs);
                     model.Return = paramModel;
                 }
             }
@@ -785,6 +798,9 @@ namespace DandyDoc.CodeDoc
             model.Namespace = GetCodeDocNamespaceByName(type.Namespace);
             model.Assembly = GetCodeDocAssembly(type.Assembly);
             model.IsEnum = type.IsEnum;
+            model.IsFlagsEnum = type.IsEnum && type.HasAttribute(typeof(FlagsAttribute));
+            model.IsSealed = type.IsSealed;
+            model.IsValueType = type.IsValueType;
 
             if (type.DeclaringType != null) {
                 model.DeclaringType = GetSimpleEntity(type.DeclaringType);
@@ -913,7 +929,7 @@ namespace DandyDoc.CodeDoc
             if (model is CodeDocDelegate){
                 var delegateResult = (CodeDocDelegate)model;
 
-                delegateResult.IsPure = type.HasAttribute(t => t.Name == "PureAttribute");
+                delegateResult.IsPure = type.HasAttribute(t => t.Constructor.Name == "PureAttribute");
 
                 var parameterModels = type
                     .GetDelegateTypeParameters()
@@ -942,7 +958,7 @@ namespace DandyDoc.CodeDoc
                         GetSimpleEntity(returnType),
                         returnSummaryElement
                     );
-                    ApplyReturnEntityAttributes(paramModel, model.XmlDocs);
+                    ApplyReturnEntityAttributes(paramModel, returnType, model.XmlDocs);
                     delegateResult.Return = paramModel;
                 }
 

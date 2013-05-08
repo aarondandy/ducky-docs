@@ -1,11 +1,11 @@
 ﻿namespace DandyDoc.CRef
 {
-	public interface ICRefGenerator
-	{
+    public interface ICRefGenerator
+    {
 
-		string GetCRef(object entity);
+        string GetCRef(object entity);
 
-		bool IncludeTypePrefix { get; }
+        bool IncludeTypePrefix { get; }
 
-	}
+    }
 }

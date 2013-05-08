@@ -51,5 +51,15 @@ namespace DandyDoc.CodeDoc
         public IList<XmlDocContractElement> Requires { get; set; }
 
         public bool IsPure { get; set; }
+
+        public bool IsExtensionMethod { get { return false; } }
+
+        public bool IsOperatorOverload { get { return false; } }
+
+        public bool IsSealed { get { return false; } }
+
+        public bool IsAbstract { get { return false; } }
+
+        public bool IsVirtual { get { return false; } }
     }
 }

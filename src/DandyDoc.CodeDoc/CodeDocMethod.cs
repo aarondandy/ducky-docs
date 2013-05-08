@@ -56,5 +56,15 @@ namespace DandyDoc.CodeDoc
 
         public bool IsPure { get; set; }
 
+        public bool IsExtensionMethod { get; set; }
+
+        public bool IsOperatorOverload { get; set; }
+
+        public bool IsSealed { get; set; }
+
+        public bool IsAbstract { get; set; }
+
+        public bool IsVirtual { get; set; }
+
     }
 }

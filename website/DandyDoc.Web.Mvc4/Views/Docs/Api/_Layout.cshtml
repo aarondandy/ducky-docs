@@ -35,7 +35,7 @@
           if (entityModel.HasSummaryContents) {
           <p class="lead">@Html.XmlDocHtml(entityModel.SummaryContents)</p>
           }
-          @Html.FlairTable(Model)
+          @Html.FlairTable(entityModel)
         }
         @if (contentModel != null) {
           if (contentModel.Namespace != null) {

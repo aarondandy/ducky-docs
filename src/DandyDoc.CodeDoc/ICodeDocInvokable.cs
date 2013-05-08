@@ -6,24 +6,6 @@ namespace DandyDoc.CodeDoc
     public interface ICodeDocInvokable
     {
 
-        /*
-        TODO: Is there a way to handle these outside of implementations of this class? 
-
-        bool AllReferenceParamsAndReturnNotNull { get; }
-
-        bool EnsuresResultNotNull { get; }
-
-        bool EnsuresResultNotNullOrEmpty { get; }
-
-        bool RequiresParameterNotNull(string parameterName);
-
-        bool RequiresParameterNotNullOrEmpty(string parameterName);
-
-        bool IsPure { get; }
-
-        bool CanReturnNull { get; }
-        */
-
         bool HasParameters { get; }
 
         IList<ICodeDocParameter> Parameters { get; }
@@ -49,6 +31,16 @@ namespace DandyDoc.CodeDoc
         IList<XmlDocContractElement> Requires { get; }
 
         bool IsPure { get; }
+
+        bool IsExtensionMethod { get; }
+
+        bool IsOperatorOverload { get; }
+
+        bool IsSealed { get; }
+
+        bool IsAbstract { get; }
+
+        bool IsVirtual { get; }
 
     }
 }

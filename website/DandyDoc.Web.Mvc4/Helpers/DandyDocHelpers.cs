@@ -9,6 +9,7 @@ using System.Web.Routing;
 using DandyDoc.CRef;
 using DandyDoc.CodeDoc;
 using System.Text;
+using DandyDoc.ExternalVisibility;
 using DandyDoc.XmlDoc;
 
 namespace DandyDoc.Web.Mvc4.Helpers
@@ -114,7 +115,7 @@ namespace DandyDoc.Web.Mvc4.Helpers
             var tableInnerHtmlBuilder = new StringBuilder("<thead><tr><th><i class=\"icon-info-sign\"></i></th><th>Name</th><th>Description</th></tr></thead><tbody>");
             foreach(var entity in entities){
                 tableInnerHtmlBuilder.Append("<tr><td>");
-                // TODO: flair
+                tableInnerHtmlBuilder.Append(helper.FlairIconList(entity));
                 tableInnerHtmlBuilder.Append("</td><td>");
                 tableInnerHtmlBuilder.Append(helper.ActionLink(entity));
                 tableInnerHtmlBuilder.Append("</td><td>");
@@ -482,45 +483,254 @@ namespace DandyDoc.Web.Mvc4.Helpers
             var flair = GetFlair(entity).ToList();
             if (flair.Count == 0)
                 return MvcHtmlString.Empty;
-            throw new NotImplementedException();
+            return helper.FlairIconList(flair);
+        }
+
+        public static MvcHtmlString FlairIconList(this HtmlHelper helper, IEnumerable<FlairItem> flairItems) {
+            var builder = new StringBuilder();
+            foreach (var flairItem in flairItems) {
+                builder.Append(helper.FlairIcon(flairItem));
+            }
+            return new MvcHtmlString(builder.ToString());
+        }
+
+        private static readonly Dictionary<string, string> SimpleIconClasses = new Dictionary<string, string> {
+            {"protected", "icon-eye-close"},
+            {"public","icon-eye-open"},
+            {"hidden","icon-ban-circle"},
+            {"pure","icon-leaf"},
+            {"static","icon-globe"},
+            {"extension","icon-resize-full"},
+            {"no-nulls","icon-ok-circle"},
+            {"null-result","icon-question-sign"},
+            {"null-ok","icon-ok-sign"},
+            {"flags","icon-flag"},
+            {"operator","icon-plus"},
+            {"sealed","icon-lock"},
+            {"virtual","icon-circle-arrow-down"},
+            {"abstract","icon-edit"},
+            {"obsolete","icon-warning-sign"},
+            {"instant","icon-tasks"},
+            {"value-type","icon-th-large"}
+        };
+
+        public static MvcHtmlString FlairIcon(this HtmlHelper helper, FlairItem item) {
+            string cssClass;
+            if(SimpleIconClasses.TryGetValue(item.IconId, out cssClass))
+                return new MvcHtmlString("<i class=\"" +cssClass+ " flair-icon\" title=\"" + item.IconId + "\"></i>");
+
+            switch (item.IconId) {
+            case "get": return new MvcHtmlString("<code class=\"flair-icon\" title=\"getter\">get</code>");
+            case "proget": return new MvcHtmlString("<code class=\"flair-icon\" title=\"protected getter\"><i class=\"icon-eye-close\"></i>get</code>");
+            case "set": return new MvcHtmlString("<code class=\"flair-icon\" title=\"setter\">set</code>");
+            case "proset": return new MvcHtmlString("<code class=\"flair-icon\" title=\"protected setter\"><i class=\"icon-eye-close\"></i>set</code>");
+            case "indexer": return new MvcHtmlString("<code class=\"flair-icon\" title=\"indexer\">[]</code>");
+            case "constant": return new MvcHtmlString("<code class=\"flair-icon\" title=\"constant\">42</code>");
+            case "readonly": return new MvcHtmlString("<code class=\"flair-icon\" title=\"readonly\">get</code>");
+            default: return new MvcHtmlString(item.IconId);
+            }
         }
 
         public static MvcHtmlString FlairTable(this HtmlHelper helper, ICodeDocEntity entity){
             var flair = GetFlair(entity).ToList();
             if (flair.Count == 0)
                 return MvcHtmlString.Empty;
-            throw new NotImplementedException();
+            return helper.FlairTable(flair);
         }
 
-        private class FlairItem
-        {
-            MvcHtmlString Icon;
-            MvcHtmlString Description;
+        public static MvcHtmlString FlairTable(this HtmlHelper helper, IEnumerable<FlairItem> items){
+            var tagbuilder = new TagBuilder("table");
+            tagbuilder.MergeAttribute("class", "table table-bordered table-condensed");
+            var rowBuilder = new StringBuilder();
+            foreach (var item in items.OrderBy(x => x.Category, StringComparer.OrdinalIgnoreCase)) {
+                rowBuilder.Append("<tr><th>");
+                rowBuilder.Append(helper.FlairIcon(item));
+                rowBuilder.Append("</th><td>");
+                rowBuilder.Append(HttpUtility.HtmlEncode(item.Category));
+                rowBuilder.Append("</td><td>");
+                rowBuilder.Append(item.Description);
+                rowBuilder.Append("</td></tr>");
+            }
+            tagbuilder.InnerHtml = rowBuilder.ToString();
+            return new MvcHtmlString(tagbuilder.ToString());
         }
+
+        private static bool HasReferenceParamsOrReturnAndAllAreNullrestricted(ICodeDocInvokable invokable) {
+            Contract.Requires(invokable != null);
+            IEnumerable<ICodeDocParameter> parameters = invokable.Parameters;
+            if (invokable.HasReturn)
+                parameters = parameters.Concat(new[] { invokable.Return });
+
+            int count = 0;
+            foreach (var parameter in parameters) {
+                if (parameter.IsReferenceType.GetValueOrDefault()) {
+                    if (!(parameter.NullRestricted.GetValueOrDefault()))
+                        return false;
+                    count++;
+                }
+            }
+            return count > 0;
+        }
+
+        public class FlairItem
+        {
+            public string IconId;
+            public string Category;
+            public MvcHtmlString Description;
+
+            public FlairItem(string iconId, string category, MvcHtmlString description) {
+                IconId = iconId;
+                Category = category;
+                Description = description;
+            }
+
+            public FlairItem(string iconId, string category, string description)
+                : this(iconId, category, new MvcHtmlString(description)) { }
+
+        }
+
+        private static readonly FlairItem DefaultStaticTag = new FlairItem("static", "Static", "Accessible relative to a type rather than an object instance.");
+        private static readonly FlairItem DefaultObsoleteTag = new FlairItem("obsolete", "Warning", "<strong>This is deprecated.</strong>");
+        private static readonly FlairItem DefaultPublicTag = new FlairItem("public", "Visibility", "Externally visible.");
+        private static readonly FlairItem DefaultProtectedTag = new FlairItem("protected", "Visibility", "Externally visible only through inheritance.");
+        private static readonly FlairItem DefaultHiddenTag = new FlairItem("hidden", "Visibility", "Not externally visible.");
+        private static readonly FlairItem DefaultCanReturnNullTag = new FlairItem("null-result", "Null Values", "May return null.");
+        private static readonly FlairItem DefaultNotNullTag = new FlairItem("no-nulls", "Null Values", "Does not return or accept null values for reference types.");
+        private static readonly FlairItem DefaultPureTag = new FlairItem("pure", "Purity", "Does not have side effects.");
+        private static readonly FlairItem DefaultOperatorTag = new FlairItem("operator", "Operator", "Invoked through a language operator.");
+        private static readonly FlairItem DefaultFlagsTag = new FlairItem("flags", "Enumeration", "Bitwise combination is allowed.");
+        private static readonly FlairItem DefaultSealedTag = new FlairItem("sealed", "Inheritance", "This is sealed, preventing inheritance.");
+        private static readonly FlairItem DefaultValueTypeTag = new FlairItem("value-type", "Type", "This type is a value type.");
+        private static readonly FlairItem DefaultExtensionMethodTag = new FlairItem("extension", "Extension", "This method is an extension method.");
+        private static readonly FlairItem DefaultAbstractTag = new FlairItem("abstract", "Inheritance", "This is abstract and <strong>must</strong> be implemented by inheriting types.");
+        private static readonly FlairItem DefaultVirtualTag = new FlairItem("virtual", "Inheritance", "This is virtual and can be overridden by inheriting types.");
+        private static readonly FlairItem DefaultOverrideTag = new FlairItem("override", "Inheritance", "This overrides functionality from its parent.");
+        private static readonly FlairItem DefaultConstantTag = new FlairItem("constant", "Value", "This field is a constant.");
+        private static readonly FlairItem DefaultReadonlyTag = new FlairItem("readonly", "Value", "This field is only assignable during instantiation.");
+        private static readonly FlairItem DefaultIndexerOperatorTag = new FlairItem("indexer", "Operator", "This property is invoked through a language index operator.");
+        private static readonly FlairItem DefaultGetTag = new FlairItem("get", "Property", "Value can be read externally.");
+        private static readonly FlairItem DefaultProGetTag = new FlairItem("proget", "Property", "Value can be read through inheritance.");
+        private static readonly FlairItem DefaultSetTag = new FlairItem("set", "Property", "Value can be assigned externally.");
+        private static readonly FlairItem DefaultProSetTag = new FlairItem("proset", "Property", "Value can be assigned through inheritance.");
 
         private static IEnumerable<FlairItem> GetFlair(ICodeDocEntity entity){
-            throw new NotImplementedException();
+            Contract.Requires(entity != null);
+
+            var invokable = entity as ICodeDocInvokable;
+            var property = entity as ICodeDocProperty;
+            var field = entity as ICodeDocField;
+            var type = entity as ICodeDocType;
+
+            if (property == null && !(entity is ICodeDocNamespace || entity is ICodeDocAssembly)) {
+                switch (entity.ExternalVisibility) {
+                    case ExternalVisibilityKind.Hidden:
+                        yield return DefaultHiddenTag;
+                        break;
+                    case ExternalVisibilityKind.Protected:
+                        yield return DefaultProtectedTag;
+                        break;
+                    case ExternalVisibilityKind.Public:
+                        //yield return DefaultPublicTag;
+                        break;
+                }
+            }
+
+            if (entity.IsStatic) {
+                if (invokable == null || !invokable.IsOperatorOverload)
+                    yield return DefaultStaticTag;
+            }
+
+            if (entity.IsObsolete)
+                yield return DefaultObsoleteTag;
+
+            if (type != null) {
+                if (invokable == null) {
+                    if (type.IsFlagsEnum)
+                        yield return DefaultFlagsTag;
+
+                    if (type.IsValueType)
+                        yield return DefaultValueTypeTag;
+                    else if (type.IsSealed)
+                        yield return DefaultSealedTag;
+                }
+            }
+
+            if (invokable != null) {
+                if (HasReferenceParamsOrReturnAndAllAreNullrestricted(invokable))
+                    yield return DefaultNotNullTag;
+                if (invokable.IsPure)
+                    yield return DefaultPureTag;
+                if (invokable.IsExtensionMethod)
+                    yield return DefaultExtensionMethodTag;
+                if (invokable.IsOperatorOverload)
+                    yield return DefaultOperatorTag;
+
+                if (type == null) {
+                    if (invokable.IsSealed)
+                        yield return DefaultSealedTag;
+                    else if (invokable.IsAbstract)
+                        yield return DefaultAbstractTag;
+                    else if (invokable.IsVirtual)
+                        yield return DefaultVirtualTag;
+                }
+            }
+
+            if (field != null) {
+                if (field.IsLiteral)
+                    yield return DefaultConstantTag;
+                if (field.IsInitOnly)
+                    yield return DefaultReadonlyTag;
+            }
+
+            if (property != null) {
+                if (property.HasParameters && "Item".Equals(property.ShortName))
+                    yield return DefaultIndexerOperatorTag;
+
+                if (property.HasGetter) {
+                    switch (property.Getter.ExternalVisibility) {
+                        case ExternalVisibilityKind.Public:
+                            yield return DefaultGetTag;
+                            break;
+                        case ExternalVisibilityKind.Protected:
+                            yield return DefaultProGetTag;
+                            break;
+                    }
+                }
+                if (property.HasSetter) {
+                    switch (property.Setter.ExternalVisibility) {
+                        case ExternalVisibilityKind.Public:
+                            yield return DefaultSetTag;
+                            break;
+                        case ExternalVisibilityKind.Protected:
+                            yield return DefaultProSetTag;
+                            break;
+                    }
+                }
+
+            }
+
         }
 
         private static IEnumerable<FlairItem> GetFlair(ICodeDocParameter parameter){
-            /*
-            if (Parameter.HasAttributeMatchingName("CanBeNullAttribute")){
-					tags.Add(DefaultCanBeNullTag);
-				}
-				else{
-					var name = Parameter.Name;
-					Contract.Assume(!String.IsNullOrEmpty(name));
-					if (Parent.RequiresParameterNotNullOrEmpty(name))
-						tags.Add(DefaultParamNotNullAndNotEmptyTag);
-					else if (Parent.RequiresParameterNotNull(name))
-						tags.Add(DefaultParamNotNullTag);
-				}
-
-				if (Parameter.HasAttributeMatchingName("InstantHandleAttribute"))
-					tags.Add(DefaultInstantHandleTag);
-            */
-            throw new NotImplementedException();
+            Contract.Requires(parameter != null);
+            if(parameter.NullRestricted.GetValueOrDefault())
+                throw new NotImplementedException();
+            if(parameter.IsByRef)
+                throw new NotImplementedException();
+            if(parameter.IsOut)
+                throw new NotImplementedException();
+            // TODO: instant handle?
+            yield break;
         }
+
+        private static IEnumerable<FlairItem> GetFlair(ICodeDocGenericParameter parameter) {
+            Contract.Requires(parameter != null);
+            if(parameter.IsCovariant)
+                throw new NotImplementedException();
+            else if(parameter.IsContravariant)
+                throw new NotImplementedException();
+            yield break;
+        } 
 
     }
 }

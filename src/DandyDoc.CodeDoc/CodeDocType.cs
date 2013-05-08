@@ -25,6 +25,12 @@ namespace DandyDoc.CodeDoc
 
         public bool IsEnum { get; set; }
 
+        public bool IsFlagsEnum { get; set; }
+
+        public bool IsSealed { get; set; }
+
+        public bool IsValueType { get; set; }
+
         public bool HasNestedTypes { get { return NestedTypes != null && NestedTypes.Count > 0; } }
 
         public IList<ICodeDocEntity> NestedTypes { get; set; }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
@@ -190,45 +191,48 @@ namespace DandyDoc.Reflection
             return result;
         }
 
-        public static bool HasAttribute(this ICustomAttributeProvider memberInfo, Func<Type, bool> predicate, bool inherit = false) {
-            if (memberInfo == null) throw new NullReferenceException("memberInfo is null");
-            if (predicate == null) throw new ArgumentNullException("predicate");
-            Contract.EndContractBlock();
-            return memberInfo.GetCustomAttributes(inherit)
-                .Select(a => a.GetType())
-                .Any(predicate);
-        }
-
-        public static bool HasAttribute(this ICustomAttributeProvider memberInfo, Func<object, bool> predicate, bool inherit = false) {
-            if (memberInfo == null) throw new NullReferenceException("memberInfo is null");
-            if (predicate == null) throw new ArgumentNullException("predicate");
-            Contract.EndContractBlock();
-            return memberInfo.GetCustomAttributes(inherit)
-                .Any(predicate);
-        }
-
-        public static bool HasAttribute(this ICustomAttributeProvider memberInfo, Type type, bool inherit = false) {
-            if (memberInfo == null) throw new NullReferenceException("memberInfo is null");
+        public static bool HasAttribute(this MemberInfo memberInfo, Type type) {
+            if (memberInfo == null) throw new NullReferenceException("memberInfof is null");
             if (type == null) throw new ArgumentNullException("type");
-            Contract.EndContractBlock();
-            return memberInfo.GetCustomAttributes(type, inherit).Length > 0;
+            return memberInfo
+                .GetCustomAttributesData()
+                .Any(x => x.Constructor.DeclaringType == type);
         }
 
-        public static bool HasAttribute(this ICustomAttributeProvider memberInfo, Type type, Func<Type, bool> predicate, bool inherit = false) {
+        public static bool HasAttribute(this MemberInfo memberInfo, Func<CustomAttributeData, bool> predicate) {
             if (memberInfo == null) throw new NullReferenceException("memberInfo is null");
             if (predicate == null) throw new ArgumentNullException("predicate");
-            Contract.EndContractBlock();
-            return memberInfo.GetCustomAttributes(type, inherit)
-                .Select(a => a.GetType())
+            return memberInfo
+                .GetCustomAttributesData()
                 .Any(predicate);
         }
 
-        public static bool HasAttribute(this ICustomAttributeProvider memberInfo, Type type, Func<object, bool> predicate, bool inherit = false) {
-            if (memberInfo == null) throw new NullReferenceException("memberInfo is null");
+        public static bool HasAttribute(this ParameterInfo parameterInfo, Func<CustomAttributeData, bool> predicate) {
+            if (parameterInfo == null) throw new NullReferenceException("parameterInfo is null");
             if (predicate == null) throw new ArgumentNullException("predicate");
-            Contract.EndContractBlock();
-            return memberInfo.GetCustomAttributes(type, inherit)
+            return parameterInfo
+                .GetCustomAttributesData()
                 .Any(predicate);
+        }
+
+        public static bool IsExtensionMethod(this MethodBase methodBase) {
+            if(methodBase == null) throw new NullReferenceException("methodBase is null");
+            Contract.EndContractBlock();
+            if (methodBase.GetParameters().Length == 0)
+                return false;
+            return methodBase.HasAttribute(typeof(System.Runtime.CompilerServices.ExtensionAttribute));
+        }
+
+        public static bool IsOverride(this MethodBase methodBase) {
+            if (methodBase == null) throw new NullReferenceException("methodBase is null");
+            Contract.EndContractBlock();
+            return methodBase.IsVirtual && methodBase.Attributes.HasFlag(MethodAttributes.ReuseSlot);
+        }
+
+        public static bool IsSealed(this MethodBase methodBase) {
+            if (methodBase == null) throw new NullReferenceException("methodBase is null");
+            Contract.EndContractBlock();
+            return methodBase.IsFinal && methodBase.IsOverride();
         }
 
     }

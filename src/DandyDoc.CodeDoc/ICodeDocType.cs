@@ -15,6 +15,12 @@ namespace DandyDoc.CodeDoc
 
         bool IsEnum { get; }
 
+        bool IsFlagsEnum { get; }
+
+        bool IsSealed { get; }
+
+        bool IsValueType { get; }
+
         bool HasNestedTypes { get; }
 
         IList<ICodeDocEntity> NestedTypes { get; }

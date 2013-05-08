@@ -22,7 +22,9 @@ namespace DandyDoc.CodeDoc
 
         bool IsByRef { get; }
 
-        bool NullRestricted { get; }
+        bool? NullRestricted { get; }
+
+        bool? IsReferenceType { get; }
 
     }
 }
