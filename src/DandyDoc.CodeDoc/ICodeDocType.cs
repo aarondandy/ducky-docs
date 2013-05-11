@@ -9,9 +9,9 @@ namespace DandyDoc.CodeDoc
 
         IList<ICodeDocEntity> BaseChain { get; }
 
-        bool HasDirectInterfaces { get; }
+        bool HasInterfaces { get; }
 
-        IList<ICodeDocEntity> DirectInterfaces { get; }
+        IList<ICodeDocEntity> Interfaces { get; } 
 
         bool IsEnum { get; }
 

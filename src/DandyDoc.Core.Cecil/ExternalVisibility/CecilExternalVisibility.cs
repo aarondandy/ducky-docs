@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using DandyDoc.Cecil;
 using Mono.Cecil;
 
 namespace DandyDoc.ExternalVisibility
@@ -10,19 +11,22 @@ namespace DandyDoc.ExternalVisibility
         public static ExternalVisibilityKind GetExternalVisibility(this MemberReference reference) {
             if(reference == null) throw new ArgumentNullException("reference");
             Contract.EndContractBlock();
-            if (reference is IMemberDefinition)
-                return GetExternalVisibility((IMemberDefinition)reference);
-            if (reference is TypeReference)
-                return GetExternalVisibility(((TypeReference)reference).Resolve());
-            if (reference is MethodReference)
-                return GetExternalVisibility(((MethodReference)reference).Resolve());
-            if (reference is PropertyReference)
-                return GetExternalVisibility(((PropertyReference)reference).Resolve());
-            if (reference is FieldReference)
-                return GetExternalVisibility(((FieldReference)reference).Resolve());
-            if (reference is EventReference)
-                return GetExternalVisibility(((EventReference)reference).Resolve());
-            throw new NotSupportedException();
+
+            var definition = reference.ToDefinition();
+            if (definition != null)
+                return definition.GetExternalVisibility();
+
+            var genericParameter = reference as GenericParameter;
+            if (genericParameter != null) {
+                return (genericParameter.DeclaringMethod ?? (MemberReference)(genericParameter.DeclaringType))
+                    .GetExternalVisibility();
+            }
+
+            var declaringType = reference.DeclaringType;
+            if (declaringType != null)
+                return declaringType.GetExternalVisibility();
+
+            throw new NotSupportedException("Could not get a member definition.");
         }
 
         public static ExternalVisibilityKind GetExternalVisibility(this IMemberDefinition definition) {

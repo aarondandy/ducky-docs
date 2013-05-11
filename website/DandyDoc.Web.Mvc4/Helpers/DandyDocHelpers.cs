@@ -715,10 +715,12 @@ namespace DandyDoc.Web.Mvc4.Helpers
             Contract.Requires(parameter != null);
             if(parameter.NullRestricted.GetValueOrDefault())
                 throw new NotImplementedException();
-            if(parameter.IsByRef)
+
+            if (parameter.IsOut)
                 throw new NotImplementedException();
-            if(parameter.IsOut)
+            else if(parameter.IsByRef)
                 throw new NotImplementedException();
+
             // TODO: instant handle?
             yield break;
         }

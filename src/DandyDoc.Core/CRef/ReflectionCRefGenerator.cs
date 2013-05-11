@@ -9,6 +9,8 @@ namespace DandyDoc.CRef
     public class ReflectionCRefGenerator : CRefGeneratorBase
     {
 
+        public static readonly ReflectionCRefGenerator Default = new ReflectionCRefGenerator();
+
         public static readonly ReflectionCRefGenerator NoPrefix = new ReflectionCRefGenerator(false);
 
         public static readonly ReflectionCRefGenerator WithPrefix = new ReflectionCRefGenerator(true);
@@ -125,6 +127,15 @@ namespace DandyDoc.CRef
             var currentType = type;
             while (true) {
                 var currentTypeName = currentType.Name;
+                Contract.Assume(!String.IsNullOrEmpty(currentTypeName));
+                if (currentType.IsByRef) {
+                    // if the type is by ref it should end in a @
+                    if (currentTypeName[currentTypeName.Length - 1] == '&') {
+                        // .NET seems to add & instead of @ so that may need to get stripped off
+                        currentTypeName = currentTypeName.Substring(0, currentTypeName.Length - 1);
+                    }
+                    currentTypeName = String.Concat(currentTypeName, '@');
+                }
 
                 if (currentType.IsGenericType && (ForceGenericExpansion || !currentType.IsGenericTypeDefinition)) {
                     var tickIndex = currentTypeName.LastIndexOf('`');

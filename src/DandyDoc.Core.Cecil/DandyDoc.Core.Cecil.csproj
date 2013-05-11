@@ -171,6 +171,7 @@
     <Compile Include="..\..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Cecil\CecilImmediateAssemblyResolver.cs" />
     <Compile Include="Cecil\CecilUtilities.cs" />
     <Compile Include="CRef\CecilCRefGenerator.cs" />
     <Compile Include="CRef\CecilCRefLookup.cs" />

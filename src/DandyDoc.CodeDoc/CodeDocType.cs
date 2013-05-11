@@ -15,9 +15,9 @@ namespace DandyDoc.CodeDoc
 
         public IList<ICodeDocEntity> BaseChain { get; set; }
 
-        public bool HasDirectInterfaces { get { return DirectInterfaces != null && DirectInterfaces.Count > 0; } }
+        public bool HasInterfaces { get { return Interfaces != null && Interfaces.Count > 0; } }
 
-        public IList<ICodeDocEntity> DirectInterfaces { get; set; }
+        public IList<ICodeDocEntity> Interfaces { get; set; }
 
         public bool HasGenericParameters { get { return GenericParameters != null && GenericParameters.Count > 0; } }
 

@@ -259,6 +259,18 @@ namespace TestLibrary1
 			throw new NotImplementedException();
 		}
 
+        /// <summary>
+        /// This method has some ref/out parameters/
+        /// </summary>
+        /// <param name="a">An 'out' parameter.</param>
+        /// <param name="b">A 'ref' parameter.</param>
+        /// <returns><code>true</code></returns>
+        public bool TrySomeOutRefStuff(out int a, ref int b) {
+            a = 2 + b;
+            b = 1;
+            return true;
+        }
+
 		/// <summary>
 		/// A finalizer that does nothing.
 		/// </summary>

@@ -14,17 +14,17 @@ namespace DandyDoc.CodeDoc.Tests
     public class CodeDocTypeReflectionEntityRepositoryTest
     {
 
-        public CodeDocTypeReflectionEntityRepositoryTest() {
-            var testLib1Asm = typeof(Class1).Assembly;
-            var testLib1AsmPath = ReflectionUtilities.GetFilePath(testLib1Asm);
-            var testLib1XmlPath = Path.ChangeExtension(testLib1AsmPath, "XML");
-            TestLibrary1Repository = new ReflectionCodeDocEntityRepository(
-                new ReflectionCRefLookup(testLib1Asm),
-                new XmlAssemblyDocumentation(testLib1XmlPath)
-            );
+        public virtual ICodeDocEntityRepository TestLibrary1Repository {
+            get {
+                var testLib1Asm = typeof(Class1).Assembly;
+                var testLib1AsmPath = ReflectionUtilities.GetFilePath(testLib1Asm);
+                var testLib1XmlPath = Path.ChangeExtension(testLib1AsmPath, "XML");
+                return new ReflectionCodeDocEntityRepository(
+                    new ReflectionCRefLookup(testLib1Asm),
+                    new XmlAssemblyDocumentation(testLib1XmlPath)
+                );
+            }
         }
-
-        public ReflectionCodeDocEntityRepository TestLibrary1Repository { get; set; }
 
         [Test]
         public void invalid_requests() {
@@ -61,9 +61,9 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual("A:" + typeof(Class1).Assembly.FullName, model.Assembly.CRef.FullCRef);
             Assert.IsTrue(model.HasBaseChain);
             Assert.AreEqual(
-                new[] {new CRefIdentifier("T:System.Object")},
+                new[] { new CRefIdentifier("T:System.Object") },
                 model.BaseChain.Select(x => x.CRef).ToArray());
-            Assert.IsFalse(model.HasDirectInterfaces);
+            Assert.IsFalse(model.HasInterfaces);
             Assert.IsNull(model.DeclaringType);
         }
 
@@ -87,7 +87,7 @@ namespace DandyDoc.CodeDoc.Tests
         }
 
         [Test]
-        public void type_members_test_for_Class1(){
+        public void type_members_test_for_Class1() {
             var model = TestLibrary1Repository
                 .GetContentEntity("TestLibrary1.Class1") as CodeDocType;
 
@@ -113,7 +113,7 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.IsTrue(model.HasConstructors);
             Assert.AreEqual(2, model.Constructors.Count);
             Assert.That(model.Constructors, Has.All.Property("SubTitle").EqualTo("Constructor"));
-            
+
             Assert.IsTrue(model.HasMethods);
             Assert.Less(5, model.Methods.Count);
             Assert.That(model.Methods, Has.All.Property("SubTitle").EqualTo("Method"));
@@ -160,16 +160,16 @@ namespace DandyDoc.CodeDoc.Tests
 
             Assert.IsTrue(model.HasBaseChain);
             Assert.AreEqual(
-                new [] {
+                new[] {
                     new CRefIdentifier("T:System.Enum"),
                     new CRefIdentifier("T:System.ValueType"),
                     new CRefIdentifier("T:System.Object")
                 },
                 model.BaseChain.Select(x => x.CRef).ToArray());
-            Assert.IsTrue(model.HasDirectInterfaces);
-            Assert.That(model.DirectInterfaces.Select(x => x.CRef), Contains.Item(new CRefIdentifier("T:System.IComparable")));
-            Assert.That(model.DirectInterfaces.Select(x => x.CRef), Contains.Item(new CRefIdentifier("T:System.IConvertible")));
-            Assert.That(model.DirectInterfaces.Select(x => x.CRef), Contains.Item(new CRefIdentifier("T:System.IFormattable")));
+            Assert.IsTrue(model.HasInterfaces);
+            Assert.That(model.Interfaces.Select(x => x.CRef), Contains.Item(new CRefIdentifier("T:System.IComparable")));
+            Assert.That(model.Interfaces.Select(x => x.CRef), Contains.Item(new CRefIdentifier("T:System.IConvertible")));
+            Assert.That(model.Interfaces.Select(x => x.CRef), Contains.Item(new CRefIdentifier("T:System.IFormattable")));
         }
 
         [Test]
@@ -198,9 +198,9 @@ namespace DandyDoc.CodeDoc.Tests
 
             Assert.IsTrue(model.HasBaseChain);
             Assert.AreEqual(
-                new[] {new CRefIdentifier("T:System.Object")},
+                new[] { new CRefIdentifier("T:System.Object") },
                 model.BaseChain.Select(x => x.CRef).ToArray());
-            Assert.IsFalse(model.HasDirectInterfaces);
+            Assert.IsFalse(model.HasInterfaces);
         }
 
         [Test]
@@ -210,7 +210,7 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.IsNotNull(model);
             Assert.AreEqual("Generic1<TA, TB>", model.ShortName);
             Assert.IsNull(model.DeclaringType);
-            
+
             Assert.IsTrue(model.HasGenericParameters);
             Assert.AreEqual(2, model.GenericParameters.Count);
 
@@ -297,7 +297,7 @@ namespace DandyDoc.CodeDoc.Tests
         }
 
         [Test]
-        public void field_nullable_int_test(){
+        public void field_nullable_int_test() {
             var field = TestLibrary1Repository
                 .GetContentEntity("TestLibrary1.Class1.SomeNullableInt") as CodeDocField;
             Assert.IsNotNull(field);
@@ -332,7 +332,7 @@ namespace DandyDoc.CodeDoc.Tests
         }
 
         [Test]
-        public void field_static_double(){
+        public void field_static_double() {
             var field = TestLibrary1Repository
                 .GetContentEntity("TestLibrary1.Class1.SomeField") as CodeDocField;
             Assert.IsNotNull(field);
@@ -348,7 +348,7 @@ namespace DandyDoc.CodeDoc.Tests
         }
 
         [Test]
-        public void field_readonly_int(){
+        public void field_readonly_int() {
             var field = TestLibrary1Repository
                 .GetContentEntity("TestLibrary1.Class1.ReadonlyField") as CodeDocField;
             Assert.IsNotNull(field);
@@ -363,7 +363,7 @@ namespace DandyDoc.CodeDoc.Tests
         }
 
         [Test]
-        public void method_strange_test(){
+        public void method_strange_test() {
             var method = TestLibrary1Repository.GetContentEntity(
                 "TestLibrary1.Class1.HasStrangeParams(System.Nullable{System.Int32},TestLibrary1.Class1[])") as CodeDocMethod;
             Assert.IsNotNull(method);
@@ -376,7 +376,7 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual("N:TestLibrary1", method.Namespace.CRef.FullCRef);
             Assert.IsNotNull(method.Assembly);
             Assert.AreEqual("A:" + typeof(Class1).Assembly.FullName, method.Assembly.CRef.FullCRef);
-            
+
             Assert.IsTrue(method.HasParameters);
             Assert.AreEqual(2, method.Parameters.Count);
             Assert.AreEqual("a", method.Parameters[0].Name);
@@ -435,7 +435,7 @@ namespace DandyDoc.CodeDoc.Tests
         }
 
         [Test]
-        public void code_contract_constructor(){
+        public void code_contract_constructor() {
             var method = TestLibrary1Repository.GetContentEntity(
                 "TestLibrary1.ClassWithContracts.#ctor(System.String)") as CodeDocMethod;
             Assert.IsNotNull(method);
@@ -457,7 +457,7 @@ namespace DandyDoc.CodeDoc.Tests
         }
 
         [Test]
-        public void code_contract_simple_ensures_method(){
+        public void code_contract_simple_ensures_method() {
             var method = TestLibrary1Repository.GetContentEntity(
                 "M:TestLibrary1.ClassWithContracts.SomeStuff") as CodeDocMethod;
             Assert.IsNotNull(method);
@@ -471,7 +471,7 @@ namespace DandyDoc.CodeDoc.Tests
         }
 
         [Test]
-        public void method_generic(){
+        public void method_generic() {
             var method = TestLibrary1Repository.GetContentEntity(
                 "M:TestLibrary1.Generic1`2.AMix``1(`0,``0)") as CodeDocMethod;
             Assert.IsNotNull(method);
@@ -486,7 +486,7 @@ namespace DandyDoc.CodeDoc.Tests
         }
 
         [Test]
-        public void method_generic_constraints(){
+        public void method_generic_constraints() {
             var method = TestLibrary1Repository.GetContentEntity(
                 "M:TestLibrary1.Generic1`2.Constraints`1.GetStuff``1(`2,``0)") as CodeDocMethod;
             Assert.IsNotNull(method);
@@ -501,7 +501,7 @@ namespace DandyDoc.CodeDoc.Tests
         }
 
         [Test]
-        public void delegate_with_comments(){
+        public void delegate_with_comments() {
             var type = TestLibrary1Repository.GetContentEntity(
                 "T:TestLibrary1.Class1.MyFunc") as CodeDocDelegate;
             Assert.IsNotNull(type);
@@ -526,7 +526,7 @@ namespace DandyDoc.CodeDoc.Tests
         }
 
         [Test]
-        public void delegate_with_generic_arg(){
+        public void delegate_with_generic_arg() {
             var type = TestLibrary1Repository.GetContentEntity(
                 "TestLibrary1.Generic1`2.MyFunc`1") as CodeDocDelegate;
             Assert.IsNotNull(type);
@@ -537,7 +537,7 @@ namespace DandyDoc.CodeDoc.Tests
         }
 
         [Test]
-        public void event_test(){
+        public void event_test() {
             var evt = TestLibrary1Repository.GetContentEntity(
                 "TestLibrary1.Class1.DoStuff") as CodeDocEvent;
             Assert.IsNotNull(evt);
@@ -561,7 +561,7 @@ namespace DandyDoc.CodeDoc.Tests
         }
 
         [Test]
-        public void property_test(){
+        public void property_test() {
             var prop = TestLibrary1Repository.GetContentEntity(
                 "TestLibrary1.Class1.HasTableInRemarks") as CodeDocProperty;
             Assert.IsNotNull(prop);
@@ -585,7 +585,7 @@ namespace DandyDoc.CodeDoc.Tests
         }
 
         [Test]
-        public void property_indexer_test(){
+        public void property_indexer_test() {
             var prop = TestLibrary1Repository.GetContentEntity(
                 "TestLibrary1.Class1.Item(System.Int32)") as CodeDocProperty;
             Assert.IsNotNull(prop);
@@ -601,7 +601,17 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual("T:System.Int32", prop.Parameters[0].ParameterType.CRef.FullCRef);
             Assert.IsTrue(prop.Parameters[0].HasSummary);
             Assert.AreEqual("an index", prop.Parameters[0].Summary.Node.InnerText);
+        }
 
+        [Test]
+        public void out_ref_method_test() {
+            var method = TestLibrary1Repository.GetContentEntity(
+                "TestLibrary1.Class1.TrySomeOutRefStuff(System.Int32@,System.Int32@)") as CodeDocMethod;
+            Assert.IsNotNull(method);
+            Assert.IsTrue(method.Parameters[0].IsOut);
+            Assert.IsTrue(method.Parameters[0].IsByRef);
+            Assert.IsFalse(method.Parameters[1].IsOut);
+            Assert.IsTrue(method.Parameters[1].IsByRef);
         }
 
     }
