@@ -17,7 +17,7 @@ namespace DandyDoc.CodeDoc.Tests
         public virtual ICodeDocEntityRepository TestLibrary1Repository {
             get {
                 var testLib1Asm = typeof(Class1).Assembly;
-                var testLib1AsmPath = ReflectionUtilities.GetFilePath(testLib1Asm);
+                var testLib1AsmPath = testLib1Asm.GetFilePath();
                 var testLib1XmlPath = Path.ChangeExtension(testLib1AsmPath, "XML");
                 return new ReflectionCodeDocEntityRepository(
                     new ReflectionCRefLookup(testLib1Asm),

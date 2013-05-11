@@ -4,17 +4,18 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{9AE8FD04-1158-4DB1-BCC7-E937EB3E64EB}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{C2ECA188-8477-4F2B-B4CC-6761DA31F74B}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DandyDoc.CodeDoc.Cecil.Tests</RootNamespace>
-    <AssemblyName>DandyDoc.CodeDoc.Cecil.Tests</AssemblyName>
+    <RootNamespace>CodeDocRepository.PerformanceTest</RootNamespace>
+    <AssemblyName>CodeDocRepository.PerformanceTest</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,6 +25,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\..\bin\Release\tests\</OutputPath>
@@ -36,17 +38,17 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Cecil.Mdb">
+    <Reference Include="Mono.Cecil.Mdb, Version=0.9.5.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Mdb.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Cecil.Pdb">
+    <Reference Include="Mono.Cecil.Pdb, Version=0.9.5.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Pdb.dll</HintPath>
     </Reference>
-    <Reference Include="Mono.Cecil.Rocks">
+    <Reference Include="Mono.Cecil.Rocks, Version=0.9.5.0, Culture=neutral, PublicKeyToken=0738eb9f132ed756, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.framework">
-      <HintPath>..\..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -57,12 +59,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CodeDocTypeCecilEntityRepositoryTest.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\DandyDoc.CodeDoc.Cecil\DandyDoc.CodeDoc.Cecil.csproj">
-      <Project>{800519b7-8f27-4f5d-94cc-9868add9559f}</Project>
+      <Project>{800519B7-8F27-4F5D-94CC-9868ADD9559F}</Project>
       <Name>DandyDoc.CodeDoc.Cecil</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\DandyDoc.CodeDoc\DandyDoc.CodeDoc.csproj">
@@ -76,10 +78,6 @@
     <ProjectReference Include="..\..\src\DandyDoc.Core\DandyDoc.Core.csproj">
       <Project>{a09f4dac-290c-4abe-b053-071ec966008f}</Project>
       <Name>DandyDoc.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DandyDoc.CodeDoc.Tests\DandyDoc.CodeDoc.Tests.csproj">
-      <Project>{2e91c452-7777-4acd-83e5-a79b5d217389}</Project>
-      <Name>DandyDoc.CodeDoc.Tests</Name>
     </ProjectReference>
     <ProjectReference Include="..\TestLibrary1\TestLibrary1.csproj">
       <Project>{f83f4c52-a886-4b9e-8164-e95e1f22f929}</Project>

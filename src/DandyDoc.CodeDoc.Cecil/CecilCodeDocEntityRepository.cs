@@ -50,6 +50,7 @@ namespace DandyDoc.CodeDoc
             Contract.Requires(cRefLookup != null);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public CecilCodeDocEntityRepository(CecilCRefLookup cRefLookup, IEnumerable<XmlAssemblyDocumentation> xmlDocs) {
             if (cRefLookup == null) throw new ArgumentNullException("cRefLookup");
             Contract.EndContractBlock();
@@ -171,7 +172,7 @@ namespace DandyDoc.CodeDoc
             if (name.Length >= 2 && (name[0] == '$' || name[name.Length - 1] == '$'))
                 return false;
 
-            var methodDefinition = methodReference.Resolve();
+            var methodDefinition = methodReference.ToDefinition();
             if (methodDefinition != null) {
                 if (!isPropertyMethod && methodDefinition.IsSpecialName && !methodDefinition.IsConstructor && !methodDefinition.IsOperatorOverload())
                     return false;
@@ -189,7 +190,7 @@ namespace DandyDoc.CodeDoc
             var name = fieldReference.Name;
             if (name.Length >= 2 && (name[0] == '$' || name[name.Length - 1] == '$'))
                 return false;
-            var fieldDefinition = fieldReference.Resolve();
+            var fieldDefinition = fieldReference.ToDefinition();
             if (fieldDefinition != null) {
                 if (fieldDefinition.IsSpecialName)
                     return false;
@@ -202,7 +203,7 @@ namespace DandyDoc.CodeDoc
                 return false;
             if (eventReference.GetExternalVisibility() == ExternalVisibilityKind.Hidden)
                 return false;
-            var eventDefinition = eventReference.Resolve();
+            var eventDefinition = eventReference.ToDefinition();
             if (eventDefinition != null) {
                 if (eventDefinition.IsSpecialName)
                     return false;
@@ -215,7 +216,7 @@ namespace DandyDoc.CodeDoc
                 return false;
             if (propertyReference.GetExternalVisibility() == ExternalVisibilityKind.Hidden)
                 return false;
-            var propertyDefinition = propertyReference.Resolve();
+            var propertyDefinition = propertyReference.ToDefinition();
             if (propertyDefinition != null) {
                 if (propertyDefinition.IsSpecialName)
                     return false;
@@ -228,6 +229,11 @@ namespace DandyDoc.CodeDoc
             return GetCodeDocAssembly(GetCRefIdentifier(assembly));
         }
 
+        private MemberReference GetMemberReferencePreferDefinition(CRefIdentifier cRef) {
+            var memberReference = CRefLookup.GetMember(cRef);
+            return (MemberReference)(memberReference.ToDefinition()) ?? memberReference;
+        }
+
         public override ICodeDocEntityContent GetContentEntity(CRefIdentifier cRef) {
             if (cRef == null) throw new ArgumentNullException("cRef");
             Contract.EndContractBlock();
@@ -237,14 +243,14 @@ namespace DandyDoc.CodeDoc
             if ("A".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
                 return GetCodeDocAssembly(cRef);
 
-            var memberReference = CRefLookup.GetMember(cRef);
+            var memberReference = GetMemberReferencePreferDefinition(cRef);
             if (memberReference == null || !MemberFilter(memberReference))
                 return null;
 
-            return ConvertToContentEntity(memberReference);
+            return ConvertToEntity(memberReference);
         }
 
-        protected virtual ICodeDocEntityContent ConvertToContentEntity(MemberReference memberReference) {
+        protected virtual ICodeDocEntityContent ConvertToEntity(MemberReference memberReference) {
             if(memberReference == null) throw new ArgumentNullException("memberReference");
             Contract.Ensures(Contract.Result<ICodeDocEntity>() != null);
             if (memberReference is TypeReference)
@@ -269,7 +275,8 @@ namespace DandyDoc.CodeDoc
             if ("A".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
                 return GetCodeDocAssembly(cRef);
 
-            var memberReference = CRefLookup.GetMember(cRef);
+            var memberReference = GetMemberReferencePreferDefinition(cRef);
+            memberReference = (MemberReference)(memberReference.ToDefinition()) ?? memberReference;
             if (memberReference == null || !MemberFilter(memberReference))
                 return null;
 
@@ -856,7 +863,7 @@ namespace DandyDoc.CodeDoc
                 var nestedTypeModels = new List<ICodeDocEntity>();
                 var nestedDelegateModels = new List<ICodeDocEntity>();
                 foreach (var nestedType in typeDefinition.NestedTypes.Where(MemberFilter)) {
-                    var nestedTypeModel = ConvertToContentEntity(nestedType)
+                    var nestedTypeModel = ConvertToEntity(nestedType)
                         ?? ConvertToSimpleEntity(nestedType);
                     if (nestedType.IsDelegateType())
                         nestedDelegateModels.Add(nestedTypeModel);
@@ -870,7 +877,7 @@ namespace DandyDoc.CodeDoc
                 var operatorModels = new List<ICodeDocEntity>();
                 var constructorModels = new List<ICodeDocEntity>();
                 foreach (var methodDefinition in typeDefinition.GetAllMethods(MemberFilter)) {
-                    var methodModel = ConvertToContentEntity(methodDefinition)
+                    var methodModel = ConvertToEntity(methodDefinition)
                         ?? ConvertToSimpleEntity(methodDefinition);
                     if(methodDefinition.IsConstructor)
                         constructorModels.Add(methodModel);
@@ -886,19 +893,19 @@ namespace DandyDoc.CodeDoc
                 model.Properties = new ReadOnlyCollection<ICodeDocEntity>(
                     typeDefinition
                     .GetAllProperties(MemberFilter)
-                    .Select(x => ConvertToContentEntity(x) ?? ConvertToSimpleEntity(x))
+                    .Select(x => ConvertToEntity(x) ?? ConvertToSimpleEntity(x))
                     .ToArray());
 
                 model.Fields = new ReadOnlyCollection<ICodeDocEntity>(
                     typeDefinition
                     .GetAllFields(MemberFilter)
-                    .Select(x => ConvertToContentEntity(x) ?? ConvertToSimpleEntity(x))
+                    .Select(x => ConvertToEntity(x) ?? ConvertToSimpleEntity(x))
                     .ToArray());
 
                 model.Events = new ReadOnlyCollection<ICodeDocEntity>(
                     typeDefinition
                     .GetAllEvents(MemberFilter)
-                    .Select(x => ConvertToContentEntity(x) ?? ConvertToSimpleEntity(x))
+                    .Select(x => ConvertToEntity(x) ?? ConvertToSimpleEntity(x))
                     .ToArray());
             }
 

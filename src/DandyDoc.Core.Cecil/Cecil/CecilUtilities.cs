@@ -260,32 +260,32 @@ namespace DandyDoc.Cecil
 
         public static TypeDefinition ToDefinition(this TypeReference typeReference) {
             Contract.Requires(typeReference != null);
-            return typeReference as TypeDefinition ?? typeReference.Resolve();
+            return typeReference as TypeDefinition ?? (typeReference.Resolve());
         }
 
         public static MethodDefinition ToDefinition(this MethodReference methodReference) {
             Contract.Requires(methodReference != null);
-            return methodReference as MethodDefinition ?? methodReference.Resolve();
+            return methodReference as MethodDefinition ?? (methodReference.Resolve());
         }
 
         public static FieldDefinition ToDefinition(this FieldReference fieldReference) {
             Contract.Requires(fieldReference != null);
-            return fieldReference as FieldDefinition ?? fieldReference.Resolve();
+            return fieldReference as FieldDefinition ?? (fieldReference.Resolve());
         }
 
         public static PropertyDefinition ToDefinition(this PropertyReference propertyReference) {
             Contract.Requires(propertyReference != null);
-            return propertyReference as PropertyDefinition ?? propertyReference.Resolve();
+            return propertyReference as PropertyDefinition ?? (propertyReference.Resolve());
         }
 
         public static EventDefinition ToDefinition(this EventReference eventReference) {
             Contract.Requires(eventReference != null);
-            return eventReference as EventDefinition ?? eventReference.Resolve();
+            return eventReference as EventDefinition ?? (eventReference.Resolve());
         }
 
         public static ParameterDefinition ToDefinition(this ParameterReference parameterReference) {
             Contract.Requires(parameterReference != null);
-            return parameterReference as ParameterDefinition ?? parameterReference.Resolve();
+            return parameterReference as ParameterDefinition ?? (parameterReference.Resolve());
         }
 
         public static IMemberDefinition ToDefinition(this MemberReference memberReference) {

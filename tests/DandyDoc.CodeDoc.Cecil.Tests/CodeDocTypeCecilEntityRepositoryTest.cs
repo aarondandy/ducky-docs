@@ -14,8 +14,9 @@ namespace DandyDoc.CodeDoc.Cecil.Tests
 
         public override ICodeDocEntityRepository TestLibrary1Repository {
             get {
-                var testLib1Asm = AssemblyDefinition.ReadAssembly(@".\TestLibrary1.dll", CecilImmediateAssemblyResolver.CreateReaderParameters());
-                var testLib1AsmPath = CecilUtilities.GetFilePath(testLib1Asm);
+                //var testLib1Asm = AssemblyDefinition.ReadAssembly(@".\TestLibrary1.dll", CecilImmediateAssemblyResolver.CreateReaderParameters());
+                var testLib1Asm = AssemblyDefinition.ReadAssembly(@".\TestLibrary1.dll");
+                var testLib1AsmPath = testLib1Asm.GetFilePath();
                 var testLib1XmlPath = Path.ChangeExtension(testLib1AsmPath, "XML");
                 return new CecilCodeDocEntityRepository(
                     new CecilCRefLookup(testLib1Asm),
