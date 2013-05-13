@@ -3,6 +3,16 @@ using Mono.Cecil;
 
 namespace DandyDoc.Cecil
 {
+    /// <summary>
+    /// An assembly resolver designed to load all meta-data ahead of time using
+    /// <see cref="Mono.Cecil.ReadingMode.Immediate" />.
+    /// </summary>
+    /// <remarks>
+    /// This resolver is useful in situations that require thread safety
+    /// when using a version of Mono Cecil that is not thread safe.
+    /// Be warned however that this will cause Cecil to be very slow.
+    /// </remarks>
+    /// <seealso cref="DandyDoc.CodeDoc.ThreadSafeCodeDocRepositoryWrapper"/>
     public class CecilImmediateAssemblyResolver : IAssemblyResolver
     {
 

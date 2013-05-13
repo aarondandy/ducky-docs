@@ -380,6 +380,7 @@ namespace DandyDoc.Cecil
             List<TResult> results;
             if (hasMembers(typeDefinition)) {
                 var members = getMembers(typeDefinition);
+                Contract.Assume(members != null);
                 if (memberFilter != null)
                     members = members.Where(memberFilter);
                 results = members.ToList();

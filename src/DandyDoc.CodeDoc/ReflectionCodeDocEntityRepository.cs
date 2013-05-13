@@ -52,6 +52,7 @@ namespace DandyDoc.CodeDoc
             Contract.Requires(cRefLookup != null);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public ReflectionCodeDocEntityRepository(ReflectionCRefLookup cRefLookup, IEnumerable<XmlAssemblyDocumentation> xmlDocs) {
             if(cRefLookup == null) throw new ArgumentNullException("cRefLookup");
             Contract.EndContractBlock();
@@ -89,6 +90,7 @@ namespace DandyDoc.CodeDoc
                     CodeDocNamespace namespaceModel;
                     if (!namespaceModels.TryGetValue(namespaceName, out namespaceModel)) {
                         var namespaceTitle = String.IsNullOrEmpty(namespaceName) ? "global" : namespaceName;
+                        Contract.Assume(!String.IsNullOrEmpty("N:" + namespaceName));
                         namespaceModel = new CodeDocNamespace(new CRefIdentifier("N:" + namespaceName)){
                             Title = namespaceTitle,
                             ShortName = namespaceTitle,
@@ -275,6 +277,7 @@ namespace DandyDoc.CodeDoc
 
         private void ApplySimpleEntityAttributes(CodeDocSimpleEntity entity, MemberInfo memberInfo){
             Contract.Requires(entity != null);
+            Contract.Requires(memberInfo != null);
             entity.ExternalVisibility = memberInfo.GetExternalVisibility();
             entity.IsStatic = memberInfo.IsStatic();
             entity.IsObsolete = memberInfo.HasAttribute(typeof(ObsoleteAttribute));
@@ -659,6 +662,7 @@ namespace DandyDoc.CodeDoc
                         var genericModels = new List<ICodeDocGenericParameter>();
                         foreach (var genericArgument in genericArguments){
                             var argumentName = genericArgument.Name;
+                            Contract.Assume(!String.IsNullOrEmpty(argumentName));
                             var typeConstraints = genericArgument.GetGenericParameterConstraints();
                             var genericModel = new CodeDocGenericParameter{
                                 Name = argumentName
@@ -777,6 +781,7 @@ namespace DandyDoc.CodeDoc
                         var genericModels = new List<ICodeDocGenericParameter>();
                         foreach (var genericArgument in genericArguments) {
                             var argumentName = genericArgument.Name;
+                            Contract.Assume(!String.IsNullOrEmpty(argumentName));
                             if (null != parentGenericArguments && parentGenericArguments.Any(p => p.Name == argumentName)) {
                                 continue;
                             }

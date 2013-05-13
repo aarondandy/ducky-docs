@@ -37,6 +37,7 @@ namespace DandyDoc.ExternalVisibility
             if(typeInfo == null) throw new ArgumentNullException("typeInfo");
             Contract.EndContractBlock();
             if (typeInfo.IsNested) {
+                Contract.Assume(typeInfo.DeclaringType != null);
                 var parentVisibility = GetExternalVisibility(typeInfo.DeclaringType);
                 if(parentVisibility == ExternalVisibilityKind.Hidden)
                     return ExternalVisibilityKind.Hidden;

@@ -30,12 +30,6 @@ namespace DandyDoc.CRef
         protected bool ForceGenericExpansion { get; set; }
 
         public override string GetCRef(object entity) {
-            Contract.Ensures(
-                entity is MemberInfo
-                ? !String.IsNullOrEmpty(Contract.Result<string>())
-                : null == Contract.Result<string>()
-            );
-
             if (entity is Assembly)
                 return "A:" + ((Assembly)entity).FullName;
 

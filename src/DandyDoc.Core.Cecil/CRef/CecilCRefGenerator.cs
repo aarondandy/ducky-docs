@@ -22,12 +22,6 @@ namespace DandyDoc.CRef
             : base(includeTypePrefix) { }
 
         public override string GetCRef(object entity) {
-            Contract.Ensures(
-                entity is MemberReference
-                ? !String.IsNullOrEmpty(Contract.Result<string>())
-                : null == Contract.Result<string>()
-            );
-
             if (entity is AssemblyDefinition)
                 return "A:" + ((AssemblyDefinition)entity).FullName;
 

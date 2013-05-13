@@ -706,6 +706,7 @@ namespace DandyDoc.CodeDoc
                         var genericModels = new List<ICodeDocGenericParameter>();
                         foreach (var genericArgument in genericArguments) {
                             var argumentName = genericArgument.Name;
+                            Contract.Assume(!String.IsNullOrEmpty(argumentName));
                             //var typeConstraints = genericArgument.GetGenericParameterConstraints();
                             var genericModel = new CodeDocGenericParameter {
                                 Name = argumentName
@@ -832,6 +833,7 @@ namespace DandyDoc.CodeDoc
                         var genericModels = new List<ICodeDocGenericParameter>();
                         foreach (var genericArgument in genericArguments) {
                             var argumentName = genericArgument.Name;
+                            Contract.Assume(!String.IsNullOrEmpty(argumentName));
                             if (null != parentGenericArguments && parentGenericArguments.Any(p => p.Name == argumentName)) {
                                 continue;
                             }

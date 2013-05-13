@@ -53,7 +53,8 @@ namespace DandyDoc.XmlDoc
         public XmlDocMember(XmlElement element, IEnumerable<XmlDocNode> children)
             : base(element, children.Select(Substitute)) {
             Contract.Requires(element != null);
-            Contract.Requires(children == null || Contract.ForAll(children, x => x != null));
+            Contract.Requires(children != null);
+            Contract.Requires(Contract.ForAll(children, x => x != null));
             _guts = CreateGuts();
         }
 
@@ -298,8 +299,8 @@ namespace DandyDoc.XmlDoc
 
         public IList<XmlDocContractElement> RequiresElements {
             get {
-                Contract.Ensures(Contract.Result<IList<XmlDocElement>>() != null);
-                Contract.Ensures(Contract.ForAll(Contract.Result<IList<XmlDocElement>>(), x => x != null));
+                Contract.Ensures(Contract.Result<IList<XmlDocContractElement>>() != null);
+                Contract.Ensures(Contract.ForAll(Contract.Result<IList<XmlDocContractElement>>(), x => x != null));
                 return _guts.RequiresElements;
             }
         }
@@ -308,8 +309,8 @@ namespace DandyDoc.XmlDoc
 
         public IList<XmlDocContractElement> EnsuresElements {
             get {
-                Contract.Ensures(Contract.Result<IList<XmlDocElement>>() != null);
-                Contract.Ensures(Contract.ForAll(Contract.Result<IList<XmlDocElement>>(), x => x != null));
+                Contract.Ensures(Contract.Result<IList<XmlDocContractElement>>() != null);
+                Contract.Ensures(Contract.ForAll(Contract.Result<IList<XmlDocContractElement>>(), x => x != null));
                 return _guts.EnsuresElements;
             }
         }
@@ -318,8 +319,8 @@ namespace DandyDoc.XmlDoc
 
         public IList<XmlDocContractElement> InvariantElements {
             get {
-                Contract.Ensures(Contract.Result<IList<XmlDocElement>>() != null);
-                Contract.Ensures(Contract.ForAll(Contract.Result<IList<XmlDocElement>>(), x => x != null));
+                Contract.Ensures(Contract.Result<IList<XmlDocContractElement>>() != null);
+                Contract.Ensures(Contract.ForAll(Contract.Result<IList<XmlDocContractElement>>(), x => x != null));
                 return _guts.InvariantElements;
             }
         }
