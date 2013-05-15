@@ -7,16 +7,31 @@ using System.Xml;
 
 namespace DandyDoc.XmlDoc
 {
+    /// <summary>
+    /// A general XML doc node wrapper.
+    /// </summary>
     public class XmlDocNode
     {
 
+        /// <summary>
+        /// An empty XML doc node collection.
+        /// </summary>
         protected static readonly IList<XmlDocNode> EmptyXmlDocNodeList = new XmlDocNode[0];
 
+        /// <summary>
+        /// Creates a new XML doc node.
+        /// </summary>
+        /// <param name="node">The raw XML node to wrap.</param>
         public XmlDocNode(XmlNode node)
             : this(node, null) {
             Contract.Requires(node != null);
         }
 
+        /// <summary>
+        /// Creates a new XML doc node.
+        /// </summary>
+        /// <param name="node">The raw XML node to wrap.</param>
+        /// <param name="children">The child XML doc nodes.</param>
         public XmlDocNode(XmlNode node, IEnumerable<XmlDocNode> children) {
             if (node == null) throw new ArgumentNullException("node");
             Contract.Requires(children == null || Contract.ForAll(children, x => x != null));
@@ -36,19 +51,6 @@ namespace DandyDoc.XmlDoc
             }
         }
 
-        public XmlDocNode Parent { get; private set; }
-
-        public XmlNode Node { get; private set; }
-
-        public IList<XmlDocNode> Children { get; private set; }
-
-        public bool HasChildren {
-            get {
-                Contract.Ensures(Contract.Result<bool>() == Children.Count > 0);
-                return Children.Count > 0;
-            }
-        }
-
         [ContractInvariantMethod]
         private void CodeContractInvariant() {
             Contract.Invariant(Node != null);
@@ -56,6 +58,34 @@ namespace DandyDoc.XmlDoc
             Contract.Invariant(Contract.ForAll(Children, child => child != null));
         }
 
+        /// <summary>
+        /// The parent XML doc node.
+        /// </summary>
+        public XmlDocNode Parent { get; private set; }
+
+        /// <summary>
+        /// The raw wrapped XML node.
+        /// </summary>
+        public XmlNode Node { get; private set; }
+
+        /// <summary>
+        /// The XML doc child nodes.
+        /// </summary>
+        public IList<XmlDocNode> Children { get; private set; }
+
+        /// <summary>
+        /// Determines if this node has any child nodes.
+        /// </summary>
+        public bool HasChildren {
+            get {
+                Contract.Ensures(Contract.Result<bool>() == Children.Count > 0);
+                return Children.Count > 0;
+            }
+        }
+
+        /// <summary>
+        /// Traverses the prior sibling XML doc nodes.
+        /// </summary>
         public IEnumerable<XmlDocNode> PriorSiblings {
             get {
                 if (Parent == null || !Parent.HasChildren)
@@ -68,6 +98,9 @@ namespace DandyDoc.XmlDoc
             }
         }
 
+        /// <summary>
+        /// Traverses the next sibling XML doc nodes.
+        /// </summary>
         public IEnumerable<XmlDocNode> NextSiblings {
             get {
                 if (Parent == null || !Parent.HasChildren)
@@ -84,12 +117,22 @@ namespace DandyDoc.XmlDoc
             }
         }
 
+        /// <summary>
+        /// Gets the prior sibling XML doc node if one exists.
+        /// </summary>
         public XmlDocNode PriorSibling {
-            get { return PriorSiblings.FirstOrDefault(); }
+            get {
+                return PriorSiblings.FirstOrDefault();
+            }
         }
 
+        /// <summary>
+        /// Gets the next sibling XML doc node if one exists.
+        /// </summary>
         public XmlDocNode NextSibling {
-            get { return NextSiblings.FirstOrDefault(); }
+            get {
+                return NextSiblings.FirstOrDefault();
+            }
         }
 
     }

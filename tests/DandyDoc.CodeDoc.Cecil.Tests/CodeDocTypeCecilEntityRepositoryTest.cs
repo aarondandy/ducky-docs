@@ -6,6 +6,8 @@ using DandyDoc.XmlDoc;
 using Mono.Cecil;
 using NUnit.Framework;
 
+#pragma warning disable 1591
+
 namespace DandyDoc.CodeDoc.Cecil.Tests
 {
     [TestFixture]

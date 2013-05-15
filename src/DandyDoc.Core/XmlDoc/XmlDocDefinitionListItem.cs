@@ -6,6 +6,10 @@ using System.Xml;
 
 namespace DandyDoc.XmlDoc
 {
+
+    /// <summary>
+    /// An XML doc definition list item.
+    /// </summary>
     public class XmlDocDefinitionListItem : XmlDocElement
     {
 
@@ -25,12 +29,23 @@ namespace DandyDoc.XmlDoc
 
         private readonly Lazy<GutsData> _lazyGuts;
 
+        /// <summary>
+        /// Creates a new XML doc definition list item.
+        /// </summary>
+        /// <param name="element">The raw XML element to wrap.</param>
+        /// <param name="children">The child XML doc nodes.</param>
         public XmlDocDefinitionListItem(XmlElement element, IEnumerable<XmlDocNode> children)
             : this("LISTHEADER".Equals(element.Name, StringComparison.OrdinalIgnoreCase), element, children) {
             Contract.Requires(element != null);
             Contract.Requires(children == null || Contract.ForAll(children, x => x != null));
         }
 
+        /// <summary>
+        /// Creates a new XML doc definition list item.
+        /// </summary>
+        /// <param name="isHeader">Indicates that this list item is to act as a header.</param>
+        /// <param name="element">The raw XML element to wrap.</param>
+        /// <param name="children">The child XML doc nodes.</param>
         public XmlDocDefinitionListItem(bool isHeader, XmlElement element, IEnumerable<XmlDocNode> children)
             : base(element, children) {
             Contract.Requires(element != null);
@@ -65,14 +80,26 @@ namespace DandyDoc.XmlDoc
             return result;
         }
 
+        /// <summary>
+        /// Indicates that this list item is to act as a header.
+        /// </summary>
         public bool IsHeader { get; private set; }
 
+        /// <summary>
+        /// The XML doc term element.
+        /// </summary>
         public XmlDocElement TermElement {
             get { return _lazyGuts.Value.TermElement; }
         }
 
+        /// <summary>
+        /// Determines if the list item has a term element.
+        /// </summary>
         public bool HasTerm { get { return TermElement != null; } }
 
+        /// <summary>
+        /// The XML doc contents of the term element.
+        /// </summary>
         public IList<XmlDocNode> TermContents {
             get {
                 Contract.Ensures(Contract.Result<IList<XmlDocNode>>() != null);
@@ -80,14 +107,26 @@ namespace DandyDoc.XmlDoc
             }
         }
 
+        /// <summary>
+        /// Determines if the term element has XML doc contents.
+        /// </summary>
         public bool HasTermContents { get { return TermContents.Count > 0; } }
 
+        /// <summary>
+        /// The XML doc description element.
+        /// </summary>
         public XmlDocElement DescriptionElement {
             get { return _lazyGuts.Value.DescriptionElement; }
         }
 
+        /// <summary>
+        /// Determines if the list item has a description element.
+        /// </summary>
         public bool HasDescription { get { return DescriptionElement != null; } }
 
+        /// <summary>
+        /// The XML doc contents of the term element.
+        /// </summary>
         public IList<XmlDocNode> DescriptionContents {
             get {
                 Contract.Ensures(Contract.Result<IList<XmlDocNode>>() != null);
@@ -95,6 +134,9 @@ namespace DandyDoc.XmlDoc
             }
         }
 
+        /// <summary>
+        /// Determines if the description element has XML doc contents.
+        /// </summary>
         public bool HasDescriptionContents { get { return DescriptionContents.Count > 0; } }
 
     }

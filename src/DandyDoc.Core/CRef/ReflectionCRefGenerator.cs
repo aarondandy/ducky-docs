@@ -6,6 +6,10 @@ using System.Reflection;
 
 namespace DandyDoc.CRef
 {
+
+    /// <summary>
+    /// Generates a code reference (cref) given a reflected member info.
+    /// </summary>
     public class ReflectionCRefGenerator : CRefGeneratorBase
     {
 
@@ -19,16 +23,31 @@ namespace DandyDoc.CRef
             ForceGenericExpansion = true
         };
 
+        /// <summary>
+        /// Creates a code reference generator that will include a cref type prefix.
+        /// </summary>
         public ReflectionCRefGenerator()
             : this(true) { }
 
+        /// <summary>
+        /// Creates a code reference generator with the desired options.
+        /// </summary>
+        /// <param name="includeTypePrefix">A flag indicating if generated crefs contain a type prefix.</param>
         public ReflectionCRefGenerator(bool includeTypePrefix)
             : base(includeTypePrefix) {
             ForceGenericExpansion = false;
         }
 
+        /// <summary>
+        /// Generic expansion of type parameters will be performed when set.
+        /// </summary>
+        /// <remarks>
+        /// Generic types are encoded different when used as method parameters.
+        /// This flag assists with the proper encoding of parameter types.
+        /// </remarks>
         protected bool ForceGenericExpansion { get; set; }
 
+        /// <inheritdoc/>
         public override string GetCRef(object entity) {
             if (entity is Assembly)
                 return "A:" + ((Assembly)entity).FullName;
@@ -37,6 +56,11 @@ namespace DandyDoc.CRef
             return memberInfo != null ? GetCRef(memberInfo) : null;
         }
 
+        /// <summary>
+        /// Generates a code reference (cref) for the given member info.
+        /// </summary>
+        /// <param name="info">The member info to create a code reference (cref) for.</param>
+        /// <returns>A code reference (cref) for the given member info.</returns>
         public virtual string GetCRef(MemberInfo info) {
             if (info == null) throw new ArgumentNullException("info");
             Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
@@ -94,7 +118,7 @@ namespace DandyDoc.CRef
             return NoPrefixForceGenericExpansion.GetCRef(parameterInfo.ParameterType);
         }
 
-        protected virtual string GetCRef(Type type) {
+        private string GetCRef(Type type) {
             if (type == null) throw new ArgumentNullException("type");
             Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
 
@@ -104,7 +128,7 @@ namespace DandyDoc.CRef
             return GetFullName(type);
         }
 
-        protected virtual string GetGenericParameterName(Type type) {
+        private string GetGenericParameterName(Type type) {
             if (type == null) throw new ArgumentNullException("type");
             Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
             var declaringMethod = type.DeclaringMethod;
@@ -114,7 +138,7 @@ namespace DandyDoc.CRef
             return String.Concat('`', type.GenericParameterPosition);
         }
 
-        protected virtual string GetFullName(Type type) {
+        private string GetFullName(Type type) {
             if (type == null) throw new ArgumentNullException("type");
             Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
             var typeParts = new List<string>();

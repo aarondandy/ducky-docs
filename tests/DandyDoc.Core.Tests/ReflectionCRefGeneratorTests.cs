@@ -5,6 +5,8 @@ using DandyDoc.CRef;
 using NUnit.Framework;
 using TestLibrary1;
 
+#pragma warning disable 1591
+
 namespace DandyDoc.Core.Tests
 {
     [TestFixture]
@@ -17,11 +19,7 @@ namespace DandyDoc.Core.Tests
             public void DoNullStuff() {
                 Assert.IsNull(GetCRef((object)null));
                 Assert.IsNull(GetCRef("hot dog!"));
-                Assert.Throws<ArgumentNullException>(() => GetCRef((MemberInfo)null));
-                Assert.Throws<ArgumentNullException>(() => GetCRef((Type)null));
-                Assert.Throws<ArgumentNullException>(() => GetGenericParameterName(null));
-                Assert.Throws<ArgumentNullException>(() => GetFullName(null));
-
+                Assert.Throws<ArgumentNullException>(() => GetCRef(null));
             }
 
         }

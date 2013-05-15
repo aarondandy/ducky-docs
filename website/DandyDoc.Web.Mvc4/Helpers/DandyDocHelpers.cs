@@ -153,9 +153,15 @@ namespace DandyDoc.Web.Mvc4.Helpers
             if (node is XmlDocDefinitionList)
                 return helper.XmlDocHtml((XmlDocDefinitionList)node);
 
-            return node.HasChildren
-                ? helper.XmlDocHtml(node.Children)
-                : MvcHtmlString.Empty;
+            if (node is XmlDocElement) {
+                var element = (XmlDocElement)node;
+                var nodeName = element.Name;
+                if (String.Equals("PARA", nodeName))
+                    return new MvcHtmlString("<p>" + helper.XmlDocHtml(element.Children) + "</p>");
+                return new MvcHtmlString(element.Node.OuterXml); // just use it in the raw
+            }
+
+            return helper.XmlDocHtml(node.Children);
         }
 
         public static MvcHtmlString XmlDocHtml(this HtmlHelper helper, XmlDocNameElement element) {

@@ -4,9 +4,22 @@ using System.Reflection;
 
 namespace DandyDoc.ExternalVisibility
 {
+
+    /// <summary>
+    /// Determines general external visibility for members.
+    /// </summary>
+    /// <seealso cref="DandyDoc.ExternalVisibility.ExternalVisibilityKind"/>
+    /// <remarks>
+    /// Friend assemblies are not respected.
+    /// </remarks>
     public static class ReflectionExternalVisibility
     {
 
+        /// <summary>
+        /// Determines external visibility for the given <paramref name="memberInfo"/>.
+        /// </summary>
+        /// <param name="memberInfo">The member info to test.</param>
+        /// <returns>Calculated external visibility.</returns>
         public static ExternalVisibilityKind GetExternalVisibility(this MemberInfo memberInfo) {
             if (memberInfo == null) throw new ArgumentNullException("memberInfo");
             Contract.EndContractBlock();
@@ -33,6 +46,11 @@ namespace DandyDoc.ExternalVisibility
             return ExternalVisibilityKind.Hidden;
         }
 
+        /// <summary>
+        /// Determines external visibility for the given type.
+        /// </summary>
+        /// <param name="typeInfo">The type to test.</param>
+        /// <returns>Calculated external visibility.</returns>
         public static ExternalVisibilityKind GetExternalVisibility(this Type typeInfo) {
             if(typeInfo == null) throw new ArgumentNullException("typeInfo");
             Contract.EndContractBlock();
@@ -42,13 +60,18 @@ namespace DandyDoc.ExternalVisibility
                 if(parentVisibility == ExternalVisibilityKind.Hidden)
                     return ExternalVisibilityKind.Hidden;
                 var thisVisibility = GetNestedExternalVisibility(typeInfo);
-                return ExternalVisibilityKindOperations.Min(parentVisibility, thisVisibility);
+                return ExternalVisibilityOperations.LeastVisible(parentVisibility, thisVisibility);
             }
             return typeInfo.IsPublic
                 ? ExternalVisibilityKind.Public
                 : ExternalVisibilityKind.Hidden;
         }
 
+        /// <summary>
+        /// Determines external visibility for the given method.
+        /// </summary>
+        /// <param name="methodBase">The method to test.</param>
+        /// <returns>Calculated external visibility.</returns>
         public static ExternalVisibilityKind GetExternalVisibility(this MethodBase methodBase) {
             if(methodBase == null) throw new ArgumentNullException("methodBase");
             Contract.EndContractBlock();
@@ -59,9 +82,17 @@ namespace DandyDoc.ExternalVisibility
                 : (methodBase.IsFamily || methodBase.IsFamilyOrAssembly)
                     ? ExternalVisibilityKind.Protected
                 : ExternalVisibilityKind.Hidden;
-            return ExternalVisibilityKindOperations.Min(typeVisibility, fieldVisibility);
+            return ExternalVisibilityOperations.LeastVisible(typeVisibility, fieldVisibility);
         }
 
+        /// <summary>
+        /// Determines external visibility for the given property.
+        /// </summary>
+        /// <param name="propertyInfo">The property to test.</param>
+        /// <returns>Calculated external visibility.</returns>
+        /// <remarks>
+        /// Because properties accessors can have differing visibility it is recommended to test them independently.
+        /// </remarks>
         public static ExternalVisibilityKind GetExternalVisibility(this PropertyInfo propertyInfo) {
             if(propertyInfo == null) throw new ArgumentNullException("propertyInfo");
             Contract.EndContractBlock();
@@ -74,12 +105,17 @@ namespace DandyDoc.ExternalVisibility
             }
             return setMethodInfo == null
                 ? GetExternalVisibility(getMethodInfo)
-                : ExternalVisibilityKindOperations.Max(
+                : ExternalVisibilityOperations.MostVisible(
                     GetExternalVisibility(getMethodInfo),
                     GetExternalVisibility(setMethodInfo)
                 );
         }
 
+        /// <summary>
+        /// Determines external visibility for the given field.
+        /// </summary>
+        /// <param name="fieldInfo">The field to test.</param>
+        /// <returns>Calculated external visibility.</returns>
         public static ExternalVisibilityKind GetExternalVisibility(this FieldInfo fieldInfo) {
             if(fieldInfo == null) throw new ArgumentNullException("fieldInfo");
             Contract.EndContractBlock();
@@ -90,9 +126,14 @@ namespace DandyDoc.ExternalVisibility
                 : (fieldInfo.IsFamily || fieldInfo.IsFamilyOrAssembly)
                     ? ExternalVisibilityKind.Protected
                 : ExternalVisibilityKind.Hidden;
-            return ExternalVisibilityKindOperations.Min(typeVisibility, fieldVisibility);
+            return ExternalVisibilityOperations.LeastVisible(typeVisibility, fieldVisibility);
         }
 
+        /// <summary>
+        /// Determines external visibility for the given event.
+        /// </summary>
+        /// <param name="eventInfo">The event to test.</param>
+        /// <returns>Calculated external visibility.</returns>
         public static ExternalVisibilityKind GetExternalVisibility(this EventInfo eventInfo) {
             if(eventInfo == null) throw new ArgumentNullException("eventInfo");
             Contract.EndContractBlock();

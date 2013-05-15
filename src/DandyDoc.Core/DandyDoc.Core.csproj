@@ -169,7 +169,7 @@
     <Compile Include="CRef\ReflectionCRefLookup.cs" />
     <Compile Include="DisplayName\StandardReflectionDisplayNameGenerator.cs" />
     <Compile Include="ExternalVisibility\ExternalVisibilityKind.cs" />
-    <Compile Include="ExternalVisibility\ExternalVisibilityKindOperations.cs" />
+    <Compile Include="ExternalVisibility\ExternalVisibilityOperations.cs" />
     <Compile Include="ExternalVisibility\ReflectionExternalVisibility.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reflection\ReflectionUtilities.cs" />

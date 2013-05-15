@@ -7,6 +7,8 @@ using DandyDoc.XmlDoc;
 using NUnit.Framework;
 using TestLibrary1;
 
+#pragma warning disable 1591
+
 namespace DandyDoc.CodeDoc.Tests
 {
 

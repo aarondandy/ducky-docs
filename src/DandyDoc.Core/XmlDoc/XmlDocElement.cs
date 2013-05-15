@@ -6,20 +6,36 @@ using System.Xml;
 
 namespace DandyDoc.XmlDoc
 {
+
+    /// <summary>
+    /// A general XML doc element wrapper.
+    /// </summary>
     public class XmlDocElement : XmlDocNode
     {
 
+        /// <summary>
+        /// Creates a new XML doc element.
+        /// </summary>
+        /// <param name="element">The raw XML element to wrap.</param>
         public XmlDocElement(XmlElement element)
             : this(element, null) {
             Contract.Requires(element != null);
         }
 
+        /// <summary>
+        /// Creates a new XML doc element.
+        /// </summary>
+        /// <param name="element">The raw XML element to wrap.</param>
+        /// <param name="children">The child XML doc nodes.</param>
         public XmlDocElement(XmlElement element, IEnumerable<XmlDocNode> children)
             : base(element, children) {
             Contract.Requires(element != null);
             Contract.Requires(children == null || Contract.ForAll(children, x => x != null));
         }
 
+        /// <summary>
+        /// The raw wrapped XML element.
+        /// </summary>
         public XmlElement Element {
             get {
                 Contract.Ensures(Contract.Result<XmlElement>() != null);
@@ -27,6 +43,9 @@ namespace DandyDoc.XmlDoc
             }
         }
 
+        /// <summary>
+        /// The element tag name.
+        /// </summary>
         public string Name {
             get {
                 Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
@@ -34,6 +53,9 @@ namespace DandyDoc.XmlDoc
             }
         }
 
+        /// <summary>
+        /// Extracts the opening tag XML.
+        /// </summary>
         public string OpenTagXml {
             get {
                 Contract.Ensures(Contract.Result<string>() != null);
@@ -48,6 +70,9 @@ namespace DandyDoc.XmlDoc
             }
         }
 
+        /// <summary>
+        /// Extracts the closing tag XML.
+        /// </summary>
         public string CloseTagXml {
             get {
                 Contract.Ensures(Contract.Result<string>() != null);
@@ -62,20 +87,48 @@ namespace DandyDoc.XmlDoc
             }
         }
 
+        /// <summary>
+        /// Traverses the prior sibling XML doc elements.
+        /// </summary>
+        /// <remarks>
+        /// Be aware that this may skip some XML doc nodes that are not elements
+        /// such as <seealso cref="DandyDoc.XmlDoc.XmlDocTextNode"/>.
+        /// </remarks>
         public IEnumerable<XmlDocElement> PriorElements {
-            get { return PriorSiblings.OfType<XmlDocElement>(); }
+            get {
+                return PriorSiblings.OfType<XmlDocElement>();
+            }
         }
 
+        /// <summary>
+        /// Gets the prior sibling XML doc element if one exists.
+        /// </summary>
         public XmlDocElement PriorElement {
-            get { return PriorElements.FirstOrDefault(); }
+            get {
+                return PriorElements.FirstOrDefault();
+            }
         }
 
+        /// <summary>
+        /// Traverses the next sibling XML doc elements.
+        /// </summary>
+        /// <remarks>
+        /// Be aware that this may skip some XML doc nodes that are not elements
+        /// such as <seealso cref="DandyDoc.XmlDoc.XmlDocTextNode"/>.
+        /// </remarks>
         public IEnumerable<XmlDocElement> NextElements {
-            get { return NextSiblings.OfType<XmlDocElement>(); }
+            get {
+                return NextSiblings.OfType<XmlDocElement>();
+            }
         }
 
+        /// <summary>
+        /// Gets the next sibling XML doc element if one exists.
+        /// </summary>
         public XmlDocElement NextElement {
-            get { return NextElements.FirstOrDefault(); }
+            get {
+                return NextElements.FirstOrDefault();
+            }
         }
 
     }

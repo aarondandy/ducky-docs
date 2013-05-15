@@ -63,7 +63,7 @@ namespace DandyDoc.ExternalVisibility
                 if (parentVisibility == ExternalVisibilityKind.Hidden)
                     return ExternalVisibilityKind.Hidden;
                 var thisVisibility = GetNestedExternalVisibility(typeDefinition);
-                return ExternalVisibilityKindOperations.Min(parentVisibility, thisVisibility);
+                return ExternalVisibilityOperations.LeastVisible(parentVisibility, thisVisibility);
             }
             return typeDefinition.IsPublic
                 ? ExternalVisibilityKind.Public
@@ -80,7 +80,7 @@ namespace DandyDoc.ExternalVisibility
                 : (methodDefinition.IsFamily || methodDefinition.IsFamilyOrAssembly)
                     ? ExternalVisibilityKind.Protected
                 : ExternalVisibilityKind.Hidden;
-            return ExternalVisibilityKindOperations.Min(typeVisibility, fieldVisibility);
+            return ExternalVisibilityOperations.LeastVisible(typeVisibility, fieldVisibility);
         }
 
         public static ExternalVisibilityKind GetExternalVisibility(this PropertyDefinition propertyDefinition) {
@@ -95,7 +95,7 @@ namespace DandyDoc.ExternalVisibility
             }
             return setMethodInfo == null
                 ? GetExternalVisibility(getMethodInfo)
-                : ExternalVisibilityKindOperations.Max(
+                : ExternalVisibilityOperations.MostVisible(
                     GetExternalVisibility(getMethodInfo),
                     GetExternalVisibility(setMethodInfo)
                 );
@@ -111,7 +111,7 @@ namespace DandyDoc.ExternalVisibility
                 : (fieldDefinition.IsFamily || fieldDefinition.IsFamilyOrAssembly)
                     ? ExternalVisibilityKind.Protected
                 : ExternalVisibilityKind.Hidden;
-            return ExternalVisibilityKindOperations.Min(typeVisibility, fieldVisibility);
+            return ExternalVisibilityOperations.LeastVisible(typeVisibility, fieldVisibility);
         }
 
         public static ExternalVisibilityKind GetExternalVisibility(this EventDefinition eventDefinition) {

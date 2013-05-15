@@ -10,7 +10,7 @@ namespace DandyDoc.CodeDoc
 
         IList<CRefIdentifier> TypeCRefs { get; }
 
-        IList<ICodeDocNamespace> Namespaces { get; }
+        IList<CRefIdentifier> NamespaceCRefs { get; }
 
     }
 }

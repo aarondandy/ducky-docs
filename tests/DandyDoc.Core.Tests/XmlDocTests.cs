@@ -6,6 +6,8 @@ using DandyDoc.XmlDoc;
 using NUnit.Framework;
 using TestLibrary1;
 
+#pragma warning disable 1591
+
 namespace DandyDoc.Core.Tests
 {
     [TestFixture]
@@ -21,7 +23,7 @@ namespace DandyDoc.Core.Tests
         [Test]
         public void can_load_xml_from_assembly_reflection() {
             var assembly = typeof(Class1).Assembly;
-            var xmlDoc = new XmlAssemblyDocumentation(Path.ChangeExtension(ReflectionUtilities.GetFilePath(assembly), "XML"));
+            var xmlDoc = new XmlAssemblyDocumentation(Path.ChangeExtension(assembly.GetFilePath(), "XML"));
             Assert.IsNotNull(xmlDoc);
         }
 

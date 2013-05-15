@@ -5,6 +5,8 @@ using DandyDoc.CRef;
 using NUnit.Framework;
 using TestLibrary1;
 
+#pragma warning disable 1591
+
 namespace DandyDoc.Core.Tests
 {
     [TestFixture]

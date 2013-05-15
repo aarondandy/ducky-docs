@@ -2,6 +2,8 @@
 using DandyDoc.XmlDoc;
 using NUnit.Framework;
 
+#pragma warning disable 1591
+
 namespace DandyDoc.Core.Tests
 {
     [TestFixture]

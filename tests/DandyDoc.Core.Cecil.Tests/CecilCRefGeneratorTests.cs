@@ -4,6 +4,8 @@ using DandyDoc.CRef;
 using Mono.Cecil;
 using NUnit.Framework;
 
+#pragma warning disable 1591
+
 namespace DandyDoc.Core.Cecil.Tests
 {
     [TestFixture]
@@ -16,10 +18,7 @@ namespace DandyDoc.Core.Cecil.Tests
             public void DoNullStuff() {
                 Assert.IsNull(GetCRef((object)null));
                 Assert.IsNull(GetCRef("hot dog!"));
-                Assert.Throws<ArgumentNullException>(() => GetCRef((MemberReference)null));
-                Assert.Throws<ArgumentNullException>(() => GetCRef((TypeReference)null));
-                Assert.Throws<ArgumentNullException>(() => GetGenericParameterName(null));
-                Assert.Throws<ArgumentNullException>(() => GetFullName(null));
+                Assert.Throws<ArgumentNullException>(() => GetCRef(null));
 
             }
 

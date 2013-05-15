@@ -5,6 +5,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using DandyDoc.CRef;
 using DandyDoc.Cecil;
+using DandyDoc.CodeDoc.Utility;
 using DandyDoc.DisplayName;
 using DandyDoc.ExternalVisibility;
 using DandyDoc.XmlDoc;
@@ -69,7 +70,7 @@ namespace DandyDoc.CodeDoc
                     FullName = assembly.Name.FullName,
                     NamespaceName = assemblyShortName,
                     SubTitle = "Assembly",
-                    Namespaces = new List<ICodeDocNamespace>()
+                    NamespaceCRefs = new List<CRefIdentifier>()
                 };
 
                 var assemblyTypeCRefs = new List<CRefIdentifier>();
@@ -106,7 +107,7 @@ namespace DandyDoc.CodeDoc
                     if (assemblyNamespaceNames.Add(namespaceName)) {
                         // this is the first time this assembly has seen this namespace
                         namespaceModel.Assemblies.Add(assemblyModel);
-                        assemblyModel.Namespaces.Add(namespaceModel);
+                        assemblyModel.NamespaceCRefs.Add(namespaceModel.CRef);
                     }
                 }
 
@@ -116,10 +117,10 @@ namespace DandyDoc.CodeDoc
 
             // freeze the namespace & assembly collections
             foreach (var namespaceModel in namespaceModels.Values) {
-                namespaceModel.Assemblies = new ReadOnlyCollection<ICodeDocAssembly>(namespaceModel.Assemblies);
+                namespaceModel.Assemblies = namespaceModel.Assemblies.AsReadOnly();
             }
             foreach (var assemblyModel in assemblyModels) {
-                assemblyModel.Namespaces = new ReadOnlyCollection<ICodeDocNamespace>(assemblyModel.Namespaces);
+                assemblyModel.NamespaceCRefs = assemblyModel.NamespaceCRefs.AsReadOnly();
             }
 
             Assemblies = new ReadOnlyCollection<ICodeDocAssembly>(assemblyModels.OrderBy(x => x.Title).ToArray());

@@ -6,6 +6,10 @@ using Mono.Cecil;
 
 namespace DandyDoc.CRef
 {
+
+    /// <summary>
+    /// Generates a code reference (cref) given a Cecil member reference.
+    /// </summary>
     public class CecilCRefGenerator : CRefGeneratorBase
     {
 
@@ -15,12 +19,20 @@ namespace DandyDoc.CRef
 
         public static readonly CecilCRefGenerator WithPrefix = new CecilCRefGenerator(true);
 
+        /// <summary>
+        /// Creates a code reference generator that will include a cref type prefix.
+        /// </summary>
         public CecilCRefGenerator()
             : this(true) { }
 
+        /// <summary>
+        /// Creates a code reference generator with the desired options.
+        /// </summary>
+        /// <param name="includeTypePrefix">A flag indicating if generated crefs contain a type prefix.</param>
         public CecilCRefGenerator(bool includeTypePrefix)
             : base(includeTypePrefix) { }
 
+        /// <inheritdoc/>
         public override string GetCRef(object entity) {
             if (entity is AssemblyDefinition)
                 return "A:" + ((AssemblyDefinition)entity).FullName;
@@ -29,7 +41,12 @@ namespace DandyDoc.CRef
             return memberReference != null ? GetCRef(memberReference) : null;
         }
 
-        protected virtual string GetCRef(MemberReference reference) {
+        /// <summary>
+        /// Generates a code reference (cref) for the given member reference.
+        /// </summary>
+        /// <param name="reference">The member reference to create a code reference (cref) for.</param>
+        /// <returns>A code reference (cref) for the given member reference.</returns>
+        public virtual string GetCRef(MemberReference reference) {
             if (reference == null) throw new ArgumentNullException("reference");
             Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
 
@@ -84,7 +101,7 @@ namespace DandyDoc.CRef
             return NoPrefix.GetCRef(parameterDefinition.ParameterType);
         }
 
-        protected virtual string GetCRef(TypeReference reference) {
+        private string GetCRef(TypeReference reference) {
             if (null == reference) throw new ArgumentNullException("reference");
             Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
 
@@ -94,7 +111,7 @@ namespace DandyDoc.CRef
             return GetFullName(reference);
         }
 
-        protected virtual string GetGenericParameterName(GenericParameter parameter) {
+        private string GetGenericParameterName(GenericParameter parameter) {
             if (parameter == null) throw new ArgumentNullException("parameter");
             Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
             var paramIndex = parameter.Owner.GenericParameters.IndexOf(parameter);
@@ -106,7 +123,7 @@ namespace DandyDoc.CRef
             );
         }
 
-        protected virtual string GetFullName(TypeReference reference) {
+        private string GetFullName(TypeReference reference) {
             if (null == reference) throw new ArgumentNullException("reference");
             Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
             var typeParts = new List<string>();

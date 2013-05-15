@@ -11,6 +11,8 @@ using DandyDoc.XmlDoc;
 using Mono.Cecil;
 using TestLibrary1;
 
+#pragma warning disable 1591
+
 namespace CodeDocRepository.PerformanceTest
 {
     class Program

@@ -6,26 +6,48 @@ using Mono.Cecil;
 
 namespace DandyDoc.CRef
 {
+
+    /// <summary>
+    /// Code reference (cref) lookup for Cecil members.
+    /// </summary>
     public class CecilCRefLookup : CRefLookupBase<AssemblyDefinition, MemberReference>
     {
 
+        /// <summary>
+        /// Constructs a code reference lookup for the given <paramref name="assemblies"/>.
+        /// </summary>
+        /// <param name="assemblies">The assemblies that are to be searched.</param>
         public CecilCRefLookup(params AssemblyDefinition[] assemblies)
             : this((IEnumerable<AssemblyDefinition>)assemblies) {
             Contract.Requires(assemblies != null);
         }
 
+        /// <summary>
+        /// Constructs a code reference lookup for the given <paramref name="assemblies"/>.
+        /// </summary>
+        /// <param name="assemblies">The assemblies that are to be searched.</param>
         public CecilCRefLookup(IEnumerable<AssemblyDefinition> assemblies)
             : base(assemblies) {
             if (assemblies == null) throw new ArgumentNullException("assemblies");
             Contract.EndContractBlock();
         }
 
+        /// <summary>
+        /// Locates a member based on a code reference.
+        /// </summary>
+        /// <param name="cRef">The code reference to search for.</param>
+        /// <returns>The member if found.</returns>
         public override MemberReference GetMember(string cRef) {
             if (String.IsNullOrEmpty(cRef)) throw new ArgumentException("CRef is not valid.", "cRef");
             Contract.EndContractBlock();
             return GetMember(new CRefIdentifier(cRef));
         }
 
+        /// <summary>
+        /// Locates a member based on a code reference.
+        /// </summary>
+        /// <param name="cRef">The code reference to search for.</param>
+        /// <returns>The member if found.</returns>
         public override MemberReference GetMember(CRefIdentifier cRef) {
             if (cRef == null) throw new ArgumentNullException("cRef");
             Contract.EndContractBlock();
@@ -34,14 +56,14 @@ namespace DandyDoc.CRef
                 .FirstOrDefault(x => null != x);
         }
 
-        public static MemberReference GetMemberReference(AssemblyDefinition assembly, CRefIdentifier cRef) {
+        private static MemberReference GetMemberReference(AssemblyDefinition assembly, CRefIdentifier cRef) {
             if (assembly == null) throw new ArgumentNullException("assembly");
             if (cRef == null) throw new ArgumentNullException("cRef");
             Contract.EndContractBlock();
 
-            if (cRef.IsTargetingType)
+            if ("T".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
                 return GetTypeDefinition(assembly, cRef);
-            else if (cRef.HasTargetType)
+            if (cRef.HasTargetType)
                 return GetNonTypeMemberDefinition(assembly, cRef);
 
             return GetTypeDefinition(assembly, cRef)
@@ -126,28 +148,23 @@ namespace DandyDoc.CRef
             var memberName = cRef.CoreName.Substring(lastDotIndex + 1);
             Contract.Assume(!String.IsNullOrEmpty(memberName));
 
-            if (String.IsNullOrEmpty(cRef.TargetType)) {
+            if (String.IsNullOrEmpty(cRef.TargetType) || "!".Equals(cRef.TargetType)) {
                 var paramTypes = cRef.ParamPartTypes;
                 return type.Methods.FirstOrDefault(m => MethodMatches(m, memberName, paramTypes))
                     ?? type.Properties.FirstOrDefault(p => PropertyMatches(p, memberName, paramTypes))
                     ?? type.Events.FirstOrDefault(e => EventMatches(e, memberName))
                     ?? (type.Fields.FirstOrDefault(f => FieldMatches(f, memberName)) as MemberReference);
             }
-            else if ("M".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase)) {
+
+            if ("M".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
                 return type.Methods.FirstOrDefault(m => MethodMatches(m, memberName, cRef.ParamPartTypes));
-            }
-            else if ("P".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase)) {
+            if ("P".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
                 return type.Properties.FirstOrDefault(p => PropertyMatches(p, memberName, cRef.ParamPartTypes));
-            }
-            else if ("F".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase)) {
+            if ("F".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
                 return type.Fields.FirstOrDefault(f => FieldMatches(f, memberName));
-            }
-            else if ("E".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase)) {
+            if ("E".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
                 return type.Events.FirstOrDefault(e => EventMatches(e, memberName));
-            }
-            else {
-                return null;
-            }
+            return null;
         }
 
         private static bool MethodMatches(MethodDefinition methodDefinition, string nameTest, IList<string> paramTypeTest) {

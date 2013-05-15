@@ -8,6 +8,8 @@ using DandyDoc.Reflection;
 using NUnit.Framework;
 using TestLibrary1;
 
+#pragma warning disable 1591
+
 namespace DandyDoc.Core.Tests
 {
     [TestFixture]
@@ -54,28 +56,28 @@ namespace DandyDoc.Core.Tests
 
         [Test]
         public void min_kind() {
-            Assert.AreEqual(ExternalVisibilityKind.Hidden, ExternalVisibilityKindOperations.Min(ExternalVisibilityKind.Hidden, ExternalVisibilityKind.Hidden));
-            Assert.AreEqual(ExternalVisibilityKind.Hidden, ExternalVisibilityKindOperations.Min(ExternalVisibilityKind.Hidden, ExternalVisibilityKind.Protected));
-            Assert.AreEqual(ExternalVisibilityKind.Hidden, ExternalVisibilityKindOperations.Min(ExternalVisibilityKind.Hidden, ExternalVisibilityKind.Public));
-            Assert.AreEqual(ExternalVisibilityKind.Hidden, ExternalVisibilityKindOperations.Min(ExternalVisibilityKind.Protected, ExternalVisibilityKind.Hidden));
-            Assert.AreEqual(ExternalVisibilityKind.Protected, ExternalVisibilityKindOperations.Min(ExternalVisibilityKind.Protected, ExternalVisibilityKind.Protected));
-            Assert.AreEqual(ExternalVisibilityKind.Protected, ExternalVisibilityKindOperations.Min(ExternalVisibilityKind.Protected, ExternalVisibilityKind.Public));
-            Assert.AreEqual(ExternalVisibilityKind.Hidden, ExternalVisibilityKindOperations.Min(ExternalVisibilityKind.Public, ExternalVisibilityKind.Hidden));
-            Assert.AreEqual(ExternalVisibilityKind.Protected, ExternalVisibilityKindOperations.Min(ExternalVisibilityKind.Public, ExternalVisibilityKind.Protected));
-            Assert.AreEqual(ExternalVisibilityKind.Public, ExternalVisibilityKindOperations.Min(ExternalVisibilityKind.Public, ExternalVisibilityKind.Public));
+            Assert.AreEqual(ExternalVisibilityKind.Hidden, ExternalVisibilityOperations.LeastVisible(ExternalVisibilityKind.Hidden, ExternalVisibilityKind.Hidden));
+            Assert.AreEqual(ExternalVisibilityKind.Hidden, ExternalVisibilityOperations.LeastVisible(ExternalVisibilityKind.Hidden, ExternalVisibilityKind.Protected));
+            Assert.AreEqual(ExternalVisibilityKind.Hidden, ExternalVisibilityOperations.LeastVisible(ExternalVisibilityKind.Hidden, ExternalVisibilityKind.Public));
+            Assert.AreEqual(ExternalVisibilityKind.Hidden, ExternalVisibilityOperations.LeastVisible(ExternalVisibilityKind.Protected, ExternalVisibilityKind.Hidden));
+            Assert.AreEqual(ExternalVisibilityKind.Protected, ExternalVisibilityOperations.LeastVisible(ExternalVisibilityKind.Protected, ExternalVisibilityKind.Protected));
+            Assert.AreEqual(ExternalVisibilityKind.Protected, ExternalVisibilityOperations.LeastVisible(ExternalVisibilityKind.Protected, ExternalVisibilityKind.Public));
+            Assert.AreEqual(ExternalVisibilityKind.Hidden, ExternalVisibilityOperations.LeastVisible(ExternalVisibilityKind.Public, ExternalVisibilityKind.Hidden));
+            Assert.AreEqual(ExternalVisibilityKind.Protected, ExternalVisibilityOperations.LeastVisible(ExternalVisibilityKind.Public, ExternalVisibilityKind.Protected));
+            Assert.AreEqual(ExternalVisibilityKind.Public, ExternalVisibilityOperations.LeastVisible(ExternalVisibilityKind.Public, ExternalVisibilityKind.Public));
         }
 
         [Test]
         public void max_kind() {
-            Assert.AreEqual(ExternalVisibilityKind.Hidden, ExternalVisibilityKindOperations.Max(ExternalVisibilityKind.Hidden, ExternalVisibilityKind.Hidden));
-            Assert.AreEqual(ExternalVisibilityKind.Protected, ExternalVisibilityKindOperations.Max(ExternalVisibilityKind.Hidden, ExternalVisibilityKind.Protected));
-            Assert.AreEqual(ExternalVisibilityKind.Public, ExternalVisibilityKindOperations.Max(ExternalVisibilityKind.Hidden, ExternalVisibilityKind.Public));
-            Assert.AreEqual(ExternalVisibilityKind.Protected, ExternalVisibilityKindOperations.Max(ExternalVisibilityKind.Protected, ExternalVisibilityKind.Hidden));
-            Assert.AreEqual(ExternalVisibilityKind.Protected, ExternalVisibilityKindOperations.Max(ExternalVisibilityKind.Protected, ExternalVisibilityKind.Protected));
-            Assert.AreEqual(ExternalVisibilityKind.Public, ExternalVisibilityKindOperations.Max(ExternalVisibilityKind.Protected, ExternalVisibilityKind.Public));
-            Assert.AreEqual(ExternalVisibilityKind.Public, ExternalVisibilityKindOperations.Max(ExternalVisibilityKind.Public, ExternalVisibilityKind.Hidden));
-            Assert.AreEqual(ExternalVisibilityKind.Public, ExternalVisibilityKindOperations.Max(ExternalVisibilityKind.Public, ExternalVisibilityKind.Protected));
-            Assert.AreEqual(ExternalVisibilityKind.Public, ExternalVisibilityKindOperations.Max(ExternalVisibilityKind.Public, ExternalVisibilityKind.Public));
+            Assert.AreEqual(ExternalVisibilityKind.Hidden, ExternalVisibilityOperations.MostVisible(ExternalVisibilityKind.Hidden, ExternalVisibilityKind.Hidden));
+            Assert.AreEqual(ExternalVisibilityKind.Protected, ExternalVisibilityOperations.MostVisible(ExternalVisibilityKind.Hidden, ExternalVisibilityKind.Protected));
+            Assert.AreEqual(ExternalVisibilityKind.Public, ExternalVisibilityOperations.MostVisible(ExternalVisibilityKind.Hidden, ExternalVisibilityKind.Public));
+            Assert.AreEqual(ExternalVisibilityKind.Protected, ExternalVisibilityOperations.MostVisible(ExternalVisibilityKind.Protected, ExternalVisibilityKind.Hidden));
+            Assert.AreEqual(ExternalVisibilityKind.Protected, ExternalVisibilityOperations.MostVisible(ExternalVisibilityKind.Protected, ExternalVisibilityKind.Protected));
+            Assert.AreEqual(ExternalVisibilityKind.Public, ExternalVisibilityOperations.MostVisible(ExternalVisibilityKind.Protected, ExternalVisibilityKind.Public));
+            Assert.AreEqual(ExternalVisibilityKind.Public, ExternalVisibilityOperations.MostVisible(ExternalVisibilityKind.Public, ExternalVisibilityKind.Hidden));
+            Assert.AreEqual(ExternalVisibilityKind.Public, ExternalVisibilityOperations.MostVisible(ExternalVisibilityKind.Public, ExternalVisibilityKind.Protected));
+            Assert.AreEqual(ExternalVisibilityKind.Public, ExternalVisibilityOperations.MostVisible(ExternalVisibilityKind.Public, ExternalVisibilityKind.Public));
         }
 
         [Test]
@@ -98,7 +100,7 @@ namespace DandyDoc.Core.Tests
                 var typeVis = typeTuple.Item1;
                 foreach (var fieldSet in fields) {
                     var fieldDefinition = type.GetAllFields().Single(x => x.Name == fieldSet.Name);
-                    var expectedVis = ExternalVisibilityKindOperations.Min(typeVis, fieldSet.Vis);
+                    var expectedVis = ExternalVisibilityOperations.LeastVisible(typeVis, fieldSet.Vis);
                     Assert.AreEqual(expectedVis, GetVisibility(fieldDefinition));
                 }
             }
@@ -118,7 +120,7 @@ namespace DandyDoc.Core.Tests
                 var typeVis = typeTuple.Item1;
                 foreach (var methodSet in methods) {
                     var methodDefinition = type.GetAllMethods().Single(x => x.Name == methodSet.Name);
-                    var expectedVis = ExternalVisibilityKindOperations.Min(typeVis, methodSet.Vis);
+                    var expectedVis = ExternalVisibilityOperations.LeastVisible(typeVis, methodSet.Vis);
                     Assert.AreEqual(expectedVis, GetVisibility(methodDefinition));
                 }
             }
@@ -127,18 +129,18 @@ namespace DandyDoc.Core.Tests
         [Test]
         public void delegate_visibility() {
             var delegates = new[] {
-				new {Vis = ExternalVisibilityKind.Hidden, Name = "PrivateDelegate"},
-				new {Vis = ExternalVisibilityKind.Protected, Name = "ProtectedDelegate"},
-				new {Vis = ExternalVisibilityKind.Public, Name = "PublicDelegate"},
-				new {Vis = ExternalVisibilityKind.Hidden, Name = "InternalDelegate"},
-				new {Vis = ExternalVisibilityKind.Protected, Name = "ProtectedInternalDelegate"}
-			};
+                new {Vis = ExternalVisibilityKind.Hidden, Name = "PrivateDelegate"},
+                new {Vis = ExternalVisibilityKind.Protected, Name = "ProtectedDelegate"},
+                new {Vis = ExternalVisibilityKind.Public, Name = "PublicDelegate"},
+                new {Vis = ExternalVisibilityKind.Hidden, Name = "InternalDelegate"},
+                new {Vis = ExternalVisibilityKind.Protected, Name = "ProtectedInternalDelegate"}
+            };
             foreach (var typeTuple in AllClasses) {
                 var type = Lookup.GetMember(typeTuple.Item2) as Type;
                 var typeVis = typeTuple.Item1;
                 foreach (var delegateSet in delegates) {
                     var delegateDefinition = type.GetAllNestedTypes().Single(x => x.Name == delegateSet.Name);
-                    var expectedVis = ExternalVisibilityKindOperations.Min(typeVis, delegateSet.Vis);
+                    var expectedVis = ExternalVisibilityOperations.LeastVisible(typeVis, delegateSet.Vis);
                     Assert.AreEqual(expectedVis, GetVisibility(delegateDefinition));
                 }
             }
@@ -158,7 +160,7 @@ namespace DandyDoc.Core.Tests
                 var typeVis = typeTuple.Item1;
                 foreach (var eventSet in events) {
                     var eventDefinition = type.GetAllEvents().Single(x => x.Name == eventSet.Name);
-                    var expectedVis = ExternalVisibilityKindOperations.Min(typeVis, eventSet.Vis);
+                    var expectedVis = ExternalVisibilityOperations.LeastVisible(typeVis, eventSet.Vis);
                     Assert.AreEqual(expectedVis, GetVisibility(eventDefinition));
                 }
             }
@@ -167,36 +169,38 @@ namespace DandyDoc.Core.Tests
         [Test]
         public void property_visibility() {
             var props = new[] {
-				new{Name = "PropPubPub", Get = ExternalVisibilityKind.Public, Set = ExternalVisibilityKind.Public},
-				new{Name = "PropPubPro", Get = ExternalVisibilityKind.Public, Set = ExternalVisibilityKind.Protected},
-				new{Name = "PropPubPri", Get = ExternalVisibilityKind.Public, Set = ExternalVisibilityKind.Hidden},
-				new{Name = "PropPubInt", Get = ExternalVisibilityKind.Public, Set = ExternalVisibilityKind.Hidden},
-				new{Name = "PropPubPin", Get = ExternalVisibilityKind.Public, Set = ExternalVisibilityKind.Protected},
-				new{Name = "PropProPub", Get = ExternalVisibilityKind.Protected, Set = ExternalVisibilityKind.Public},
-				new{Name = "PropProPro", Get = ExternalVisibilityKind.Protected, Set = ExternalVisibilityKind.Protected},
-				new{Name = "PropProPri", Get = ExternalVisibilityKind.Protected, Set = ExternalVisibilityKind.Hidden},
-				new{Name = "PropProPin", Get = ExternalVisibilityKind.Protected, Set = ExternalVisibilityKind.Protected},
-				new{Name = "PropPriPub", Get = ExternalVisibilityKind.Hidden, Set = ExternalVisibilityKind.Public},
-				new{Name = "PropPriPro", Get = ExternalVisibilityKind.Hidden, Set = ExternalVisibilityKind.Protected},
-				new{Name = "PropPriPri", Get = ExternalVisibilityKind.Hidden, Set = ExternalVisibilityKind.Hidden},
-				new{Name = "PropPriPin", Get = ExternalVisibilityKind.Hidden, Set = ExternalVisibilityKind.Protected},
-				new{Name = "PropIntPub", Get = ExternalVisibilityKind.Hidden, Set=ExternalVisibilityKind.Public},
-				new{Name = "PropIntPri", Get = ExternalVisibilityKind.Hidden, Set = ExternalVisibilityKind.Hidden},
-				new{Name = "PropIntInt", Get = ExternalVisibilityKind.Hidden, Set = ExternalVisibilityKind.Hidden},
-				new{Name = "PropIntPin", Get = ExternalVisibilityKind.Hidden, Set = ExternalVisibilityKind.Protected},
-				new{Name = "PropPinPub", Get = ExternalVisibilityKind.Protected, Set = ExternalVisibilityKind.Public},
-				new{Name = "PropPinPro", Get = ExternalVisibilityKind.Protected, Set = ExternalVisibilityKind.Protected},
-				new{Name = "PropPinPri", Get = ExternalVisibilityKind.Protected, Set = ExternalVisibilityKind.Hidden},
-				new{Name = "PropPinPin", Get = ExternalVisibilityKind.Protected, Set = ExternalVisibilityKind.Protected}
-			};
+                new{Name = "PropPubPub", Get = ExternalVisibilityKind.Public, Set = ExternalVisibilityKind.Public},
+                new{Name = "PropPubPro", Get = ExternalVisibilityKind.Public, Set = ExternalVisibilityKind.Protected},
+                new{Name = "PropPubPri", Get = ExternalVisibilityKind.Public, Set = ExternalVisibilityKind.Hidden},
+                new{Name = "PropPubInt", Get = ExternalVisibilityKind.Public, Set = ExternalVisibilityKind.Hidden},
+                new{Name = "PropPubPin", Get = ExternalVisibilityKind.Public, Set = ExternalVisibilityKind.Protected},
+                new{Name = "PropProPub", Get = ExternalVisibilityKind.Protected, Set = ExternalVisibilityKind.Public},
+                new{Name = "PropProPro", Get = ExternalVisibilityKind.Protected, Set = ExternalVisibilityKind.Protected},
+                new{Name = "PropProPri", Get = ExternalVisibilityKind.Protected, Set = ExternalVisibilityKind.Hidden},
+                new{Name = "PropProPin", Get = ExternalVisibilityKind.Protected, Set = ExternalVisibilityKind.Protected},
+                new{Name = "PropPriPub", Get = ExternalVisibilityKind.Hidden, Set = ExternalVisibilityKind.Public},
+                new{Name = "PropPriPro", Get = ExternalVisibilityKind.Hidden, Set = ExternalVisibilityKind.Protected},
+                new{Name = "PropPriPri", Get = ExternalVisibilityKind.Hidden, Set = ExternalVisibilityKind.Hidden},
+                new{Name = "PropPriPin", Get = ExternalVisibilityKind.Hidden, Set = ExternalVisibilityKind.Protected},
+                new{Name = "PropIntPub", Get = ExternalVisibilityKind.Hidden, Set=ExternalVisibilityKind.Public},
+                new{Name = "PropIntPri", Get = ExternalVisibilityKind.Hidden, Set = ExternalVisibilityKind.Hidden},
+                new{Name = "PropIntInt", Get = ExternalVisibilityKind.Hidden, Set = ExternalVisibilityKind.Hidden},
+                new{Name = "PropIntPin", Get = ExternalVisibilityKind.Hidden, Set = ExternalVisibilityKind.Protected},
+                new{Name = "PropPinPub", Get = ExternalVisibilityKind.Protected, Set = ExternalVisibilityKind.Public},
+                new{Name = "PropPinPro", Get = ExternalVisibilityKind.Protected, Set = ExternalVisibilityKind.Protected},
+                new{Name = "PropPinPri", Get = ExternalVisibilityKind.Protected, Set = ExternalVisibilityKind.Hidden},
+                new{Name = "PropPinPin", Get = ExternalVisibilityKind.Protected, Set = ExternalVisibilityKind.Protected}
+            };
             foreach (var typeTuple in AllClasses) {
                 var type = Lookup.GetMember(typeTuple.Item2) as Type;
                 var typeVis = typeTuple.Item1;
                 foreach (var propSet in props) {
                     var propDef = type.GetAllProperties().Single(x => x.Name == propSet.Name);
-                    var expectedGetVis = ExternalVisibilityKindOperations.Min(typeVis, propSet.Get);
-                    var expectedSetVis = ExternalVisibilityKindOperations.Min(typeVis, propSet.Set);
-                    var expectedPropVis = ExternalVisibilityKindOperations.Min(typeVis, ExternalVisibilityKindOperations.Max(propSet.Get, propSet.Set));
+                    var expectedGetVis = ExternalVisibilityOperations.LeastVisible(typeVis, propSet.Get);
+                    var expectedSetVis = ExternalVisibilityOperations.LeastVisible(typeVis, propSet.Set);
+                    var expectedPropVis = ExternalVisibilityOperations.LeastVisible(
+                        typeVis,
+                        ExternalVisibilityOperations.MostVisible(propSet.Get, propSet.Set));
                     Assert.AreEqual(expectedGetVis, GetVisibility(propDef.GetGetMethod(true)));
                     Assert.AreEqual(expectedSetVis, GetVisibility(propDef.GetSetMethod(true)));
                     Assert.AreEqual(expectedPropVis, GetVisibility(propDef));
