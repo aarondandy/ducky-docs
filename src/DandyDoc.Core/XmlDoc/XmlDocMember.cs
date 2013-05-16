@@ -7,6 +7,10 @@ using System.Xml;
 
 namespace DandyDoc.XmlDoc
 {
+
+    /// <summary>
+    /// An XML doc element for a member.
+    /// </summary>
     public class XmlDocMember : XmlDocElement
     {
 
@@ -50,6 +54,11 @@ namespace DandyDoc.XmlDoc
 
         private readonly GutsData _guts;
 
+        /// <summary>
+        /// Creates an XML doc member element.
+        /// </summary>
+        /// <param name="element">The raw XML element to wrap.</param>
+        /// <param name="children">The child XML doc nodes.</param>
         public XmlDocMember(XmlElement element, IEnumerable<XmlDocNode> children)
             : base(element, children.Select(Substitute)) {
             Contract.Requires(element != null);
@@ -159,10 +168,19 @@ namespace DandyDoc.XmlDoc
             return result;
         }
 
+        /// <summary>
+        /// Gets the primary XML doc summary element if found.
+        /// </summary>
         public XmlDocElement SummaryElement {
             get { return _guts.FirstSummary; }
         }
 
+        /// <summary>
+        /// Gets the merged contents of the XML doc summary elements.
+        /// </summary>
+        /// <remarks>
+        /// While a member should not have multiple summaries this property will aggregate the contents of all summary elements.
+        /// </remarks>
         public IList<XmlDocNode> SummaryContents {
             get {
                 Contract.Ensures(Contract.Result<IList<XmlDocNode>>() != null);
@@ -171,22 +189,37 @@ namespace DandyDoc.XmlDoc
             }
         }
 
+        /// <summary>
+        /// Determines if there are any summary content elements.
+        /// </summary>
         public bool HasSummaryContents {
             get { return SummaryContents.Count > 0; }
         }
 
+        /// <summary>
+        /// Gets the XML doc pure element if found.
+        /// </summary>
         public XmlDocElement PureElement {
             get { return _guts.PureElement; }
         }
 
+        /// <summary>
+        /// Determines if this member has a pure element.
+        /// </summary>
         public bool HasPureElement {
             get { return PureElement != null; }
         }
 
+        /// <summary>
+        /// Gets the first XML doc return element for the member if found.
+        /// </summary>
         public XmlDocElement ReturnsElement {
             get { return _guts.FirstReturnsSummary; }
         }
 
+        /// <summary>
+        /// Gets the XML doc contents of the returns elements.
+        /// </summary>
         public IList<XmlDocNode> ReturnsContents {
             get {
                 Contract.Ensures(Contract.Result<IList<XmlDocNode>>() != null);
@@ -195,14 +228,23 @@ namespace DandyDoc.XmlDoc
             }
         }
 
+        /// <summary>
+        /// Determines if there are XML doc contents for any returns elements.
+        /// </summary>
         public bool HasReturnsContents {
             get { return ReturnsContents.Count > 0; }
         }
 
+        /// <summary>
+        /// Gets the first XML doc value element if found.
+        /// </summary>
         public XmlDocElement ValueElement {
             get { return _guts.FirstValueSummary; }
         }
 
+        /// <summary>
+        /// Gets the XML doc contents for all value elements.
+        /// </summary>
         public IList<XmlDocNode> ValueContents {
             get {
                 Contract.Ensures(Contract.Result<IList<XmlDocNode>>() != null);
@@ -211,10 +253,16 @@ namespace DandyDoc.XmlDoc
             }
         }
 
+        /// <summary>
+        /// Determines if there are XML doc contents nodes for any values elements.
+        /// </summary>
         public bool HasValueContents {
             get { return ValueContents.Count > 0; }
         }
 
+        /// <summary>
+        /// Gets all XML doc remarks elements.
+        /// </summary>
         public IList<XmlDocElement> RemarksElements {
             get {
                 Contract.Ensures(Contract.Result<IList<XmlDocElement>>() != null);
@@ -223,8 +271,14 @@ namespace DandyDoc.XmlDoc
             }
         }
 
+        /// <summary>
+        /// Determines if this member has XML doc remarks elements.
+        /// </summary>
         public bool HasRemarksElements { get { return RemarksElements.Count > 0; } }
 
+        /// <summary>
+        /// Gets all XML doc examples elements.
+        /// </summary>
         public IList<XmlDocElement> ExampleElements {
             get {
                 Contract.Ensures(Contract.Result<IList<XmlDocElement>>() != null);
@@ -233,8 +287,14 @@ namespace DandyDoc.XmlDoc
             }
         }
 
+        /// <summary>
+        /// Determines if this member has XML doc example elements.
+        /// </summary>
         public bool HasExampleElements { get { return ExampleElements.Count > 0; } }
 
+        /// <summary>
+        /// Gets all XMl doc exception elements.
+        /// </summary>
         public IList<XmlDocRefElement> ExceptionElements {
             get {
                 Contract.Ensures(Contract.Result<IList<XmlDocRefElement>>() != null);
@@ -243,8 +303,14 @@ namespace DandyDoc.XmlDoc
             }
         }
 
+        /// <summary>
+        /// Determines if this member has XML doc exception elements.
+        /// </summary>
         public bool HasExceptionElements { get { return ExceptionElements.Count > 0; } }
 
+        /// <summary>
+        /// Gets all XML doc permission elements.
+        /// </summary>
         public IList<XmlDocRefElement> PermissionElements {
             get {
                 Contract.Ensures(Contract.Result<IList<XmlDocRefElement>>() != null);
@@ -253,8 +319,14 @@ namespace DandyDoc.XmlDoc
             }
         }
 
+        /// <summary>
+        /// Determines if this member has XML doc permission elements.
+        /// </summary>
         public bool HasPermissionElements { get { return PermissionElements.Count > 0; } }
 
+        /// <summary>
+        /// Gets all XML doc see also elements.
+        /// </summary>
         public IList<XmlDocRefElement> SeeAlsoElements {
             get {
                 Contract.Ensures(Contract.Result<IList<XmlDocRefElement>>() != null);
@@ -263,8 +335,14 @@ namespace DandyDoc.XmlDoc
             }
         }
 
+        /// <summary>
+        /// Determines if this member has XML doc see also elements.
+        /// </summary>
         public bool HasSeeAlsoElements { get { return SeeAlsoElements.Count > 0; } }
 
+        /// <summary>
+        /// Gets all XML doc parameter summary elements.
+        /// </summary>
         public IList<XmlDocNameElement> ParameterSummaries {
             get {
                 Contract.Ensures(Contract.Result<IList<XmlDocNameElement>>() != null);
@@ -273,14 +351,25 @@ namespace DandyDoc.XmlDoc
             }
         }
 
+        /// <summary>
+        /// Determines if this member has XML doc parameter summary elements.
+        /// </summary>
         public bool HasParameterSummaries { get { return ParameterSummaries.Count > 0; } }
 
+        /// <summary>
+        /// Gets a parameter summary element by parameter name.
+        /// </summary>
+        /// <param name="parameterName">The parameter name to locate a summary element for.</param>
+        /// <returns>A parameter summary element if found.</returns>
         public XmlDocNameElement GetParameterSummary(string parameterName) {
             if (String.IsNullOrEmpty(parameterName)) throw new ArgumentException("Invalid parameter name.", "parameterName");
             Contract.EndContractBlock();
             return ParameterSummaries.FirstOrDefault(x => x.TargetName == parameterName);
         }
 
+        /// <summary>
+        /// Gets all XML doc generic type parameter summaries.
+        /// </summary>
         public IList<XmlDocNameElement> TypeParameterSummaries {
             get {
                 Contract.Ensures(Contract.Result<IList<XmlDocNameElement>>() != null);
@@ -289,14 +378,25 @@ namespace DandyDoc.XmlDoc
             }
         }
 
+        /// <summary>
+        /// Determines if this member has any XML doc generic parameter type summary elements.
+        /// </summary>
         public bool HasTypeParameterSummaries { get { return TypeParameterSummaries.Count > 0; } }
 
+        /// <summary>
+        /// Gets a generic parameter type summary element by type parameter name.
+        /// </summary>
+        /// <param name="parameterName">The type parameter name to locate a summary element for.</param>
+        /// <returns>A type parameter summary element if found.</returns>
         public XmlDocNameElement GetTypeParameterSummary(string parameterName) {
             if (String.IsNullOrEmpty(parameterName)) throw new ArgumentException("Invalid parameter name.", "parameterName");
             Contract.EndContractBlock();
             return TypeParameterSummaries.FirstOrDefault(x => x.TargetName == parameterName);
         }
 
+        /// <summary>
+        /// Gets all XML doc code contract requires elements.
+        /// </summary>
         public IList<XmlDocContractElement> RequiresElements {
             get {
                 Contract.Ensures(Contract.Result<IList<XmlDocContractElement>>() != null);
@@ -305,8 +405,14 @@ namespace DandyDoc.XmlDoc
             }
         }
 
+        /// <summary>
+        /// Determines if this member has any XML doc code contract requires elements.
+        /// </summary>
         public bool HasRequiresElements { get { return RequiresElements.Count > 0; } }
 
+        /// <summary>
+        /// Gets all XML doc code contract ensures elements.
+        /// </summary>
         public IList<XmlDocContractElement> EnsuresElements {
             get {
                 Contract.Ensures(Contract.Result<IList<XmlDocContractElement>>() != null);
@@ -315,8 +421,14 @@ namespace DandyDoc.XmlDoc
             }
         }
 
+        /// <summary>
+        /// Determines if this member has any XML doc code contract ensures elements.
+        /// </summary>
         public bool HasEnsuresElements { get { return EnsuresElements.Count > 0; } }
 
+        /// <summary>
+        /// Gets all XML doc code contract invariant elements.
+        /// </summary>
         public IList<XmlDocContractElement> InvariantElements {
             get {
                 Contract.Ensures(Contract.Result<IList<XmlDocContractElement>>() != null);
@@ -325,20 +437,35 @@ namespace DandyDoc.XmlDoc
             }
         }
 
+        /// <summary>
+        /// Determines if this member has any XMl doc code contract invariant elements.
+        /// </summary>
         public bool HasInvariantElements { get { return InvariantElements.Count > 0; } }
 
+        /// <summary>
+        /// Gets an XML doc getter member element if found.
+        /// </summary>
         public XmlDocMember GetterElement {
             get { return _guts.Getter; }
         }
 
+        /// <summary>
+        /// Determines if this member has an XML doc getter element.
+        /// </summary>
         public bool HasGetterElement {
             get { return GetterElement != null; }
         }
 
+        /// <summary>
+        /// Gets an XML doc setter member element if found.
+        /// </summary>
         public XmlDocMember SetterElement {
             get { return _guts.Setter; }
         }
 
+        /// <summary>
+        /// Determines if this member has an XML doc setter element.
+        /// </summary>
         public bool HasSetterElement {
             get { return SetterElement != null; }
         }

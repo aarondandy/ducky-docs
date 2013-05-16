@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
+using System.IO;
 using System.Linq;
 using DandyDoc.CRef;
 using DandyDoc.Cecil;
@@ -16,18 +17,21 @@ namespace DandyDoc.CodeDoc
     public class CecilCodeDocEntityRepository : CodeDocEntityRepositoryBase
     {
 
-        protected static readonly StandardCecilDisplayNameGenerator RegularTypeDisplayNameOverlay = new StandardCecilDisplayNameGenerator {
-            ShowTypeNameForMembers = false
-        };
+        private static readonly StandardCecilDisplayNameGenerator RegularTypeDisplayNameOverlay
+            = new StandardCecilDisplayNameGenerator {
+                ShowTypeNameForMembers = false
+            };
 
-        protected static readonly StandardCecilDisplayNameGenerator NestedTypeDisplayNameOverlay = new StandardCecilDisplayNameGenerator {
-            ShowTypeNameForMembers = true
-        };
+        private static readonly StandardCecilDisplayNameGenerator NestedTypeDisplayNameOverlay
+            = new StandardCecilDisplayNameGenerator {
+                ShowTypeNameForMembers = true
+            };
 
-        protected static readonly StandardCecilDisplayNameGenerator FullTypeDisplayNameOverlay = new StandardCecilDisplayNameGenerator {
-            ShowTypeNameForMembers = true,
-            IncludeNamespaceForTypes = true
-        };
+        private static readonly StandardCecilDisplayNameGenerator FullTypeDisplayNameOverlay
+            = new StandardCecilDisplayNameGenerator {
+                ShowTypeNameForMembers = true,
+                IncludeNamespaceForTypes = true
+            };
 
         private static CRefIdentifier GetCRefIdentifier(MemberReference memberReference) {
             Contract.Requires(memberReference != null);
@@ -46,17 +50,17 @@ namespace DandyDoc.CodeDoc
             Contract.Requires(cRefLookup != null);
         }
 
-        public CecilCodeDocEntityRepository(CecilCRefLookup cRefLookup, params XmlAssemblyDocumentation[] xmlDocs)
-            : this(cRefLookup, (IEnumerable<XmlAssemblyDocumentation>)xmlDocs) {
+        public CecilCodeDocEntityRepository(CecilCRefLookup cRefLookup, params XmlAssemblyDocument[] xmlDocs)
+            : this(cRefLookup, (IEnumerable<XmlAssemblyDocument>)xmlDocs) {
             Contract.Requires(cRefLookup != null);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public CecilCodeDocEntityRepository(CecilCRefLookup cRefLookup, IEnumerable<XmlAssemblyDocumentation> xmlDocs) {
+        public CecilCodeDocEntityRepository(CecilCRefLookup cRefLookup, IEnumerable<XmlAssemblyDocument> xmlDocs) {
             if (cRefLookup == null) throw new ArgumentNullException("cRefLookup");
             Contract.EndContractBlock();
             CRefLookup = cRefLookup;
-            XmlDocs = new XmlAssemblyDocumentationCollection(xmlDocs);
+            XmlDocs = new XmlAssemblyDocumentCollection(xmlDocs);
 
             var assemblyModels = new List<CodeDocAssembly>();
             var namespaceModels = new Dictionary<string, CodeDocNamespace>();
@@ -64,7 +68,7 @@ namespace DandyDoc.CodeDoc
             foreach (var assembly in CRefLookup.Assemblies) {
                 var assemblyShortName = assembly.Name.Name;
                 var assemblyModel = new CodeDocAssembly(GetCRefIdentifier(assembly)) {
-                    AssemblyFileName = assembly.GetFileName(),
+                    AssemblyFileName = Path.GetFileName(assembly.GetFilePath()),
                     Title = assemblyShortName,
                     ShortName = assemblyShortName,
                     FullName = assembly.Name.FullName,
@@ -133,7 +137,7 @@ namespace DandyDoc.CodeDoc
             Contract.Invariant(XmlDocs != null);
         }
 
-        public XmlAssemblyDocumentationCollection XmlDocs { get; private set; }
+        public XmlAssemblyDocumentCollection XmlDocs { get; private set; }
 
         public CecilCRefLookup CRefLookup { get; private set; }
 
@@ -583,7 +587,8 @@ namespace DandyDoc.CodeDoc
             Contract.Assume(fieldReference.DeclaringType != null);
             model.NamespaceName = fieldReference.DeclaringType.Namespace;
 
-            if (fieldReference.IsLiteral())
+            var fieldDefinition = fieldReference.ToDefinition();
+            if (fieldDefinition != null && fieldDefinition.IsLiteral)
                 model.SubTitle = "Constant";
             else
                 model.SubTitle = "Field";
@@ -596,15 +601,32 @@ namespace DandyDoc.CodeDoc
             ApplyStandardXmlDocs(model, model.CRef.FullCRef);
             ApplyCommonAttributes(model, fieldReference);
 
-            model.ValueType = GetSimpleEntity(fieldReference.FieldType);
-            model.IsLiteral = fieldReference.IsLiteral();
-            model.IsInitOnly = fieldReference.IsInitOnly();
+            var fieldDefinition = fieldReference.ToDefinition();
 
-            Contract.Assume(fieldReference.DeclaringType != null);
-            model.Namespace = GetCodeDocNamespaceByName(fieldReference.DeclaringType.Namespace);
-            model.Assembly = GetCodeDocAssembly(fieldReference.DeclaringType.Module.Assembly);
-            model.DeclaringType = GetSimpleEntity(fieldReference.DeclaringType);
+            model.ValueType = GetSimpleEntity(fieldReference.FieldType);
+            if (fieldDefinition != null) {
+                model.IsLiteral = fieldDefinition.IsLiteral;
+                model.IsInitOnly = fieldDefinition.IsInitOnly;
+            }
+
+            var declaringTypeReference = fieldReference.DeclaringType;
+            if (declaringTypeReference != null) {
+                model.Namespace = GetCodeDocNamespaceByName(declaringTypeReference.Namespace);
+                model.Assembly = GetCodeDocAssembly(declaringTypeReference.Module.Assembly);
+                model.DeclaringType = GetSimpleEntity(declaringTypeReference);
+            }
             return model;
+        }
+
+        private string GetMethodSubTitle(MethodDefinition methodDefinition) {
+            Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
+            if (methodDefinition != null) {
+                if (methodDefinition.IsConstructor)
+                    return "Constructor";
+                if (methodDefinition.IsOperatorOverload())
+                    return "Operator";
+            }
+            return "Method";
         }
 
         private void ApplyCommonAttributes(CodeDocSimpleEntity model, MethodReference methodReference) {
@@ -624,12 +646,7 @@ namespace DandyDoc.CodeDoc
             Contract.Assume(methodReference.DeclaringType != null);
             model.NamespaceName = methodReference.DeclaringType.Namespace;
 
-            if (methodReference.IsConstructor())
-                model.SubTitle = "Constructor";
-            else if (methodReference.IsOperatorOverload())
-                model.SubTitle = "Operator";
-            else
-                model.SubTitle = "Method";
+            model.SubTitle = GetMethodSubTitle(methodReference.ToDefinition());
         }
 
         private CodeDocMethod ConvertToEntity(MethodReference methodReference) {
@@ -753,13 +770,15 @@ namespace DandyDoc.CodeDoc
             model.Title = model.ShortName;
             model.NamespaceName = typeReference.GetOuterType().Namespace;
 
-            if (typeReference.IsEnum())
+            var typeDefinition = typeReference.ToDefinition();
+
+            if (typeDefinition != null && typeDefinition.IsEnum)
                 model.SubTitle = "Enumeration";
             else if (typeReference.IsValueType)
                 model.SubTitle = "Structure";
-            else if (typeReference.IsInterface())
+            else if (typeDefinition != null && typeDefinition.IsInterface)
                 model.SubTitle = "Interface";
-            else if (typeReference.IsDelegateType())
+            else if (typeDefinition != null && typeDefinition.IsDelegateType())
                 model.SubTitle = "Delegate";
             else
                 model.SubTitle = "Class";

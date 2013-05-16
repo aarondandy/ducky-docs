@@ -24,34 +24,6 @@ namespace DandyDoc.DisplayName
     {
 
         /// <summary>
-        /// Creates the short form of a member display name.
-        /// </summary>
-        public static readonly StandardReflectionDisplayNameGenerator RegularTypeDisplayNameOverlay
-            = new StandardReflectionDisplayNameGenerator {
-                ShowTypeNameForMembers = false
-            };
-
-        /// <summary>
-        /// Creates the short form including the declaring type name for members.
-        /// </summary>
-        /// <remarks>
-        /// The type name addition also applies to nested types.
-        /// </remarks>
-        public static readonly StandardReflectionDisplayNameGenerator NestedTypeDisplayNameOverlay
-            = new StandardReflectionDisplayNameGenerator {
-                ShowTypeNameForMembers = true
-            };
-
-        /// <summary>
-        /// Creates the full display name for a member including namespace and declaring types.
-        /// </summary>
-        public static readonly StandardReflectionDisplayNameGenerator FullTypeDisplayNameOverlay
-            = new StandardReflectionDisplayNameGenerator {
-                ShowTypeNameForMembers = true,
-                IncludeNamespaceForTypes = true
-            };
-
-        /// <summary>
         /// Creates a default display name generator.
         /// </summary>
         public StandardReflectionDisplayNameGenerator() {
@@ -72,7 +44,7 @@ namespace DandyDoc.DisplayName
         public bool ShowGenericParametersOnDefinition { get; set; }
 
         /// <summary>
-        /// Gets a value indicating if decalring types will be added to members.
+        /// Gets a value indicating if declaring types will be added to members.
         /// </summary>
         public bool ShowTypeNameForMembers { get; set; }
 

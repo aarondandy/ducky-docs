@@ -17,6 +17,22 @@ namespace DandyDoc.CodeDoc
     public class ReflectionCodeDocEntityRepository : CodeDocEntityRepositoryBase
     {
 
+        private static readonly StandardReflectionDisplayNameGenerator RegularTypeDisplayNameOverlay
+            = new StandardReflectionDisplayNameGenerator {
+                ShowTypeNameForMembers = false
+            };
+
+        private static readonly StandardReflectionDisplayNameGenerator NestedTypeDisplayNameOverlay
+            = new StandardReflectionDisplayNameGenerator {
+                ShowTypeNameForMembers = true
+            };
+
+        private static readonly StandardReflectionDisplayNameGenerator FullTypeDisplayNameOverlay
+            = new StandardReflectionDisplayNameGenerator {
+                ShowTypeNameForMembers = true,
+                IncludeNamespaceForTypes = true
+            };
+
         private static CRefIdentifier GetCRefIdentifier(MemberInfo memberInfo){
             Contract.Requires(memberInfo != null);
             Contract.Ensures(Contract.Result<CRefIdentifier>() != null);
@@ -35,18 +51,18 @@ namespace DandyDoc.CodeDoc
             Contract.Requires(cRefLookup != null);
         }
 
-        public ReflectionCodeDocEntityRepository(ReflectionCRefLookup cRefLookup, params XmlAssemblyDocumentation[] xmlDocs)
-            : this(cRefLookup, (IEnumerable<XmlAssemblyDocumentation>)xmlDocs)
+        public ReflectionCodeDocEntityRepository(ReflectionCRefLookup cRefLookup, params XmlAssemblyDocument[] xmlDocs)
+            : this(cRefLookup, (IEnumerable<XmlAssemblyDocument>)xmlDocs)
         {
             Contract.Requires(cRefLookup != null);
         }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public ReflectionCodeDocEntityRepository(ReflectionCRefLookup cRefLookup, IEnumerable<XmlAssemblyDocumentation> xmlDocs) {
+        public ReflectionCodeDocEntityRepository(ReflectionCRefLookup cRefLookup, IEnumerable<XmlAssemblyDocument> xmlDocs) {
             if(cRefLookup == null) throw new ArgumentNullException("cRefLookup");
             Contract.EndContractBlock();
             CRefLookup = cRefLookup;
-            XmlDocs = new XmlAssemblyDocumentationCollection(xmlDocs);
+            XmlDocs = new XmlAssemblyDocumentCollection(xmlDocs);
 
             var assemblyModels = new List<CodeDocAssembly>();
             var namespaceModels = new Dictionary<string, CodeDocNamespace>();
@@ -125,7 +141,7 @@ namespace DandyDoc.CodeDoc
             Contract.Invariant(XmlDocs != null);
         }
 
-        public XmlAssemblyDocumentationCollection XmlDocs { get; private set; }
+        public XmlAssemblyDocumentCollection XmlDocs { get; private set; }
 
         public ReflectionCRefLookup CRefLookup { get; private set; }
 
@@ -351,8 +367,8 @@ namespace DandyDoc.CodeDoc
 
             ApplySimpleEntityAttributes(model, eventInfo);
 
-            model.ShortName = StandardReflectionDisplayNameGenerator.RegularTypeDisplayNameOverlay.GetDisplayName(eventInfo);
-            model.FullName = StandardReflectionDisplayNameGenerator.FullTypeDisplayNameOverlay.GetDisplayName(eventInfo);
+            model.ShortName = RegularTypeDisplayNameOverlay.GetDisplayName(eventInfo);
+            model.FullName = FullTypeDisplayNameOverlay.GetDisplayName(eventInfo);
             model.Title = model.ShortName;
             Contract.Assume(eventInfo.DeclaringType != null);
             model.NamespaceName = eventInfo.DeclaringType.Namespace;
@@ -389,8 +405,8 @@ namespace DandyDoc.CodeDoc
 
             ApplySimpleEntityAttributes(model, fieldInfo);
 
-            model.ShortName = StandardReflectionDisplayNameGenerator.RegularTypeDisplayNameOverlay.GetDisplayName(fieldInfo);
-            model.FullName = StandardReflectionDisplayNameGenerator.FullTypeDisplayNameOverlay.GetDisplayName(fieldInfo);
+            model.ShortName = RegularTypeDisplayNameOverlay.GetDisplayName(fieldInfo);
+            model.FullName = FullTypeDisplayNameOverlay.GetDisplayName(fieldInfo);
             model.Title = model.ShortName;
             Contract.Assume(fieldInfo.DeclaringType != null);
             model.NamespaceName = fieldInfo.DeclaringType.Namespace;
@@ -512,8 +528,8 @@ namespace DandyDoc.CodeDoc
 
             ApplySimpleEntityAttributes(model, propertyInfo);
 
-            model.ShortName = StandardReflectionDisplayNameGenerator.RegularTypeDisplayNameOverlay.GetDisplayName(propertyInfo);
-            model.FullName = StandardReflectionDisplayNameGenerator.FullTypeDisplayNameOverlay.GetDisplayName(propertyInfo);
+            model.ShortName = RegularTypeDisplayNameOverlay.GetDisplayName(propertyInfo);
+            model.FullName = FullTypeDisplayNameOverlay.GetDisplayName(propertyInfo);
             model.Title = model.ShortName;
             Contract.Assume(propertyInfo.DeclaringType != null);
             model.NamespaceName = propertyInfo.DeclaringType.Namespace;
@@ -695,8 +711,8 @@ namespace DandyDoc.CodeDoc
 
             ApplySimpleEntityAttributes(model, methodBase);
 
-            model.ShortName = StandardReflectionDisplayNameGenerator.RegularTypeDisplayNameOverlay.GetDisplayName(methodBase);
-            model.FullName = StandardReflectionDisplayNameGenerator.FullTypeDisplayNameOverlay.GetDisplayName(methodBase);
+            model.ShortName = RegularTypeDisplayNameOverlay.GetDisplayName(methodBase);
+            model.FullName = FullTypeDisplayNameOverlay.GetDisplayName(methodBase);
             model.Title = model.ShortName;
             Contract.Assume(methodBase.DeclaringType != null);
             model.NamespaceName = methodBase.DeclaringType.Namespace;
@@ -958,8 +974,8 @@ namespace DandyDoc.CodeDoc
 
             ApplySimpleEntityAttributes(model, type);
 
-            model.ShortName = StandardReflectionDisplayNameGenerator.RegularTypeDisplayNameOverlay.GetDisplayName(type);
-            model.FullName = StandardReflectionDisplayNameGenerator.FullTypeDisplayNameOverlay.GetDisplayName(type);
+            model.ShortName = RegularTypeDisplayNameOverlay.GetDisplayName(type);
+            model.FullName = FullTypeDisplayNameOverlay.GetDisplayName(type);
             model.Title = model.ShortName;
             model.NamespaceName = type.Namespace;
 

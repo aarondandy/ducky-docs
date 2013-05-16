@@ -9,11 +9,21 @@ using Mono.Cecil;
 
 namespace DandyDoc.Cecil
 {
+
+    /// <summary>
+    /// Various method and extension methods related to Cecil.
+    /// </summary>
     public static class CecilUtilities
     {
 
-        private static readonly ReadOnlyCollection<ParameterDefinition> EmptyParameterDefinitionCollection = Array.AsReadOnly(new ParameterDefinition[0]);
+        private static readonly ReadOnlyCollection<ParameterDefinition> EmptyParameterDefinitionCollection
+            = new ReadOnlyCollection<ParameterDefinition>(new ParameterDefinition[0]);
 
+        /// <summary>
+        /// Gets the full file path for a given assembly definition.
+        /// </summary>
+        /// <param name="assembly">The assembly to locate.</param>
+        /// <returns>The assembly file path.</returns>
         public static string GetFilePath(this AssemblyDefinition assembly) {
             if (assembly == null) throw new ArgumentNullException("assembly");
             Contract.EndContractBlock();
@@ -21,30 +31,11 @@ namespace DandyDoc.Cecil
             return new FileInfo(assembly.MainModule.FullyQualifiedName).FullName;
         }
 
-        public static string GetFileName(this AssemblyDefinition assembly) {
-            if(assembly == null) throw new ArgumentNullException("assembly");
-            Contract.Assume(assembly.MainModule.FullyQualifiedName != null);
-            return new FileInfo(assembly.MainModule.FullyQualifiedName).Name;
-        }
-
-        public static bool IsLiteral(this FieldReference fieldReference) {
-            Contract.Requires(fieldReference != null);
-            var definition = fieldReference.ToDefinition();
-            return definition != null && definition.IsLiteral;
-        }
-
-        public static bool IsInitOnly(this FieldReference fieldReference) {
-            Contract.Requires(fieldReference != null);
-            var definition = fieldReference.ToDefinition();
-            return definition != null && definition.IsInitOnly;
-        }
-
-        public static bool IsOperatorOverload(this MethodReference methodReference) {
-            Contract.Requires(methodReference != null);
-            var definition = methodReference.ToDefinition();
-            return definition != null && definition.IsOperatorOverload();
-        }
-
+        /// <summary>
+        /// Determines if the method definition is an operator overload.
+        /// </summary>
+        /// <param name="methodDefinition">The method definition to test.</param>
+        /// <returns><c>true</c> if the method is an operator overload.</returns>
         public static bool IsOperatorOverload(this MethodDefinition methodDefinition) {
             Contract.Requires(methodDefinition != null);
             if (!methodDefinition.IsStatic)
@@ -53,63 +44,55 @@ namespace DandyDoc.Cecil
             return CSharpOperatorNameSymbolMap.IsOperatorName(methodDefinition.Name);
         }
 
-        public static bool IsExtensionMethod(this MethodReference methodReference) {
-            Contract.Requires(methodReference != null);
-            if (!methodReference.HasParameters)
-                return false;
-            var definition = methodReference.ToDefinition();
-            return definition != null && definition.IsExtensionMethod();
-        }
-
+        /// <summary>
+        /// Determines if the method definition is an extension method.
+        /// </summary>
+        /// <param name="methodDefinition">The method definition to test.</param>
+        /// <returns><c>true</c> if the method is an extension method.</returns>
         public static bool IsExtensionMethod(this MethodDefinition methodDefinition) {
             Contract.Requires(methodDefinition != null);
             return methodDefinition.HasParameters
                 && methodDefinition.Parameters.Count > 0
                 && methodDefinition.HasCustomAttributes
                 && methodDefinition.HasAttribute(x => x.AttributeType.FullName == "System.Runtime.CompilerServices.ExtensionAttribute");
-
         }
 
-        public static bool IsOverride(this MethodReference methodReference) {
-            Contract.Requires(methodReference != null);
-            var definition = methodReference.ToDefinition();
-            return definition != null && definition.IsOverride();
-        }
-
+        /// <summary>
+        /// Determines if the method is an override of a base method.
+        /// </summary>
+        /// <param name="methodDefinition">The method definition to test.</param>
+        /// <returns><c>true</c> if the method is an override.</returns>
         public static bool IsOverride(this MethodDefinition methodDefinition) {
             Contract.Requires(methodDefinition != null);
             return methodDefinition.IsVirtual && methodDefinition.IsReuseSlot;
         }
 
-        public static bool IsSealed(this MethodReference methodReference) {
-            Contract.Requires(methodReference != null);
-            var definition = methodReference.ToDefinition();
-            return definition != null && definition.IsSealed();
-        }
-
+        /// <summary>
+        /// Determines if a method definition is sealed.
+        /// </summary>
+        /// <param name="methodDefinition">The method definition to test.</param>
+        /// <returns><c>true</c> if the method is sealed.</returns>
         public static bool IsSealed(this MethodDefinition methodDefinition) {
             Contract.Requires(methodDefinition != null);
             return methodDefinition.IsFinal && methodDefinition.IsOverride();
         }
 
+        /// <summary>
+        /// Determines if a property is an item indexer.
+        /// </summary>
+        /// <param name="propertyReference">The property to test.</param>
+        /// <returns><c>true</c> when the property is an item indexer.</returns>
         public static bool IsItemIndexerProperty(this PropertyReference propertyReference) {
             Contract.Requires(propertyReference != null);
             return "Item".Equals(propertyReference.Name)
                 && propertyReference.Parameters.Count > 0;
         }
 
-        public static bool IsConstructor(this MethodReference methodReference) {
-            Contract.Requires(methodReference != null);
-            var definition = methodReference.ToDefinition();
-            return definition != null && definition.IsConstructor;
-        }
-
-        public static bool IsDelegateType(this TypeReference typeReference) {
-            Contract.Requires(typeReference != null);
-            var definition = typeReference.ToDefinition();
-            return definition != null && definition.IsDelegateType();
-        }
-
+        /// <summary>
+        /// Determines if a type is a delegate type.
+        /// </summary>
+        /// <param name="typeDefinition">The type definition to test.</param>
+        /// <returns><c>true</c> when the type is a delegate.</returns>
         public static bool IsDelegateType(this TypeDefinition typeDefinition) {
             Contract.Requires(typeDefinition != null);
             var baseType = typeDefinition.BaseType;
@@ -122,6 +105,11 @@ namespace DandyDoc.Cecil
             return typeDefinition.HasMethods && typeDefinition.Methods.Any(x => "Invoke".Equals(x.Name));
         }
 
+        /// <summary>
+        /// Extracts the parameters for a delegate type from the invoke method.
+        /// </summary>
+        /// <param name="typeDefinition">The delegate type to extract parameters from.</param>
+        /// <returns>The parameters for the delegate.</returns>
         public static IList<ParameterDefinition> GetDelegateTypeParameters(this TypeDefinition typeDefinition) {
             Contract.Requires(typeDefinition != null);
             Contract.Ensures(Contract.Result<IList<ParameterDefinition>>() != null);
@@ -135,6 +123,11 @@ namespace DandyDoc.Cecil
                 : method.Parameters;
         }
 
+        /// <summary>
+        /// Extracts the return type for a delegate type from the invoke method.
+        /// </summary>
+        /// <param name="typeDefinition">The delegate type to extract a return type from.</param>
+        /// <returns>The return type.</returns>
         public static TypeReference GetDelegateReturnType(this TypeDefinition typeDefinition) {
             Contract.Requires(typeDefinition != null);
             Contract.Requires(typeDefinition.IsDelegateType());
@@ -144,12 +137,11 @@ namespace DandyDoc.Cecil
             return method == null ? null : method.ReturnType;
         }
 
-        public static bool IsFinalizer(this MethodReference methodReference) {
-            Contract.Requires(methodReference != null);
-            var methodDefinition = methodReference.ToDefinition();
-            return methodDefinition != null && methodDefinition.IsFinalizer();
-        }
-
+        /// <summary>
+        /// Determines if a method is a finalizer method.
+        /// </summary>
+        /// <param name="methodDefinition">The method to test.</param>
+        /// <returns><c>true</c> when the method is a finalizer.</returns>
         public static bool IsFinalizer(this MethodDefinition methodDefinition) {
             Contract.Requires(methodDefinition != null);
             return !methodDefinition.IsStatic
@@ -157,68 +149,46 @@ namespace DandyDoc.Cecil
                 && "Finalize".Equals(methodDefinition.Name);
         }
 
-        public static bool IsStatic(this MethodReference methodReference) {
-            Contract.Requires(methodReference != null);
-            var methodDefinition = methodReference.ToDefinition();
-            return methodDefinition != null && methodDefinition.IsStatic;
-        }
-
-        public static bool IsStatic(this FieldReference fieldReference) {
-            Contract.Requires(fieldReference != null);
-            var fieldDefinition = fieldReference.ToDefinition();
-            return fieldDefinition != null && fieldDefinition.IsStatic;
-        }
-
-        public static bool IsStatic(this TypeReference typeReference) {
-            Contract.Requires(typeReference != null);
-            var typeDefinition = typeReference.ToDefinition();
-            return typeDefinition != null && typeDefinition.IsStatic();
-        }
-
+        /// <summary>
+        /// Determines if a type is static.
+        /// </summary>
+        /// <param name="typeDefinition">The type to test.</param>
+        /// <returns><c>true</c> if the type is static.</returns>
+        /// <remarks>
+        /// A type is static when it is both abstract and sealed.
+        /// </remarks>
         public static bool IsStatic(this TypeDefinition typeDefinition) {
             Contract.Requires(typeDefinition != null);
             return typeDefinition.IsAbstract && typeDefinition.IsSealed;
         }
 
-        public static bool IsStatic(this PropertyReference propertyReference) {
-            Contract.Requires(propertyReference != null);
-            var propertyDefinition = propertyReference.ToDefinition();
-            return propertyDefinition != null && propertyDefinition.IsStatic();
-        }
-
+        /// <summary>
+        /// Determines if a property is static.
+        /// </summary>
+        /// <param name="propertyDefinition">The property to test.</param>
+        /// <returns><c>true</c> if the property is static.</returns>
         public static bool IsStatic(this PropertyDefinition propertyDefinition) {
             Contract.Requires(propertyDefinition != null);
             var method = propertyDefinition.GetMethod ?? propertyDefinition.SetMethod;
             return method != null && method.IsStatic;
         }
 
-        public static bool IsStatic(this EventReference eventReference) {
-            Contract.Requires(eventReference != null);
-            var eventDefinition = eventReference.ToDefinition();
-            return eventDefinition != null && eventDefinition.IsStatic();
-        }
-
+        /// <summary>
+        /// Determines if an event is static.
+        /// </summary>
+        /// <param name="eventDefinition">The event to test.</param>
+        /// <returns><c>true</c> if the event is static.</returns>
         public static bool IsStatic(this EventDefinition eventDefinition) {
             Contract.Requires(eventDefinition != null);
             var method = eventDefinition.AddMethod ?? eventDefinition.InvokeMethod;
             return method != null && method.IsStatic;
         }
 
-        public static bool IsStatic(this MemberReference memberReference) {
-            Contract.Requires(memberReference != null);
-            if (memberReference is MethodReference)
-                return ((MethodReference)memberReference).IsStatic();
-            if (memberReference is FieldReference)
-                return ((FieldReference)memberReference).IsStatic();
-            if (memberReference is TypeReference)
-                return ((TypeReference)memberReference).IsStatic();
-            if (memberReference is PropertyReference)
-                return ((PropertyReference)memberReference).IsStatic();
-            if (memberReference is EventReference)
-                return ((EventReference)memberReference).IsStatic();
-            throw new NotSupportedException();
-        }
-
+        /// <summary>
+        /// Determines if a member is static.
+        /// </summary>
+        /// <param name="memberDefinition">The member to test.</param>
+        /// <returns><c>true</c> if the member is static.</returns>
         public static bool IsStatic(this IMemberDefinition memberDefinition) {
             Contract.Requires(memberDefinition != null);
             if (memberDefinition is MethodDefinition)
@@ -234,23 +204,22 @@ namespace DandyDoc.Cecil
             throw new NotSupportedException();
         }
 
+        /// <summary>
+        /// Determines if a type reference is the void type.
+        /// </summary>
+        /// <param name="typeReference">The type to test.</param>
+        /// <returns><c>true</c> when the type is the void type.</returns>
         public static bool IsVoid(this TypeReference typeReference) {
             Contract.Requires(typeReference != null);
             return String.Equals(typeReference.FullName, "System.Void");
         }
 
-        public static bool IsEnum(this TypeReference typeReference) {
-            Contract.Requires(typeReference != null);
-            var typeDefinition = typeReference.ToDefinition();
-            return typeDefinition != null && typeDefinition.IsEnum;
-        }
-
-        public static bool IsInterface(this TypeReference typeReference) {
-            Contract.Requires(typeReference != null);
-            var typeDefinition = typeReference.ToDefinition();
-            return typeDefinition != null && typeDefinition.IsInterface;
-        }
-
+        /// <summary>
+        /// Determines if any attribute on a member satisfies a predicate.
+        /// </summary>
+        /// <param name="memberDefinition">The member to search for attributes on.</param>
+        /// <param name="predicate">The test to apply to all attributes.</param>
+        /// <returns><c>true</c> if any attribute satisfies the <paramref name="predicate"/>.</returns>
         public static bool HasAttribute(this IMemberDefinition memberDefinition, Func<CustomAttribute, bool> predicate) {
             Contract.Requires(memberDefinition != null);
             Contract.Requires(predicate != null);
@@ -258,36 +227,71 @@ namespace DandyDoc.Cecil
                 && memberDefinition.CustomAttributes.Any(predicate);
         }
 
+        /// <summary>
+        /// Attempts to cast or resolve a definition from a reference.
+        /// </summary>
+        /// <param name="typeReference">The reference to get a definition for.</param>
+        /// <returns>A definition or null.</returns>
         public static TypeDefinition ToDefinition(this TypeReference typeReference) {
             Contract.Requires(typeReference != null);
             return typeReference as TypeDefinition ?? (typeReference.Resolve());
         }
 
+        /// <summary>
+        /// Attempts to cast or resolve a definition from a reference.
+        /// </summary>
+        /// <param name="methodReference">The reference to get a definition for.</param>
+        /// <returns>A definition or null.</returns>
         public static MethodDefinition ToDefinition(this MethodReference methodReference) {
             Contract.Requires(methodReference != null);
             return methodReference as MethodDefinition ?? (methodReference.Resolve());
         }
 
+        /// <summary>
+        /// Attempts to cast or resolve a definition from a reference.
+        /// </summary>
+        /// <param name="fieldReference">The reference to get a definition for.</param>
+        /// <returns>A definition or null.</returns>
         public static FieldDefinition ToDefinition(this FieldReference fieldReference) {
             Contract.Requires(fieldReference != null);
             return fieldReference as FieldDefinition ?? (fieldReference.Resolve());
         }
 
+        /// <summary>
+        /// Attempts to cast or resolve a definition from a reference.
+        /// </summary>
+        /// <param name="propertyReference">The reference to get a definition for.</param>
+        /// <returns>A definition or null.</returns>
         public static PropertyDefinition ToDefinition(this PropertyReference propertyReference) {
             Contract.Requires(propertyReference != null);
             return propertyReference as PropertyDefinition ?? (propertyReference.Resolve());
         }
 
+        /// <summary>
+        /// Attempts to cast or resolve a definition from a reference.
+        /// </summary>
+        /// <param name="eventReference">The reference to get a definition for.</param>
+        /// <returns>A definition or null.</returns>
         public static EventDefinition ToDefinition(this EventReference eventReference) {
             Contract.Requires(eventReference != null);
             return eventReference as EventDefinition ?? (eventReference.Resolve());
         }
 
+        /// <summary>
+        /// Attempts to cast or resolve a definition from a reference.
+        /// </summary>
+        /// <param name="parameterReference">The reference to get a definition for.</param>
+        /// <returns>A definition or null.</returns>
         public static ParameterDefinition ToDefinition(this ParameterReference parameterReference) {
             Contract.Requires(parameterReference != null);
             return parameterReference as ParameterDefinition ?? (parameterReference.Resolve());
         }
 
+        /// <summary>
+        /// Attempts to cast or resolve a definition from a reference.
+        /// </summary>
+        /// <param name="memberReference">The reference to get a definition for.</param>
+        /// <returns>A definition or null.</returns>
         public static IMemberDefinition ToDefinition(this MemberReference memberReference) {
             var definition = memberReference as IMemberDefinition;
             if (definition != null)
@@ -306,6 +310,11 @@ namespace DandyDoc.Cecil
             return null;
         }
 
+        /// <summary>
+        /// Gets the base type definitions for a type.
+        /// </summary>
+        /// <param name="typeDefinition">The type to find the base chain of.</param>
+        /// <returns>The base type that the given type inherits from.</returns>
         public static IEnumerable<TypeDefinition> GetBaseChainDefinitions(this TypeDefinition typeDefinition) {
             Contract.Requires(typeDefinition != null);
             var baseRef = typeDefinition.BaseType;
@@ -319,12 +328,13 @@ namespace DandyDoc.Cecil
             }
         }
 
-        public static IEnumerable<TypeDefinition> GetBaseChainDefinitions(this TypeDefinition typeDefinition, Func<TypeDefinition, bool> predicate) {
-            Contract.Requires(typeDefinition != null);
-            Contract.Requires(predicate != null);
-            return typeDefinition.GetBaseChainDefinitions().Where(predicate);
-        }
-
+        /// <summary>
+        /// Gets all event definitions for a type.
+        /// </summary>
+        /// <param name="typeDefinition">The type to get members for.</param>
+        /// <param name="filter">An optional filter for the members.</param>
+        /// <param name="skipInheritance">Indicates if inherited types should be checked for members.</param>
+        /// <returns>Members that are found for the type.</returns>
         public static List<EventDefinition> GetAllEvents(this TypeDefinition typeDefinition, Func<EventDefinition, bool> filter, bool skipInheritance = false) {
             Contract.Requires(typeDefinition != null);
             Contract.Ensures(Contract.Result<List<EventDefinition>>() != null);
@@ -335,6 +345,13 @@ namespace DandyDoc.Cecil
                 skipInheritance);
         }
 
+        /// <summary>
+        /// Gets all field definitions for a type.
+        /// </summary>
+        /// <param name="typeDefinition">The type to get members for.</param>
+        /// <param name="filter">An optional filter for the members.</param>
+        /// <param name="skipInheritance">Indicates if inherited types should be checked for members.</param>
+        /// <returns>Members that are found for the type.</returns>
         public static List<FieldDefinition> GetAllFields(this TypeDefinition typeDefinition, Func<FieldDefinition, bool> filter = null, bool skipInheritance = false) {
             Contract.Requires(typeDefinition != null);
             Contract.Ensures(Contract.Result<List<FieldDefinition>>() != null);
@@ -345,6 +362,13 @@ namespace DandyDoc.Cecil
                 skipInheritance);
         }
 
+        /// <summary>
+        /// Gets all method definitions for a type.
+        /// </summary>
+        /// <param name="typeDefinition">The type to get members for.</param>
+        /// <param name="filter">An optional filter for the members.</param>
+        /// <param name="skipInheritance">Indicates if inherited types should be checked for members.</param>
+        /// <returns>Members that are found for the type.</returns>
         public static List<MethodDefinition> GetAllMethods(this TypeDefinition typeDefinition, Func<MethodDefinition, bool> filter = null, bool skipInheritance = false) {
             Contract.Requires(typeDefinition != null);
             Contract.Ensures(Contract.Result<List<MethodDefinition>>() != null);
@@ -355,6 +379,13 @@ namespace DandyDoc.Cecil
                 skipInheritance);
         }
 
+        /// <summary>
+        /// Gets all property definitions for a type.
+        /// </summary>
+        /// <param name="typeDefinition">The type to get members for.</param>
+        /// <param name="filter">An optional filter for the members.</param>
+        /// <param name="skipInheritance">Indicates if inherited types should be checked for members.</param>
+        /// <returns>Members that are found for the type.</returns>
         public static List<PropertyDefinition> GetAllProperties(this TypeDefinition typeDefinition, Func<PropertyDefinition, bool> filter = null, bool skipInheritance = false) {
             Contract.Requires(typeDefinition != null);
             Contract.Ensures(Contract.Result<List<PropertyDefinition>>() != null);
@@ -394,7 +425,7 @@ namespace DandyDoc.Cecil
 
             var nameSet = new HashSet<string>(results.Select(definition => definition.Name));
             Func<TResult, bool> addIfNotFound = definition => nameSet.Add(definition.Name);
-            foreach (var baseTypeDefinition in typeDefinition.GetBaseChainDefinitions(hasMembers)) {
+            foreach (var baseTypeDefinition in typeDefinition.GetBaseChainDefinitions().Where(hasMembers)) {
                 var members = getMembers(baseTypeDefinition).Where(addIfNotFound);
                 if (memberFilter != null)
                     members = members.Where(memberFilter);
@@ -403,12 +434,17 @@ namespace DandyDoc.Cecil
             return results;
         }
 
+        /// <summary>
+        /// Follows the declaring type chain to find the non-nested type from the given type.
+        /// </summary>
+        /// <param name="typeReference">The type to find a non-nested declaring type for.</param>
+        /// <returns>A non-nested declaring type.</returns>
         public static TypeReference GetOuterType(this TypeReference typeReference) {
             Contract.Requires(typeReference != null);
             Contract.Ensures(Contract.Result<TypeReference>() != null);
             if (typeReference.IsNested) {
-                Contract.Assume(typeReference.DeclaringType != null);
                 typeReference = typeReference.DeclaringType;
+                Contract.Assume(typeReference != null);
             }
             return typeReference;
         }

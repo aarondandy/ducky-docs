@@ -12,22 +12,22 @@ namespace DandyDoc.Cecil
     /// when using a version of Mono Cecil that is not thread safe.
     /// Be warned however that this will cause Cecil to be very slow.
     /// </remarks>
-    /// <seealso cref="DandyDoc.CodeDoc.ThreadSafeCodeDocRepositoryWrapper"/>
+    /// <seealso cref="T:DandyDoc.CodeDoc.ThreadSafeCodeDocRepositoryWrapper"/>
     public class CecilImmediateAssemblyResolver : IAssemblyResolver
     {
 
+        /// <summary>
+        /// A default instance of the immediate assembly resolver.
+        /// </summary>
         public static readonly CecilImmediateAssemblyResolver Default
             = new CecilImmediateAssemblyResolver();
 
-        public static ReaderParameters CreateReaderParameters() {
-            return new ReaderParameters(ReadingMode.Immediate) {
-                AssemblyResolver = Default
-            };
-        }
-
-        public CecilImmediateAssemblyResolver() {
+        /// <summary>
+        /// Constructs an immediate assembly resolver.
+        /// </summary>
+        protected CecilImmediateAssemblyResolver() {
             Core = new DefaultAssemblyResolver();
-            ImmediateParams = new ReaderParameters(ReadingMode.Immediate) {
+            ImmediateParameters = new ReaderParameters(ReadingMode.Immediate) {
                 AssemblyResolver = this
             };
         }
@@ -35,27 +35,38 @@ namespace DandyDoc.Cecil
         [ContractInvariantMethod]
         private void CodeContractInvariants() {
             Contract.Invariant(Core != null);
-            Contract.Invariant(ImmediateParams != null);
+            Contract.Invariant(ImmediateParameters != null);
         }
 
-        public IAssemblyResolver Core { get; private set; }
+        /// <summary>
+        /// The core assembly resolver that is used.
+        /// </summary>
+        protected IAssemblyResolver Core { get; private set; }
 
-        public ReaderParameters ImmediateParams { get; private set; }
+        /// <summary>
+        /// The reader parameters that trigger immediate loading.
+        /// </summary>
+        protected ReaderParameters ImmediateParameters { get; private set; }
 
+        /// <inheritdoc/>
         public AssemblyDefinition Resolve(string fullName, ReaderParameters parameters) {
             return Core.Resolve(fullName, parameters);
         }
 
+        /// <inheritdoc/>
         public AssemblyDefinition Resolve(string fullName) {
-            return Core.Resolve(fullName, ImmediateParams);
+            return Core.Resolve(fullName, ImmediateParameters);
         }
 
+        /// <inheritdoc/>
         public AssemblyDefinition Resolve(AssemblyNameReference name, ReaderParameters parameters) {
             return Core.Resolve(name, parameters);
         }
 
+        /// <inheritdoc/>
         public AssemblyDefinition Resolve(AssemblyNameReference name) {
-            return Core.Resolve(name, ImmediateParams);
+            return Core.Resolve(name, ImmediateParameters);
         }
+
     }
 }

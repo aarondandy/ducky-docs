@@ -26,9 +26,9 @@ namespace DandyDoc.Web.Mvc4
                         typeof(ICodeDocEntityRepository).Assembly,
                         Assembly.ReflectionOnlyLoadFrom(HostingEnvironment.MapPath("~/bin/TestLibrary1.dll"))
                     ),
-                    new XmlAssemblyDocumentation(HostingEnvironment.MapPath("~/bin/DandyDoc.Core.XML")),
-                    new XmlAssemblyDocumentation(HostingEnvironment.MapPath("~/bin/DandyDoc.CodeDoc.XML")),
-                    new XmlAssemblyDocumentation(HostingEnvironment.MapPath("~/bin/TestLibrary1.XML"))
+                    new XmlAssemblyDocument(HostingEnvironment.MapPath("~/bin/DandyDoc.Core.XML")),
+                    new XmlAssemblyDocument(HostingEnvironment.MapPath("~/bin/DandyDoc.CodeDoc.XML")),
+                    new XmlAssemblyDocument(HostingEnvironment.MapPath("~/bin/TestLibrary1.XML"))
                 )).InSingletonScope();
             return kernel;
         }

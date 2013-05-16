@@ -23,7 +23,7 @@ namespace DandyDoc.CodeDoc.Tests
                 var testLib1XmlPath = Path.ChangeExtension(testLib1AsmPath, "XML");
                 return new ReflectionCodeDocEntityRepository(
                     new ReflectionCRefLookup(testLib1Asm),
-                    new XmlAssemblyDocumentation(testLib1XmlPath)
+                    new XmlAssemblyDocument(testLib1XmlPath)
                 );
             }
         }

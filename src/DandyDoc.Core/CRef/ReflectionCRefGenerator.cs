@@ -13,12 +13,27 @@ namespace DandyDoc.CRef
     public class ReflectionCRefGenerator : CRefGeneratorBase
     {
 
+        /// <summary>
+        /// A default code reference generator instance.
+        /// </summary>
         public static readonly ReflectionCRefGenerator Default = new ReflectionCRefGenerator();
 
+        /// <summary>
+        /// A code reference generator that does not append the code reference type prefix.
+        /// </summary>
         public static readonly ReflectionCRefGenerator NoPrefix = new ReflectionCRefGenerator(false);
 
+        /// <summary>
+        /// A code reference generator that always adds the code reference type prefix.
+        /// </summary>
         public static readonly ReflectionCRefGenerator WithPrefix = new ReflectionCRefGenerator(true);
 
+        /// <summary>
+        /// A code reference generator that does not append a prefix and performs generic parameter type expansion.
+        /// </summary>
+        /// <remarks>
+        /// This generator is useful when dealing with method parameter types within code references.
+        /// </remarks>
         public static readonly ReflectionCRefGenerator NoPrefixForceGenericExpansion = new ReflectionCRefGenerator(false) {
             ForceGenericExpansion = true
         };

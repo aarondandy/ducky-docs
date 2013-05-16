@@ -6,7 +6,10 @@ using DandyDoc.Utility;
 
 namespace DandyDoc.XmlDoc
 {
-    public class XmlAssemblyDocumentation
+    /// <summary>
+    /// An assembly XML document.
+    /// </summary>
+    public class XmlAssemblyDocument : IXmlDocMemberProvider
     {
 
         private static XmlDocument Load(string filePath) {
@@ -17,15 +20,24 @@ namespace DandyDoc.XmlDoc
             return doc;
         }
 
-        public XmlAssemblyDocumentation(string filePath)
+        /// <summary>
+        /// Creates an assembly XML document.
+        /// </summary>
+        /// <param name="filePath">The file path of the XML document to load.</param>
+        public XmlAssemblyDocument(string filePath)
             : this(Load(filePath)) {
             Contract.Requires(!String.IsNullOrEmpty(filePath));
-            Parser = XmlDocParser.Default;
         }
 
-        protected XmlAssemblyDocumentation(XmlDocument xmlDocument) {
+        /// <summary>
+        /// Creates an assembly XML document.
+        /// </summary>
+        /// <param name="xmlDocument">The raw XML document to wrap.</param>
+        public XmlAssemblyDocument(XmlDocument xmlDocument) {
             if (xmlDocument == null) throw new ArgumentNullException("xmlDocument");
             Contract.EndContractBlock();
+
+            Parser = XmlDocParser.Default;
 
             var members = xmlDocument.SelectNodes("/doc/members/member");
             if (null != members) {
@@ -42,15 +54,27 @@ namespace DandyDoc.XmlDoc
             XmlDocument = xmlDocument;
         }
 
-        protected XmlDocument XmlDocument { get; private set; }
-
-        public XmlDocParser Parser { get; protected set; }
-
         [ContractInvariantMethod]
         private void CodeContractInvariant() {
             Contract.Invariant(XmlDocument != null);
+            Contract.Invariant(Parser != null);
         }
 
+        /// <summary>
+        /// The raw XML document that is wrapped.
+        /// </summary>
+        protected XmlDocument XmlDocument { get; private set; }
+
+        /// <summary>
+        /// The parsed that is used to create XML doc member elements.
+        /// </summary>
+        public XmlDocParser Parser { get; protected set; }
+
+        /// <summary>
+        /// Gets a raw XML documentation element for a given code reference (<paramref name="cRef"/>).
+        /// </summary>
+        /// <param name="cRef">The code reference to search for.</param>
+        /// <returns>The raw XML element if found.</returns>
         public XmlElement GetMemberRawElement(string cRef) {
             if (String.IsNullOrEmpty(cRef)) throw new ArgumentException("Invalid CRef.", "cRef");
             Contract.EndContractBlock();
@@ -59,6 +83,11 @@ namespace DandyDoc.XmlDoc
                 "/doc/members/member[@name=\"{0}\"]", cRef)) as XmlElement;
         }
 
+        /// <summary>
+        /// Gets a parsed XML documentation member element for a given code reference (<paramref name="cRef"/>).
+        /// </summary>
+        /// <param name="cRef">The code reference to search for.</param>
+        /// <returns>The parsed XML doc member element if found.</returns>
         public virtual XmlDocMember GetMember(string cRef) {
             if (String.IsNullOrEmpty(cRef)) throw new ArgumentException("Invalid CRef.", "cRef");
             Contract.EndContractBlock();

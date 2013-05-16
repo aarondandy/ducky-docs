@@ -1,88 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml;
 
 namespace DandyDoc.XmlDoc
 {
+
+    /// <summary>
+    /// An XML doc code contract element.
+    /// </summary>
+    /// <seealso href="http://research.microsoft.com/en-us/projects/contracts/"/>
     public class XmlDocContractElement : XmlDocRefElement
     {
-
-        [Obsolete]
-        private static bool IsMatch(Regex regex, params string[] testItems) {
-            Contract.Requires(regex != null);
-            Contract.Requires(testItems != null);
-            return Array.Exists(testItems, regex.IsMatch);
-        }
-
-        [Obsolete]
-        public static bool RequiresParameterNotEverNull(IEnumerable<XmlDocContractElement> contracts, string parameterName) {
-            if(contracts == null) throw new ArgumentNullException("contracts");
-            Contract.EndContractBlock();
-            if (String.IsNullOrEmpty(parameterName))
-                return false;
-
-            var notEqualNullRegex = new Regex(WrapRegexCodeTestLine(BuildNotNullRegexText(parameterName)));
-            var notNullOrEmptyRegex = new Regex(WrapRegexCodeTestLine(WrapNotRegex(BuildIsNullOrEmptyRegexText(parameterName))));
-            var notNullOrWhiteSpaceRegex = new Regex(WrapRegexCodeTestLine(WrapNotRegex(BuildIsNullOrWhiteSpaceRegexText(parameterName))));
-            return contracts
-                .Select(c =>
-                    new[] {
-                        c.CSharp,
-                        c.VisualBasic,
-                        c.Node.InnerText
-                    }
-                    .Where(x => !String.IsNullOrEmpty(x))
-                    .ToArray()
-                )
-                .Where(s => s.Length > 0)
-                .Any(s => IsMatch(notEqualNullRegex, s) || IsMatch(notNullOrEmptyRegex, s) || IsMatch(notNullOrWhiteSpaceRegex, s));
-        }
-
-        [Obsolete]
-        private static readonly Regex _resultNotNullCodeRegex = new Regex(
-           WrapRegexCodeTestLine(BuildNotNullRegexText("result")), RegexOptions.IgnoreCase);
-
-        [Obsolete]
-        private static readonly Regex _resultNotIsNullOrEmptyRegex = new Regex(
-            @"^\s*([!]|Not\s+)\s*" + BuildIsNullOrEmptyRegexText("result") + @"\s*$", RegexOptions.IgnoreCase);
-
-        [Obsolete]
-        private static readonly Regex _resultNotIsNullOrWhiteSpaceRegex = new Regex(
-            @"^\s*([!]|Not\s+)\s*" + BuildIsNullOrWhiteSpaceRegexText("result") + @"\s*$", RegexOptions.IgnoreCase);
-
-        [Obsolete]
-        private static string BuildIsNullOrEmptyRegexText(string parameterName){
-            return @"(:?String[.])IsNullOrEmpty\s*[(]\s*" + parameterName + @"\s*[)]";
-        }
-
-        [Obsolete]
-        private static string BuildIsNullOrWhiteSpaceRegexText(string parameterName) {
-            return @"(:?String[.])IsNullOrWhiteSpace\s*[(]\s*" + parameterName + @"\s*[)]";
-        }
-
-        [Obsolete]
-        private static string BuildNotNullRegexText(string parameterName){
-            return String.Concat(
-                "(:?",
-                parameterName,@"\s*(:?!=\s*null|<>\s*Nothing)",
-                "|",
-                @"(:?null\s*!=|Nothing\s*<>)\s*", parameterName,
-                ")"
-            );
-        }
-
-        [Obsolete]
-        private static string WrapRegexCodeTestLine(string regexText){
-            return String.Concat(@"^\s*", regexText, @"\s*$");
-        }
-
-        [Obsolete]
-        private static string WrapNotRegex(string regexText) {
-            return String.Concat(@"(:?[!]|Not\s+)\s*", regexText);
-        }
 
         private const string ResultParameterName = "result";
 
@@ -126,34 +56,66 @@ namespace DandyDoc.XmlDoc
                 && String.Equals(match.Groups["param"].Value, parameterName, StringComparison.OrdinalIgnoreCase);
         }
 
+        /// <summary>
+        /// Creates an XML doc code contract element.
+        /// </summary>
+        /// <param name="element">The raw XML element to wrap.</param>
+        /// <param name="children">The child XML doc nodes.</param>
         public XmlDocContractElement(XmlElement element, IEnumerable<XmlDocNode> children)
             : base(element, children) {
             Contract.Requires(element != null);
             Contract.Requires(children == null || Contract.ForAll(children, x => x != null));
         }
 
+        /// <summary>
+        /// Indicates that this is a requires contract element.
+        /// </summary>
         public bool IsRequires { get { return "REQUIRES".Equals(Name, StringComparison.OrdinalIgnoreCase); } }
 
+        /// <summary>
+        /// Indicates that this is an ensures contract element for normal termination.
+        /// </summary>
         public bool IsNormalEnsures { get { return "ENSURES".Equals(Name, StringComparison.OrdinalIgnoreCase); } }
 
+        /// <summary>
+        /// Indicates that this is an ensures contract element for exceptional termination.
+        /// </summary>
         public bool IsEnsuresOnThrow { get { return "ENSURESONTHROW".Equals(Name, StringComparison.OrdinalIgnoreCase); } }
 
+        /// <summary>
+        /// Indicates that this is an ensures contract element of any kind.
+        /// </summary>
         public bool IsAnyEnsures { get { return IsNormalEnsures || IsEnsuresOnThrow; } }
 
+        /// <summary>
+        /// Indicates that this is an invariant contract element.
+        /// </summary>
         public bool IsInvariant { get { return "INVARIANT".Equals(Name, StringComparison.OrdinalIgnoreCase); } }
 
+        /// <summary>
+        /// The C# code for the contract.
+        /// </summary>
         public string CSharp {
             get { return Element.GetAttribute("csharp"); }
         }
 
+        /// <summary>
+        /// The VB code for the contract.
+        /// </summary>
         public string VisualBasic {
             get { return Element.GetAttribute("vb"); }
         }
 
+        /// <summary>
+        /// The code reference (cref) of an exception associated with this contract.
+        /// </summary>
         public string ExceptionCRef {
             get { return Element.GetAttribute("exception"); }
         }
 
+        /// <summary>
+        /// The context sensitive code reference (cref) associated with this contract.
+        /// </summary>
         public override string CRef {
             get {
                 var result = base.CRef;
@@ -164,6 +126,11 @@ namespace DandyDoc.XmlDoc
             }
         }
 
+        /// <summary>
+        /// Determines if this contract is a requirement that a given parameter is not null due to various possible forms of null checking.
+        /// </summary>
+        /// <param name="parameterName">The parameter name to test for.</param>
+        /// <returns><c>true</c> when the parameter can not be null.</returns>
         public bool RequiresParameterNotEverNull(string parameterName) {
             if(String.IsNullOrEmpty(parameterName)) throw new ArgumentException("bad parameter name", "parameterName");
             Contract.EndContractBlock();
@@ -175,6 +142,11 @@ namespace DandyDoc.XmlDoc
                 );
         }
 
+        /// <summary>
+        /// Determines if this contract is a requirement that a given parameter is not exactly null.
+        /// </summary>
+        /// <param name="parameterName">The parameter name to test for.</param>
+        /// <returns><c>true</c> when the parameter can not be equal to null.</returns>
         public bool RequiresParameterNotEqualNull(string parameterName) {
             if (String.IsNullOrEmpty(parameterName)) throw new ArgumentException("bad parameter name", "parameterName");
             Contract.EndContractBlock();
@@ -182,6 +154,14 @@ namespace DandyDoc.XmlDoc
                 || CodeIsNotEqualNull(VisualBasic, parameterName);
         }
 
+        /// <summary>
+        /// Determines if this contract is a requirement that a given parameter is not null or empty.
+        /// </summary>
+        /// <param name="parameterName">The parameter name to test for.</param>
+        /// <returns><c>true</c> when the parameter can not be null or empty.</returns>
+        /// <remarks>
+        /// This check may test positive for contracts other than !String.IsNullOrEmpty.
+        /// </remarks>
         public bool RequiresParameterNotNullOrEmpty(string parameterName) {
             if (String.IsNullOrEmpty(parameterName)) throw new ArgumentException("bad parameter name", "parameterName");
             Contract.EndContractBlock();
@@ -189,6 +169,11 @@ namespace DandyDoc.XmlDoc
                 || CodeIsNotNullOrEmpty(VisualBasic, parameterName);
         }
 
+        /// <summary>
+        /// Determines if this contract is a requirement that a given parameter is not null or white space.
+        /// </summary>
+        /// <param name="parameterName">The parameter name to test for.</param>
+        /// <returns><c>true</c> when the parameter can not be null or white space.</returns>
         public bool RequiresParameterNotNullOrWhiteSpace(string parameterName) {
             if (String.IsNullOrEmpty(parameterName)) throw new ArgumentException("bad parameter name", "parameterName");
             Contract.EndContractBlock();
@@ -196,6 +181,9 @@ namespace DandyDoc.XmlDoc
                 || CodeIsNotNullOrWhiteSpace(VisualBasic, parameterName);
         }
 
+        /// <summary>
+        /// Determines if this contract ensures the result is not null due to various possible forms of null checking.
+        /// </summary>
         public bool EnsuresResultNotEverNull {
             get {
                 return IsNormalEnsures
@@ -207,6 +195,9 @@ namespace DandyDoc.XmlDoc
             }
         }
 
+        /// <summary>
+        /// Determines if this contract ensures the result is not equal to null.
+        /// </summary>
         public bool EnsuresResultNotEqualNull {
             get {
                 if (!IsNormalEnsures)
@@ -216,6 +207,12 @@ namespace DandyDoc.XmlDoc
             }
         }
 
+        /// <summary>
+        /// Determines if this contract ensures the result is not null or empty.
+        /// </summary>
+        /// <remarks>
+        /// This check may test positive for contracts other than !String.IsNullOrEmpty.
+        /// </remarks>
         public bool EnsuresResultNotNullOrEmpty{
             get{
                 if (!IsNormalEnsures)
@@ -225,6 +222,9 @@ namespace DandyDoc.XmlDoc
             }
         }
 
+        /// <summary>
+        /// Determins if this contract ensures the result is not null or white space.
+        /// </summary>
         public bool EnsuresResultNotNullOrWhiteSpace {
             get {
                 if (!IsNormalEnsures)

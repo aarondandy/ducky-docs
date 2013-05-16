@@ -6,19 +6,16 @@ namespace DandyDoc.ExternalVisibility
 {
 
     /// <summary>
-    /// Determines general external visibility for members.
+    /// Determines general external visibility for reflected members.
     /// </summary>
     /// <seealso cref="DandyDoc.ExternalVisibility.ExternalVisibilityKind"/>
-    /// <remarks>
-    /// Friend assemblies are not respected.
-    /// </remarks>
     public static class ReflectionExternalVisibility
     {
 
         /// <summary>
         /// Determines external visibility for the given <paramref name="memberInfo"/>.
         /// </summary>
-        /// <param name="memberInfo">The member info to test.</param>
+        /// <param name="memberInfo">The member to test.</param>
         /// <returns>Calculated external visibility.</returns>
         public static ExternalVisibilityKind GetExternalVisibility(this MemberInfo memberInfo) {
             if (memberInfo == null) throw new ArgumentNullException("memberInfo");

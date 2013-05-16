@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using DandyDoc.Utility;
@@ -125,9 +124,6 @@ namespace DandyDoc.Reflection
         /// </summary>
         /// <param name="propertyInfo">The property to test.</param>
         /// <returns><c>true</c> when the property is an item indexer.</returns>
-        /// <remarks>
-        /// Properties with parameters may be treated differently by your language.
-        /// </remarks>
         public static bool IsItemIndexerProperty(this PropertyInfo propertyInfo) {
             if(propertyInfo == null) throw new NullReferenceException("propertyInfo is null");
             Contract.EndContractBlock();
@@ -299,11 +295,11 @@ namespace DandyDoc.Reflection
         }
 
         /// <summary>
-        /// Determines if any attribute on a member matches a predicate.
+        /// Determines if any attribute on a member satisfies a predicate.
         /// </summary>
         /// <param name="memberInfo">The member to search for attributes on.</param>
         /// <param name="predicate">The test to apply to all attributes.</param>
-        /// <returns><c>true</c> if any attribute matches the <paramref name="predicate"/>.</returns>
+        /// <returns><c>true</c> if any attribute satisfies the <paramref name="predicate"/>.</returns>
         public static bool HasAttribute(this MemberInfo memberInfo, Func<CustomAttributeData, bool> predicate) {
             if (memberInfo == null) throw new NullReferenceException("memberInfo is null");
             if (predicate == null) throw new ArgumentNullException("predicate");

@@ -8,7 +8,7 @@ namespace DandyDoc.XmlDoc
 {
 
     /// <summary>
-    /// An XML doc definition list item.
+    /// An XML doc definition list item element.
     /// </summary>
     public class XmlDocDefinitionListItem : XmlDocElement
     {

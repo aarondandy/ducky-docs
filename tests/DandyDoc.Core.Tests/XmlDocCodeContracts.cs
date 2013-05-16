@@ -11,10 +11,10 @@ namespace DandyDoc.Core.Tests
     {
 
         public XmlDocCodeContracts() {
-            Docs = new XmlAssemblyDocumentation("./TestLibrary1.XML");
+            Docs = new XmlAssemblyDocument("./TestLibrary1.XML");
         }
 
-        public XmlAssemblyDocumentation Docs { get; private set; }
+        public XmlAssemblyDocument Docs { get; private set; }
 
         [Test]
         public void check_purity() {

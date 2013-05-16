@@ -13,10 +13,19 @@ namespace DandyDoc.CRef
     public class CecilCRefGenerator : CRefGeneratorBase
     {
 
+        /// <summary>
+        /// A default code reference generator.
+        /// </summary>
         public static readonly CecilCRefGenerator Default = new CecilCRefGenerator();
 
+        /// <summary>
+        /// A code reference generator that does not add a code reference type prefix.
+        /// </summary>
         public static readonly CecilCRefGenerator NoPrefix = new CecilCRefGenerator(false);
 
+        /// <summary>
+        /// A code reference generator that always adds a code reference type prefix.
+        /// </summary>
         public static readonly CecilCRefGenerator WithPrefix = new CecilCRefGenerator(true);
 
         /// <summary>

@@ -24,7 +24,7 @@ namespace CodeDocRepository.PerformanceTest
             var testLib1XmlPath = Path.ChangeExtension(testLib1AsmPath, "XML");
             return new ReflectionCodeDocEntityRepository(
                 new ReflectionCRefLookup(testLib1Asm),
-                new XmlAssemblyDocumentation(testLib1XmlPath)
+                new XmlAssemblyDocument(testLib1XmlPath)
             );
         }
 
@@ -35,7 +35,7 @@ namespace CodeDocRepository.PerformanceTest
             var testLib1XmlPath = Path.ChangeExtension(testLib1AsmPath, "XML");
             return new CecilCodeDocEntityRepository(
                 new CecilCRefLookup(testLib1Asm),
-                new XmlAssemblyDocumentation(testLib1XmlPath)
+                new XmlAssemblyDocument(testLib1XmlPath)
             );
         }
 

@@ -5,43 +5,57 @@ using Mono.Cecil;
 
 namespace DandyDoc.ExternalVisibility
 {
+    /// <summary>
+    /// Determines general external visibility for Cecil members.
+    /// </summary>
+    /// <seealso cref="DandyDoc.ExternalVisibility.ExternalVisibilityKind"/>
     public static class CecilExternalVisibility
     {
 
-        public static ExternalVisibilityKind GetExternalVisibility(this MemberReference reference) {
-            if(reference == null) throw new ArgumentNullException("reference");
+        /// <summary>
+        /// Determines external visibility for the given <paramref name="memberReference"/>.
+        /// </summary>
+        /// <param name="memberReference">The member to test.</param>
+        /// <returns>Calculated external visibility.</returns>
+        public static ExternalVisibilityKind GetExternalVisibility(this MemberReference memberReference) {
+            if(memberReference == null) throw new ArgumentNullException("memberReference");
             Contract.EndContractBlock();
 
-            var definition = reference.ToDefinition();
+            var definition = memberReference.ToDefinition();
             if (definition != null)
                 return definition.GetExternalVisibility();
 
-            var genericParameter = reference as GenericParameter;
+            var genericParameter = memberReference as GenericParameter;
             if (genericParameter != null) {
                 return (genericParameter.DeclaringMethod ?? (MemberReference)(genericParameter.DeclaringType))
                     .GetExternalVisibility();
             }
 
-            var declaringType = reference.DeclaringType;
+            var declaringType = memberReference.DeclaringType;
             if (declaringType != null)
                 return declaringType.GetExternalVisibility();
 
             throw new NotSupportedException("Could not get a member definition.");
         }
 
-        public static ExternalVisibilityKind GetExternalVisibility(this IMemberDefinition definition) {
-            if (definition == null) throw new ArgumentNullException("definition");
+        /// <summary>
+        /// Determines external visibility for the given <paramref name="memberDefinition"/>.
+        /// </summary>
+        /// <param name="memberDefinition">The member to test.</param>
+        /// <returns>Calculated external visibility.</returns>
+        public static ExternalVisibilityKind GetExternalVisibility(this IMemberDefinition memberDefinition) {
+            if (memberDefinition == null) throw new ArgumentNullException("memberDefinition");
             Contract.EndContractBlock();
-            if (definition is TypeDefinition)
-                return GetExternalVisibility((TypeDefinition)definition);
-            if (definition is MethodDefinition)
-                return GetExternalVisibility((MethodDefinition)definition);
-            if (definition is PropertyDefinition)
-                return GetExternalVisibility((PropertyDefinition)definition);
-            if (definition is FieldDefinition)
-                return GetExternalVisibility((FieldDefinition)definition);
-            if (definition is EventDefinition)
-                return GetExternalVisibility((EventDefinition)definition);
+            if (memberDefinition is TypeDefinition)
+                return GetExternalVisibility((TypeDefinition)memberDefinition);
+            if (memberDefinition is MethodDefinition)
+                return GetExternalVisibility((MethodDefinition)memberDefinition);
+            if (memberDefinition is PropertyDefinition)
+                return GetExternalVisibility((PropertyDefinition)memberDefinition);
+            if (memberDefinition is FieldDefinition)
+                return GetExternalVisibility((FieldDefinition)memberDefinition);
+            if (memberDefinition is EventDefinition)
+                return GetExternalVisibility((EventDefinition)memberDefinition);
             throw new NotSupportedException();
         }
 
@@ -55,6 +69,11 @@ namespace DandyDoc.ExternalVisibility
             return ExternalVisibilityKind.Hidden;
         }
 
+        /// <summary>
+        /// Determines external visibility for the given <paramref name="typeDefinition"/>.
+        /// </summary>
+        /// <param name="typeDefinition">The type to test.</param>
+        /// <returns>Calculated external visibility.</returns>
         public static ExternalVisibilityKind GetExternalVisibility(this TypeDefinition typeDefinition) {
             if (typeDefinition == null) throw new ArgumentNullException("typeDefinition");
             Contract.EndContractBlock();
@@ -70,6 +89,11 @@ namespace DandyDoc.ExternalVisibility
                 : ExternalVisibilityKind.Hidden;
         }
 
+        /// <summary>
+        /// Determines external visibility for the given <paramref name="methodDefinition"/>.
+        /// </summary>
+        /// <param name="methodDefinition">The member to test.</param>
+        /// <returns>Calculated external visibility.</returns>
         public static ExternalVisibilityKind GetExternalVisibility(this MethodDefinition methodDefinition) {
             if (methodDefinition == null) throw new ArgumentNullException("methodDefinition");
             Contract.EndContractBlock();
@@ -83,6 +107,11 @@ namespace DandyDoc.ExternalVisibility
             return ExternalVisibilityOperations.LeastVisible(typeVisibility, fieldVisibility);
         }
 
+        /// <summary>
+        /// Determines external visibility for the given <paramref name="propertyDefinition"/>.
+        /// </summary>
+        /// <param name="propertyDefinition">The member to test.</param>
+        /// <returns>Calculated external visibility.</returns>
         public static ExternalVisibilityKind GetExternalVisibility(this PropertyDefinition propertyDefinition) {
             if (propertyDefinition == null) throw new ArgumentNullException("propertyDefinition");
             Contract.EndContractBlock();
@@ -101,6 +130,11 @@ namespace DandyDoc.ExternalVisibility
                 );
         }
 
+        /// <summary>
+        /// Determines external visibility for the given <paramref name="fieldDefinition"/>.
+        /// </summary>
+        /// <param name="fieldDefinition">The member to test.</param>
+        /// <returns>Calculated external visibility.</returns>
         public static ExternalVisibilityKind GetExternalVisibility(this FieldDefinition fieldDefinition) {
             if (fieldDefinition == null) throw new ArgumentNullException("fieldDefinition");
             Contract.EndContractBlock();
@@ -114,6 +148,11 @@ namespace DandyDoc.ExternalVisibility
             return ExternalVisibilityOperations.LeastVisible(typeVisibility, fieldVisibility);
         }
 
+        /// <summary>
+        /// Determines external visibility for the given <paramref name="eventDefinition"/>.
+        /// </summary>
+        /// <param name="eventDefinition">The member to test.</param>
+        /// <returns>Calculated external visibility.</returns>
         public static ExternalVisibilityKind GetExternalVisibility(this EventDefinition eventDefinition) {
             if (eventDefinition == null) throw new ArgumentNullException("eventDefinition");
             Contract.EndContractBlock();

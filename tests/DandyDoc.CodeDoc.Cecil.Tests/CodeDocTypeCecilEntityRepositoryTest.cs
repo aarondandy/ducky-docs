@@ -21,7 +21,7 @@ namespace DandyDoc.CodeDoc.Cecil.Tests
                 var testLib1XmlPath = Path.ChangeExtension(testLib1AsmPath, "XML");
                 var coreRepo = new CecilCodeDocEntityRepository(
                     new CecilCRefLookup(testLib1Asm),
-                    new XmlAssemblyDocumentation(testLib1XmlPath)
+                    new XmlAssemblyDocument(testLib1XmlPath)
                 );
                 return new ThreadSafeCodeDocRepositoryWrapper(coreRepo);
             }

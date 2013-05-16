@@ -147,9 +147,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Runtime.Caching" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -173,18 +170,14 @@
     <Compile Include="ExternalVisibility\ReflectionExternalVisibility.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reflection\ReflectionUtilities.cs" />
-    <Compile Include="Service References\MsdnContentService\Reference.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Compile>
     <Compile Include="Utility\CollectionUtility.cs" />
     <Compile Include="Utility\CSharpOperatorNameSymbolMap.cs" />
     <Compile Include="Utility\NameUtility.cs" />
     <Compile Include="Utility\TextUtility.cs" />
     <Compile Include="Utility\XmlUtility.cs" />
-    <Compile Include="XmlDoc\XmlAssemblyDocumentation.cs" />
-    <Compile Include="XmlDoc\XmlAssemblyDocumentationCollection.cs" />
+    <Compile Include="XmlDoc\IXmlDocMemberProvider.cs" />
+    <Compile Include="XmlDoc\XmlAssemblyDocument.cs" />
+    <Compile Include="XmlDoc\XmlAssemblyDocumentCollection.cs" />
     <Compile Include="XmlDoc\XmlDocCodeElement.cs" />
     <Compile Include="XmlDoc\XmlDocContractElement.cs" />
     <Compile Include="XmlDoc\XmlDocDefinitionList.cs" />
@@ -199,76 +192,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Service References\MsdnContentService\atoms.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\MsdnContentService\atoms1.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\MsdnContentService\atoms2.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\MsdnContentService\atoms3.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\MsdnContentService\atoms4.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\MsdnContentService\atoms5.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\MsdnContentService\atoms6.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\MsdnContentService\atoms7.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\MsdnContentService\atoms8.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\MsdnContentService\ContentService.wsdl" />
-    <None Include="Service References\MsdnContentService\DandyDoc.MsdnContentService.getContentResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\MsdnContentService\DandyDoc.MsdnContentService.getNavigationPathsResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\MsdnContentService\default.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\MsdnContentService\default1.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\MsdnContentService\default2.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\MsdnContentService\default3.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\MsdnContentService\urn_msdn_com_public_content_syndication_2006_09_common.xsd">
-      <SubType>Designer</SubType>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadataStorage Include="Service References\MsdnContentService\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Service References\MsdnContentService\ContentService.disco" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Service References\MsdnContentService\configuration91.svcinfo" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Service References\MsdnContentService\configuration.svcinfo" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Service References\MsdnContentService\Reference.svcmap">
-      <Generator>WCF Proxy Generator</Generator>
-      <LastGenOutput>Reference.cs</LastGenOutput>
-    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

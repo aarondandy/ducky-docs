@@ -15,15 +15,15 @@ namespace DandyDoc.Core.Tests
     {
 
         public XmlDocTests() {
-            Docs = new XmlAssemblyDocumentation("./TestLibrary1.XML");
+            Docs = new XmlAssemblyDocument("./TestLibrary1.XML");
         }
 
-        public XmlAssemblyDocumentation Docs { get; private set; }
+        public XmlAssemblyDocument Docs { get; private set; }
 
         [Test]
         public void can_load_xml_from_assembly_reflection() {
             var assembly = typeof(Class1).Assembly;
-            var xmlDoc = new XmlAssemblyDocumentation(Path.ChangeExtension(assembly.GetFilePath(), "XML"));
+            var xmlDoc = new XmlAssemblyDocument(Path.ChangeExtension(assembly.GetFilePath(), "XML"));
             Assert.IsNotNull(xmlDoc);
         }
 
