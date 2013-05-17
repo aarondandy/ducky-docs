@@ -5,10 +5,17 @@ using DandyDoc.CRef;
 
 namespace DandyDoc.CodeDoc
 {
-    public class ThreadSafeCodeDocRepositoryWrapper : ICodeDocEntityRepository
+    /// <summary>
+    /// A locking code doc repository wrapper.
+    /// </summary>
+    public class ThreadSafeCodeDocRepositoryWrapper : ICodeDocMemberRepository
     {
 
-        public ThreadSafeCodeDocRepositoryWrapper(ICodeDocEntityRepository repository) {
+        /// <summary>
+        /// Creates a new locking wrapper for another repository.
+        /// </summary>
+        /// <param name="repository">The repository to wrap.</param>
+        public ThreadSafeCodeDocRepositoryWrapper(ICodeDocMemberRepository repository) {
             if(repository == null) throw new ArgumentNullException("repository");
             Contract.EndContractBlock();
             Repository = repository;
@@ -21,35 +28,61 @@ namespace DandyDoc.CodeDoc
             Contract.Invariant(_mutex != null);
         }
 
-        protected ICodeDocEntityRepository Repository { get; private set; }
+        /// <summary>
+        /// The wrapped repository.
+        /// </summary>
+        protected ICodeDocMemberRepository Repository { get; private set; }
 
         private readonly object _mutex;
 
-        public ICodeDocEntityContent GetContentEntity(string cRef) {
+        /// <summary>
+        /// A locked request to the wrapped repository for a member.
+        /// </summary>
+        /// <param name="cRef">The code reference.</param>
+        /// <returns>The member.</returns>
+        public ICodeDocMember GetContentMember(string cRef) {
             lock (_mutex) {
-                return Repository.GetContentEntity(cRef);
+                return Repository.GetContentMember(cRef);
             }
         }
 
-        public ICodeDocEntityContent GetContentEntity(CRefIdentifier cRef) {
+        /// <summary>
+        /// A locked request to the wrapped repository for a member.
+        /// </summary>
+        /// <param name="cRef">The code reference.</param>
+        /// <returns>The member.</returns>
+        public ICodeDocMember GetContentMember(CRefIdentifier cRef) {
             lock (_mutex) {
-                return Repository.GetContentEntity(cRef);
+                return Repository.GetContentMember(cRef);
             }
         }
 
-        public ICodeDocEntity GetSimpleEntity(string cRef) {
+        /// <summary>
+        /// A locked request to the wrapped repository for a member.
+        /// </summary>
+        /// <param name="cRef">The code reference.</param>
+        /// <returns>The member.</returns>
+        public ICodeDocMember GetSimpleMember(string cRef) {
             lock (_mutex) {
-                return Repository.GetSimpleEntity(cRef);
+                return Repository.GetSimpleMember(cRef);
             }
         }
 
-        public ICodeDocEntity GetSimpleEntity(CRefIdentifier cRef) {
+        /// <summary>
+        /// A locked request to the wrapped repository for a member.
+        /// </summary>
+        /// <param name="cRef">The code reference.</param>
+        /// <returns>The member.</returns>
+        public ICodeDocMember GetSimpleMember(CRefIdentifier cRef) {
             lock (_mutex) {
-                return Repository.GetSimpleEntity(cRef);
+                return Repository.GetSimpleMember(cRef);
             }
         }
 
-        public IList<ICodeDocAssembly> Assemblies {
+        /// <summary>
+        /// A locked request to the wrapped repository for assemblies.
+        /// </summary>
+        public IList<CodeDocSimpleAssembly> Assemblies {
             get {
                 lock (_mutex) {
                     return Repository.Assemblies;
@@ -57,7 +90,10 @@ namespace DandyDoc.CodeDoc
             }
         }
 
-        public IList<ICodeDocNamespace> Namespaces {
+        /// <summary>
+        /// A locked request to the wrapped repository for namespaces.
+        /// </summary>
+        public IList<CodeDocSimpleNamespace> Namespaces {
             get {
                 lock (_mutex) {
                     return Repository.Namespaces;

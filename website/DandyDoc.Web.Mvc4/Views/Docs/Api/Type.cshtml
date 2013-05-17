@@ -1,6 +1,6 @@
 ﻿@using DandyDoc.CodeDoc;
 @using DandyDoc.Web.Mvc4.Helpers
-@model ICodeDocType
+@model CodeDocType
 @{
   Layout = "./_Layout.cshtml";
   var memberSets = new[] {
@@ -14,7 +14,7 @@
     new {Title = "Operators", Members = Model.Operators}
   }.Where(set => set.Members != null && set.Members.Count > 0);
 
-  if (Model.HasBaseChain || Model.HasDirectInterfaces) {
+  if (Model.HasBaseChain || Model.HasInterfaces) {
   <section>
     <h2>Inheritance</h2>
     @if (Model.HasBaseChain) {
@@ -23,10 +23,10 @@
         <dd>@Html.ActionLinkList(Model.BaseChain)</dd>
       </dl>
     }
-    @if (Model.HasDirectInterfaces) {
+    @if (Model.HasInterfaces) {
       <dl>
         <dt>Implements</dt>
-        <dd>@Html.ActionLinkList(Model.DirectInterfaces)</dd>
+        <dd>@Html.ActionLinkList(Model.Interfaces)</dd>
       </dl>
     }
   </section>

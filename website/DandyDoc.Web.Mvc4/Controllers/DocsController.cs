@@ -8,11 +8,11 @@ namespace DandyDoc.Web.Mvc4.Controllers
     public class DocsController : Controller
     {
 
-        public DocsController(ICodeDocEntityRepository codeDocEntityRepository){
-            CodeDocEntityRepository = codeDocEntityRepository;
+        public DocsController(ICodeDocMemberRepository codeDocMemberRepository){
+            CodeDocMemberRepository = codeDocMemberRepository;
         }
 
-        ICodeDocEntityRepository CodeDocEntityRepository { get; set; }
+        ICodeDocMemberRepository CodeDocMemberRepository { get; set; }
 
         public ActionResult Index()
         {
@@ -20,35 +20,35 @@ namespace DandyDoc.Web.Mvc4.Controllers
         }
 
         public ActionResult Api(string cRef) {
-            ViewBag.CodeDocEntityRepository = CodeDocEntityRepository;
+            ViewBag.CodeDocEntityRepository = CodeDocMemberRepository;
 
             if (String.IsNullOrWhiteSpace(cRef))
-                return View("Api/Index", CodeDocEntityRepository);
+                return View("Api/Index", CodeDocMemberRepository);
 
             var cRefIdentifier = new CRefIdentifier(cRef);
-            var model = CodeDocEntityRepository.GetContentEntity(cRefIdentifier);
+            var model = CodeDocMemberRepository.GetContentMember(cRefIdentifier);
             if (model == null)
                 return HttpNotFound();
 
-            if (model is ICodeDocNamespace)
+            if (model is CodeDocNamespace)
                 return View("Api/Namespace", model);
 
-            if (model is ICodeDocType) {
-                var codeDocType = (ICodeDocType)model;
-                if (codeDocType is ICodeDocDelegate)
+            if (model is CodeDocType) {
+                var codeDocType = (CodeDocType)model;
+                if (codeDocType is CodeDocDelegate)
                     return View("Api/Delegate", codeDocType);
                 if (codeDocType.IsEnum)
                     return View("Api/Enum", codeDocType);
                 return View("Api/Type", codeDocType);
             }
 
-            if (model is ICodeDocEvent)
+            if (model is CodeDocEvent)
                 return View("Api/Event", model);
-            if (model is ICodeDocField)
+            if (model is CodeDocField)
                 return View("Api/Field", model);
-            if (model is ICodeDocMethod)
+            if (model is CodeDocMethod)
                 return View("Api/Method", model);
-            if (model is ICodeDocProperty)
+            if (model is CodeDocProperty)
                 return View("Api/Property", model);
 
             return HttpNotFound();

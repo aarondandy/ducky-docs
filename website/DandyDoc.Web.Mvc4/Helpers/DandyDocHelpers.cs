@@ -35,14 +35,14 @@ namespace DandyDoc.Web.Mvc4.Helpers
             return new MvcHtmlString(htmlBuilder.ToString());
         }
 
-        public static MvcHtmlString ActionLinkFull(this HtmlHelper helper, ICodeDocEntity entity) {
-            var cRef = entity.CRef;
+        public static MvcHtmlString ActionLinkFull(this HtmlHelper helper, ICodeDocMember member) {
+            var cRef = member.CRef;
             if ("A".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase)) {
                 // simplify the CRef for an assembly
-                var text = entity.ShortName;
-                var cRefText = "A:" + entity.ShortName;
-                if (entity is ICodeDocAssembly) {
-                    var assemblyFileName = ((ICodeDocAssembly)entity).AssemblyFileName;
+                var text = member.ShortName;
+                var cRefText = "A:" + member.ShortName;
+                if (member is CodeDocSimpleAssembly) {
+                    var assemblyFileName = ((CodeDocSimpleAssembly)member).AssemblyFileName;
                     if (!String.IsNullOrEmpty(assemblyFileName)) {
                         text += " (" + assemblyFileName + ')';
                         cRefText = "A:" + assemblyFileName;
@@ -50,16 +50,16 @@ namespace DandyDoc.Web.Mvc4.Helpers
                 }
                 return helper.CRefActionLink(text, cRefText);
             }
-            return helper.CRefActionLink(entity.FullName, cRef.FullCRef);
+            return helper.CRefActionLink(member.FullName, cRef.FullCRef);
         }
 
-        public static MvcHtmlString ActionLink(this HtmlHelper helper, ICodeDocEntity entity) {
-            var cRef = entity.CRef;
+        public static MvcHtmlString ActionLink(this HtmlHelper helper, ICodeDocMember member) {
+            var cRef = member.CRef;
             if ("A".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase)) {
                 // simplify the CRef for an assembly
-                return helper.CRefActionLink(entity.ShortName, "A:" + entity.ShortName);
+                return helper.CRefActionLink(member.ShortName, "A:" + member.ShortName);
             }
-            return helper.CRefActionLink(entity.ShortName, cRef.FullCRef);
+            return helper.CRefActionLink(member.ShortName, cRef.FullCRef);
         }
 
         public static MvcHtmlString CRefActionLink(this HtmlHelper helper, string linkText, string cRef) {
@@ -77,7 +77,7 @@ namespace DandyDoc.Web.Mvc4.Helpers
             return new MvcHtmlString(linkBuilder.ToString());
         }
 
-        public static MvcHtmlString ActionLinkList(this HtmlHelper helper, IEnumerable<ICodeDocEntity> entities, object ulTagAttributes = null, object liTagAttributes = null) {
+        public static MvcHtmlString ActionLinkList(this HtmlHelper helper, IEnumerable<ICodeDocMember> entities, object ulTagAttributes = null, object liTagAttributes = null) {
             var tagBuilder = new TagBuilder("ul");
 
             if (ulTagAttributes == null)
@@ -104,7 +104,7 @@ namespace DandyDoc.Web.Mvc4.Helpers
             return new MvcHtmlString(tagBuilder.ToString());
         }
 
-        public static MvcHtmlString CodeDocEntityTable(this HtmlHelper helper, IEnumerable<ICodeDocEntity> entities, object tableTagAttributes = null) {
+        public static MvcHtmlString CodeDocEntityTable(this HtmlHelper helper, IEnumerable<ICodeDocMember> entities, object tableTagAttributes = null) {
             var builder = new TagBuilder("table");
 
             if(tableTagAttributes == null)
@@ -198,9 +198,9 @@ namespace DandyDoc.Web.Mvc4.Helpers
                         element.CRef);
                 }
 
-                var repository = helper.ViewBag.CodeDocEntityRepository as ICodeDocEntityRepository;
+                var repository = helper.ViewBag.CodeDocEntityRepository as ICodeDocMemberRepository;
                 if (repository != null) {
-                    var targetModel = repository.GetSimpleEntity(new CRefIdentifier(element.CRef));
+                    var targetModel = repository.GetSimpleMember(new CRefIdentifier(element.CRef));
                     if (targetModel != null) {
                         return helper.ActionLink(targetModel);
                     }
@@ -293,7 +293,7 @@ namespace DandyDoc.Web.Mvc4.Helpers
             return new MvcHtmlString(listTag.ToString());
         }
 
-        public static MvcHtmlString CodeDocParameterDetails(this HtmlHelper helper, ICodeDocParameter parameter) {
+        public static MvcHtmlString CodeDocParameterDetails(this HtmlHelper helper, CodeDocParameter parameter) {
             var htmlBuilder = new StringBuilder();
             if (parameter.HasSummaryContents) {
                 htmlBuilder.Append("<div>");
@@ -308,7 +308,7 @@ namespace DandyDoc.Web.Mvc4.Helpers
             return new MvcHtmlString(htmlBuilder.ToString());
         }
 
-        public static MvcHtmlString CodeDocParameters(this HtmlHelper helper, IEnumerable<ICodeDocParameter> parameters) {
+        public static MvcHtmlString CodeDocParameters(this HtmlHelper helper, IEnumerable<CodeDocParameter> parameters) {
             var tagBuilder = new TagBuilder("dl");
             var innerHtmlBuilder = new StringBuilder();
             foreach (var parameter in parameters) {
@@ -323,7 +323,7 @@ namespace DandyDoc.Web.Mvc4.Helpers
             return new MvcHtmlString(tagBuilder.ToString());
         }
 
-        public static MvcHtmlString CodeDocParameters(this HtmlHelper helper, IEnumerable<ICodeDocGenericParameter> parameters) {
+        public static MvcHtmlString CodeDocParameters(this HtmlHelper helper, IEnumerable<CodeDocGenericParameter> parameters) {
             var tagBuilder = new TagBuilder("dl");
             var innerHtmlBuilder = new StringBuilder();
             foreach (var parameter in parameters) {
@@ -370,7 +370,7 @@ namespace DandyDoc.Web.Mvc4.Helpers
             return new MvcHtmlString(tagBuilder.ToString());
         }
 
-        public static MvcHtmlString CodeDocExceptions(this HtmlHelper helper, IEnumerable<ICodeDocException> exceptions, object tableTagAttributes = null) {
+        public static MvcHtmlString CodeDocExceptions(this HtmlHelper helper, IEnumerable<CodeDocException> exceptions, object tableTagAttributes = null) {
             var tagBuilder = new TagBuilder("table");
 
             if (tableTagAttributes == null)
@@ -455,7 +455,7 @@ namespace DandyDoc.Web.Mvc4.Helpers
             return new MvcHtmlString(tagBuilder.ToString());
         }
 
-        public static MvcHtmlString CodeDocAccessor(this HtmlHelper helper, ICodeDocMethod accessor) {
+        public static MvcHtmlString CodeDocAccessor(this HtmlHelper helper, CodeDocMethod accessor) {
             var htmlBuilder = new StringBuilder();
 
             htmlBuilder.Append(helper.FlairTable(accessor));
@@ -478,15 +478,15 @@ namespace DandyDoc.Web.Mvc4.Helpers
             return new MvcHtmlString(htmlBuilder.ToString());
         }
 
-        public static bool CodeDocAccessorIsWorthDisplaying(ICodeDocMethod accessor) {
+        public static bool CodeDocAccessorIsWorthDisplaying(CodeDocMethod accessor) {
             return GetFlair(accessor).Any()
                 || accessor.HasExceptions
                 || accessor.HasNormalTerminationEnsures
                 || accessor.HasRequires;
         }
 
-        public static MvcHtmlString FlairIconList(this HtmlHelper helper, ICodeDocEntity entity){
-            var flair = GetFlair(entity).ToList();
+        public static MvcHtmlString FlairIconList(this HtmlHelper helper, ICodeDocMember member){
+            var flair = GetFlair(member).ToList();
             if (flair.Count == 0)
                 return MvcHtmlString.Empty;
             return helper.FlairIconList(flair);
@@ -537,8 +537,8 @@ namespace DandyDoc.Web.Mvc4.Helpers
             }
         }
 
-        public static MvcHtmlString FlairTable(this HtmlHelper helper, ICodeDocEntity entity){
-            var flair = GetFlair(entity).ToList();
+        public static MvcHtmlString FlairTable(this HtmlHelper helper, ICodeDocMember member){
+            var flair = GetFlair(member).ToList();
             if (flair.Count == 0)
                 return MvcHtmlString.Empty;
             return helper.FlairTable(flair);
@@ -563,7 +563,7 @@ namespace DandyDoc.Web.Mvc4.Helpers
 
         private static bool HasReferenceParamsOrReturnAndAllAreNullrestricted(ICodeDocInvokable invokable) {
             Contract.Requires(invokable != null);
-            IEnumerable<ICodeDocParameter> parameters = invokable.Parameters;
+            IEnumerable<CodeDocParameter> parameters = invokable.Parameters;
             if (invokable.HasReturn)
                 parameters = parameters.Concat(new[] { invokable.Return });
 
@@ -619,16 +619,16 @@ namespace DandyDoc.Web.Mvc4.Helpers
         private static readonly FlairItem DefaultSetTag = new FlairItem("set", "Property", "Value can be assigned externally.");
         private static readonly FlairItem DefaultProSetTag = new FlairItem("proset", "Property", "Value can be assigned through inheritance.");
 
-        private static IEnumerable<FlairItem> GetFlair(ICodeDocEntity entity){
-            Contract.Requires(entity != null);
+        private static IEnumerable<FlairItem> GetFlair(ICodeDocMember member){
+            Contract.Requires(member != null);
 
-            var invokable = entity as ICodeDocInvokable;
-            var property = entity as ICodeDocProperty;
-            var field = entity as ICodeDocField;
-            var type = entity as ICodeDocType;
+            var invokable = member as ICodeDocInvokable;
+            var property = member as CodeDocProperty;
+            var field = member as CodeDocField;
+            var type = member as CodeDocType;
 
-            if (property == null && !(entity is ICodeDocNamespace || entity is ICodeDocAssembly)) {
-                switch (entity.ExternalVisibility) {
+            if (property == null && !(member is CodeDocSimpleNamespace || member is CodeDocSimpleAssembly)) {
+                switch (member.ExternalVisibility) {
                     case ExternalVisibilityKind.Hidden:
                         yield return DefaultHiddenTag;
                         break;
@@ -641,12 +641,12 @@ namespace DandyDoc.Web.Mvc4.Helpers
                 }
             }
 
-            if (entity.IsStatic) {
+            if (member.IsStatic) {
                 if (invokable == null || !invokable.IsOperatorOverload)
                     yield return DefaultStaticTag;
             }
 
-            if (entity.IsObsolete)
+            if (member.IsObsolete)
                 yield return DefaultObsoleteTag;
 
             if (type != null) {
@@ -717,7 +717,7 @@ namespace DandyDoc.Web.Mvc4.Helpers
 
         }
 
-        private static IEnumerable<FlairItem> GetFlair(ICodeDocParameter parameter){
+        private static IEnumerable<FlairItem> GetFlair(CodeDocParameter parameter){
             Contract.Requires(parameter != null);
             if(parameter.NullRestricted.GetValueOrDefault())
                 throw new NotImplementedException();
@@ -731,7 +731,7 @@ namespace DandyDoc.Web.Mvc4.Helpers
             yield break;
         }
 
-        private static IEnumerable<FlairItem> GetFlair(ICodeDocGenericParameter parameter) {
+        private static IEnumerable<FlairItem> GetFlair(CodeDocGenericParameter parameter) {
             Contract.Requires(parameter != null);
             if(parameter.IsCovariant)
                 throw new NotImplementedException();

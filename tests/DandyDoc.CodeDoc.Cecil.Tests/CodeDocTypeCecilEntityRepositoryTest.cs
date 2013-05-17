@@ -14,12 +14,12 @@ namespace DandyDoc.CodeDoc.Cecil.Tests
     public class CodeDocTypeCecilEntityRepositoryTest : CodeDocTypeReflectionEntityRepositoryTest
     {
 
-        public override ICodeDocEntityRepository TestLibrary1Repository {
+        public override ICodeDocMemberRepository TestLibrary1Repository {
             get {
                 var testLib1Asm = AssemblyDefinition.ReadAssembly(@".\TestLibrary1.dll");
                 var testLib1AsmPath = testLib1Asm.GetFilePath();
                 var testLib1XmlPath = Path.ChangeExtension(testLib1AsmPath, "XML");
-                var coreRepo = new CecilCodeDocEntityRepository(
+                var coreRepo = new CecilCodeDocMemberRepository(
                     new CecilCRefLookup(testLib1Asm),
                     new XmlAssemblyDocument(testLib1XmlPath)
                 );

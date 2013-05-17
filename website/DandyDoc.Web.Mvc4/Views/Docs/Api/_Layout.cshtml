@@ -6,12 +6,12 @@
   Layout = "~/Views/Shared/_Layout.cshtml";
   ViewBag.Title = "Dandy Doc";
   ViewBag.SubTitle = "API Reference";
-  var entityModel = Model as ICodeDocEntity;
+  var entityModel = Model as ICodeDocMember;
   if (entityModel != null) {
     ViewBag.EntityTitle = entityModel.Title;
     ViewBag.EntitySubTitle = entityModel.SubTitle;
   }
-  var contentModel = Model as ICodeDocEntityContent;
+  var contentModel = Model as ICodeDocMemberContent;
 }
 <div class="container">
   <div class="row">

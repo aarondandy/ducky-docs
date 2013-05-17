@@ -19,11 +19,11 @@ namespace DandyDoc.Web.Mvc4
     {
         protected override IKernel CreateKernel() {
             var kernel = new StandardKernel();
-            kernel.Bind<ICodeDocEntityRepository>().ToMethod(x =>
-                new ReflectionCodeDocEntityRepository(
+            kernel.Bind<ICodeDocMemberRepository>().ToMethod(x =>
+                new ReflectionCodeDocMemberRepository(
                     new ReflectionCRefLookup(
                         typeof(ReflectionCRefLookup).Assembly,
-                        typeof(ICodeDocEntityRepository).Assembly,
+                        typeof(ICodeDocMemberRepository).Assembly,
                         Assembly.ReflectionOnlyLoadFrom(HostingEnvironment.MapPath("~/bin/TestLibrary1.dll"))
                     ),
                     new XmlAssemblyDocument(HostingEnvironment.MapPath("~/bin/DandyDoc.Core.XML")),

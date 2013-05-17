@@ -18,28 +18,28 @@ namespace CodeDocRepository.PerformanceTest
     class Program
     {
 
-        static ReflectionCodeDocEntityRepository CreateReflectionRepository() {
+        static ReflectionCodeDocMemberRepository CreateReflectionRepository() {
             var testLib1Asm = typeof(Class1).Assembly;
             var testLib1AsmPath = ReflectionUtilities.GetFilePath(testLib1Asm);
             var testLib1XmlPath = Path.ChangeExtension(testLib1AsmPath, "XML");
-            return new ReflectionCodeDocEntityRepository(
+            return new ReflectionCodeDocMemberRepository(
                 new ReflectionCRefLookup(testLib1Asm),
                 new XmlAssemblyDocument(testLib1XmlPath)
             );
         }
 
-        static CecilCodeDocEntityRepository CreateCecilRepository() {
+        static CecilCodeDocMemberRepository CreateCecilRepository() {
             //var testLib1Asm = AssemblyDefinition.ReadAssembly(@".\TestLibrary1.dll", CecilImmediateAssemblyResolver.CreateReaderParameters());
             var testLib1Asm = AssemblyDefinition.ReadAssembly(@".\TestLibrary1.dll");
             var testLib1AsmPath = testLib1Asm.GetFilePath();
             var testLib1XmlPath = Path.ChangeExtension(testLib1AsmPath, "XML");
-            return new CecilCodeDocEntityRepository(
+            return new CecilCodeDocMemberRepository(
                 new CecilCRefLookup(testLib1Asm),
                 new XmlAssemblyDocument(testLib1XmlPath)
             );
         }
 
-        static ICodeDocEntityRepository CreateRepository() {
+        static ICodeDocMemberRepository CreateRepository() {
             //return CreateReflectionRepository();
             return CreateCecilRepository();
         }
@@ -48,21 +48,19 @@ namespace CodeDocRepository.PerformanceTest
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             var repository = CreateRepository();
-            var rootTypeCRefs = repository.Namespaces
-                .SelectMany(x => x.Types)
-                .Select(x => x.CRef);
-            var rootTypes = rootTypeCRefs.Select(repository.GetContentEntity);
+            var rootTypeCRefs = repository.Namespaces.SelectMany(x => x.TypeCRefs);
+            var rootTypes = rootTypeCRefs.Select(repository.GetContentMember);
             var typeCount = CountTypes(rootTypes);
             stopwatch.Stop();
             Console.WriteLine("TypeCount:\t" + typeCount);
             Console.WriteLine("Elapsed:\t" + stopwatch.Elapsed);
         }
 
-        static int CountTypes(IEnumerable<ICodeDocEntity> entities) {
-            return CountTypes(entities.OfType<ICodeDocType>());
+        static int CountTypes(IEnumerable<ICodeDocMember> entities) {
+            return CountTypes(entities.OfType<CodeDocType>());
         }
 
-        static int CountTypes(IEnumerable<ICodeDocType> types) {
+        static int CountTypes(IEnumerable<CodeDocType> types) {
             int count = 0;
             foreach (var typeEntity in types) {
                 count++;

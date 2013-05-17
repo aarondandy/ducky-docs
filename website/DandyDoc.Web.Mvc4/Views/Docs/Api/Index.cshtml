@@ -1,5 +1,5 @@
 ﻿@using DandyDoc.Web.Mvc4.Helpers
-@model DandyDoc.CodeDoc.ICodeDocEntityRepository
+@model DandyDoc.CodeDoc.ICodeDocMemberRepository
 @{
   Layout = "./_Layout.cshtml";
   ViewBag.EntityTitle = "All Namespaces";
@@ -10,7 +10,6 @@
       <tr>
         <th><i class="icon-info-sign"></i></th>
         <th>Namespace</th>
-        <th>Assembly</th>
       </tr>
     </thead>
     <tbody>
@@ -18,7 +17,6 @@
         <tr>
           <td><i class="icon-gift"></i></td>
           <td>@Html.ActionLink(namespaceModel)</td>
-          <td>@String.Join(", ", namespaceModel.Assemblies.Select(a => a.ShortName))</td>
         </tr>
       }
     </tbody>

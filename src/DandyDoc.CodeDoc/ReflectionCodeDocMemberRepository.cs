@@ -14,7 +14,11 @@ using DandyDoc.XmlDoc;
 
 namespace DandyDoc.CodeDoc
 {
-    public class ReflectionCodeDocEntityRepository : CodeDocEntityRepositoryBase
+
+    /// <summary>
+    /// Generates code doc member models from reflected members.
+    /// </summary>
+    public class ReflectionCodeDocMemberRepository : CodeDocMemberRepositoryBase
     {
 
         private static readonly StandardReflectionDisplayNameGenerator RegularTypeDisplayNameOverlay
@@ -45,31 +49,45 @@ namespace DandyDoc.CodeDoc
             return new CRefIdentifier(ReflectionCRefGenerator.WithPrefix.GetCRef(assembly));
         }
 
-        public ReflectionCodeDocEntityRepository(ReflectionCRefLookup cRefLookup)
+        /// <summary>
+        /// Creates a new reflection code doc repository.
+        /// </summary>
+        /// <param name="cRefLookup">The lookup used to resolve code references into reflected members.</param>
+        public ReflectionCodeDocMemberRepository(ReflectionCRefLookup cRefLookup)
             : this(cRefLookup, null)
         {
             Contract.Requires(cRefLookup != null);
         }
 
-        public ReflectionCodeDocEntityRepository(ReflectionCRefLookup cRefLookup, params XmlAssemblyDocument[] xmlDocs)
+        /// <summary>
+        /// Creates a new reflection code doc repository.
+        /// </summary>
+        /// <param name="cRefLookup">The lookup used to resolve code references into reflected members.</param>
+        /// <param name="xmlDocs">The related XML documentation files for the members.</param>
+        public ReflectionCodeDocMemberRepository(ReflectionCRefLookup cRefLookup, params XmlAssemblyDocument[] xmlDocs)
             : this(cRefLookup, (IEnumerable<XmlAssemblyDocument>)xmlDocs)
         {
             Contract.Requires(cRefLookup != null);
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public ReflectionCodeDocEntityRepository(ReflectionCRefLookup cRefLookup, IEnumerable<XmlAssemblyDocument> xmlDocs) {
+        /// <summary>
+        /// Creates a new reflection code doc repository.
+        /// </summary>
+        /// <param name="cRefLookup">The lookup used to resolve code references into reflected members.</param>
+        /// <param name="xmlDocs">The related XML documentation files for the members.</param>
+        public ReflectionCodeDocMemberRepository(ReflectionCRefLookup cRefLookup, IEnumerable<XmlAssemblyDocument> xmlDocs)
+            : base(xmlDocs)
+        {
             if(cRefLookup == null) throw new ArgumentNullException("cRefLookup");
             Contract.EndContractBlock();
             CRefLookup = cRefLookup;
-            XmlDocs = new XmlAssemblyDocumentCollection(xmlDocs);
 
-            var assemblyModels = new List<CodeDocAssembly>();
-            var namespaceModels = new Dictionary<string, CodeDocNamespace>();
+            var assemblyModels = new List<CodeDocSimpleAssembly>();
+            var namespaceModels = new Dictionary<string, CodeDocSimpleNamespace>();
 
             foreach (var assembly in CRefLookup.Assemblies){
                 var assemblyShortName = assembly.GetName().Name;
-                var assemblyModel = new CodeDocAssembly(GetCRefIdentifier(assembly)){
+                var assemblyModel = new CodeDocSimpleAssembly(GetCRefIdentifier(assembly)) {
                     AssemblyFileName = Path.GetFileName(assembly.GetFilePath()),
                     Title = assemblyShortName,
                     ShortName = assemblyShortName,
@@ -92,28 +110,27 @@ namespace DandyDoc.CodeDoc
                     if (String.IsNullOrWhiteSpace(namespaceName))
                         namespaceName = String.Empty;
 
-                    CodeDocNamespace namespaceModel;
+                    CodeDocSimpleNamespace namespaceModel;
                     if (!namespaceModels.TryGetValue(namespaceName, out namespaceModel)) {
                         var namespaceTitle = String.IsNullOrEmpty(namespaceName) ? "global" : namespaceName;
                         Contract.Assume(!String.IsNullOrEmpty("N:" + namespaceName));
-                        namespaceModel = new CodeDocNamespace(new CRefIdentifier("N:" + namespaceName)){
+                        namespaceModel = new CodeDocSimpleNamespace(new CRefIdentifier("N:" + namespaceName)){
                             Title = namespaceTitle,
                             ShortName = namespaceTitle,
                             FullName = namespaceTitle,
                             NamespaceName = namespaceTitle,
                             SubTitle = "Namespace",
-                            Types = new List<ICodeDocEntity>(),
-                            Assemblies = new List<ICodeDocAssembly>()
+                            TypeCRefs = new List<CRefIdentifier>(),
+                            AssemblyCRefs = new List<CRefIdentifier>()
                         };
                         namespaceModels.Add(namespaceName, namespaceModel);
                     }
 
-                    var simpleEntity = GetSimpleEntity(typeCRef);
-                    namespaceModel.Types.Add(simpleEntity);
+                    namespaceModel.TypeCRefs.Add(typeCRef);
                     
                     if (assemblyNamespaceNames.Add(namespaceName)) {
                         // this is the first time this assembly has seen this namespace
-                        namespaceModel.Assemblies.Add(assemblyModel);
+                        namespaceModel.AssemblyCRefs.Add(assemblyModel.CRef);
                         assemblyModel.NamespaceCRefs.Add(namespaceModel.CRef);
                     }
 
@@ -125,26 +142,31 @@ namespace DandyDoc.CodeDoc
 
             // freeze the namespace & assembly collections
             foreach (var namespaceModel in namespaceModels.Values) {
-                namespaceModel.Assemblies = namespaceModel.Assemblies.AsReadOnly();
+                namespaceModel.AssemblyCRefs = namespaceModel.AssemblyCRefs.AsReadOnly();
             }
             foreach (var assemblyModel in assemblyModels) {
                 assemblyModel.NamespaceCRefs = assemblyModel.NamespaceCRefs.AsReadOnly();
             }
 
-            Assemblies = new ReadOnlyCollection<ICodeDocAssembly>(assemblyModels.OrderBy(x => x.Title).ToArray());
-            Namespaces = new ReadOnlyCollection<ICodeDocNamespace>(namespaceModels.Values.OrderBy(x => x.Title).ToArray());
+            Assemblies = new ReadOnlyCollection<CodeDocSimpleAssembly>(assemblyModels.OrderBy(x => x.Title).ToArray());
+            Namespaces = new ReadOnlyCollection<CodeDocSimpleNamespace>(namespaceModels.Values.OrderBy(x => x.Title).ToArray());
         }
 
         [ContractInvariantMethod]
         private void CodeContractInvariant() {
             Contract.Invariant(CRefLookup != null);
-            Contract.Invariant(XmlDocs != null);
         }
 
-        public XmlAssemblyDocumentCollection XmlDocs { get; private set; }
-
+        /// <summary>
+        /// The code reference lookup.
+        /// </summary>
         public ReflectionCRefLookup CRefLookup { get; private set; }
 
+        /// <summary>
+        /// Determines if a member is valid for this repository.
+        /// </summary>
+        /// <param name="memberInfo">The member to test.</param>
+        /// <returns><c>true</c> if the member is valid.</returns>
         protected bool MemberFilter(MemberInfo memberInfo) {
             if (memberInfo == null)
                 return false;
@@ -163,15 +185,31 @@ namespace DandyDoc.CodeDoc
             return memberInfo.GetExternalVisibility() != ExternalVisibilityKind.Hidden;
         }
 
+        /// <summary>
+        /// Determines if a member is valid for this repository.
+        /// </summary>
+        /// <param name="type">The member to test.</param>
+        /// <returns><c>true</c> if the member is valid.</returns>
         protected virtual bool MemberFilter(Type type) {
             return type != null
                 && type.GetExternalVisibility() != ExternalVisibilityKind.Hidden;
         }
 
+        /// <summary>
+        /// Determines if a member is valid for this repository.
+        /// </summary>
+        /// <param name="methodBase">The member to test.</param>
+        /// <returns><c>true</c> if the member is valid.</returns>
         protected bool MemberFilter(MethodBase methodBase){
             return MemberFilter(methodBase, false);
         }
 
+        /// <summary>
+        /// Determines if a member is valid for this repository.
+        /// </summary>
+        /// <param name="methodBase">The member to test.</param>
+        /// <param name="isPropertyMethod">Indicates that the method is a property getter or setter.</param>
+        /// <returns><c>true</c> if the member is valid.</returns>
         protected virtual bool MemberFilter(MethodBase methodBase, bool isPropertyMethod) {
             if (methodBase == null)
                 return false;
@@ -187,6 +225,11 @@ namespace DandyDoc.CodeDoc
             return true;
         }
 
+        /// <summary>
+        /// Determines if a member is valid for this repository.
+        /// </summary>
+        /// <param name="fieldInfo">The member to test.</param>
+        /// <returns><c>true</c> if the member is valid.</returns>
         protected virtual bool MemberFilter(FieldInfo fieldInfo) {
             if (fieldInfo == null)
                 return false;
@@ -200,6 +243,11 @@ namespace DandyDoc.CodeDoc
             return true;
         }
 
+        /// <summary>
+        /// Determines if a member is valid for this repository.
+        /// </summary>
+        /// <param name="eventInfo">The member to test.</param>
+        /// <returns><c>true</c> if the member is valid.</returns>
         protected virtual bool MemberFilter(EventInfo eventInfo) {
             if (eventInfo == null)
                 return false;
@@ -210,6 +258,11 @@ namespace DandyDoc.CodeDoc
             return true;
         }
 
+        /// <summary>
+        /// Determines if a member is valid for this repository.
+        /// </summary>
+        /// <param name="propertyInfo">The member to test.</param>
+        /// <returns><c>true</c> if the member is valid.</returns>
         protected virtual bool MemberFilter(PropertyInfo propertyInfo) {
             if (propertyInfo == null)
                 return false;
@@ -220,26 +273,31 @@ namespace DandyDoc.CodeDoc
             return true;
         }
 
-        private ICodeDocAssembly GetCodeDocAssembly(Assembly assembly) {
+        /// <summary>
+        /// Gets a code doc assembly from a reflected assembly.
+        /// </summary>
+        /// <param name="assembly">An assembly to get the code doc model for.</param>
+        /// <returns>The assembly code doc model if found.</returns>
+        private CodeDocSimpleAssembly GetCodeDocAssembly(Assembly assembly) {
             Contract.Requires(assembly != null);
-            return GetCodeDocAssembly(GetCRefIdentifier(assembly));
+            return GetCodeDocSimpleAssembly(GetCRefIdentifier(assembly));
         }
 
-        private ICodeDocEntity GetSimpleEntity(MemberInfo memberInfo) {
+        private ICodeDocMember GetSimpleEntity(MemberInfo memberInfo) {
             Contract.Requires(memberInfo != null);
 
             // TODO: check a pool of other repositories if not found in this one
 
             if (MemberFilter(memberInfo))
-                return ConvertToSimpleEntity(memberInfo);
+                return ConvertToSimpleModel(memberInfo);
 
             return CreateSimpleEntityPlaceholder(memberInfo);
         }
 
-        private ICodeDocEntity CreateSimpleEntityPlaceholder(MemberInfo memberInfo){
+        private ICodeDocMember CreateSimpleEntityPlaceholder(MemberInfo memberInfo){
             Contract.Requires(memberInfo != null);
-            Contract.Ensures(Contract.Result<ICodeDocEntity>() != null);
-            var result = new CodeDocSimpleEntity(GetCRefIdentifier(memberInfo)) {
+            Contract.Ensures(Contract.Result<ICodeDocMember>() != null);
+            var result = new CodeDocSimpleMember(GetCRefIdentifier(memberInfo)) {
                 ShortName = memberInfo.Name,
                 Title = memberInfo.Name,
                 SubTitle = String.Empty,
@@ -250,49 +308,56 @@ namespace DandyDoc.CodeDoc
             return result;
         }
 
-        public override ICodeDocEntity GetSimpleEntity(CRefIdentifier cRef) {
+        /// <inheritdoc/>
+        public override ICodeDocMember GetSimpleMember(CRefIdentifier cRef) {
             if (cRef == null) throw new ArgumentNullException("cRef");
             Contract.EndContractBlock();
 
             if ("N".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
-                return GetCodeDocNamespace(cRef);
+                return GetCodeDocSimpleNamespace(cRef);
             if ("A".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
-                return GetCodeDocAssembly(cRef);
+                return GetCodeDocSimpleAssembly(cRef);
 
             var memberInfo = CRefLookup.GetMember(cRef);
             if (memberInfo == null || !MemberFilter(memberInfo))
                 return null;
-            return ConvertToSimpleEntity(memberInfo);
+            return ConvertToSimpleModel(memberInfo);
         }
 
-        public override ICodeDocEntityContent GetContentEntity(CRefIdentifier cRef) {
+        /// <inheritdoc/>
+        public override ICodeDocMember GetContentMember(CRefIdentifier cRef) {
             if(cRef == null) throw new ArgumentNullException("cRef");
             Contract.EndContractBlock();
 
             if ("N".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
-                return GetCodeDocNamespace(cRef);
+                return ToFullNamespace(GetCodeDocSimpleNamespace(cRef));
             if ("A".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
-                return GetCodeDocAssembly(cRef);
+                return GetCodeDocSimpleAssembly(cRef);
 
             var memberInfo = CRefLookup.GetMember(cRef);
             if (memberInfo == null || !MemberFilter(memberInfo))
                 return null;
-            return ConvertToContentEntity(memberInfo);
+            return ConvertToModel(memberInfo);
         }
 
-        private void ApplySimpleEntityAttributes(CodeDocSimpleEntity entity, MemberInfo memberInfo){
-            Contract.Requires(entity != null);
+        private void ApplySimpleEntityAttributes(CodeDocSimpleMember member, MemberInfo memberInfo){
+            Contract.Requires(member != null);
             Contract.Requires(memberInfo != null);
-            entity.ExternalVisibility = memberInfo.GetExternalVisibility();
-            entity.IsStatic = memberInfo.IsStatic();
-            entity.IsObsolete = memberInfo.HasAttribute(typeof(ObsoleteAttribute));
+            member.ExternalVisibility = memberInfo.GetExternalVisibility();
+            member.IsStatic = memberInfo.IsStatic();
+            member.IsObsolete = memberInfo.HasAttribute(typeof(ObsoleteAttribute));
         }
 
-        protected virtual ICodeDocEntity ConvertToSimpleEntity(MemberInfo memberInfo) {
+        /// <summary>
+        /// Converts a reflected member to a simple code doc model.
+        /// </summary>
+        /// <param name="memberInfo">A reflected member.</param>
+        /// <returns>A code doc model for the given member.</returns>
+        protected virtual ICodeDocMember ConvertToSimpleModel(MemberInfo memberInfo) {
             if (memberInfo == null) throw new ArgumentNullException("memberInfo");
-            Contract.Ensures(Contract.Result<ICodeDocEntity>() != null);
+            Contract.Ensures(Contract.Result<ICodeDocMember>() != null);
             var cRef = GetCRefIdentifier(memberInfo);
-            var result = new CodeDocSimpleEntity(cRef);
+            var result = new CodeDocSimpleMember(cRef);
             ApplyStandardXmlDocs(result, cRef.FullCRef);
             if (memberInfo is Type)
                 ApplyCommonAttributes(result, (Type)memberInfo);
@@ -310,36 +375,41 @@ namespace DandyDoc.CodeDoc
             return result;
         }
 
-        protected virtual ICodeDocEntityContent ConvertToContentEntity(MemberInfo memberInfo) {
+        /// <summary>
+        /// Converts a reflected member to a code doc model.
+        /// </summary>
+        /// <param name="memberInfo">A reflected member.</param>
+        /// <returns>A code doc model for the given member.</returns>
+        protected virtual CodeDocMemberContentBase ConvertToModel(MemberInfo memberInfo) {
             if(memberInfo == null) throw new ArgumentNullException("memberInfo");
-            Contract.Ensures(Contract.Result<ICodeDocEntity>() != null);
+            Contract.Ensures(Contract.Result<ICodeDocMember>() != null);
 
             if (memberInfo is Type)
-                return ConvertToEntity((Type)memberInfo);
+                return ConvertToModel((Type)memberInfo);
             if (memberInfo is FieldInfo)
-                return ConvertToEntity((FieldInfo)memberInfo);
+                return ConvertToModel((FieldInfo)memberInfo);
             if (memberInfo is MethodBase)
-                return ConvertToEntity((MethodBase) memberInfo);
+                return ConvertToModel((MethodBase) memberInfo);
             if (memberInfo is EventInfo)
-                return ConvertToEntity((EventInfo) memberInfo);
+                return ConvertToModel((EventInfo) memberInfo);
             if (memberInfo is PropertyInfo)
-                return ConvertToEntity((PropertyInfo) memberInfo);
+                return ConvertToModel((PropertyInfo) memberInfo);
             throw new NotSupportedException();
         }
 
-        private void ApplyStandardXmlDocs(CodeDocEntityContentBase model, string cRef){
+        private void ApplyStandardXmlDocs(CodeDocMemberContentBase model, string cRef){
             Contract.Requires(model != null);
             Contract.Requires(!String.IsNullOrEmpty(cRef));
             model.XmlDocs = XmlDocs.GetMember(cRef);
         }
 
-        private void ApplyStandardXmlDocs(CodeDocSimpleEntity model, string cRef) {
+        private void ApplyStandardXmlDocs(CodeDocSimpleMember model, string cRef) {
             Contract.Requires(model != null);
             Contract.Requires(!String.IsNullOrEmpty(cRef));
             model.XmlDocs = XmlDocs.GetMember(cRef);
         }
 
-        private CodeDocEvent ConvertToEntity(EventInfo eventInfo){
+        private CodeDocEvent ConvertToModel(EventInfo eventInfo){
             Contract.Requires(eventInfo != null);
             Contract.Ensures(Contract.Result<CodeDocEvent>() != null);
             var cRef = GetCRefIdentifier(eventInfo);
@@ -356,7 +426,7 @@ namespace DandyDoc.CodeDoc
             return model;
         }
 
-        private void ApplyCommonAttributes(CodeDocSimpleEntity model, EventInfo eventInfo) {
+        private void ApplyCommonAttributes(CodeDocSimpleMember model, EventInfo eventInfo) {
             Contract.Requires(model != null);
             Contract.Requires(eventInfo != null);
             Contract.Ensures(!String.IsNullOrEmpty(model.ShortName));
@@ -375,7 +445,7 @@ namespace DandyDoc.CodeDoc
             model.SubTitle = "Event";
         }
 
-        private CodeDocField ConvertToEntity(FieldInfo fieldInfo) {
+        private CodeDocField ConvertToModel(FieldInfo fieldInfo) {
             Contract.Requires(fieldInfo != null);
             Contract.Ensures(Contract.Result<CodeDocField>() != null);
             var model = new CodeDocField(GetCRefIdentifier(fieldInfo));
@@ -394,7 +464,7 @@ namespace DandyDoc.CodeDoc
             return model;
         }
 
-        private void ApplyCommonAttributes(CodeDocSimpleEntity model, FieldInfo fieldInfo) {
+        private void ApplyCommonAttributes(CodeDocSimpleMember model, FieldInfo fieldInfo) {
             Contract.Requires(model != null);
             Contract.Requires(fieldInfo != null);
             Contract.Ensures(!String.IsNullOrEmpty(model.ShortName));
@@ -463,7 +533,7 @@ namespace DandyDoc.CodeDoc
             }
         }
 
-        private CodeDocProperty ConvertToEntity(PropertyInfo propertyInfo){
+        private CodeDocProperty ConvertToModel(PropertyInfo propertyInfo){
             Contract.Requires(propertyInfo != null);
             Contract.Ensures(Contract.Result<CodeDocProperty>() != null);
             var model = new CodeDocProperty(GetCRefIdentifier(propertyInfo));
@@ -472,7 +542,7 @@ namespace DandyDoc.CodeDoc
 
             var parameters = propertyInfo.GetIndexParameters();
             if (parameters.Length > 0){
-                model.Parameters = new ReadOnlyCollection<ICodeDocParameter>(Array.ConvertAll(parameters,
+                model.Parameters = new ReadOnlyCollection<CodeDocParameter>(Array.ConvertAll(parameters,
                     parameter => {
                         var parameterSummaryElement = model.XmlDocs != null
                             ? model.XmlDocs.GetParameterSummary(parameter.Name)
@@ -490,7 +560,7 @@ namespace DandyDoc.CodeDoc
 
             var getterMethodInfo = propertyInfo.GetGetMethod(true);
             if (getterMethodInfo != null && MemberFilter(getterMethodInfo, true)) {
-                var accessor = ConvertToEntity(getterMethodInfo);
+                var accessor = ConvertToModel(getterMethodInfo);
                 if (model.XmlDocs != null && model.XmlDocs.HasGetterElement) {
                     accessor.XmlDocs = model.XmlDocs.GetterElement;
                     ExpandCodeDocMethodXmlDocProperties(accessor);
@@ -500,7 +570,7 @@ namespace DandyDoc.CodeDoc
 
             var setterMethodInfo = propertyInfo.GetSetMethod(true);
             if (setterMethodInfo != null && MemberFilter(setterMethodInfo, true)) {
-                var accessor = ConvertToEntity(setterMethodInfo);
+                var accessor = ConvertToModel(setterMethodInfo);
                 if (model.XmlDocs != null && model.XmlDocs.HasSetterElement) {
                     accessor.XmlDocs = model.XmlDocs.SetterElement;
                     ExpandCodeDocMethodXmlDocProperties(accessor);
@@ -517,7 +587,7 @@ namespace DandyDoc.CodeDoc
             return model;
         }
 
-        private void ApplyCommonAttributes(CodeDocSimpleEntity model, PropertyInfo propertyInfo) {
+        private void ApplyCommonAttributes(CodeDocSimpleMember model, PropertyInfo propertyInfo) {
             Contract.Requires(model != null);
             Contract.Requires(propertyInfo != null);
             Contract.Ensures(!String.IsNullOrEmpty(model.ShortName));
@@ -551,7 +621,7 @@ namespace DandyDoc.CodeDoc
                             : new CRefIdentifier(xmlDocException.CRef);
                         CodeDocException exceptionModel;
                         if (!exceptionLookup.TryGetValue(exceptionCRef, out exceptionModel)) {
-                            exceptionModel = new CodeDocException(GetSimpleEntity(exceptionCRef) ?? CreateSimpleEntityTypePlaceholder(exceptionCRef));
+                            exceptionModel = new CodeDocException(GetSimpleMember(exceptionCRef) ?? CreateTypeMemberPlaceholder(exceptionCRef));
                             exceptionModel.Ensures = new List<XmlDocNode>();
                             exceptionModel.Conditions = new List<XmlDocNode>();
                             exceptionLookup.Add(exceptionCRef, exceptionModel);
@@ -583,7 +653,7 @@ namespace DandyDoc.CodeDoc
                         exceptionModel.Conditions = new ReadOnlyCollection<XmlDocNode>(exceptionModel.Conditions.ToArray());
                     }
 
-                    model.Exceptions = new ReadOnlyCollection<ICodeDocException>(exceptionModels);
+                    model.Exceptions = new ReadOnlyCollection<CodeDocException>(exceptionModels);
                 }
 
                 if (model.XmlDocs.HasEnsuresElements) {
@@ -595,7 +665,7 @@ namespace DandyDoc.CodeDoc
             }
         }
 
-        private CodeDocMethod ConvertToEntity(MethodBase methodBase){
+        private CodeDocMethod ConvertToModel(MethodBase methodBase){
             Contract.Requires(methodBase != null);
             Contract.Ensures(Contract.Result<CodeDocMethod>() != null);
             var model = new CodeDocMethod(GetCRefIdentifier(methodBase));
@@ -637,7 +707,7 @@ namespace DandyDoc.CodeDoc
                     return paramModel;
                 })
                 .ToArray();
-            model.Parameters = new ReadOnlyCollection<ICodeDocParameter>(parameterModels);
+            model.Parameters = new ReadOnlyCollection<CodeDocParameter>(parameterModels);
 
             if (methodInfo != null) {
                 if (methodInfo.ReturnParameter != null && methodInfo.ReturnType != typeof(void)) {
@@ -664,7 +734,7 @@ namespace DandyDoc.CodeDoc
                     var genericArguments = genericDefinition.GetGenericArguments();
                     if (genericArguments.Length > 0){
                         var xmlDocs = XmlDocs.GetMember(GetCRefIdentifier(methodBase).FullCRef);
-                        var genericModels = new List<ICodeDocGenericParameter>();
+                        var genericModels = new List<CodeDocGenericParameter>();
                         foreach (var genericArgument in genericArguments){
                             var argumentName = genericArgument.Name;
                             Contract.Assume(!String.IsNullOrEmpty(argumentName));
@@ -692,7 +762,7 @@ namespace DandyDoc.CodeDoc
                             genericModels.Add(genericModel);
 
                         }
-                        model.GenericParameters = new ReadOnlyCollection<ICodeDocGenericParameter>(genericModels);
+                        model.GenericParameters = new ReadOnlyCollection<CodeDocGenericParameter>(genericModels);
                     }
                 }
             }
@@ -700,7 +770,7 @@ namespace DandyDoc.CodeDoc
             return model;
         }
 
-        private void ApplyCommonAttributes(CodeDocSimpleEntity model, MethodBase methodBase) {
+        private void ApplyCommonAttributes(CodeDocSimpleMember model, MethodBase methodBase) {
             Contract.Requires(model != null);
             Contract.Requires(methodBase != null);
             Contract.Ensures(!String.IsNullOrEmpty(model.ShortName));
@@ -725,7 +795,7 @@ namespace DandyDoc.CodeDoc
                 model.SubTitle = "Method";
         }
 
-        private CodeDocType ConvertToEntity(Type type) {
+        private CodeDocType ConvertToModel(Type type) {
             Contract.Requires(type != null);
             Contract.Ensures(Contract.Result<CodeDocType>() != null);
 
@@ -751,7 +821,7 @@ namespace DandyDoc.CodeDoc
             if (!type.IsInterface) {
                 var currentBase = type.BaseType;
                 if (null != currentBase) {
-                    var baseChain = new List<ICodeDocEntity>() {
+                    var baseChain = new List<ICodeDocMember>() {
                         GetSimpleEntity(currentBase)
                     };
                     currentBase = currentBase.BaseType;
@@ -759,7 +829,7 @@ namespace DandyDoc.CodeDoc
                         baseChain.Add(GetSimpleEntity(currentBase));
                         currentBase = currentBase.BaseType;
                     }
-                    model.BaseChain = new ReadOnlyCollection<ICodeDocEntity>(baseChain.ToArray());
+                    model.BaseChain = new ReadOnlyCollection<ICodeDocMember>(baseChain.ToArray());
                 }
             }
 
@@ -783,7 +853,7 @@ namespace DandyDoc.CodeDoc
                             parentGenericArguments = type.DeclaringType.GetGenericArguments();
                         }
 
-                        var genericModels = new List<ICodeDocGenericParameter>();
+                        var genericModels = new List<CodeDocGenericParameter>();
                         foreach (var genericArgument in genericArguments) {
                             var argumentName = genericArgument.Name;
                             Contract.Assume(!String.IsNullOrEmpty(argumentName));
@@ -814,59 +884,59 @@ namespace DandyDoc.CodeDoc
 
                             genericModels.Add(genericModel);
                         }
-                        model.GenericParameters = new ReadOnlyCollection<ICodeDocGenericParameter>(genericModels);
+                        model.GenericParameters = new ReadOnlyCollection<CodeDocGenericParameter>(genericModels);
                     }
                 }
             }
 
-            var nestedTypeModels = new List<ICodeDocEntity>();
-            var nestedDelegateModels = new List<ICodeDocEntity>();
+            var nestedTypeModels = new List<ICodeDocMember>();
+            var nestedDelegateModels = new List<ICodeDocMember>();
             foreach (var nestedType in type.GetAllNestedTypes().Where(MemberFilter)) {
-                var nestedTypeModel = ConvertToContentEntity(nestedType)
-                    ?? ConvertToSimpleEntity(nestedType);
+                var nestedTypeModel = ConvertToModel((MemberInfo)nestedType)
+                    ?? ConvertToSimpleModel(nestedType);
                 if (nestedType.IsDelegateType())
                     nestedDelegateModels.Add(nestedTypeModel);
                 else
                     nestedTypeModels.Add(nestedTypeModel);
             }
-            model.NestedTypes = new ReadOnlyCollection<ICodeDocEntity>(nestedTypeModels);
-            model.NestedDelegates = new List<ICodeDocEntity>(nestedDelegateModels);
+            model.NestedTypes = new ReadOnlyCollection<ICodeDocMember>(nestedTypeModels);
+            model.NestedDelegates = new List<ICodeDocMember>(nestedDelegateModels);
 
-            var methodModels = new List<ICodeDocEntity>();
-            var operatorModels = new List<ICodeDocEntity>();
+            var methodModels = new List<ICodeDocMember>();
+            var operatorModels = new List<ICodeDocMember>();
             foreach (var methodInfo in type.GetAllMethods().Where(MemberFilter)) {
-                var methodModel = ConvertToContentEntity(methodInfo)
-                    ?? ConvertToSimpleEntity(methodInfo);
+                var methodModel = ConvertToModel((MemberInfo)methodInfo)
+                    ?? ConvertToSimpleModel(methodInfo);
                 if (methodInfo.IsOperatorOverload())
                     operatorModels.Add(methodModel);
                 else
                     methodModels.Add(methodModel);
             }
-            model.Methods = new ReadOnlyCollection<ICodeDocEntity>(methodModels);
-            model.Operators = new ReadOnlyCollection<ICodeDocEntity>(operatorModels);
+            model.Methods = new ReadOnlyCollection<ICodeDocMember>(methodModels);
+            model.Operators = new ReadOnlyCollection<ICodeDocMember>(operatorModels);
 
-            model.Constructors = new ReadOnlyCollection<ICodeDocEntity>(type
+            model.Constructors = new ReadOnlyCollection<ICodeDocMember>(type
                 .GetAllConstructors()
                 .Where(MemberFilter)
-                .Select(x => ConvertToContentEntity(x) ?? ConvertToSimpleEntity(x))
+                .Select(x => ConvertToModel((MemberInfo)x) ?? ConvertToSimpleModel(x))
                 .ToArray());
 
-            model.Properties = new ReadOnlyCollection<ICodeDocEntity>(type
+            model.Properties = new ReadOnlyCollection<ICodeDocMember>(type
                 .GetAllProperties()
                 .Where(MemberFilter)
-                .Select(x => ConvertToContentEntity(x) ?? ConvertToSimpleEntity(x))
+                .Select(x => ConvertToModel((MemberInfo)x) ?? ConvertToSimpleModel(x))
                 .ToArray());
 
-            model.Fields = new ReadOnlyCollection<ICodeDocEntity>(type
+            model.Fields = new ReadOnlyCollection<ICodeDocMember>(type
                 .GetAllFields()
                 .Where(MemberFilter)
-                .Select(x => ConvertToContentEntity(x) ?? ConvertToSimpleEntity(x))
+                .Select(x => ConvertToModel((MemberInfo)x) ?? ConvertToSimpleModel(x))
                 .ToArray());
 
-            model.Events = new ReadOnlyCollection<ICodeDocEntity>(type
+            model.Events = new ReadOnlyCollection<ICodeDocMember>(type
                 .GetAllEvents()
                 .Where(MemberFilter)
-                .Select(x => ConvertToContentEntity(x) ?? ConvertToSimpleEntity(x))
+                .Select(x => ConvertToModel((MemberInfo)x) ?? ConvertToSimpleModel(x))
                 .ToArray());
 
             if (model is CodeDocDelegate){
@@ -889,7 +959,7 @@ namespace DandyDoc.CodeDoc
                         return paramModel;
                     })
                     .ToArray();
-                delegateResult.Parameters = new ReadOnlyCollection<ICodeDocParameter>(parameterModels);
+                delegateResult.Parameters = new ReadOnlyCollection<CodeDocParameter>(parameterModels);
 
                 var returnType = type.GetDelegateReturnType();
                 if(returnType != null && returnType != typeof(void)) {
@@ -914,7 +984,7 @@ namespace DandyDoc.CodeDoc
                                 : new CRefIdentifier(xmlDocException.CRef);
                             CodeDocException exceptionModel;
                             if (!exceptionLookup.TryGetValue(exceptionCRef, out exceptionModel)){
-                                exceptionModel = new CodeDocException(GetSimpleEntity(exceptionCRef) ?? CreateSimpleEntityTypePlaceholder(exceptionCRef));
+                                exceptionModel = new CodeDocException(GetSimpleMember(exceptionCRef) ?? CreateTypeMemberPlaceholder(exceptionCRef));
                                 exceptionModel.Ensures = new List<XmlDocNode>();
                                 exceptionModel.Conditions = new List<XmlDocNode>();
                                 exceptionLookup.Add(exceptionCRef, exceptionModel);
@@ -946,7 +1016,7 @@ namespace DandyDoc.CodeDoc
                             exceptionModel.Conditions = new ReadOnlyCollection<XmlDocNode>(exceptionModel.Conditions.ToArray());
                         }
 
-                        delegateResult.Exceptions = new ReadOnlyCollection<ICodeDocException>(exceptionModels);
+                        delegateResult.Exceptions = new ReadOnlyCollection<CodeDocException>(exceptionModels);
                     }
 
                     if (model.XmlDocs.HasEnsuresElements){
@@ -963,7 +1033,7 @@ namespace DandyDoc.CodeDoc
             return model;
         }
 
-        private void ApplyCommonAttributes(CodeDocSimpleEntity model, Type type){
+        private void ApplyCommonAttributes(CodeDocSimpleMember model, Type type){
             Contract.Requires(model != null);
             Contract.Requires(type != null);
             Contract.Ensures(!String.IsNullOrEmpty(model.ShortName));
