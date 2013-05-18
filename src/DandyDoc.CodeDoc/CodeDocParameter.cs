@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using DandyDoc.XmlDoc;
 
@@ -17,10 +18,10 @@ namespace DandyDoc.CodeDoc
         /// <param name="name">The parameter name.</param>
         /// <param name="parameterType">The parameter type.</param>
         /// <param name="summary">The optional XML doc summary element.</param>
-        public CodeDocParameter(string name, ICodeDocMember parameterType, XmlDocElement summary = null) {
+        [Obsolete]
+        public CodeDocParameter(string name, ICodeDocMember parameterType, XmlDocElement _ = null) {
             Name = name;
             ParameterType = parameterType;
-            Summary = summary;
         }
 
         /// <summary>
@@ -36,6 +37,7 @@ namespace DandyDoc.CodeDoc
         /// <summary>
         /// Indicates that the parameter has an XML doc summary element.
         /// </summary>
+        [Obsolete]
         public bool HasSummary {
             get { return Summary != null; }
         }
@@ -43,26 +45,27 @@ namespace DandyDoc.CodeDoc
         /// <summary>
         /// Gets the XML doc summary element.
         /// </summary>
+        [Obsolete]
         public XmlDocElement Summary { get; private set; }
 
         /// <summary>
         /// Indicates that the parameter has XML doc summary contents.
         /// </summary>
         public bool HasSummaryContents {
-            get { return Summary != null && Summary.HasChildren; }
+            get { return SummaryContents != null && SummaryContents.Count > 0; }
         }
 
         /// <summary>
         /// Gets the XML doc summary contents.
         /// </summary>
         public IList<XmlDocNode> SummaryContents {
-            get {
+            /*get {
                 Contract.Ensures(Contract.Result<IList<XmlDocNode>>() != null);
                 return HasSummaryContents
                     ? Summary.Children
                     : new XmlDocNode[0];
-            }
-        }
+            }*/
+            get; set; }
 
         /// <summary>
         /// Indicates that this is an out parameter.

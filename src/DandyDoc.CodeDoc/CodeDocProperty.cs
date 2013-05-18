@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using DandyDoc.CRef;
 using DandyDoc.XmlDoc;
@@ -52,28 +53,28 @@ namespace DandyDoc.CodeDoc
         /// <inheritdoc/>
         public ICodeDocMember ValueType { get; set; }
 
-        /// <inheritdoc/>
+        [Obsolete]
         public bool HasValueDescription {
             get { return ValueDescription != null; }
         }
 
-        /// <inheritdoc/>
+        [Obsolete]
         public XmlDocElement ValueDescription {
             get { return XmlDocs == null ? null : XmlDocs.ValueElement; }
         }
 
         /// <inheritdoc/>
-        public bool HasValueDescriptionContents { get { return XmlDocs != null && XmlDocs.HasValueContents; } }
+        public bool HasValueDescriptionContents { get { return ValueDescriptionContents != null && ValueDescriptionContents.Count > 0; } }
 
         /// <inheritdoc/>
         public IList<XmlDocNode> ValueDescriptionContents {
-            get {
+            /*get {
                 Contract.Ensures(Contract.Result<IList<XmlDocNode>>() != null);
                 return XmlDocs != null && XmlDocs.HasValueContents
                     ? XmlDocs.ValueContents
                     : new XmlDocNode[0];
-            }
-        }
+            }*/
+            get; set; }
 
     }
 }

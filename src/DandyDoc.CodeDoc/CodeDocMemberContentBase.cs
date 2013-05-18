@@ -16,7 +16,7 @@ namespace DandyDoc.CodeDoc
         private static readonly XmlDocRefElement[] EmptyXmlDocRefElementArray = new XmlDocRefElement[0];
 
         /// <summary>
-        /// Consrtructor for a code doc member model.
+        /// Constructor for a code doc member model.
         /// </summary>
         /// <param name="cRef">The code reference of this member.</param>
         protected CodeDocMemberContentBase(CRefIdentifier cRef) : base(cRef) {
@@ -26,66 +26,66 @@ namespace DandyDoc.CodeDoc
         /// <summary>
         /// Indicates that this model has XML doc examples.
         /// </summary>
-        public bool HasExamples { get { return Examples.Count > 0; } }
+        public bool HasExamples { get { return Examples != null && Examples.Count > 0; } }
 
         /// <summary>
         /// Gets the XML doc example elements.
         /// </summary>
         public IList<XmlDocElement> Examples {
-            get {
+            /*get {
                 Contract.Ensures(Contract.Result<IList<XmlDocElement>>() != null);
                 Contract.Ensures(Contract.ForAll(Contract.Result<IList<XmlDocElement>>(), x => x != null));
                 return XmlDocs == null ? EmptyXmlDocElementArray : XmlDocs.ExampleElements;
-            }
-        }
+            }*/
+            get; set; }
 
         /// <summary>
         /// Indicates that this model has XML doc permissions.
         /// </summary>
-        public bool HasPermissions { get { return Permissions.Count > 0; } }
+        public bool HasPermissions { get { return Permissions != null && Permissions.Count > 0; } }
 
         /// <summary>
         /// Gets the XML doc permissions elements.
         /// </summary>
         public IList<XmlDocRefElement> Permissions {
-            get {
+            /*get {
                 Contract.Ensures(Contract.Result<IList<XmlDocRefElement>>() != null);
                 Contract.Ensures(Contract.ForAll(Contract.Result<IList<XmlDocRefElement>>(), x => x != null));
                 return XmlDocs == null ? EmptyXmlDocRefElementArray : XmlDocs.PermissionElements;
-            }
-        }
+            }*/
+            get; set; }
 
         /// <summary>
         /// Indicates that this model has XML doc remarks.
         /// </summary>
-        public bool HasRemarks { get { return Remarks.Count > 0; } }
+        public bool HasRemarks { get { return Remarks != null && Remarks.Count > 0; } }
 
         /// <summary>
         /// Gets the XML doc remarks elements.
         /// </summary>
         public IList<XmlDocElement> Remarks {
-            get {
+            /*get {
                 Contract.Ensures(Contract.Result<IList<XmlDocElement>>() != null);
                 Contract.Ensures(Contract.ForAll(Contract.Result<IList<XmlDocElement>>(), x => x != null));
                 return XmlDocs == null ? EmptyXmlDocElementArray : XmlDocs.RemarksElements;
-            }
-        }
+            }*/
+            get; set; }
 
         /// <summary>
         /// Indicates that this model has XML doc see also links.
         /// </summary>
-        public bool HasSeeAlso { get { return SeeAlso.Count > 0; } }
+        public bool HasSeeAlso { get { return SeeAlso != null && SeeAlso.Count > 0; } }
 
         /// <summary>
         /// Gets the XML doc see also elements.
         /// </summary>
         public IList<XmlDocRefElement> SeeAlso {
-            get {
+            /*get {
                 Contract.Ensures(Contract.Result<IList<XmlDocRefElement>>() != null);
                 Contract.Ensures(Contract.ForAll(Contract.Result<IList<XmlDocRefElement>>(), x => x != null));
                 return XmlDocs == null ? EmptyXmlDocRefElementArray : XmlDocs.SeeAlsoElements;
-            }
-        }
+            }*/
+            get; set; }
 
         /// <summary>
         /// Gets the declaring member model for this member model.
@@ -101,6 +101,16 @@ namespace DandyDoc.CodeDoc
         /// Gets the assembly for this model.
         /// </summary>
         public ICodeDocMember Assembly { get; set; }
+
+        /// <summary>
+        /// Indicates that this member is obsolete.
+        /// </summary>
+        public bool IsObsolete { get; set; }
+
+        /// <summary>
+        /// Indicates that this member is static.
+        /// </summary>
+        public bool IsStatic { get; set; }
 
     }
 }

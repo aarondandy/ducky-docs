@@ -1,5 +1,4 @@
-﻿@using System.Text.RegularExpressions
-@using DandyDoc.CodeDoc
+﻿@using DandyDoc.CodeDoc
 @using DandyDoc.Web.Mvc4.Helpers
 @model dynamic
 @{
@@ -11,7 +10,7 @@
     ViewBag.EntityTitle = entityModel.Title;
     ViewBag.EntitySubTitle = entityModel.SubTitle;
   }
-  var contentModel = Model as ICodeDocMemberContent;
+  var contentModel = Model as CodeDocMemberContentBase;
 }
 <div class="container">
   <div class="row">

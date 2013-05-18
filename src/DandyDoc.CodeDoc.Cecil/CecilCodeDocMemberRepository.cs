@@ -512,11 +512,6 @@ namespace DandyDoc.CodeDoc
         private void ApplySimpleEntityAttributes(CodeDocSimpleMember member, MemberReference memberReference) {
             Contract.Requires(memberReference != null);
             member.ExternalVisibility = memberReference.GetExternalVisibility();
-            var definition = memberReference.ToDefinition();
-            if (definition != null) {
-                member.IsStatic = definition.IsStatic();
-                member.IsObsolete = definition.HasAttribute(x => x.AttributeType.FullName == "System.ObsoleteAttribute");
-            }
         }
 
         private void ApplyCommonAttributes(CodeDocSimpleMember model, PropertyReference propertyReference) {
@@ -568,6 +563,10 @@ namespace DandyDoc.CodeDoc
             }
 
             var propertyDefinition = propertyReference.ToDefinition();
+            if (propertyDefinition != null) {
+                model.IsStatic = propertyDefinition.IsStatic();
+                model.IsObsolete = propertyDefinition.HasAttribute(x => x.AttributeType.FullName == "System.ObsoleteAttribute");
+            }
 
             var getterMethodInfo = propertyDefinition == null ? null : propertyDefinition.GetMethod;
             if (getterMethodInfo != null && MemberFilter(getterMethodInfo, true)) {
@@ -631,6 +630,13 @@ namespace DandyDoc.CodeDoc
             model.Namespace = GetCodeDocNamespaceByName(eventReference.DeclaringType.Namespace);
             model.Assembly = GetCodeDocAssembly(eventReference.DeclaringType.Module.Assembly);
             model.DeclaringType = GetSimpleEntity(eventReference.DeclaringType);
+
+            var eventDefinition = eventReference.ToDefinition();
+            if (eventDefinition != null) {
+                model.IsStatic = eventDefinition.IsStatic();
+                model.IsObsolete = eventDefinition.HasAttribute(x => x.AttributeType.FullName == "System.ObsoleteAttribute");
+            }
+
             return model;
         }
 
@@ -671,6 +677,8 @@ namespace DandyDoc.CodeDoc
             if (fieldDefinition != null) {
                 model.IsLiteral = fieldDefinition.IsLiteral;
                 model.IsInitOnly = fieldDefinition.IsInitOnly;
+                model.IsStatic = fieldDefinition.IsStatic;
+                model.IsObsolete = fieldDefinition.HasAttribute(x => x.AttributeType.FullName == "System.ObsoleteAttribute");
             }
 
             var declaringTypeReference = fieldReference.DeclaringType;
@@ -732,6 +740,8 @@ namespace DandyDoc.CodeDoc
                 model.IsOperatorOverload = methodDefinition.IsOperatorOverload();
                 model.IsExtensionMethod = methodDefinition.IsExtensionMethod();
                 model.IsSealed = methodDefinition.IsSealed();
+                model.IsStatic = methodDefinition.IsStatic;
+                model.IsObsolete = methodDefinition.HasAttribute(x => x.AttributeType.FullName == "System.ObsoleteAttribute");
             }
 
             if (methodDefinition != null) {
@@ -868,6 +878,8 @@ namespace DandyDoc.CodeDoc
                 model.IsEnum = typeDefinition.IsEnum;
                 model.IsFlagsEnum = typeDefinition.IsEnum && typeDefinition.HasAttribute(x => x.AttributeType.FullName == "System.FlagsAttribute");
                 model.IsSealed = typeDefinition.IsSealed;
+                model.IsStatic = typeDefinition.IsStatic();
+                model.IsObsolete = typeDefinition.HasAttribute(x => x.AttributeType.FullName == "System.ObsoleteAttribute");
             }
 
             if (typeReference.DeclaringType != null) {

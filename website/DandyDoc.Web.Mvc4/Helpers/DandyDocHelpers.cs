@@ -622,6 +622,7 @@ namespace DandyDoc.Web.Mvc4.Helpers
         private static IEnumerable<FlairItem> GetFlair(ICodeDocMember member){
             Contract.Requires(member != null);
 
+            var content = member as CodeDocMemberContentBase;
             var invokable = member as ICodeDocInvokable;
             var property = member as CodeDocProperty;
             var field = member as CodeDocField;
@@ -641,14 +642,16 @@ namespace DandyDoc.Web.Mvc4.Helpers
                 }
             }
 
-            if (member.IsStatic) {
-                if (invokable == null || !invokable.IsOperatorOverload)
-                    yield return DefaultStaticTag;
+            if (content != null) {
+                if (content.IsStatic) {
+                    if (invokable == null || !invokable.IsOperatorOverload)
+                        yield return DefaultStaticTag;
+                }
+
+                if (content.IsObsolete)
+                    yield return DefaultObsoleteTag;
+
             }
-
-            if (member.IsObsolete)
-                yield return DefaultObsoleteTag;
-
             if (type != null) {
                 if (invokable == null) {
                     if (type.IsFlagsEnum)
@@ -656,7 +659,7 @@ namespace DandyDoc.Web.Mvc4.Helpers
 
                     if (type.IsValueType)
                         yield return DefaultValueTypeTag;
-                    else if (type.IsSealed)
+                    else if (type.IsSealed && !type.IsStatic)
                         yield return DefaultSealedTag;
                 }
             }

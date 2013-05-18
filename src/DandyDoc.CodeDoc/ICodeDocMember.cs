@@ -64,21 +64,9 @@ namespace DandyDoc.CodeDoc
         IList<XmlDocNode> SummaryContents { get; }
 
         /// <summary>
-        /// Indicates that this member is static.
-        /// </summary>
-        [Obsolete]
-        bool IsStatic { get; }
-
-        /// <summary>
         /// The external visibility of the member.
         /// </summary>
         ExternalVisibilityKind ExternalVisibility { get; }
-
-        /// <summary>
-        /// Indicates that this member is obsolete.
-        /// </summary>
-        [Obsolete]
-        bool IsObsolete { get; } 
 
     }
 }

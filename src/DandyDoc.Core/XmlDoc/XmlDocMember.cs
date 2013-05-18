@@ -31,6 +31,7 @@ namespace DandyDoc.XmlDoc
             public IList<XmlDocNameElement> TypeParameterSummaries;
             public XmlDocMember Getter;
             public XmlDocMember Setter;
+            public XmlDocElement Inheritdoc;
 
             public XmlDocElement PureElement;
             public IList<XmlDocContractElement> RequiresElements;
@@ -116,6 +117,10 @@ namespace DandyDoc.XmlDoc
                     if (result.PureElement == null)
                         result.PureElement = child;
                 }
+                else if ("INHERITDOC".Equals(child.Name, StringComparison.OrdinalIgnoreCase)) {
+                    if (result.Inheritdoc == null)
+                        result.Inheritdoc = child;
+                }
                 else if (child is XmlDocMember) {
                     if ("GETTER".Equals(child.Name, StringComparison.OrdinalIgnoreCase)) {
                         if (child.HasChildren && result.Getter == null)
@@ -194,6 +199,20 @@ namespace DandyDoc.XmlDoc
         /// </summary>
         public bool HasSummaryContents {
             get { return SummaryContents.Count > 0; }
+        }
+
+        /// <summary>
+        /// Gets the element indicating that documentation should be inherited.
+        /// </summary>
+        public XmlDocElement InheritDoc {
+            get { return _guts.Inheritdoc; }
+        }
+
+        /// <summary>
+        /// Determines if this member has an inherit documentation element.
+        /// </summary>
+        public bool HasInheritDoc {
+            get { return InheritDoc != null; }
         }
 
         /// <summary>

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using DandyDoc.XmlDoc;
 
 namespace DandyDoc.CodeDoc
@@ -14,14 +15,10 @@ namespace DandyDoc.CodeDoc
         /// </summary>
         ICodeDocMember ValueType { get; }
 
-        /// <summary>
-        /// Indicates that this member has a value description.
-        /// </summary>
+        [Obsolete]
         bool HasValueDescription { get; }
 
-        /// <summary>
-        /// Gets the value description element.
-        /// </summary>
+        [Obsolete]
         XmlDocElement ValueDescription { get; }
 
         /// <summary>

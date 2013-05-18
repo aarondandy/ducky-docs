@@ -74,8 +74,8 @@ namespace DandyDoc.CodeDoc.Tests
             var model = TestLibrary1Repository
                 .GetContentMember("TestLibrary1.Class1") as CodeDocType;
 
-            Assert.IsTrue(model.HasSummary);
-            Assert.AreEqual("This class is just for testing and has no real use outside of generating some documentation.", model.Summary.Node.InnerText);
+            Assert.IsTrue(model.HasSummaryContents);
+            Assert.AreEqual("This class is just for testing and has no real use outside of generating some documentation.", model.SummaryContents.First().Node.OuterXml);
             Assert.IsTrue(model.HasExamples);
             Assert.AreEqual(2, model.Examples.Count);
             Assert.AreEqual("Example 1", model.Examples[0].Node.InnerText);
@@ -106,7 +106,7 @@ namespace DandyDoc.CodeDoc.Tests
                 "no remarks here",
                 model.NestedTypes
                     .First(x => x.ShortName == "NoRemarks")
-                    .Summary.Node.InnerText);
+                    .SummaryContents.First().Node.OuterXml);
 
             Assert.IsTrue(model.HasNestedDelegates);
             Assert.AreEqual(1, model.NestedDelegates.Count);
@@ -151,8 +151,8 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual("TestLibrary1", model.NamespaceName);
             Assert.IsTrue(model.IsEnum);
 
-            Assert.IsTrue(model.HasSummary);
-            Assert.AreEqual("An enumeration to check detection of the flags attribute.", model.Summary.Node.InnerText);
+            Assert.IsTrue(model.HasSummaryContents);
+            Assert.AreEqual("An enumeration to check detection of the flags attribute.", model.SummaryContents.First().Node.OuterXml);
             Assert.IsTrue(model.HasExamples);
             Assert.AreEqual(1, model.Examples.Count);
             Assert.AreEqual("FlagsEnum.AB == FlagsEnum.A | FlagsEnum.B;", model.Examples[0].Node.InnerText);
@@ -190,7 +190,7 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.IsNotNull(model.DeclaringType);
             Assert.AreEqual("T:TestLibrary1.Class1", model.DeclaringType.CRef.FullCRef);
 
-            Assert.IsFalse(model.HasSummary);
+            Assert.IsFalse(model.HasSummaryContents);
             Assert.IsFalse(model.HasExamples);
             Assert.IsFalse(model.HasPermissions);
             Assert.IsFalse(model.HasSeeAlso);
@@ -326,8 +326,8 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual("MyConst", field.ShortName);
             Assert.AreEqual("Constant", field.SubTitle);
             Assert.AreEqual(new CRefIdentifier("T:System.Int32"), field.ValueType.CRef);
-            Assert.IsTrue(field.HasValueDescription);
-            Assert.AreEqual("1", field.ValueDescription.Node.InnerText.Trim());
+            Assert.IsTrue(field.HasValueDescriptionContents);
+            Assert.AreEqual("1", field.ValueDescriptionContents.First().Node.OuterXml.Trim());
             Assert.IsTrue(field.IsLiteral);
             Assert.IsFalse(field.IsInitOnly);
             Assert.IsTrue(field.IsStatic);
@@ -342,8 +342,8 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual("SomeField", field.ShortName);
             Assert.AreEqual("Field", field.SubTitle);
             Assert.AreEqual(new CRefIdentifier("T:System.Double"), field.ValueType.CRef);
-            Assert.IsTrue(field.HasValueDescription);
-            Assert.AreEqual("A double value.", field.ValueDescription.Node.InnerText);
+            Assert.IsTrue(field.HasValueDescriptionContents);
+            Assert.AreEqual("A double value.", field.ValueDescriptionContents.First().Node.OuterXml);
             Assert.IsFalse(field.IsLiteral);
             Assert.IsFalse(field.IsInitOnly);
             Assert.IsTrue(field.IsStatic);
@@ -425,8 +425,8 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.IsTrue(method.IsStatic);
             Assert.IsTrue(method.HasReturn);
             Assert.AreEqual("T:System.Double", method.Return.ParameterType.CRef.FullCRef);
-            Assert.IsTrue(method.Return.HasSummary);
-            Assert.AreEqual("The result of doubling the value.", method.Return.Summary.Node.InnerText);
+            Assert.IsTrue(method.Return.HasSummaryContents);
+            Assert.AreEqual("The result of doubling the value.", method.Return.SummaryContents.First().Node.OuterXml);
 
             Assert.IsTrue(method.HasParameters);
             Assert.AreEqual(1, method.Parameters.Count);
@@ -509,18 +509,18 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.IsNotNull(type);
             Assert.IsNotNull(type.DeclaringType);
             Assert.AreEqual("T:TestLibrary1.Class1", type.DeclaringType.CRef.FullCRef);
-            Assert.IsTrue(type.HasSummary);
-            Assert.That(type.Summary.Node.InnerText.Contains("My delegate."));
+            Assert.IsTrue(type.HasSummaryContents);
+            Assert.That(type.SummaryContents.First().Node.OuterXml.Contains("My delegate."));
             Assert.IsTrue(type.HasRemarks);
 
             Assert.IsFalse(type.HasGenericParameters);
             Assert.IsTrue(type.HasParameters);
             Assert.AreEqual(2, type.Parameters.Count);
             Assert.AreEqual("a", type.Parameters[0].Name);
-            Assert.AreEqual("param a", type.Parameters[0].Summary.Node.InnerText);
+            Assert.AreEqual("param a", type.Parameters[0].SummaryContents.First().Node.OuterXml);
             Assert.AreEqual("T:System.Int32", type.Parameters[0].ParameterType.CRef.FullCRef);
             Assert.AreEqual("b", type.Parameters[1].Name);
-            Assert.AreEqual("param b", type.Parameters[1].Summary.Node.InnerText);
+            Assert.AreEqual("param b", type.Parameters[1].SummaryContents.First().Node.OuterXml);
             Assert.AreEqual("T:System.Int32", type.Parameters[1].ParameterType.CRef.FullCRef);
             Assert.IsTrue(type.HasReturn);
             Assert.AreEqual("T:System.Int32", type.Return.ParameterType.CRef.FullCRef);
@@ -555,8 +555,8 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual("E:TestLibrary1.Class1.DoStuff", evt.CRef.FullCRef);
             Assert.AreEqual("TestLibrary1.Class1.DoStuff", evt.FullName);
             Assert.AreEqual("T:TestLibrary1.Class1.MyFunc", evt.DelegateType.CRef.FullCRef);
-            Assert.IsTrue(evt.HasSummary);
-            Assert.That(evt.Summary.Node.InnerText.Contains("My event!"));
+            Assert.IsTrue(evt.HasSummaryContents);
+            Assert.That(evt.SummaryContents.First().Node.OuterXml.Contains("My event!"));
             Assert.IsTrue(evt.HasRemarks);
             Assert.AreEqual(1, evt.Remarks.Count);
             Assert.That(evt.Remarks[0].Node.InnerText.Contains("stuff"));
@@ -578,8 +578,8 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual("Property", prop.SubTitle);
             Assert.AreEqual("TestLibrary1.Class1.HasTableInRemarks", prop.FullName);
             Assert.AreEqual("P:TestLibrary1.Class1.HasTableInRemarks", prop.CRef.FullCRef);
-            Assert.IsTrue(prop.HasSummary);
-            Assert.That(prop.Summary.Node.InnerText.Contains("This has a table in the remarks section."));
+            Assert.IsTrue(prop.HasSummaryContents);
+            Assert.That(prop.SummaryContents.First().Node.OuterXml.Contains("This has a table in the remarks section."));
             Assert.IsTrue(prop.HasRemarks);
             Assert.IsFalse(prop.HasGetter);
             Assert.IsTrue(prop.HasSetter);
@@ -593,15 +593,15 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.IsNotNull(prop);
 
             Assert.AreEqual("T:System.Int32", prop.ValueType.CRef.FullCRef);
-            Assert.IsTrue(prop.HasSummary);
-            Assert.IsTrue(prop.HasValueDescription);
-            Assert.AreEqual("Some number.", prop.ValueDescription.Node.InnerText);
+            Assert.IsTrue(prop.HasSummaryContents);
+            Assert.IsTrue(prop.HasValueDescriptionContents);
+            Assert.AreEqual("Some number.", prop.ValueDescriptionContents.First().Node.OuterXml);
 
             Assert.IsTrue(prop.HasParameters);
             Assert.AreEqual(1, prop.Parameters.Count);
             Assert.AreEqual("n", prop.Parameters[0].Name);
             Assert.AreEqual("T:System.Int32", prop.Parameters[0].ParameterType.CRef.FullCRef);
-            Assert.IsTrue(prop.Parameters[0].HasSummary);
+            Assert.IsTrue(prop.Parameters[0].HasSummaryContents);
             Assert.AreEqual("an index", prop.Parameters[0].Summary.Node.InnerText);
         }
 

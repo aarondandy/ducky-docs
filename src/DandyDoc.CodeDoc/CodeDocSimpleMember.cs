@@ -50,10 +50,7 @@ namespace DandyDoc.CodeDoc
         /// <inheritdoc/>
         public ExternalVisibilityKind ExternalVisibility { get; set; }
 
-        /// <inheritdoc/>
-        public bool IsObsolete { get; set; }
-
-        /// <inheritdoc/>
+        [Obsolete]
         public bool HasSummary {
             get {
                 var summary = Summary;
@@ -61,16 +58,13 @@ namespace DandyDoc.CodeDoc
             }
         }
 
-        /// <inheritdoc/>
+        [Obsolete]
         public XmlDocElement Summary {
             get { return XmlDocs == null ? null : XmlDocs.SummaryElement; }
         }
 
-        /// <inheritdoc/>
+        [Obsolete]
         public XmlDocMember XmlDocs { get; set; }
-
-        /// <inheritdoc/>
-        public bool IsStatic { get; set; }
 
         /// <inheritdoc/>
         public override string ToString() {
@@ -79,18 +73,11 @@ namespace DandyDoc.CodeDoc
 
         /// <inheritdoc/>
         public bool HasSummaryContents {
-            get { return XmlDocs != null && XmlDocs.HasSummaryContents; }
+            get { return SummaryContents != null && SummaryContents.Count > 0; }
         }
 
         /// <inheritdoc/>
-        public IList<XmlDocNode> SummaryContents {
-            get {
-                Contract.Ensures(Contract.Result<IList<XmlDocNode>>() != null);
-                return XmlDocs != null && XmlDocs.HasSummaryContents
-                    ? XmlDocs.SummaryContents
-                    : new XmlDocNode[0];
-            }
-        }
+        public IList<XmlDocNode> SummaryContents { get; set; }
 
     }
 }

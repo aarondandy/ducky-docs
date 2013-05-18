@@ -31,25 +31,25 @@ namespace DandyDoc.Web.Mvc4.Controllers
                 return HttpNotFound();
 
             if (model is CodeDocNamespace)
-                return View("Api/Namespace", model);
+                return View("Api/Namespace", (CodeDocNamespace)model);
 
             if (model is CodeDocType) {
                 var codeDocType = (CodeDocType)model;
                 if (codeDocType is CodeDocDelegate)
-                    return View("Api/Delegate", codeDocType);
+                    return View("Api/Delegate", (CodeDocDelegate)codeDocType);
                 if (codeDocType.IsEnum)
                     return View("Api/Enum", codeDocType);
                 return View("Api/Type", codeDocType);
             }
 
             if (model is CodeDocEvent)
-                return View("Api/Event", model);
+                return View("Api/Event", (CodeDocEvent)model);
             if (model is CodeDocField)
-                return View("Api/Field", model);
+                return View("Api/Field", (CodeDocField)model);
             if (model is CodeDocMethod)
-                return View("Api/Method", model);
+                return View("Api/Method", (CodeDocMethod)model);
             if (model is CodeDocProperty)
-                return View("Api/Property", model);
+                return View("Api/Property", (CodeDocProperty)model);
 
             return HttpNotFound();
         }
