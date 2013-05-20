@@ -39,24 +39,36 @@ namespace DandyDoc.CodeDoc
         public IList<CodeDocSimpleNamespace> Namespaces { get; protected set; }
 
         /// <inheritdoc/>
+        [Obsolete]
         public virtual ICodeDocMember GetContentMember(string cRef) {
-            if (String.IsNullOrEmpty(cRef)) throw new ArgumentException("CRef is not valid.", "cRef");
+            if (String.IsNullOrEmpty(cRef)) throw new ArgumentException("Code reference is not valid.", "cRef");
             Contract.EndContractBlock();
             return GetContentMember(new CRefIdentifier(cRef));
         }
 
         /// <inheritdoc/>
+        [Obsolete]
         public abstract ICodeDocMember GetContentMember(CRefIdentifier cRef);
 
         /// <inheritdoc/>
+        [Obsolete]
         public ICodeDocMember GetSimpleMember(string cRef) {
-            if (String.IsNullOrEmpty(cRef)) throw new ArgumentException("CRef is not valid.", "cRef");
+            if (String.IsNullOrEmpty(cRef)) throw new ArgumentException("Code reference is not valid.", "cRef");
             Contract.EndContractBlock();
             return GetSimpleMember(new CRefIdentifier(cRef));
         }
 
         /// <inheritdoc/>
+        [Obsolete]
         public abstract ICodeDocMember GetSimpleMember(CRefIdentifier cRef);
+
+        public ICodeDocMember GetMemberModel(string cRef) {
+            if (String.IsNullOrEmpty(cRef)) throw new ArgumentException("Code reference is not valid.", "cRef");
+            Contract.EndContractBlock();
+            return GetMemberModel(new CRefIdentifier(cRef));
+        }
+
+        public abstract ICodeDocMember GetMemberModel(CRefIdentifier cRef);
 
         /// <summary>
         /// Gets a namespace model by code reference.
@@ -150,6 +162,7 @@ namespace DandyDoc.CodeDoc
                 ExternalVisibility = ExternalVisibilityKind.Public
             };
         }
+
 
     }
 }

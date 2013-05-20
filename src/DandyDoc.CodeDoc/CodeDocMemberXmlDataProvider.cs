@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Linq;
 using DandyDoc.XmlDoc;
 
 namespace DandyDoc.CodeDoc
@@ -39,7 +38,6 @@ namespace DandyDoc.CodeDoc
             return XmlDoc.ValueContents;
         }
 
-
         public bool HasPermissions {
             get { return XmlDoc.HasPermissionElements; }
         }
@@ -68,6 +66,18 @@ namespace DandyDoc.CodeDoc
             get {
                 return XmlDoc.HasPureElement ? true : default(bool?);
             }
+        }
+
+        public ExternalVisibility.ExternalVisibilityKind? ExternalVisibility {
+            get { return null; }
+        }
+
+        public bool? IsStatic {
+            get { return null; }
+        }
+
+        public bool? IsObsolete {
+            get{ return null; }
         }
     }
 }

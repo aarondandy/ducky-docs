@@ -293,6 +293,24 @@ namespace DandyDoc.CodeDoc
 
         /// <inheritdoc/>
         public override ICodeDocMember GetContentMember(CRefIdentifier cRef) {
+            /*if (cRef == null) throw new ArgumentNullException("cRef");
+            Contract.EndContractBlock();
+
+            if ("N".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
+                return ToFullNamespace(GetCodeDocSimpleNamespace(cRef));
+            if ("A".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
+                return GetCodeDocSimpleAssembly(cRef);
+
+            var memberReference = GetMemberReferencePreferDefinition(cRef);
+            if (memberReference == null || !MemberFilter(memberReference))
+                return null;
+
+            return ConvertToModel(memberReference);*/
+            throw new NotSupportedException();
+        }
+
+        /// <inheritdoc/>
+        public override ICodeDocMember GetMemberModel(CRefIdentifier cRef) {
             if (cRef == null) throw new ArgumentNullException("cRef");
             Contract.EndContractBlock();
 
@@ -331,7 +349,7 @@ namespace DandyDoc.CodeDoc
 
         /// <inheritdoc/>
         public override ICodeDocMember GetSimpleMember(CRefIdentifier cRef) {
-            if (cRef == null) throw new ArgumentNullException("cRef");
+            /*if (cRef == null) throw new ArgumentNullException("cRef");
             Contract.EndContractBlock();
 
             if ("N".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
@@ -344,7 +362,8 @@ namespace DandyDoc.CodeDoc
             if (memberReference == null || !MemberFilter(memberReference))
                 return null;
 
-            return ConvertToSimpleModel(memberReference);
+            return ConvertToSimpleModel(memberReference);*/
+            throw new NotSupportedException();
         }
 
         private ICodeDocMember GetSimpleEntity(MemberReference memberReference) {

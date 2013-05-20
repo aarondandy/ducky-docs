@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using DandyDoc.ExternalVisibility;
 using DandyDoc.XmlDoc;
 
 namespace DandyDoc.CodeDoc
@@ -30,6 +31,12 @@ namespace DandyDoc.CodeDoc
         IEnumerable<XmlDocRefElement> GetSeeAlsos();
 
         bool? IsPure { get; }
+
+        ExternalVisibilityKind? ExternalVisibility { get; }
+
+        bool? IsStatic { get; }
+
+        bool? IsObsolete { get; }
 
     }
 }

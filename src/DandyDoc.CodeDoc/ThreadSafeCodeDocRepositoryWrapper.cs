@@ -40,6 +40,7 @@ namespace DandyDoc.CodeDoc
         /// </summary>
         /// <param name="cRef">The code reference.</param>
         /// <returns>The member.</returns>
+        [Obsolete]
         public ICodeDocMember GetContentMember(string cRef) {
             lock (_mutex) {
                 return Repository.GetContentMember(cRef);
@@ -51,6 +52,7 @@ namespace DandyDoc.CodeDoc
         /// </summary>
         /// <param name="cRef">The code reference.</param>
         /// <returns>The member.</returns>
+        [Obsolete]
         public ICodeDocMember GetContentMember(CRefIdentifier cRef) {
             lock (_mutex) {
                 return Repository.GetContentMember(cRef);
@@ -62,6 +64,7 @@ namespace DandyDoc.CodeDoc
         /// </summary>
         /// <param name="cRef">The code reference.</param>
         /// <returns>The member.</returns>
+        [Obsolete]
         public ICodeDocMember GetSimpleMember(string cRef) {
             lock (_mutex) {
                 return Repository.GetSimpleMember(cRef);
@@ -73,9 +76,32 @@ namespace DandyDoc.CodeDoc
         /// </summary>
         /// <param name="cRef">The code reference.</param>
         /// <returns>The member.</returns>
+        [Obsolete]
         public ICodeDocMember GetSimpleMember(CRefIdentifier cRef) {
             lock (_mutex) {
                 return Repository.GetSimpleMember(cRef);
+            }
+        }
+
+        /// <summary>
+        /// A locked request to the wrapped repository for a member model.
+        /// </summary>
+        /// <param name="cRef">The code reference.</param>
+        /// <returns>The member model.</returns>
+        public ICodeDocMember GetMemberModel(string cRef) {
+            lock (_mutex) {
+                return Repository.GetMemberModel(cRef);
+            }
+        }
+
+        /// <summary>
+        /// A locked request to the wrapped repository for a member model.
+        /// </summary>
+        /// <param name="cRef">The code reference.</param>
+        /// <returns>The member model.</returns>
+        public ICodeDocMember GetMemberModel(CRefIdentifier cRef) {
+            lock (_mutex) {
+                return Repository.GetMemberModel(cRef);
             }
         }
 
@@ -100,5 +126,6 @@ namespace DandyDoc.CodeDoc
                 }
             }
         }
+
     }
 }

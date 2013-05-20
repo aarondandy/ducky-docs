@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using DandyDoc.CodeDoc.Utility;
 using DandyDoc.XmlDoc;
 
 namespace DandyDoc.CodeDoc
@@ -10,6 +12,8 @@ namespace DandyDoc.CodeDoc
         Collection<ICodeDocMemberDataProvider>,
         ICodeDocMemberDataProvider
     {
+
+        
 
         public CodeDocMemberDataProviderCollection()
             : this(new List<ICodeDocMemberDataProvider>()) { }
@@ -98,9 +102,19 @@ namespace DandyDoc.CodeDoc
         }
 
         public virtual bool? IsPure {
-            get {
-                return this.Select(x => x.IsPure).FirstOrDefault(x => x.HasValue);
-            }
+            get { return this.Select(x => x.IsPure).FirstSetNullableOrDefault(); }
+        }
+
+        public virtual ExternalVisibility.ExternalVisibilityKind? ExternalVisibility {
+            get { return this.Select(x => x.ExternalVisibility).FirstSetNullableOrDefault(); }
+        }
+
+        public virtual bool? IsStatic {
+            get { return this.Select(x => x.IsStatic).FirstSetNullableOrDefault(); }
+        }
+
+        public virtual bool? IsObsolete {
+            get { return this.Select(x => x.IsObsolete).FirstSetNullableOrDefault(); }
         }
 
     }

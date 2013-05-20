@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Linq;
 using System.Reflection;
-using System.Text;
+using DandyDoc.ExternalVisibility;
 using DandyDoc.Reflection;
 
 namespace DandyDoc.CodeDoc
@@ -30,6 +28,24 @@ namespace DandyDoc.CodeDoc
                 if (Member.HasAttribute(t => t.Constructor.Name == "PureAttribute"))
                     return true;
                 return base.IsPure;
+            }
+        }
+
+        public override ExternalVisibilityKind? ExternalVisibility {
+            get {
+                return Member.GetExternalVisibility();
+            }
+        }
+
+        public override bool? IsStatic {
+            get {
+                return Member.IsStatic();
+            }
+        }
+
+        public override bool? IsObsolete {
+            get {
+                return Member.HasAttribute(typeof(ObsoleteAttribute));
             }
         }
 
