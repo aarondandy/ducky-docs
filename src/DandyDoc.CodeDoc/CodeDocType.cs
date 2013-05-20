@@ -26,7 +26,7 @@ namespace DandyDoc.CodeDoc
         /// <summary>
         /// Gets the inherited types.
         /// </summary>
-        public IList<ICodeDocMember> BaseChain { get; set; }
+        public IList<CodeDocType> BaseChain { get; set; }
 
         /// <summary>
         /// Indicates that this type implements interfaces.
@@ -36,7 +36,7 @@ namespace DandyDoc.CodeDoc
         /// <summary>
         /// Gets the interfaces implemented by this type.
         /// </summary>
-        public IList<ICodeDocMember> Interfaces { get; set; }
+        public IList<CodeDocType> Interfaces { get; set; }
 
         /// <summary>
         /// Indicates that this type has generic parameter.

@@ -828,7 +828,7 @@ namespace DandyDoc.CodeDoc
 
                             var typeConstraints = genericArgument.Constraints;
                             if (typeConstraints.Count > 0)
-                                genericModel.TypeConstraints = new ReadOnlyCollection<ICodeDocMember>(typeConstraints.Select(GetSimpleEntity).ToArray());
+                                genericModel.TypeConstraints = new ReadOnlyCollection<CodeDocType>(typeConstraints.Select(GetSimpleEntity).Cast<CodeDocType>().ToArray());
 
                             genericModel.IsContravariant = genericArgument.IsContravariant;
                             genericModel.IsCovariant = genericArgument.IsCovariant;
@@ -911,14 +911,15 @@ namespace DandyDoc.CodeDoc
                 baseChainDefinitions = typeDefinition.GetBaseChainDefinitions().ToArray();
                 var baseChainModels = baseChainDefinitions
                     .Select(GetSimpleEntity)
+                    .Cast<CodeDocType>()
                     .ToArray();
-                model.BaseChain = new ReadOnlyCollection<ICodeDocMember>(baseChainModels);
+                model.BaseChain = new ReadOnlyCollection<CodeDocType>(baseChainModels);
             }
 
             if (typeDefinition != null) {
                 var interfaces = typeDefinition.HasInterfaces
-                    ? typeDefinition.Interfaces.Select(GetSimpleEntity).ToList()
-                    : new List<ICodeDocMember>();
+                    ? typeDefinition.Interfaces.Select(GetSimpleEntity).Cast<CodeDocType>().ToList()
+                    : new List<CodeDocType>();
                 var interfaceCRefs = new HashSet<CRefIdentifier>(interfaces.Select(x => x.CRef));
                 interfaces.AddRange(baseChainDefinitions
                     .Where(x => x.HasInterfaces)
@@ -926,8 +927,9 @@ namespace DandyDoc.CodeDoc
                     .Select(x => new {InterfaceReference = x, CRef = GetCRefIdentifier(x)})
                     .Where(x => interfaceCRefs.Add(x.CRef))
                     .Select(x => GetSimpleEntity(x.InterfaceReference))
+                    .Cast<CodeDocType>()
                 );
-                model.Interfaces = new ReadOnlyCollection<ICodeDocMember>(interfaces.ToArray());
+                model.Interfaces = new ReadOnlyCollection<CodeDocType>(interfaces.ToArray());
             }
 
             if (typeReference.HasGenericParameters) {
@@ -961,7 +963,7 @@ namespace DandyDoc.CodeDoc
                             if (xmlDocs != null)
                                 genericModel.Summary = xmlDocs.GetTypeParameterSummary(argumentName);
                             if (typeConstraints.Count > 0)
-                                genericModel.TypeConstraints = Array.AsReadOnly(typeConstraints.Select(GetSimpleEntity).ToArray());
+                                genericModel.TypeConstraints = Array.AsReadOnly(typeConstraints.Select(GetSimpleEntity).Cast<CodeDocType>().ToArray());
 
                             genericModel.IsContravariant = genericArgument.IsContravariant;
                             genericModel.IsCovariant = genericArgument.IsCovariant;

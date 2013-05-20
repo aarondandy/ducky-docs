@@ -19,7 +19,7 @@ namespace DandyDoc.CodeDoc
         /// <summary>
         /// Gets the type constraints.
         /// </summary>
-        public IList<ICodeDocMember> TypeConstraints { get; set; }
+        public IList<CodeDocType> TypeConstraints { get; set; }
 
         /// <summary>
         /// The generic type parameter name.

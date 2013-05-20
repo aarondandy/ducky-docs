@@ -102,6 +102,7 @@ namespace DandyDoc.CodeDoc
         /// </summary>
         /// <param name="namespaceName">The name of the namespace to find.</param>
         /// <returns>A namespace model matching the given name.</returns>
+        [Obsolete("This should be a final effort, best to get the namespace from the top of a search tree so it can be merged with other repositories covering the same namespaces.")]
         protected CodeDocSimpleMember GetCodeDocNamespaceByName(string namespaceName) {
             Contract.Ensures(Contract.Result<CodeDocSimpleMember>() != null);
             return Namespaces.FirstOrDefault(x => x.FullName == namespaceName)
@@ -149,6 +150,7 @@ namespace DandyDoc.CodeDoc
         /// </summary>
         /// <param name="cRef">The code reference.</param>
         /// <returns>A new simple model for a code reference.</returns>
+        [Obsolete]
         protected ICodeDocMember CreateTypeMemberPlaceholder(CRefIdentifier cRef) {
             Contract.Requires(cRef != null);
             Contract.Ensures(Contract.Result<ICodeDocMember>() != null);
@@ -157,6 +159,39 @@ namespace DandyDoc.CodeDoc
                 ShortName = cRefFullName,
                 Title = cRefFullName,
                 SubTitle = "Type",
+                FullName = cRefFullName,
+                NamespaceName = String.Empty,
+                ExternalVisibility = ExternalVisibilityKind.Public
+            };
+        }
+
+        protected ICodeDocMember CreateGeneralMemberPlaceholder(CRefIdentifier cRef) {
+            Contract.Requires(cRef != null);
+            Contract.Ensures(Contract.Result<ICodeDocMember>() != null);
+
+            string subTitle;
+            if ("T".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
+                subTitle = "Type";
+            else if ("M".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
+                subTitle = "Invokable";
+            else if ("P".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
+                subTitle = "Property";
+            else if ("E".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
+                subTitle = "Event";
+            else if ("F".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
+                subTitle = "Field";
+            else if ("N".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
+                subTitle = "Namespace";
+            else if ("A".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
+                subTitle = "Assembly";
+            else
+                subTitle = String.Empty;
+
+            var cRefFullName = cRef.CoreName;
+            return new CodeDocSimpleMember(cRef) {
+                ShortName = cRefFullName,
+                Title = cRefFullName,
+                SubTitle = subTitle,
                 FullName = cRefFullName,
                 NamespaceName = String.Empty,
                 ExternalVisibility = ExternalVisibilityKind.Public

@@ -31,9 +31,9 @@ namespace DandyDoc.CodeDoc.Tests
         [Test]
         public void invalid_requests() {
             Assert.Throws<ArgumentException>(
-                () => TestLibrary1Repository.GetContentMember(String.Empty));
+                () => TestLibrary1Repository.GetMemberModel(String.Empty));
             Assert.Throws<ArgumentNullException>(
-                () => TestLibrary1Repository.GetContentMember((CRefIdentifier)null));
+                () => TestLibrary1Repository.GetMemberModel((CRefIdentifier)null));
         }
 
         [Test]
@@ -50,7 +50,7 @@ namespace DandyDoc.CodeDoc.Tests
         [Test]
         public void type_test_for_Class1() {
             var model = TestLibrary1Repository
-                .GetContentMember("TestLibrary1.Class1") as CodeDocType;
+                .GetMemberModel("TestLibrary1.Class1") as CodeDocType;
             Assert.AreEqual("Class1", model.ShortName);
             Assert.AreEqual("TestLibrary1.Class1", model.FullName);
             Assert.AreEqual("T:TestLibrary1.Class1", model.CRef.FullCRef);
@@ -72,7 +72,7 @@ namespace DandyDoc.CodeDoc.Tests
         [Test]
         public void type_xmldoc_test_for_Class1() {
             var model = TestLibrary1Repository
-                .GetContentMember("TestLibrary1.Class1") as CodeDocType;
+                .GetMemberModel("TestLibrary1.Class1") as CodeDocType;
 
             Assert.IsTrue(model.HasSummaryContents);
             Assert.AreEqual("This class is just for testing and has no real use outside of generating some documentation.", model.SummaryContents.First().Node.OuterXml);
@@ -91,7 +91,7 @@ namespace DandyDoc.CodeDoc.Tests
         [Test]
         public void type_members_test_for_Class1() {
             var model = TestLibrary1Repository
-                .GetContentMember("TestLibrary1.Class1") as CodeDocType;
+                .GetMemberModel("TestLibrary1.Class1") as CodeDocType;
 
             Assert.IsTrue(model.HasNestedTypes);
             Assert.AreEqual(6, model.NestedTypes.Count);
@@ -142,7 +142,7 @@ namespace DandyDoc.CodeDoc.Tests
         [Test]
         public void type_test_for_FlagsEnum() {
             var model = TestLibrary1Repository
-                .GetContentMember("TestLibrary1.FlagsEnum") as CodeDocType;
+                .GetMemberModel("TestLibrary1.FlagsEnum") as CodeDocType;
             Assert.AreEqual("FlagsEnum", model.ShortName);
             Assert.AreEqual("TestLibrary1.FlagsEnum", model.FullName);
             Assert.AreEqual("T:TestLibrary1.FlagsEnum", model.CRef.FullCRef);
@@ -177,7 +177,7 @@ namespace DandyDoc.CodeDoc.Tests
         [Test]
         public void type_test_for_Class1_Inner() {
             var model = TestLibrary1Repository
-                .GetContentMember("TestLibrary1.Class1.Inner") as CodeDocType;
+                .GetMemberModel("TestLibrary1.Class1.Inner") as CodeDocType;
             Assert.IsNotNull(model);
             Assert.AreEqual("Inner", model.ShortName);
             Assert.AreEqual("TestLibrary1.Class1.Inner", model.FullName);
@@ -208,7 +208,7 @@ namespace DandyDoc.CodeDoc.Tests
         [Test]
         public void type_test_for_Generic1() {
             var model = TestLibrary1Repository
-                .GetContentMember("TestLibrary1.Generic1`2") as CodeDocType;
+                .GetMemberModel("TestLibrary1.Generic1`2") as CodeDocType;
             Assert.IsNotNull(model);
             Assert.AreEqual("Generic1<TA, TB>", model.ShortName);
             Assert.IsNull(model.DeclaringType);
@@ -250,7 +250,7 @@ namespace DandyDoc.CodeDoc.Tests
         [Test]
         public void type_test_for_generic_variance() {
             var model = TestLibrary1Repository
-                .GetContentMember("T:TestLibrary1.Generic1`2.IVariance`2") as CodeDocType;
+                .GetMemberModel("T:TestLibrary1.Generic1`2.IVariance`2") as CodeDocType;
             Assert.IsNotNull(model);
             Assert.IsTrue(model.HasGenericParameters);
             Assert.AreEqual(2, model.GenericParameters.Count);
@@ -265,7 +265,7 @@ namespace DandyDoc.CodeDoc.Tests
         [Test]
         public void type_generic_contraint_test() {
             var model = TestLibrary1Repository
-                .GetContentMember("TestLibrary1.Generic1`2.Constraints`1") as CodeDocType;
+                .GetMemberModel("TestLibrary1.Generic1`2.Constraints`1") as CodeDocType;
             Assert.IsNotNull(model);
             Assert.IsTrue(model.HasGenericParameters);
             Assert.AreEqual(1, model.GenericParameters.Count);
@@ -284,7 +284,7 @@ namespace DandyDoc.CodeDoc.Tests
         [Test]
         public void field_array_of_ref_type_tests() {
             var field = TestLibrary1Repository
-                .GetContentMember("TestLibrary1.Class1.SomeClasses") as CodeDocField;
+                .GetMemberModel("TestLibrary1.Class1.SomeClasses") as CodeDocField;
             Assert.IsNotNull(field);
             Assert.AreEqual(new CRefIdentifier("F:TestLibrary1.Class1.SomeClasses"), field.CRef);
             Assert.AreEqual("SomeClasses", field.ShortName);
@@ -301,7 +301,7 @@ namespace DandyDoc.CodeDoc.Tests
         [Test]
         public void field_nullable_int_test() {
             var field = TestLibrary1Repository
-                .GetContentMember("TestLibrary1.Class1.SomeNullableInt") as CodeDocField;
+                .GetMemberModel("TestLibrary1.Class1.SomeNullableInt") as CodeDocField;
             Assert.IsNotNull(field);
             Assert.AreEqual(new CRefIdentifier("F:TestLibrary1.Class1.SomeNullableInt"), field.CRef);
             Assert.AreEqual("SomeNullableInt", field.ShortName);
@@ -320,7 +320,7 @@ namespace DandyDoc.CodeDoc.Tests
         [Test]
         public void field_const_int_test() {
             var field = TestLibrary1Repository
-                .GetContentMember("TestLibrary1.Class1.MyConst") as CodeDocField;
+                .GetMemberModel("TestLibrary1.Class1.MyConst") as CodeDocField;
             Assert.IsNotNull(field);
             Assert.AreEqual(new CRefIdentifier("F:TestLibrary1.Class1.MyConst"), field.CRef);
             Assert.AreEqual("MyConst", field.ShortName);
@@ -336,7 +336,7 @@ namespace DandyDoc.CodeDoc.Tests
         [Test]
         public void field_static_double() {
             var field = TestLibrary1Repository
-                .GetContentMember("TestLibrary1.Class1.SomeField") as CodeDocField;
+                .GetMemberModel("TestLibrary1.Class1.SomeField") as CodeDocField;
             Assert.IsNotNull(field);
             Assert.AreEqual(new CRefIdentifier("F:TestLibrary1.Class1.SomeField"), field.CRef);
             Assert.AreEqual("SomeField", field.ShortName);
@@ -352,7 +352,7 @@ namespace DandyDoc.CodeDoc.Tests
         [Test]
         public void field_readonly_int() {
             var field = TestLibrary1Repository
-                .GetContentMember("TestLibrary1.Class1.ReadonlyField") as CodeDocField;
+                .GetMemberModel("TestLibrary1.Class1.ReadonlyField") as CodeDocField;
             Assert.IsNotNull(field);
             Assert.AreEqual(new CRefIdentifier("F:TestLibrary1.Class1.ReadonlyField"), field.CRef);
             Assert.AreEqual("ReadonlyField", field.ShortName);
@@ -366,7 +366,7 @@ namespace DandyDoc.CodeDoc.Tests
 
         [Test]
         public void method_strange_test() {
-            var method = TestLibrary1Repository.GetContentMember(
+            var method = TestLibrary1Repository.GetMemberModel(
                 "TestLibrary1.Class1.HasStrangeParams(System.Nullable{System.Int32},TestLibrary1.Class1[])") as CodeDocMethod;
             Assert.IsNotNull(method);
             Assert.AreEqual("M:TestLibrary1.Class1.HasStrangeParams(System.Nullable{System.Int32},TestLibrary1.Class1[])", method.CRef.FullCRef);
@@ -396,7 +396,7 @@ namespace DandyDoc.CodeDoc.Tests
 
         [Test]
         public void method_one_param_ctor() {
-            var method = TestLibrary1Repository.GetContentMember(
+            var method = TestLibrary1Repository.GetMemberModel(
                 "TestLibrary1.Class1.#ctor(System.String)") as CodeDocMethod;
             Assert.IsNotNull(method);
             Assert.AreEqual("M:TestLibrary1.Class1.#ctor(System.String)", method.CRef.FullCRef);
@@ -416,7 +416,7 @@ namespace DandyDoc.CodeDoc.Tests
 
         [Test]
         public void method_DoubleStatic() {
-            var method = TestLibrary1Repository.GetContentMember(
+            var method = TestLibrary1Repository.GetMemberModel(
                 "TestLibrary1.Class1.DoubleStatic(System.Double)") as CodeDocMethod;
             Assert.IsNotNull(method);
             Assert.AreEqual("M:TestLibrary1.Class1.DoubleStatic(System.Double)", method.CRef.FullCRef);
@@ -438,7 +438,7 @@ namespace DandyDoc.CodeDoc.Tests
 
         [Test]
         public void code_contract_constructor() {
-            var method = TestLibrary1Repository.GetContentMember(
+            var method = TestLibrary1Repository.GetMemberModel(
                 "TestLibrary1.ClassWithContracts.#ctor(System.String)") as CodeDocMethod;
             Assert.IsNotNull(method);
             Assert.IsTrue(method.HasExceptions);
@@ -460,7 +460,7 @@ namespace DandyDoc.CodeDoc.Tests
 
         [Test]
         public void code_contract_simple_ensures_method() {
-            var method = TestLibrary1Repository.GetContentMember(
+            var method = TestLibrary1Repository.GetMemberModel(
                 "M:TestLibrary1.ClassWithContracts.SomeStuff") as CodeDocMethod;
             Assert.IsNotNull(method);
 
@@ -474,7 +474,7 @@ namespace DandyDoc.CodeDoc.Tests
 
         [Test]
         public void method_generic() {
-            var method = TestLibrary1Repository.GetContentMember(
+            var method = TestLibrary1Repository.GetMemberModel(
                 "M:TestLibrary1.Generic1`2.AMix``1(`0,``0)") as CodeDocMethod;
             Assert.IsNotNull(method);
             Assert.IsNotNull(method.DeclaringType);
@@ -489,7 +489,7 @@ namespace DandyDoc.CodeDoc.Tests
 
         [Test]
         public void method_generic_constraints() {
-            var method = TestLibrary1Repository.GetContentMember(
+            var method = TestLibrary1Repository.GetMemberModel(
                 "M:TestLibrary1.Generic1`2.Constraints`1.GetStuff``1(`2,``0)") as CodeDocMethod;
             Assert.IsNotNull(method);
 
@@ -504,7 +504,7 @@ namespace DandyDoc.CodeDoc.Tests
 
         [Test]
         public void delegate_with_comments() {
-            var type = TestLibrary1Repository.GetContentMember(
+            var type = TestLibrary1Repository.GetMemberModel(
                 "T:TestLibrary1.Class1.MyFunc") as CodeDocDelegate;
             Assert.IsNotNull(type);
             Assert.IsNotNull(type.DeclaringType);
@@ -529,7 +529,7 @@ namespace DandyDoc.CodeDoc.Tests
 
         [Test]
         public void delegate_with_generic_arg() {
-            var type = TestLibrary1Repository.GetContentMember(
+            var type = TestLibrary1Repository.GetMemberModel(
                 "TestLibrary1.Generic1`2.MyFunc`1") as CodeDocDelegate;
             Assert.IsNotNull(type);
 
@@ -540,7 +540,7 @@ namespace DandyDoc.CodeDoc.Tests
 
         [Test]
         public void event_test() {
-            var evt = TestLibrary1Repository.GetContentMember(
+            var evt = TestLibrary1Repository.GetMemberModel(
                 "TestLibrary1.Class1.DoStuff") as CodeDocEvent;
             Assert.IsNotNull(evt);
             Assert.IsNotNull(evt.DeclaringType);
@@ -564,7 +564,7 @@ namespace DandyDoc.CodeDoc.Tests
 
         [Test]
         public void property_test() {
-            var prop = TestLibrary1Repository.GetContentMember(
+            var prop = TestLibrary1Repository.GetMemberModel(
                 "TestLibrary1.Class1.HasTableInRemarks") as CodeDocProperty;
             Assert.IsNotNull(prop);
             Assert.IsNotNull(prop.DeclaringType);
@@ -588,7 +588,7 @@ namespace DandyDoc.CodeDoc.Tests
 
         [Test]
         public void property_indexer_test() {
-            var prop = TestLibrary1Repository.GetContentMember(
+            var prop = TestLibrary1Repository.GetMemberModel(
                 "TestLibrary1.Class1.Item(System.Int32)") as CodeDocProperty;
             Assert.IsNotNull(prop);
 
@@ -607,7 +607,7 @@ namespace DandyDoc.CodeDoc.Tests
 
         [Test]
         public void out_ref_method_test() {
-            var method = TestLibrary1Repository.GetContentMember(
+            var method = TestLibrary1Repository.GetMemberModel(
                 "TestLibrary1.Class1.TrySomeOutRefStuff(System.Int32@,System.Int32@)") as CodeDocMethod;
             Assert.IsNotNull(method);
             Assert.IsTrue(method.Parameters[0].IsOut);
