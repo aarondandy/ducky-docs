@@ -80,6 +80,7 @@ namespace DandyDoc.CodeDoc
         {
             if(cRefLookup == null) throw new ArgumentNullException("cRefLookup");
             Contract.EndContractBlock();
+
             CRefLookup = cRefLookup;
 
             var assemblyModels = new List<CodeDocSimpleAssembly>();
@@ -283,47 +284,21 @@ namespace DandyDoc.CodeDoc
             return GetCodeDocSimpleAssembly(GetCRefIdentifier(assembly));
         }
 
-        /// <inheritdoc/>
+        [Obsolete]
         public override ICodeDocMember GetSimpleMember(CRefIdentifier cRef) {
-            /*if (cRef == null) throw new ArgumentNullException("cRef");
-            Contract.EndContractBlock();
-
-            if ("N".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
-                return GetCodeDocSimpleNamespace(cRef);
-            if ("A".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
-                return GetCodeDocSimpleAssembly(cRef);
-
-            var memberInfo = CRefLookup.GetMember(cRef);
-            if (memberInfo == null || !MemberFilter(memberInfo))
-                return null;
-            return ConvertToSimpleModel(memberInfo);*/
             throw new NotSupportedException();
         }
 
-        /// <inheritdoc/>
+        [Obsolete]
         public override ICodeDocMember GetContentMember(CRefIdentifier cRef) {
-            /*
-            if(cRef == null) throw new ArgumentNullException("cRef");
-            Contract.EndContractBlock();
-
-            if ("N".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
-                return ToFullNamespace(GetCodeDocSimpleNamespace(cRef));
-            if ("A".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
-                return GetCodeDocSimpleAssembly(cRef);
-
-            var memberInfo = CRefLookup.GetMember(cRef);
-            if (memberInfo == null || !MemberFilter(memberInfo))
-                return null;
-            return ConvertToModel(memberInfo);
-            */
             throw new NotSupportedException();
         }
 
         public override ICodeDocMember GetMemberModel(CRefIdentifier cRef) {
-            return GetMemberModel(cRef, light: false);
+            return GetMemberModel(cRef, lite: false);
         }
 
-        private ICodeDocMember GetMemberModel(CRefIdentifier cRef, bool light) {
+        private ICodeDocMember GetMemberModel(CRefIdentifier cRef, bool lite) {
             if (cRef == null) throw new ArgumentNullException("cRef");
             Contract.EndContractBlock();
 
@@ -336,46 +311,7 @@ namespace DandyDoc.CodeDoc
             if (memberInfo == null || !MemberFilter(memberInfo))
                 return null;
 
-            if (memberInfo is Type) {
-                return light ? ConvertToModelLite((Type)memberInfo) : ConvertToModel((Type)memberInfo);
-            }
-            return ConvertToModel(memberInfo);
-        }
-
-        /// <summary>
-        /// Converts a reflected member to a simple code doc model.
-        /// </summary>
-        /// <param name="memberInfo">A reflected member.</param>
-        /// <returns>A code doc model for the given member.</returns>
-        [Obsolete]
-        protected virtual ICodeDocMember ConvertToSimpleModel(MemberInfo memberInfo) {
-            /*if (memberInfo == null) throw new ArgumentNullException("memberInfo");
-            Contract.Ensures(Contract.Result<ICodeDocMember>() != null);
-            var cRef = GetCRefIdentifier(memberInfo);
-            var result = new CodeDocSimpleMember(cRef);
-
-            var memberDataProvider = new CodeDocMemberInfoProvider<MemberInfo>(memberInfo);
-            var xmlDocs = XmlDocs.GetMember(cRef.FullCRef);
-            if (xmlDocs != null)
-                memberDataProvider.Add(new CodeDocMemberXmlDataProvider(xmlDocs));
-
-            ApplySimpleXmlDocs(result, memberDataProvider);
-
-            if (memberInfo is Type)
-                ApplyCommonAttributes(result, (Type)memberInfo);
-            else if (memberInfo is MethodBase)
-                ApplyCommonAttributes(result, (MethodBase) memberInfo);
-            else if (memberInfo is FieldInfo)
-                ApplyCommonAttributes(result, (FieldInfo)memberInfo);
-            else if (memberInfo is EventInfo)
-                ApplyCommonAttributes(result, (EventInfo)memberInfo);
-            else if (memberInfo is PropertyInfo)
-                ApplyCommonAttributes(result, (PropertyInfo)memberInfo);
-            else
-                throw new NotSupportedException();
-
-            return result;*/
-            throw new NotSupportedException();
+            return ConvertToModel(memberInfo, lite: lite);
         }
 
         /// <summary>
@@ -383,12 +319,12 @@ namespace DandyDoc.CodeDoc
         /// </summary>
         /// <param name="memberInfo">A reflected member.</param>
         /// <returns>A code doc model for the given member.</returns>
-        protected virtual CodeDocMemberContentBase ConvertToModel(MemberInfo memberInfo) {
+        protected virtual CodeDocMemberContentBase ConvertToModel(MemberInfo memberInfo, bool lite) {
             if(memberInfo == null) throw new ArgumentNullException("memberInfo");
             Contract.Ensures(Contract.Result<ICodeDocMember>() != null);
 
             if (memberInfo is Type)
-                return ConvertToModel((Type)memberInfo);
+                return ConvertToModel((Type)memberInfo, lite: lite);
             if (memberInfo is FieldInfo)
                 return ConvertToModel((FieldInfo)memberInfo);
             if (memberInfo is MethodBase)
@@ -400,23 +336,17 @@ namespace DandyDoc.CodeDoc
             throw new NotSupportedException();
         }
 
-        private void ApplySimpleAttributes(CodeDocSimpleMember model, ICodeDocMemberDataProvider provider) {
-            Contract.Requires(model != null);
-            Contract.Requires(provider != null);
-            model.ExternalVisibility = provider.ExternalVisibility ?? ExternalVisibilityKind.Public;
-        }
-
         private void ApplyContentXmlDocs(CodeDocMemberContentBase model, ICodeDocMemberDataProvider provider) {
             Contract.Requires(model != null);
             Contract.Requires(provider != null);
-            model.SummaryContents = provider.GetSummaryContents().ToList();
-            model.Examples = provider.GetExamples().ToList();
-            model.Permissions = provider.GetPermissions().ToList();
-            model.Remarks = provider.GetRemarks().ToList();
-            model.SeeAlso = provider.GetSeeAlsos().ToList();
+            model.SummaryContents = provider.GetSummaryContents().ToArray();
+            model.Examples = provider.GetExamples().ToArray();
+            model.Permissions = provider.GetPermissions().ToArray();
+            model.Remarks = provider.GetRemarks().ToArray();
+            model.SeeAlso = provider.GetSeeAlsos().ToArray();
         }
 
-        private ICodeDocMember GetOrConvert(CRefIdentifier cRef) {
+        private ICodeDocMember GetOrConvert(CRefIdentifier cRef, bool lite = false) {
             Contract.Requires(cRef != null);
             // TODO:
             // 1) Use the repository tree to get the model by cRef (so we can use a cache)
@@ -424,52 +354,53 @@ namespace DandyDoc.CodeDoc
             // 2) Try to make a model for it
 
             // TODO: need to look elsewhere for a model.
-            var localModel = GetMemberModel(cRef);
+            var localModel = GetMemberModel(cRef, lite: lite);
             if (localModel != null)
                 return localModel;
 
             return CreateGeneralMemberPlaceholder(cRef);
         }
 
-        private ICodeDocMember GetOrConvertLite(CRefIdentifier cRef) {
-            Contract.Requires(cRef != null);
-            // TODO:
-            // 1) Use the repository tree to get the model by cRef (so we can use a cache)
-            // 1a) Make sure to include this repostitory in the search, but last (should be behind a cache)
-            // 2) Try to make a model for it
-
-            // TODO: need to look elsewhere for a model.
-            var localModel = GetMemberModel(cRef, light: true);
-            if (localModel != null)
-                return localModel;
-
-            return CreateGeneralMemberPlaceholder(cRef);
-        }
-
-        private CodeDocType GetOrConvert(Type type){
+        private CodeDocType GetOrConvert(Type type, bool lite = false){
             Contract.Requires(type != null);
             // TODO:
             // 1) Use the repository tree to get the model by cRef (so we can use a cache)
             // 1a) Make sure to include this repostitory in the search, but last (should be behind a cache)
             // 2) Try to make a model for it
-            return ConvertToModel(type);
+            return ConvertToModel(type, lite: lite);
         }
 
-        private CodeDocType GetOrConvertLite(Type type) {
-            Contract.Requires(type != null);
-            // TODO:
-            // 1) Use the repository tree to get the model by cRef (so we can use a cache)
-            // 1a) Make sure to include this repostitory in the search, but last (should be behind a cache)
-            // 2) Try to make a model for it
-            return ConvertToModelLite(type);
+        private CodeDocParameter CreateArgument(ParameterInfo parameterInfo, ICodeDocMemberDataProvider provider) {
+            Contract.Requires(parameterInfo != null);
+            Contract.Requires(provider != null);
+            var parameterName = parameterInfo.Name;
+            var parameterType = parameterInfo.ParameterType;
+            var model = new CodeDocParameter(
+                parameterName,
+                GetOrConvert(parameterType, lite: true)
+            );
+            model.IsOut = parameterInfo.IsOut;
+            model.IsByRef = parameterType.IsByRef;
+            model.IsReferenceType = !parameterType.IsValueType;
+            model.SummaryContents = provider.GetParameterSummaryContents(parameterName).ToArray();
+            if (!model.NullRestricted.HasValue)
+                model.NullRestricted = provider.RequiresParameterNotEverNull(parameterName);
+            return model;
         }
 
-        [Obsolete("Use GetCodeDocAssembly")]
-        private CodeDocSimpleAssembly GetOrConvert(Assembly assembly){
-            Contract.Requires(assembly != null);
-            Contract.Assume(CRefLookup.Assemblies.Contains(assembly));
-            // NOTE: if we are caling this method it should be for an assembly handled by this repository instance
-            return GetCodeDocAssembly(assembly);
+        private CodeDocParameter CreateReturn(ParameterInfo parameterInfo, ICodeDocMemberDataProvider provider) {
+            Contract.Requires(parameterInfo != null);
+            Contract.Requires(provider != null);
+            var model = new CodeDocParameter(
+                "result",
+                GetOrConvert(parameterInfo.ParameterType, lite: true)
+            );
+            var returnType = parameterInfo.ParameterType;
+            model.IsReferenceType = !returnType.IsValueType;
+            model.SummaryContents = provider.GetReturnSummaryContents().ToArray();
+            if (!model.NullRestricted.HasValue)
+                model.NullRestricted = provider.EnsuresResultNotEverNull;
+            return model;
         }
 
         private CodeDocEvent ConvertToModel(EventInfo eventInfo){
@@ -499,11 +430,11 @@ namespace DandyDoc.CodeDoc
             model.NamespaceName = memberDataProvider.Member.DeclaringType.Namespace;
             model.SubTitle = "Event";
 
-            model.DelegateType = GetOrConvertLite(eventInfo.EventHandlerType);
+            model.DelegateType = GetOrConvert(eventInfo.EventHandlerType, lite: true);
             Contract.Assume(eventInfo.DeclaringType != null);
             model.Namespace = GetCodeDocNamespaceByName(eventInfo.DeclaringType.Namespace);
             model.Assembly = GetCodeDocAssembly(eventInfo.DeclaringType.Assembly);
-            model.DeclaringType = GetOrConvertLite(eventInfo.DeclaringType);
+            model.DeclaringType = GetOrConvert(eventInfo.DeclaringType, lite: true);
             model.IsStatic = memberDataProvider.IsStatic.GetValueOrDefault();
             model.IsObsolete = memberDataProvider.IsObsolete.GetValueOrDefault();
 
@@ -538,65 +469,18 @@ namespace DandyDoc.CodeDoc
 
             model.SubTitle = fieldInfo.IsLiteral ? "Constant" : "Field";
 
-            model.ValueDescriptionContents = memberDataProvider.GeValueDescriptionContents().ToList();
-            model.ValueType = GetOrConvertLite(fieldInfo.FieldType);
+            model.ValueDescriptionContents = memberDataProvider.GeValueDescriptionContents().ToArray();
+            model.ValueType = GetOrConvert(fieldInfo.FieldType, lite: true);
             model.IsLiteral = fieldInfo.IsLiteral;
             model.IsInitOnly = fieldInfo.IsInitOnly;
-            model.IsStatic = fieldInfo.IsStatic;
-            model.IsObsolete = fieldInfo.HasAttribute(typeof(ObsoleteAttribute));
+            model.IsStatic = memberDataProvider.IsStatic.GetValueOrDefault();
+            model.IsObsolete = memberDataProvider.IsObsolete.GetValueOrDefault();
 
             Contract.Assume(fieldInfo.DeclaringType != null);
             model.Namespace = GetCodeDocNamespaceByName(fieldInfo.DeclaringType.Namespace);
             model.Assembly = GetCodeDocAssembly(fieldInfo.DeclaringType.Assembly);
-            model.DeclaringType = GetOrConvertLite(fieldInfo.DeclaringType);
+            model.DeclaringType = GetOrConvert(fieldInfo.DeclaringType, lite: true);
             return model;
-        }
-
-
-        private void ApplyCommonAttributes(CodeDocParameter model, ParameterInfo parameterInfo){
-            Contract.Requires(model != null);
-            if (parameterInfo != null) {
-                model.IsOut = parameterInfo.IsOut;
-                model.IsByRef = parameterInfo.ParameterType.IsByRef;
-
-                model.NullRestricted = null;
-                foreach (var attribute in parameterInfo.GetCustomAttributesData()) {
-                    var constructorName = attribute.Constructor.Name;
-                    if (constructorName == "CanBeNullAttribute") {
-                        model.NullRestricted = false;
-                        break;
-                    }
-                    if (constructorName == "NotNullAttribute") {
-                        model.NullRestricted = true;
-                        break;
-                    }
-                }
-
-            }
-        }
-
-        private void ApplyReturnEntityAttributes(CodeDocParameter model, Type returnType, XmlDocMember xmlDocs) {
-            Contract.Requires(model != null);
-            ApplyCommonAttributes(model, null);
-            if (!model.NullRestricted.HasValue && xmlDocs != null) {
-                if (xmlDocs.HasEnsuresElements && xmlDocs.EnsuresElements.Any(c => c.EnsuresResultNotEverNull))
-                    model.NullRestricted = true;
-            }
-            if (returnType != null) {
-                model.IsReferenceType = !returnType.IsValueType;
-            }
-        }
-
-        private void ApplyArgumentEntityAttributes(CodeDocParameter model, ParameterInfo parameterInfo, XmlDocMember xmlDocs) {
-            Contract.Requires(model != null);
-            ApplyCommonAttributes(model, parameterInfo);
-            if (!model.NullRestricted.HasValue && xmlDocs != null) {
-                if(xmlDocs.HasRequiresElements && xmlDocs.RequiresElements.Any(c => c.RequiresParameterNotEverNull(parameterInfo.Name)))
-                    model.NullRestricted = true;
-            }
-            if (parameterInfo != null) {
-                model.IsReferenceType = !parameterInfo.ParameterType.IsValueType;
-            }
         }
 
         private CodeDocProperty ConvertToModel(PropertyInfo propertyInfo){
@@ -630,29 +514,16 @@ namespace DandyDoc.CodeDoc
             model.IsStatic = memberDataProvider.IsStatic.GetValueOrDefault();
             model.IsObsolete = memberDataProvider.IsObsolete.GetValueOrDefault();
 
-            model.ValueDescriptionContents = memberDataProvider.GeValueDescriptionContents().ToList();
-            model.ValueType = GetOrConvertLite(propertyInfo.PropertyType);
+            model.ValueDescriptionContents = memberDataProvider.GeValueDescriptionContents().ToArray();
+            model.ValueType = GetOrConvert(propertyInfo.PropertyType, lite: true);
             Contract.Assume(propertyInfo.DeclaringType != null);
             model.Namespace = GetCodeDocNamespaceByName(propertyInfo.DeclaringType.Namespace);
             model.Assembly = GetCodeDocAssembly(propertyInfo.DeclaringType.Assembly);
-            model.DeclaringType = GetOrConvertLite(propertyInfo.DeclaringType);
+            model.DeclaringType = GetOrConvert(propertyInfo.DeclaringType, lite: true);
 
             var parameters = propertyInfo.GetIndexParameters();
             if (parameters.Length > 0){
-                model.Parameters = new ReadOnlyCollection<CodeDocParameter>(Array.ConvertAll(parameters,
-                    parameter => {
-                        var parameterSummaryElement = xmlDocs != null
-                            ? xmlDocs.GetParameterSummary(parameter.Name)
-                            : null;
-                        var paramModel = new CodeDocParameter(
-                            parameter.Name,
-                            GetOrConvertLite(parameter.ParameterType),
-                            parameterSummaryElement
-                        );
-                        ApplyArgumentEntityAttributes(paramModel, parameter, xmlDocs);
-                        return paramModel;
-                    }
-                ));  // TODO: Freeze
+                model.Parameters = Array.ConvertAll(parameters,p => CreateArgument(p, memberDataProvider));
             }
 
             var getterMethodInfo = propertyInfo.GetGetMethod(true);
@@ -691,7 +562,7 @@ namespace DandyDoc.CodeDoc
                             : new CRefIdentifier(xmlDocException.CRef);
                         CodeDocException exceptionModel;
                         if (!exceptionLookup.TryGetValue(exceptionCRef, out exceptionModel)) {
-                            exceptionModel = new CodeDocException(GetOrConvertLite(exceptionCRef));
+                            exceptionModel = new CodeDocException(GetOrConvert(exceptionCRef, lite: true));
                             exceptionModel.Ensures = new List<XmlDocNode>();
                             exceptionModel.Conditions = new List<XmlDocNode>();
                             exceptionLookup.Add(exceptionCRef, exceptionModel);
@@ -713,25 +584,15 @@ namespace DandyDoc.CodeDoc
                         }
                     }
 
-                    var exceptionModels = exceptionLookup.Values
+                    model.Exceptions = exceptionLookup.Values
                         .OrderBy(x => x.ExceptionType.CRef.FullCRef)
                         .ToArray();
-
-                    foreach (var exceptionModel in exceptionModels) {
-                        // TODO: freeze collections
-                        exceptionModel.Ensures = new ReadOnlyCollection<XmlDocNode>(exceptionModel.Ensures.ToArray()); // TODO: Freeze
-                        exceptionModel.Conditions = new ReadOnlyCollection<XmlDocNode>(exceptionModel.Conditions.ToArray()); // TODO: Freeze
-                    }
-
-                    model.Exceptions = new ReadOnlyCollection<CodeDocException>(exceptionModels); // TODO: Freeze
                 }
 
-                if (model.XmlDocs.HasEnsuresElements) {
-                    model.Ensures = new ReadOnlyCollection<XmlDocContractElement>(model.XmlDocs.EnsuresElements.ToArray()); // TODO: Freeze
-                }
-                if (model.XmlDocs.HasRequiresElements) {
-                    model.Requires = new ReadOnlyCollection<XmlDocContractElement>(model.XmlDocs.RequiresElements.ToArray()); // TODO: Freeze
-                }
+                if (model.XmlDocs.HasEnsuresElements)
+                    model.Ensures = model.XmlDocs.EnsuresElements.ToArray();
+                if (model.XmlDocs.HasRequiresElements)
+                    model.Requires = model.XmlDocs.RequiresElements.ToArray();
             }
         }
 
@@ -768,16 +629,14 @@ namespace DandyDoc.CodeDoc
             else
                 model.SubTitle = "Method";
 
-            var methodInfo = methodBase as MethodInfo;
-
             Contract.Assume(methodBase.DeclaringType != null);
             model.Namespace = GetCodeDocNamespaceByName(methodBase.DeclaringType.Namespace);
             model.Assembly = GetCodeDocAssembly(methodBase.DeclaringType.Assembly);
-            model.DeclaringType = GetOrConvertLite(methodBase.DeclaringType);
+            model.DeclaringType = GetOrConvert(methodBase.DeclaringType, lite: true);
             model.IsOperatorOverload = methodBase.IsOperatorOverload();
             model.IsExtensionMethod = methodBase.IsExtensionMethod();
             model.IsSealed = methodBase.IsSealed();
-            model.IsStatic = memberDataProvider.IsStatic ?? methodBase.IsStatic;
+            model.IsStatic = memberDataProvider.IsStatic.GetValueOrDefault();
             model.IsObsolete = memberDataProvider.IsObsolete.GetValueOrDefault();
             model.IsPure = memberDataProvider.IsPure.GetValueOrDefault();
             
@@ -788,37 +647,13 @@ namespace DandyDoc.CodeDoc
                     model.IsVirtual = true;
             }
 
-            var parameterModels = methodBase
-                .GetParameters()
-                .Select(parameter => {
-                    var parameterSummaryElement = model.XmlDocs != null
-                        ? model.XmlDocs.GetParameterSummary(parameter.Name)
-                        : null;
-                    var paramModel = new CodeDocParameter(
-                        parameter.Name,
-                        GetOrConvertLite(parameter.ParameterType),
-                        parameterSummaryElement
-                    );
-                    ApplyArgumentEntityAttributes(paramModel, parameter, model.XmlDocs);
-                    return paramModel;
-                })
-                .ToArray();
-            model.Parameters = new ReadOnlyCollection<CodeDocParameter>(parameterModels); // TODO: freeze
+            model.Parameters = Array.ConvertAll(
+                methodBase.GetParameters(),
+                p => CreateArgument(p, memberDataProvider));
 
-            if (methodInfo != null) {
-                if (methodInfo.ReturnParameter != null && methodInfo.ReturnType != typeof(void)) {
-                    var returnSummaryElement = model.XmlDocs != null
-                        ? model.XmlDocs.ReturnsElement
-                        : null;
-                    var paramModel = new CodeDocParameter(
-                        String.Empty,
-                        GetOrConvertLite(methodInfo.ReturnType),
-                        returnSummaryElement
-                    );
-                    ApplyReturnEntityAttributes(paramModel, methodInfo.ReturnParameter.ParameterType, model.XmlDocs);
-                    model.Return = paramModel;
-                }
-            }
+            var methodInfo = methodBase as MethodInfo;
+            if (methodInfo != null && methodInfo.ReturnParameter != null && methodInfo.ReturnType != typeof(void))
+                model.Return = CreateReturn(methodInfo.ReturnParameter, memberDataProvider);
 
             ExpandCodeDocMethodXmlDocProperties(model);
 
@@ -842,7 +677,7 @@ namespace DandyDoc.CodeDoc
                             if (xmlDocs != null)
                                 genericModel.Summary = xmlDocs.GetTypeParameterSummary(argumentName);
                             if (typeConstraints.Length > 0)
-                                genericModel.TypeConstraints = Array.AsReadOnly(Array.ConvertAll(typeConstraints, GetOrConvertLite));
+                                genericModel.TypeConstraints = Array.AsReadOnly(Array.ConvertAll(typeConstraints, t => GetOrConvert(t, lite: true)));
 
                             genericModel.IsContravariant = genericArgument.GenericParameterAttributes.HasFlag(
                                 GenericParameterAttributes.Contravariant);
@@ -858,7 +693,7 @@ namespace DandyDoc.CodeDoc
                             genericModels.Add(genericModel);
 
                         }
-                        model.GenericParameters = new ReadOnlyCollection<CodeDocGenericParameter>(genericModels); // TODO: freeze instead
+                        model.GenericParameters = genericModels;
                     }
                 }
             }
@@ -866,7 +701,7 @@ namespace DandyDoc.CodeDoc
             return model;
         }
 
-        private CodeDocType ConvertToModelLite(Type type) {
+        private CodeDocType ConvertToModel(Type type, bool lite = false) {
             Contract.Requires(type != null);
             Contract.Ensures(Contract.Result<CodeDocType>() != null);
             Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<CodeDocType>().ShortName));
@@ -914,92 +749,40 @@ namespace DandyDoc.CodeDoc
             model.IsObsolete = memberDataProvider.IsObsolete.GetValueOrDefault();
 
             if (type.DeclaringType != null) {
-                model.DeclaringType = GetOrConvertLite(type.DeclaringType);
+                model.DeclaringType = GetOrConvert(type.DeclaringType, lite: true);
             }
 
-            return model;
-        }
-
-        private CodeDocType ConvertToModel(Type type) {
-            Contract.Requires(type != null);
-            Contract.Ensures(Contract.Result<CodeDocType>() != null);
-            Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<CodeDocType>().ShortName));
-            Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<CodeDocType>().FullName));
-            Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<CodeDocType>().Title));
-            Contract.Ensures(Contract.Result<CodeDocType>().Title == Contract.Result<CodeDocType>().ShortName);
-            Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<CodeDocType>().SubTitle));
-
-            var cRef = GetCRefIdentifier(type);
-            var model = type.IsDelegateType()
-                ? new CodeDocDelegate(cRef)
-                : new CodeDocType(cRef);
-
-            var memberDataProvider = new CodeDocMemberInfoProvider<Type>(type);
-            var xmlDocs = XmlDocs.GetMember(cRef.FullCRef);
-            if (xmlDocs != null)
-                memberDataProvider.Add(new CodeDocMemberXmlDataProvider(xmlDocs));
-
-            ApplyContentXmlDocs(model, memberDataProvider);
-
-            model.ExternalVisibility = memberDataProvider.ExternalVisibility ?? ExternalVisibilityKind.Public;
-            model.ShortName = RegularTypeDisplayNameOverlay.GetDisplayName(type);
-            model.FullName = FullTypeDisplayNameOverlay.GetDisplayName(type);
-            model.Title = model.ShortName;
-            model.NamespaceName = type.Namespace;
-
-            if (type.IsEnum)
-                model.SubTitle = "Enumeration";
-            else if (type.IsValueType)
-                model.SubTitle = "Structure";
-            else if (type.IsInterface)
-                model.SubTitle = "Interface";
-            else if (type.IsDelegateType())
-                model.SubTitle = "Delegate";
-            else
-                model.SubTitle = "Class";
-
-            model.Namespace = GetCodeDocNamespaceByName(type.Namespace);
-            model.Assembly = GetCodeDocAssembly(type.Assembly);
-            model.IsEnum = type.IsEnum;
-            model.IsFlagsEnum = type.IsEnum && type.HasAttribute(typeof(FlagsAttribute));
-            model.IsSealed = type.IsSealed;
-            model.IsValueType = type.IsValueType;
-            model.IsStatic = memberDataProvider.IsStatic.GetValueOrDefault();
-            model.IsObsolete = memberDataProvider.IsObsolete.GetValueOrDefault();
-
-            if (type.DeclaringType != null) {
-                model.DeclaringType = GetOrConvertLite(type.DeclaringType);
-            }
-
-            if (!type.IsInterface) {
+            if (!lite && !type.IsInterface) {
                 var currentBase = type.BaseType;
                 if (null != currentBase) {
                     var baseChain = new List<CodeDocType>() {
-                        GetOrConvertLite(currentBase)
+                        GetOrConvert(currentBase, lite: true)
                     };
                     currentBase = currentBase.BaseType;
                     while (currentBase != null) {
-                        baseChain.Add(GetOrConvertLite(currentBase));
+                        baseChain.Add(GetOrConvert(currentBase, lite: true));
                         currentBase = currentBase.BaseType;
                     }
-                    model.BaseChain = new ReadOnlyCollection<CodeDocType>(baseChain.ToArray()); // TODO: freeze instead
+                    model.BaseChain = baseChain;
                 }
             }
 
-            var implementedInterfaces = type.GetInterfaces();
-            if (implementedInterfaces.Length > 0) {
-                model.Interfaces = Array.AsReadOnly(
-                    Array.ConvertAll(implementedInterfaces, GetOrConvertLite));
+            if (!lite) {
+                var implementedInterfaces = type.GetInterfaces();
+                if (implementedInterfaces.Length > 0) {
+                    model.Interfaces = Array.ConvertAll(
+                        implementedInterfaces,
+                        t => GetOrConvert(t, lite: true));
+                }
             }
 
-            if (type.IsGenericType) {
+            if (!lite && type.IsGenericType) {
                 var genericTypeDefinition = type.IsGenericTypeDefinition
                     ? type
                     : type.GetGenericTypeDefinition();
                 if (genericTypeDefinition != null) {
                     var genericArguments = genericTypeDefinition.GetGenericArguments();
                     if (genericArguments.Length > 0) {
-                        //var xmlDocs = XmlDocs.GetMember(GetCRefIdentifier(type).FullCRef);
                         Type[] parentGenericArguments = null;
                         if (type.IsNested) {
                             Contract.Assume(type.DeclaringType != null);
@@ -1022,7 +805,9 @@ namespace DandyDoc.CodeDoc
                             if (xmlDocs != null)
                                 genericModel.Summary = xmlDocs.GetTypeParameterSummary(argumentName);
                             if (typeConstraints.Length > 0)
-                                genericModel.TypeConstraints = Array.AsReadOnly(Array.ConvertAll(typeConstraints, GetOrConvertLite));
+                                genericModel.TypeConstraints = Array.ConvertAll(
+                                    typeConstraints,
+                                    t => GetOrConvert(t, lite: true));
 
                             genericModel.IsContravariant = genericArgument.GenericParameterAttributes.HasFlag(
                                 GenericParameterAttributes.Contravariant);
@@ -1037,94 +822,72 @@ namespace DandyDoc.CodeDoc
 
                             genericModels.Add(genericModel);
                         }
-                        model.GenericParameters = new ReadOnlyCollection<CodeDocGenericParameter>(genericModels); // TODO: Freeze
+                        model.GenericParameters = genericModels;
                     }
                 }
             }
 
-            var nestedTypeModels = new List<ICodeDocMember>();
-            var nestedDelegateModels = new List<ICodeDocMember>();
-            foreach (var nestedType in type.GetAllNestedTypes().Where(MemberFilter)) {
-                var nestedTypeModel = ConvertToModelLite(nestedType);
-                if (nestedType.IsDelegateType())
-                    nestedDelegateModels.Add(nestedTypeModel);
-                else
-                    nestedTypeModels.Add(nestedTypeModel);
-            }
-            model.NestedTypes = new ReadOnlyCollection<ICodeDocMember>(nestedTypeModels); // TODO: freeze
-            model.NestedDelegates = new ReadOnlyCollection<ICodeDocMember>(nestedDelegateModels); // TODO: freeze
-
-            var methodModels = new List<ICodeDocMember>();
-            var operatorModels = new List<ICodeDocMember>();
-            foreach (var methodInfo in type.GetAllMethods().Where(MemberFilter)) {
-                var methodModel = ConvertToModel(methodInfo);
-                if (methodInfo.IsOperatorOverload())
-                    operatorModels.Add(methodModel);
-                else
-                    methodModels.Add(methodModel);
-            }
-            model.Methods = new ReadOnlyCollection<ICodeDocMember>(methodModels); // TODO: freeze
-            model.Operators = new ReadOnlyCollection<ICodeDocMember>(operatorModels); // TODO: freeze
-
-            model.Constructors = new ReadOnlyCollection<ICodeDocMember>(type
-                .GetAllConstructors()
-                .Where(MemberFilter)
-                .Select(ConvertToModel)
-                .ToArray()); // TODO: freeze
-
-            model.Properties = new ReadOnlyCollection<ICodeDocMember>(type
-                .GetAllProperties()
-                .Where(MemberFilter)
-                .Select(ConvertToModel)
-                .ToArray()); // TODO: freeze
-
-            model.Fields = new ReadOnlyCollection<ICodeDocMember>(type
-                .GetAllFields()
-                .Where(MemberFilter)
-                .Select(ConvertToModel)
-                .ToArray()); // TODO: freeze
-
-            model.Events = new ReadOnlyCollection<ICodeDocMember>(type
-                .GetAllEvents()
-                .Where(MemberFilter)
-                .Select(ConvertToModel)
-                .ToArray()); // TODO: freeze
-
-            if (model is CodeDocDelegate){
-                var delegateResult = (CodeDocDelegate)model;
-
-                //delegateResult.IsPure = type.HasAttribute(t => t.Constructor.Name == "PureAttribute");
-                delegateResult.IsPure = memberDataProvider.IsPure.GetValueOrDefault();
-                var parameterModels = type
-                    .GetDelegateTypeParameters()
-                    .Select(parameter =>{
-                        var parameterSummaryElement = model.XmlDocs != null
-                            ? model.XmlDocs.GetParameterSummary(parameter.Name)
-                            : null;
-                        var paramModel = new CodeDocParameter(
-                            parameter.Name,
-                            GetOrConvertLite(parameter.ParameterType),
-                            parameterSummaryElement
-                        );
-                        ApplyArgumentEntityAttributes(paramModel, parameter, model.XmlDocs);
-                        return paramModel;
-                    })
-                    .ToArray();
-                delegateResult.Parameters = new ReadOnlyCollection<CodeDocParameter>(parameterModels);
-
-                var returnType = type.GetDelegateReturnType();
-                if(returnType != null && returnType != typeof(void)) {
-                    var returnSummaryElement = model.XmlDocs != null
-                        ? model.XmlDocs.ReturnsElement
-                        : null;
-                    var paramModel = new CodeDocParameter(
-                        String.Empty,
-                        GetOrConvertLite(returnType),
-                        returnSummaryElement
-                    );
-                    ApplyReturnEntityAttributes(paramModel, returnType, model.XmlDocs);
-                    delegateResult.Return = paramModel;
+            if (!lite) {
+                var nestedTypeModels = new List<ICodeDocMember>();
+                var nestedDelegateModels = new List<ICodeDocMember>();
+                foreach (var nestedType in type.GetAllNestedTypes().Where(MemberFilter)) {
+                    var nestedTypeModel = ConvertToModel(nestedType, lite: true);
+                    if (nestedType.IsDelegateType())
+                        nestedDelegateModels.Add(nestedTypeModel);
+                    else
+                        nestedTypeModels.Add(nestedTypeModel);
                 }
+                model.NestedTypes = nestedTypeModels;
+                model.NestedDelegates = nestedDelegateModels;
+
+                var methodModels = new List<ICodeDocMember>();
+                var operatorModels = new List<ICodeDocMember>();
+                foreach (var methodInfo in type.GetAllMethods().Where(MemberFilter)) {
+                    var methodModel = ConvertToModel(methodInfo);
+                    if (methodInfo.IsOperatorOverload())
+                        operatorModels.Add(methodModel);
+                    else
+                        methodModels.Add(methodModel);
+                }
+                model.Methods = methodModels;
+                model.Operators = operatorModels;
+
+                model.Constructors = type
+                    .GetAllConstructors()
+                    .Where(MemberFilter)
+                    .Select(ConvertToModel)
+                    .ToArray();
+
+                model.Properties = type
+                    .GetAllProperties()
+                    .Where(MemberFilter)
+                    .Select(ConvertToModel)
+                    .ToArray();
+
+                model.Fields = type
+                    .GetAllFields()
+                    .Where(MemberFilter)
+                    .Select(ConvertToModel)
+                    .ToArray();
+
+                model.Events = type
+                    .GetAllEvents()
+                    .Where(MemberFilter)
+                    .Select(ConvertToModel)
+                    .ToArray();
+
+            }
+
+            if (!lite && model is CodeDocDelegate){
+                var delegateResult = (CodeDocDelegate)model;
+                delegateResult.IsPure = memberDataProvider.IsPure.GetValueOrDefault();
+                delegateResult.Parameters = Array.ConvertAll(
+                    type.GetDelegateTypeParameters(),
+                    p => CreateArgument(p, memberDataProvider));
+
+                var returnParameter = type.GetDelegateReturnParameter();
+                if (returnParameter != null && returnParameter.ParameterType != typeof(void))
+                    delegateResult.Return = CreateReturn(returnParameter, memberDataProvider);
 
                 if (model.XmlDocs != null){
                     if (model.XmlDocs.HasExceptionElements){
@@ -1135,7 +898,7 @@ namespace DandyDoc.CodeDoc
                                 : new CRefIdentifier(xmlDocException.CRef);
                             CodeDocException exceptionModel;
                             if (!exceptionLookup.TryGetValue(exceptionCRef, out exceptionModel)){
-                                exceptionModel = new CodeDocException(GetOrConvertLite(exceptionCRef));
+                                exceptionModel = new CodeDocException(GetOrConvert(exceptionCRef, lite: true));
                                 exceptionModel.Ensures = new List<XmlDocNode>();
                                 exceptionModel.Conditions = new List<XmlDocNode>();
                                 exceptionLookup.Add(exceptionCRef, exceptionModel);
@@ -1157,27 +920,15 @@ namespace DandyDoc.CodeDoc
                             }
                         }
 
-                        var exceptionModels = exceptionLookup.Values
+                        delegateResult.Exceptions = exceptionLookup.Values
                             .OrderBy(x => x.ExceptionType.CRef.FullCRef)
                             .ToArray();
-
-                        foreach (var exceptionModel in exceptionModels){
-                            // freeze collections
-                            exceptionModel.Ensures = new ReadOnlyCollection<XmlDocNode>(exceptionModel.Ensures.ToArray()); // TODO: freeze
-                            exceptionModel.Conditions = new ReadOnlyCollection<XmlDocNode>(exceptionModel.Conditions.ToArray());  // TODO: freeze
-                        }
-
-                        delegateResult.Exceptions = new ReadOnlyCollection<CodeDocException>(exceptionModels);  // TODO: freeze
                     }
 
-                    if (model.XmlDocs.HasEnsuresElements){
-                        delegateResult.Ensures =
-                            new ReadOnlyCollection<XmlDocContractElement>(model.XmlDocs.EnsuresElements.ToArray());  // TODO: freeze
-                    }
-                    if (model.XmlDocs.HasRequiresElements){
-                        delegateResult.Requires =
-                            new ReadOnlyCollection<XmlDocContractElement>(model.XmlDocs.RequiresElements.ToArray());  // TODO: freeze
-                    }
+                    if (model.XmlDocs.HasEnsuresElements)
+                        delegateResult.Ensures = model.XmlDocs.EnsuresElements.ToArray();
+                    if (model.XmlDocs.HasRequiresElements)
+                        delegateResult.Requires = model.XmlDocs.RequiresElements.ToArray();
                 }
             }
 

@@ -17,11 +17,15 @@ namespace DandyDoc.CodeDoc
         /// </summary>
         /// <param name="name">The parameter name.</param>
         /// <param name="parameterType">The parameter type.</param>
-        /// <param name="summary">The optional XML doc summary element.</param>
-        [Obsolete]
-        public CodeDocParameter(string name, ICodeDocMember parameterType, XmlDocElement _ = null) {
+        public CodeDocParameter(string name, ICodeDocMember parameterType) {
+            if(String.IsNullOrEmpty(name)) throw new ArgumentException("Parameter name must contain characters.","name");
             Name = name;
             ParameterType = parameterType;
+        }
+
+        [ContractInvariantMethod]
+        private void CodeContractInvariants() {
+            Contract.Invariant(!String.IsNullOrEmpty(Name));
         }
 
         /// <summary>
@@ -35,20 +39,6 @@ namespace DandyDoc.CodeDoc
         public ICodeDocMember ParameterType { get; private set; }
 
         /// <summary>
-        /// Indicates that the parameter has an XML doc summary element.
-        /// </summary>
-        [Obsolete]
-        public bool HasSummary {
-            get { return Summary != null; }
-        }
-
-        /// <summary>
-        /// Gets the XML doc summary element.
-        /// </summary>
-        [Obsolete]
-        public XmlDocElement Summary { get; private set; }
-
-        /// <summary>
         /// Indicates that the parameter has XML doc summary contents.
         /// </summary>
         public bool HasSummaryContents {
@@ -58,14 +48,7 @@ namespace DandyDoc.CodeDoc
         /// <summary>
         /// Gets the XML doc summary contents.
         /// </summary>
-        public IList<XmlDocNode> SummaryContents {
-            /*get {
-                Contract.Ensures(Contract.Result<IList<XmlDocNode>>() != null);
-                return HasSummaryContents
-                    ? Summary.Children
-                    : new XmlDocNode[0];
-            }*/
-            get; set; }
+        public IList<XmlDocNode> SummaryContents { get; set; }
 
         /// <summary>
         /// Indicates that this is an out parameter.

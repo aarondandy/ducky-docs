@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using DandyDoc.XmlDoc;
 
 namespace DandyDoc.CodeDoc
@@ -79,5 +80,43 @@ namespace DandyDoc.CodeDoc
         public bool? IsObsolete {
             get{ return null; }
         }
+
+        public bool HasParameterSummaryContents(string parameterName) {
+            if (!XmlDoc.HasParameterSummaries)
+                return false;
+            var parameterSummary = XmlDoc.GetParameterSummary(parameterName);
+            return parameterSummary != null && parameterSummary.HasChildren;
+        }
+
+        public IEnumerable<XmlDocNode> GetParameterSummaryContents(string parameterName) {
+            if (!XmlDoc.HasParameterSummaries)
+                return Enumerable.Empty<XmlDocNode>();
+            var parameterSummary = XmlDoc.GetParameterSummary(parameterName);
+            return parameterSummary == null ? Enumerable.Empty<XmlDocNode>() : parameterSummary.Children;
+        }
+
+        public bool HasReturnSummaryContents {
+            get { return XmlDoc.HasReturnsContents; }
+        }
+
+        public IEnumerable<XmlDocNode> GetReturnSummaryContents() {
+            return XmlDoc.ReturnsContents;
+        }
+
+        public bool? RequiresParameterNotEverNull(string parameterName) {
+            if (XmlDoc.HasRequiresElements && XmlDoc.RequiresElements.Any(r => r.RequiresParameterNotEverNull(parameterName)))
+                return true;
+
+            return null;
+        }
+
+        public bool? EnsuresResultNotEverNull {
+            get {
+                if (XmlDoc.HasEnsuresElements && XmlDoc.EnsuresElements.Any(r => r.EnsuresResultNotEverNull))
+                    return true;
+                return null;
+            }
+        }
+
     }
 }

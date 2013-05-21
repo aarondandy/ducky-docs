@@ -117,5 +117,42 @@ namespace DandyDoc.CodeDoc
             get { return this.Select(x => x.IsObsolete).FirstSetNullableOrDefault(); }
         }
 
+        public virtual bool HasParameterSummaryContents(string parameterName) {
+            return this.Any(x => x.HasParameterSummaryContents(parameterName));
+        }
+
+        public virtual IEnumerable<XmlDocNode> GetParameterSummaryContents(string parameterName) {
+            return this
+                .Where(x => x.HasParameterSummaryContents(parameterName))
+                .Select(x => x.GetParameterSummaryContents(parameterName))
+                .FirstOrDefault()
+                ?? Enumerable.Empty<XmlDocNode>();
+        }
+
+        public virtual bool HasReturnSummaryContents {
+            get { return this.Any(x => x.HasReturnSummaryContents); }
+        }
+
+        public virtual IEnumerable<XmlDocNode> GetReturnSummaryContents() {
+            return this
+                .Where(x => x.HasReturnSummaryContents)
+                .Select(x => x.GetReturnSummaryContents())
+                .FirstOrDefault()
+                ?? Enumerable.Empty<XmlDocNode>();
+        }
+
+        public virtual bool? RequiresParameterNotEverNull(string parameterName) {
+            return this.Select(x => x.RequiresParameterNotEverNull(parameterName)).FirstSetNullableOrDefault();
+        }
+
+
+        public virtual bool? EnsuresResultNotEverNull {
+            get {
+                return this
+                    .Select(x => x.EnsuresResultNotEverNull)
+                    .FirstSetNullableOrDefault();
+            }
+        }
+
     }
 }

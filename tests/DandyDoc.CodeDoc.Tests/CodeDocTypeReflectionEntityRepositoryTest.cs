@@ -432,8 +432,8 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual(1, method.Parameters.Count);
             Assert.AreEqual("n", method.Parameters[0].Name);
             Assert.AreEqual("T:System.Double", method.Parameters[0].ParameterType.CRef.FullCRef);
-            Assert.IsTrue(method.Parameters[0].HasSummary);
-            Assert.AreEqual("The value to double.", method.Parameters[0].Summary.Node.InnerText);
+            Assert.IsTrue(method.Parameters[0].HasSummaryContents);
+            Assert.AreEqual("The value to double.", method.Parameters[0].SummaryContents.First().Node.OuterXml);
         }
 
         [Test]
@@ -524,7 +524,7 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual("T:System.Int32", type.Parameters[1].ParameterType.CRef.FullCRef);
             Assert.IsTrue(type.HasReturn);
             Assert.AreEqual("T:System.Int32", type.Return.ParameterType.CRef.FullCRef);
-            Assert.AreEqual("some int", type.Return.Summary.Node.InnerText);
+            Assert.AreEqual("some int", type.Return.SummaryContents.First().Node.OuterXml);
         }
 
         [Test]
@@ -602,7 +602,7 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual("n", prop.Parameters[0].Name);
             Assert.AreEqual("T:System.Int32", prop.Parameters[0].ParameterType.CRef.FullCRef);
             Assert.IsTrue(prop.Parameters[0].HasSummaryContents);
-            Assert.AreEqual("an index", prop.Parameters[0].Summary.Node.InnerText);
+            Assert.AreEqual("an index", prop.Parameters[0].SummaryContents.First().Node.OuterXml);
         }
 
         [Test]

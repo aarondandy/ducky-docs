@@ -171,6 +171,22 @@ namespace DandyDoc.Reflection
         }
 
         /// <summary>
+        /// Extracts the return parameter for a delegate type from the invoke method.
+        /// </summary>
+        /// <param name="type">The delegate type to extract a return parameter from.</param>
+        /// <returns>The return parameter.</returns>
+        public static ParameterInfo GetDelegateReturnParameter(this Type type) {
+            if (!IsDelegateType(type))
+                return null;
+
+            var invokeMethod = type.GetMethod("Invoke", BindingFlags.Instance | BindingFlags.Public);
+            if (invokeMethod == null)
+                return null;
+
+            return invokeMethod.ReturnParameter;
+        }
+
+        /// <summary>
         /// Extracts the return type for a delegate type from the invoke method.
         /// </summary>
         /// <param name="type">The delegate type to extract a return type from.</param>

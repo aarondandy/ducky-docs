@@ -417,6 +417,7 @@ namespace DandyDoc.CodeDoc
             return result;
         }
 
+        [Obsolete]
         private void ApplyEntityAttributes(CodeDocParameter model, ParameterReference parameterReference) {
             Contract.Requires(model != null);
             if (parameterReference != null) {
@@ -444,6 +445,7 @@ namespace DandyDoc.CodeDoc
             }
         }
 
+        [Obsolete]
         private void ApplyEntityAttributes(CodeDocParameter model, TypeReference returnType, XmlDocMember xmlDocs) {
             Contract.Requires(model != null);
             ApplyEntityAttributes(model, null);
@@ -456,6 +458,7 @@ namespace DandyDoc.CodeDoc
             }
         }
 
+        [Obsolete]
         private void ApplyEntityAttributes(CodeDocParameter model, ParameterReference parameterInfo, XmlDocMember xmlDocs) {
             Contract.Requires(model != null);
             ApplyEntityAttributes(model, parameterInfo);
@@ -572,8 +575,7 @@ namespace DandyDoc.CodeDoc
                             : null;
                         var paramModel = new CodeDocParameter(
                             parameter.Name,
-                            GetSimpleEntity(parameter.ParameterType),
-                            parameterSummaryElement
+                            GetSimpleEntity(parameter.ParameterType)
                         );
                         ApplyEntityAttributes(paramModel, parameter, model.XmlDocs);
                         return paramModel;
@@ -780,8 +782,7 @@ namespace DandyDoc.CodeDoc
                         : null;
                     var paramModel = new CodeDocParameter(
                         parameter.Name,
-                        GetSimpleEntity(parameter.ParameterType),
-                        parameterSummaryElement
+                        GetSimpleEntity(parameter.ParameterType)
                     );
                     ApplyEntityAttributes(paramModel, parameter, model.XmlDocs);
                     return paramModel;
@@ -795,8 +796,7 @@ namespace DandyDoc.CodeDoc
                     : null;
                 var paramModel = new CodeDocParameter(
                     String.Empty,
-                    GetSimpleEntity(methodReference.ReturnType),
-                    returnSummaryElement
+                    GetSimpleEntity(methodReference.ReturnType)
                 );
                 ApplyEntityAttributes(paramModel, methodReference.ReturnType, model.XmlDocs);
                 model.Return = paramModel;
@@ -1042,8 +1042,7 @@ namespace DandyDoc.CodeDoc
                             : null;
                         var paramModel = new CodeDocParameter(
                             parameter.Name,
-                            GetSimpleEntity(parameter.ParameterType),
-                            parameterSummaryElement
+                            GetSimpleEntity(parameter.ParameterType)
                         );
                         ApplyEntityAttributes(paramModel, parameter, model.XmlDocs);
                         return paramModel;
@@ -1058,8 +1057,7 @@ namespace DandyDoc.CodeDoc
                         : null;
                     var paramModel = new CodeDocParameter(
                         String.Empty,
-                        GetSimpleEntity(returnType),
-                        returnSummaryElement
+                        GetSimpleEntity(returnType)
                     );
                     ApplyEntityAttributes(paramModel, returnType, model.XmlDocs);
                     delegateResult.Return = paramModel;
