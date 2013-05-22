@@ -217,10 +217,10 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual(2, model.GenericParameters.Count);
 
             Assert.AreEqual("TA", model.GenericParameters[0].Name);
-            Assert.IsTrue(model.GenericParameters[0].HasSummary);
+            Assert.IsTrue(model.GenericParameters[0].HasSummaryContents);
             Assert.AreEqual(
                 "<typeparam name=\"TA\">A</typeparam>",
-                model.GenericParameters[0].Summary.Node.OuterXml);
+                model.GenericParameters[0].SummaryContents.First().Node.ParentNode.OuterXml);
             Assert.IsFalse(model.GenericParameters[0].IsContravariant);
             Assert.IsFalse(model.GenericParameters[0].IsCovariant);
             Assert.IsTrue(model.GenericParameters[0].HasDefaultConstructorConstraint);
@@ -231,10 +231,10 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual("T:System.ValueType", model.GenericParameters[0].TypeConstraints[0].CRef.FullCRef);
 
             Assert.AreEqual("TB", model.GenericParameters[1].Name);
-            Assert.IsTrue(model.GenericParameters[1].HasSummary);
+            Assert.IsTrue(model.GenericParameters[1].HasSummaryContents);
             Assert.AreEqual(
                 "<typeparam name=\"TB\">B</typeparam>",
-                model.GenericParameters[1].Summary.Node.OuterXml);
+                model.GenericParameters[1].SummaryContents.First().Node.ParentNode.OuterXml);
             Assert.IsFalse(model.GenericParameters[1].IsContravariant);
             Assert.IsFalse(model.GenericParameters[1].IsCovariant);
             Assert.IsFalse(model.GenericParameters[1].HasDefaultConstructorConstraint);
@@ -483,7 +483,7 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.IsTrue(method.HasGenericParameters);
             Assert.AreEqual(1, method.GenericParameters.Count);
             Assert.AreEqual("TOther", method.GenericParameters[0].Name);
-            Assert.IsFalse(method.GenericParameters[0].HasSummary);
+            Assert.IsFalse(method.GenericParameters[0].HasSummaryContents);
             Assert.IsFalse(method.GenericParameters[0].HasTypeConstraints);
         }
 
@@ -496,7 +496,7 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.IsTrue(method.HasGenericParameters);
             Assert.AreEqual(1, method.GenericParameters.Count);
             Assert.AreEqual("TStuff", method.GenericParameters[0].Name);
-            Assert.AreEqual("some stuff", method.GenericParameters[0].Summary.Node.InnerText);
+            Assert.AreEqual("some stuff", method.GenericParameters[0].SummaryContents.First().Node.OuterXml);
             Assert.IsTrue(method.GenericParameters[0].HasTypeConstraints);
             Assert.AreEqual(1, method.GenericParameters[0].TypeConstraints.Count);
             Assert.AreEqual("T:System.IConvertible", method.GenericParameters[0].TypeConstraints[0].CRef.FullCRef);

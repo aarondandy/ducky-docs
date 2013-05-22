@@ -137,6 +137,15 @@ namespace DandyDoc.Cecil
             return method == null ? null : method.ReturnType;
         }
 
+        public static MethodReturnType GetDelegateMethodReturn(this TypeDefinition typeDefinition) {
+            Contract.Requires(typeDefinition != null);
+            Contract.Requires(typeDefinition.IsDelegateType());
+            var method = typeDefinition
+                .GetAllMethods(x => "Invoke".Equals(x.Name))
+                .FirstOrDefault();
+            return method == null ? null : method.MethodReturnType;
+        }
+
         /// <summary>
         /// Determines if a method is a finalizer method.
         /// </summary>
@@ -335,7 +344,7 @@ namespace DandyDoc.Cecil
         /// <param name="filter">An optional filter for the members.</param>
         /// <param name="skipInheritance">Indicates if inherited types should be checked for members.</param>
         /// <returns>Members that are found for the type.</returns>
-        public static List<EventDefinition> GetAllEvents(this TypeDefinition typeDefinition, Func<EventDefinition, bool> filter, bool skipInheritance = false) {
+        public static List<EventDefinition> GetAllEvents(this TypeDefinition typeDefinition, Func<EventDefinition, bool> filter = null, bool skipInheritance = false) {
             Contract.Requires(typeDefinition != null);
             Contract.Ensures(Contract.Result<List<EventDefinition>>() != null);
             return typeDefinition.GetAllMembers(
@@ -447,6 +456,22 @@ namespace DandyDoc.Cecil
                 Contract.Assume(typeReference != null);
             }
             return typeReference;
+        }
+
+        /// <summary>
+        /// Determines if a type reference is a nullable type.
+        /// </summary>
+        /// <param name="typeReference">The type reference to test.</param>
+        /// <returns><c>true</c> when the given type is nullable.</returns>
+        /// <remarks>
+        /// Nullable is not to be confused with a reference type.
+        /// </remarks>
+        public static bool IsNullable(this TypeReference typeReference) {
+            Contract.Requires(typeReference != null);
+            return typeReference.IsValueType
+                && typeReference.IsGenericInstance
+                && typeReference.Name == "Nullable`1"
+                && typeReference.Namespace == "System";
         }
 
     }

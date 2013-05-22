@@ -9,6 +9,13 @@ namespace DandyDoc.CodeDoc
     /// </summary>
     public class CodeDocGenericParameter
     {
+
+        public CodeDocGenericParameter(){}
+
+        public CodeDocGenericParameter(string name) {
+            Name = name;
+        }
+
         /// <summary>
         /// Indicates that this parameter has type constraints.
         /// </summary>
@@ -27,34 +34,16 @@ namespace DandyDoc.CodeDoc
         public string Name { get; set; }
 
         /// <summary>
-        /// Indicates that this model has an XML doc summary.
-        /// </summary>
-        public bool HasSummary {
-            get { return Summary != null; }
-        }
-
-        /// <summary>
-        /// Gets the XML doc summary for the type parameter.
-        /// </summary>
-        public XmlDocElement Summary { get; set; }
-
-        /// <summary>
         /// Indicates that this model has XML doc summary contents.
         /// </summary>
         public bool HasSummaryContents {
-            get { return HasSummary && Summary.HasChildren; }
+            get { return SummaryContents != null && SummaryContents.Count > 0; }
         }
 
         /// <summary>
         /// Gets the XML doc summary contents.
         /// </summary>
-        public IList<XmlDocNode> SummaryContents {
-            get {
-                return HasSummaryContents
-                    ? Summary.Children
-                    : new XmlDocNode[0];
-            }
-        }
+        public IList<XmlDocNode> SummaryContents { get; set; }
 
         /// <summary>
         /// Indicates that this parameter is contravariant.

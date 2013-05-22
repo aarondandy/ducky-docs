@@ -31,7 +31,7 @@ namespace DandyDoc.Core.Cecil.Tests
         }
 
         private ExternalVisibilityKind GetVisibility(MemberReference memberReference) {
-            return memberReference.GetExternalVisibility();
+            return memberReference.GetExternalVisibilityOrDefault();
         }
 
         public static IEnumerable<Tuple<ExternalVisibilityKind, string>> AllClasses {

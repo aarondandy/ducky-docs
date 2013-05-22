@@ -118,5 +118,53 @@ namespace DandyDoc.CodeDoc
             }
         }
 
+        public bool HasGenericTypeSummaryContents(string typeParameterName) {
+            if (!XmlDoc.HasTypeParameterSummaries)
+                return false;
+            var summary = XmlDoc.GetTypeParameterSummary(typeParameterName);
+            return summary != null && summary.HasChildren;
+        }
+
+        public IEnumerable<XmlDocNode> GetGenericTypeSummaryContents(string typeParameterName) {
+            if (!XmlDoc.HasTypeParameterSummaries)
+                return Enumerable.Empty<XmlDocNode>();
+            var summary = XmlDoc.GetTypeParameterSummary(typeParameterName);
+            return summary != null
+                ? summary.Children
+                : Enumerable.Empty<XmlDocNode>();
+        }
+
+
+        public bool HasExceptions {
+            get { return XmlDoc.HasExceptionElements; }
+        }
+
+        public IEnumerable<XmlDocRefElement> GetExceptions() {
+            return XmlDoc.ExceptionElements;
+        }
+
+        public bool HasEnsures {
+            get { return XmlDoc.HasEnsuresElements; }
+        }
+
+        public IEnumerable<XmlDocContractElement> GetEnsures() {
+            return XmlDoc.EnsuresElements;
+        }
+
+        public bool HasRequires {
+            get { return XmlDoc.HasRequiresElements; }
+        }
+
+        public IEnumerable<XmlDocContractElement> GetRequires() {
+            return XmlDoc.RequiresElements;
+        }
+
+        public bool HasInvariants {
+            get { return XmlDoc.HasInvariantElements; }
+        }
+
+        public IEnumerable<XmlDocContractElement> GetInvariants() {
+            return XmlDoc.InvariantElements;
+        }
     }
 }

@@ -373,5 +373,15 @@ namespace DandyDoc.Reflection
             return methodBase.IsFinal && methodBase.IsOverride();
         }
 
+        /// <summary>
+        /// Determines if a type is a <see cref="T:System.Nullable`1"/> type.
+        /// </summary>
+        /// <param name="type">The type to test.</param>
+        /// <returns><c>true</c> if the type is nullable.</returns>
+        public static bool IsNullable(this Type type) {
+            Contract.Requires(type != null);
+            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
+        }
+
     }
 }

@@ -68,7 +68,11 @@ namespace DandyDoc.CodeDoc
             return GetMemberModel(new CRefIdentifier(cRef));
         }
 
-        public abstract ICodeDocMember GetMemberModel(CRefIdentifier cRef);
+        public virtual ICodeDocMember GetMemberModel(CRefIdentifier cRef) {
+            return GetMemberModel(cRef, lite: false);
+        }
+
+        protected abstract ICodeDocMember GetMemberModel(CRefIdentifier cRef, bool lite);
 
         /// <summary>
         /// Gets a namespace model by code reference.
@@ -198,6 +202,63 @@ namespace DandyDoc.CodeDoc
             };
         }
 
+        protected virtual void ApplyContentXmlDocs(CodeDocMemberContentBase model, ICodeDocMemberDataProvider provider) {
+            Contract.Requires(model != null);
+            Contract.Requires(provider != null);
+            model.SummaryContents = provider.GetSummaryContents().ToArray();
+            model.Examples = provider.GetExamples().ToArray();
+            model.Permissions = provider.GetPermissions().ToArray();
+            model.Remarks = provider.GetRemarks().ToArray();
+            model.SeeAlso = provider.GetSeeAlsos().ToArray();
+        }
+
+        protected ICodeDocMember GetOrConvert(CRefIdentifier cRef, bool lite = false) {
+            Contract.Requires(cRef != null);
+            // TODO:
+            // 1) Use the repository tree to get the model by cRef (so we can use a cache)
+            // 1a) Make sure to include this repostitory in the search, but last (should be behind a cache)
+            // 2) Try to make a model for it
+
+            // TODO: need to look elsewhere for a model.
+            var localModel = GetMemberModel(cRef, lite: lite);
+            if (localModel != null)
+                return localModel;
+
+            return CreateGeneralMemberPlaceholder(cRef);
+        }
+
+        protected IEnumerable<CodeDocException> CreateExceptionModels(IEnumerable<XmlDocRefElement> exceptionElement) {
+            Contract.Requires(exceptionElement != null);
+            Contract.Ensures(Contract.Result<IEnumerable<CodeDocException>>() != null);
+            var exceptionLookup = new Dictionary<CRefIdentifier, CodeDocException>();
+            foreach (var xmlDocException in exceptionElement) {
+                var exceptionCRef = String.IsNullOrWhiteSpace(xmlDocException.CRef)
+                    ? new CRefIdentifier("T:")
+                    : new CRefIdentifier(xmlDocException.CRef);
+                CodeDocException exceptionModel;
+                if (!exceptionLookup.TryGetValue(exceptionCRef, out exceptionModel)) {
+                    exceptionModel = new CodeDocException(GetOrConvert(exceptionCRef, lite: true));
+                    exceptionModel.Ensures = new List<XmlDocNode>();
+                    exceptionModel.Conditions = new List<XmlDocNode>();
+                    exceptionLookup.Add(exceptionCRef, exceptionModel);
+                }
+                var priorElement = xmlDocException.PriorElement;
+                var isRelatedEnsuresOnThrow = null != priorElement
+                    && String.Equals("ensuresOnThrow", priorElement.Name, StringComparison.OrdinalIgnoreCase)
+                    && priorElement.Element.GetAttribute("exception") == exceptionCRef.FullCRef;
+                if (isRelatedEnsuresOnThrow) {
+                    if (priorElement.HasChildren) {
+                        exceptionModel.Ensures.Add(priorElement);
+                    }
+                }
+                else {
+                    if (xmlDocException.HasChildren) {
+                        exceptionModel.Conditions.Add(xmlDocException);
+                    }
+                }
+            }
+            return exceptionLookup.Values;
+        }
 
     }
 }

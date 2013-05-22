@@ -13,8 +13,6 @@ namespace DandyDoc.CodeDoc
         ICodeDocMemberDataProvider
     {
 
-        
-
         public CodeDocMemberDataProviderCollection()
             : this(new List<ICodeDocMemberDataProvider>()) { }
 
@@ -154,5 +152,64 @@ namespace DandyDoc.CodeDoc
             }
         }
 
+        public virtual bool HasGenericTypeSummaryContents(string typeParameterName) {
+            return this.Any(x => x.HasGenericTypeSummaryContents(typeParameterName));
+        }
+
+        public virtual IEnumerable<XmlDocNode> GetGenericTypeSummaryContents(string typeParameterName) {
+            return this
+                .Where(x => x.HasGenericTypeSummaryContents(typeParameterName))
+                .Select(x => x.GetGenericTypeSummaryContents(typeParameterName))
+                .FirstOrDefault()
+                ?? Enumerable.Empty<XmlDocNode>();
+        }
+
+        public virtual bool HasExceptions {
+            get { return this.Any(x => x.HasExceptions); }
+        }
+
+        public virtual IEnumerable<XmlDocRefElement> GetExceptions() {
+            return this
+                .Where(x => x.HasExceptions)
+                .Select(x => x.GetExceptions())
+                .FirstOrDefault()
+                ?? Enumerable.Empty<XmlDocRefElement>();
+        }
+
+        public virtual bool HasEnsures {
+            get { return this.Any(x => x.HasEnsures); }
+        }
+
+        public virtual IEnumerable<XmlDocContractElement> GetEnsures() {
+            return this
+                .Where(x => x.HasEnsures)
+                .Select(x => x.GetEnsures())
+                .FirstOrDefault()
+                ?? Enumerable.Empty<XmlDocContractElement>();
+        }
+
+        public virtual bool HasRequires {
+            get { return this.Any(x => x.HasRequires); }
+        }
+
+        public virtual IEnumerable<XmlDocContractElement> GetRequires() {
+            return this
+                .Where(x => x.HasRequires)
+                .Select(x => x.GetRequires())
+                .FirstOrDefault()
+                ?? Enumerable.Empty<XmlDocContractElement>();
+        }
+
+        public virtual bool HasInvariants {
+            get { return this.Any(x => x.HasInvariants); }
+        }
+
+        public virtual IEnumerable<XmlDocContractElement> GetInvariants() {
+            return this
+                .Where(x => x.HasInvariants)
+                .Select(x => x.GetInvariants())
+                .FirstOrDefault()
+                ?? Enumerable.Empty<XmlDocContractElement>();
+        }
     }
 }

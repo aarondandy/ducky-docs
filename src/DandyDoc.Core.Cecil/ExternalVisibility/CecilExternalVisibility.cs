@@ -17,7 +17,7 @@ namespace DandyDoc.ExternalVisibility
         /// </summary>
         /// <param name="memberReference">The member to test.</param>
         /// <returns>Calculated external visibility.</returns>
-        public static ExternalVisibilityKind GetExternalVisibility(this MemberReference memberReference) {
+        public static ExternalVisibilityKind GetExternalVisibilityOrDefault(this MemberReference memberReference, ExternalVisibilityKind defaultValue = ExternalVisibilityKind.Public) {
             if(memberReference == null) throw new ArgumentNullException("memberReference");
             Contract.EndContractBlock();
 
@@ -28,14 +28,14 @@ namespace DandyDoc.ExternalVisibility
             var genericParameter = memberReference as GenericParameter;
             if (genericParameter != null) {
                 return (genericParameter.DeclaringMethod ?? (MemberReference)(genericParameter.DeclaringType))
-                    .GetExternalVisibility();
+                    .GetExternalVisibilityOrDefault(defaultValue);
             }
 
             var declaringType = memberReference.DeclaringType;
             if (declaringType != null)
-                return declaringType.GetExternalVisibility();
+                return declaringType.GetExternalVisibilityOrDefault(defaultValue);
 
-            throw new NotSupportedException("Could not get a member definition.");
+            return defaultValue;
         }
 
         /// <summary>

@@ -46,9 +46,29 @@ namespace DandyDoc.CodeDoc
 
         IEnumerable<XmlDocNode> GetReturnSummaryContents();
 
+        bool HasGenericTypeSummaryContents(string typeParameterName);
+
+        IEnumerable<XmlDocNode> GetGenericTypeSummaryContents(string typeParameterName); 
+
         bool? RequiresParameterNotEverNull(string parameterName);
 
         bool? EnsuresResultNotEverNull { get; }
+
+        bool HasExceptions { get; }
+
+        IEnumerable<XmlDocRefElement> GetExceptions();
+
+        bool HasEnsures { get; }
+
+        IEnumerable<XmlDocContractElement> GetEnsures();
+
+        bool HasRequires { get; }
+
+        IEnumerable<XmlDocContractElement> GetRequires();
+
+        bool HasInvariants { get; }
+
+        IEnumerable<XmlDocContractElement> GetInvariants();
 
     }
 }

@@ -80,6 +80,11 @@ namespace DandyDoc.CodeDoc
         public override bool? RequiresParameterNotEverNull(string parameterName) {
             var parameterInfo = GetParameterInfoByName(parameterName);
             if (parameterInfo != null) {
+                var parameterType = parameterInfo.ParameterType;
+                if (parameterType.IsValueType && !parameterType.IsNullable()) {
+                    return true;
+                }
+
                 foreach (var constructorName in parameterInfo.GetCustomAttributesData().Select(attribute => attribute.Constructor.Name)) {
                     if (constructorName == "CanBeNullAttribute")
                         return false;
@@ -92,10 +97,18 @@ namespace DandyDoc.CodeDoc
 
         public override bool? EnsuresResultNotEverNull {
             get {
-                var constructorNames = Member.GetCustomAttributesData().Select(x => x.Constructor.Name);
                 var returnParameter = GetReturnParameterInfo();
+                if (returnParameter != null) {
+                    var parameterType = returnParameter.ParameterType;
+                    if (parameterType.IsValueType && !parameterType.IsNullable()) {
+                        return true;
+                    }
+                }
+
+                var constructorNames = Member.GetCustomAttributesData().Select(x => x.Constructor.Name);
                 if (returnParameter != null)
                     constructorNames = constructorNames.Concat(returnParameter.GetCustomAttributesData().Select(x => x.Constructor.Name));
+
                 foreach (var constructorName in constructorNames) {
                     if (constructorName == "CanBeNullAttribute")
                         return false;
