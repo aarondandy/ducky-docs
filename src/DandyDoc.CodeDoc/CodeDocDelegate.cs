@@ -48,8 +48,7 @@ namespace DandyDoc.CodeDoc
         /// <inheritdoc/>
         public bool HasNormalTerminationEnsures {
             get {
-                return HasEnsures
-                    && NormalTerminationEnsures.Any();
+                return HasEnsures && NormalTerminationEnsures.Any();
             }
         }
 
@@ -70,18 +69,18 @@ namespace DandyDoc.CodeDoc
         public IList<XmlDocContractElement> Requires { get; set; }
 
         /// <inheritdoc/>
-        public bool IsPure { get; set; }
+        public bool? IsPure { get; set; }
 
         /// <inheritdoc/>
-        public bool IsExtensionMethod { get { return false; } }
+        public bool? IsExtensionMethod { get { return false; } }
 
         /// <inheritdoc/>
-        public bool IsOperatorOverload { get { return false; } }
+        public bool? IsOperatorOverload { get { return false; } }
 
         /// <inheritdoc/>
-        public bool IsAbstract { get { return false; } }
+        public bool? IsAbstract { get { return false; } }
 
         /// <inheritdoc/>
-        public bool IsVirtual { get { return false; } }
+        public bool? IsVirtual { get { return false; } }
     }
 }

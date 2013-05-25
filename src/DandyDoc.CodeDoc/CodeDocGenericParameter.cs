@@ -10,8 +10,15 @@ namespace DandyDoc.CodeDoc
     public class CodeDocGenericParameter
     {
 
+        /// <summary>
+        /// Creates a default generic parameter model.
+        /// </summary>
         public CodeDocGenericParameter(){}
 
+        /// <summary>
+        /// Creates a gemeric parameter model with the given name.
+        /// </summary>
+        /// <param name="name"></param>
         public CodeDocGenericParameter(string name) {
             Name = name;
         }
@@ -48,27 +55,27 @@ namespace DandyDoc.CodeDoc
         /// <summary>
         /// Indicates that this parameter is contravariant.
         /// </summary>
-        public bool IsContravariant { get; set; }
+        public bool? IsContravariant { get; set; }
 
         /// <summary>
         /// Indicates that this parameter is covariant.
         /// </summary>
-        public bool IsCovariant { get; set; }
+        public bool? IsCovariant { get; set; }
 
         /// <summary>
         /// Indicates that this parameter is constrained to reference types.
         /// </summary>
-        public bool HasReferenceTypeConstraint { get; set; }
+        public bool? HasReferenceTypeConstraint { get; set; }
 
         /// <summary>
         /// Indicates that this parameter is constrained to value types.
         /// </summary>
-        public bool HasNotNullableValueTypeConstraint { get; set; }
+        public bool? HasNotNullableValueTypeConstraint { get; set; }
 
         /// <summary>
         /// Indicates that this parameter is constrained to types with default constructors.
         /// </summary>
-        public bool HasDefaultConstructorConstraint { get; set; }
+        public bool? HasDefaultConstructorConstraint { get; set; }
 
         /// <summary>
         /// Indicates that this parameter has any constraints.
@@ -76,9 +83,9 @@ namespace DandyDoc.CodeDoc
         public bool HasAnyConstraints {
             get {
                 return HasTypeConstraints
-                    || HasReferenceTypeConstraint
-                    || HasNotNullableValueTypeConstraint
-                    || HasDefaultConstructorConstraint;
+                    || HasReferenceTypeConstraint.GetValueOrDefault()
+                    || HasNotNullableValueTypeConstraint.GetValueOrDefault()
+                    || HasDefaultConstructorConstraint.GetValueOrDefault();
             }
         }
 

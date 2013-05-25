@@ -282,16 +282,12 @@ namespace DandyDoc.CodeDoc
             return GetCodeDocSimpleAssembly(GetCRefIdentifier(assembly));
         }
 
-        [Obsolete]
-        public override ICodeDocMember GetSimpleMember(CRefIdentifier cRef) {
-            throw new NotSupportedException();
-        }
-
-        [Obsolete]
-        public override ICodeDocMember GetContentMember(CRefIdentifier cRef) {
-            throw new NotSupportedException();
-        }
-
+        /// <summary>
+        /// Gets a code doc model for a reflected member.
+        /// </summary>
+        /// <param name="cRef">The code reference of a reflected member to create a model from.</param>
+        /// <param name="lite">Indicates that the model should be lite.</param>
+        /// <returns>A code doc model.</returns>
         protected override ICodeDocMember GetMemberModel(CRefIdentifier cRef, bool lite) {
             if (cRef == null) throw new ArgumentNullException("cRef");
             Contract.EndContractBlock();
@@ -312,6 +308,7 @@ namespace DandyDoc.CodeDoc
         /// Converts a reflected member to a code doc model.
         /// </summary>
         /// <param name="memberInfo">A reflected member.</param>
+        /// <param name="lite">Indicates that the generated model should be lite.</param>
         /// <returns>A code doc model for the given member.</returns>
         protected virtual CodeDocMemberContentBase ConvertToModel(MemberInfo memberInfo, bool lite) {
             if(memberInfo == null) throw new ArgumentNullException("memberInfo");
@@ -444,7 +441,7 @@ namespace DandyDoc.CodeDoc
 
             model.DelegateType = GetOrConvert(eventInfo.EventHandlerType, lite: true);
             Contract.Assume(eventInfo.DeclaringType != null);
-            model.Namespace = GetCodeDocNamespaceByName(eventInfo.DeclaringType.Namespace);
+            model.Namespace = GetOrCreateNamespaceByName(eventInfo.DeclaringType.Namespace);
             model.Assembly = GetCodeDocAssembly(eventInfo.DeclaringType.Assembly);
             model.DeclaringType = GetOrConvert(eventInfo.DeclaringType, lite: true);
             model.IsStatic = memberDataProvider.IsStatic.GetValueOrDefault();
@@ -489,7 +486,7 @@ namespace DandyDoc.CodeDoc
             model.IsObsolete = memberDataProvider.IsObsolete.GetValueOrDefault();
 
             Contract.Assume(fieldInfo.DeclaringType != null);
-            model.Namespace = GetCodeDocNamespaceByName(fieldInfo.DeclaringType.Namespace);
+            model.Namespace = GetOrCreateNamespaceByName(fieldInfo.DeclaringType.Namespace);
             model.Assembly = GetCodeDocAssembly(fieldInfo.DeclaringType.Assembly);
             model.DeclaringType = GetOrConvert(fieldInfo.DeclaringType, lite: true);
             return model;
@@ -529,7 +526,7 @@ namespace DandyDoc.CodeDoc
             model.ValueDescriptionContents = memberDataProvider.GeValueDescriptionContents().ToArray();
             model.ValueType = GetOrConvert(propertyInfo.PropertyType, lite: true);
             Contract.Assume(propertyInfo.DeclaringType != null);
-            model.Namespace = GetCodeDocNamespaceByName(propertyInfo.DeclaringType.Namespace);
+            model.Namespace = GetOrCreateNamespaceByName(propertyInfo.DeclaringType.Namespace);
             model.Assembly = GetCodeDocAssembly(propertyInfo.DeclaringType.Assembly);
             model.DeclaringType = GetOrConvert(propertyInfo.DeclaringType, lite: true);
 
@@ -592,7 +589,7 @@ namespace DandyDoc.CodeDoc
                 model.SubTitle = "Method";
 
             Contract.Assume(methodBase.DeclaringType != null);
-            model.Namespace = GetCodeDocNamespaceByName(methodBase.DeclaringType.Namespace);
+            model.Namespace = GetOrCreateNamespaceByName(methodBase.DeclaringType.Namespace);
             model.Assembly = GetCodeDocAssembly(methodBase.DeclaringType.Assembly);
             model.DeclaringType = GetOrConvert(methodBase.DeclaringType, lite: true);
             model.IsOperatorOverload = methodBase.IsOperatorOverload();
@@ -680,7 +677,7 @@ namespace DandyDoc.CodeDoc
             else
                 model.SubTitle = "Class";
 
-            model.Namespace = GetCodeDocNamespaceByName(type.Namespace);
+            model.Namespace = GetOrCreateNamespaceByName(type.Namespace);
             model.Assembly = GetCodeDocAssembly(type.Assembly);
             model.IsEnum = type.IsEnum;
             model.IsFlagsEnum = type.IsEnum && type.HasAttribute(typeof(FlagsAttribute));

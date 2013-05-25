@@ -26,7 +26,7 @@ namespace DandyDoc.Web.Mvc4.Controllers
                 return View("Api/Index", CodeDocMemberRepository);
 
             var cRefIdentifier = new CRefIdentifier(cRef);
-            var model = CodeDocMemberRepository.GetContentMember(cRefIdentifier);
+            var model = CodeDocMemberRepository.GetMemberModel(cRefIdentifier);
             if (model == null)
                 return HttpNotFound();
 
@@ -37,7 +37,7 @@ namespace DandyDoc.Web.Mvc4.Controllers
                 var codeDocType = (CodeDocType)model;
                 if (codeDocType is CodeDocDelegate)
                     return View("Api/Delegate", (CodeDocDelegate)codeDocType);
-                if (codeDocType.IsEnum)
+                if (codeDocType.IsEnum.GetValueOrDefault())
                     return View("Api/Enum", codeDocType);
                 return View("Api/Type", codeDocType);
             }

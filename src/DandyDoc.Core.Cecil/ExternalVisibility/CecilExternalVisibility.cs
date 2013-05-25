@@ -16,6 +16,7 @@ namespace DandyDoc.ExternalVisibility
         /// Determines external visibility for the given <paramref name="memberReference"/>.
         /// </summary>
         /// <param name="memberReference">The member to test.</param>
+        /// <param name="defaultValue"></param>
         /// <returns>Calculated external visibility.</returns>
         public static ExternalVisibilityKind GetExternalVisibilityOrDefault(this MemberReference memberReference, ExternalVisibilityKind defaultValue = ExternalVisibilityKind.Public) {
             if(memberReference == null) throw new ArgumentNullException("memberReference");

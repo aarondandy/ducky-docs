@@ -51,22 +51,22 @@ namespace DandyDoc.CodeDoc
         /// <summary>
         /// Indicates that this type is an enumeration type.
         /// </summary>
-        public bool IsEnum { get; set; }
+        public bool? IsEnum { get; set; }
 
         /// <summary>
         /// Indicates that this type is an enumeration type and is attributed as flags.
         /// </summary>
-        public bool IsFlagsEnum { get; set; }
+        public bool? IsFlagsEnum { get; set; }
 
         /// <summary>
         /// Indicates that this type is sealed.
         /// </summary>
-        public bool IsSealed { get; set; }
+        public bool? IsSealed { get; set; }
 
         /// <summary>
         /// Indicates that this type is a value type.
         /// </summary>
-        public bool IsValueType { get; set; }
+        public bool? IsValueType { get; set; }
 
         /// <summary>
         /// Indicates that this type contains nested types.

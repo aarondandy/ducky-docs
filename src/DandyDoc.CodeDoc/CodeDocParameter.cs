@@ -53,12 +53,12 @@ namespace DandyDoc.CodeDoc
         /// <summary>
         /// Indicates that this is an out parameter.
         /// </summary>
-        public bool IsOut { get; set; }
+        public bool? IsOut { get; set; }
 
         /// <summary>
         /// Indicates that this parameter is passed by reference.
         /// </summary>
-        public bool IsByRef { get; set; }
+        public bool? IsByRef { get; set; }
 
         /// <summary>
         /// Indicates that this parameter is null restricted.

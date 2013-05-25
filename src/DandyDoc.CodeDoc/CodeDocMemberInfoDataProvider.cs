@@ -7,10 +7,17 @@ using DandyDoc.Reflection;
 
 namespace DandyDoc.CodeDoc
 {
+    /// <summary>
+    /// Provides code doc member attributes for a reflected member info.
+    /// </summary>
+    /// <typeparam name="TMember">A member info type to provide attributes for.</typeparam>
     public class CodeDocMemberInfoProvider<TMember> : CodeDocMemberDataProviderCollection
         where TMember : MemberInfo
     {
-
+        /// <summary>
+        /// Creates a member data provider for the given member.
+        /// </summary>
+        /// <param name="member">The member to wrap.</param>
         public CodeDocMemberInfoProvider(TMember member) {
             if(member == null) throw new ArgumentNullException("member");
             Contract.EndContractBlock();
@@ -22,8 +29,14 @@ namespace DandyDoc.CodeDoc
             Contract.Invariant(Member != null);
         }
 
+        /// <summary>
+        /// The wrapped member.
+        /// </summary>
         public TMember Member { get; private set; }
 
+        /// <summary>
+        /// Determines if the wrapped member is pure.
+        /// </summary>
         public override bool? IsPure {
             get {
                 if (Member.HasAttribute(t => t.Constructor.Name == "PureAttribute"))
@@ -32,18 +45,27 @@ namespace DandyDoc.CodeDoc
             }
         }
 
+        /// <summary>
+        /// Calculates the external visibility of the wrapped member.
+        /// </summary>
         public override ExternalVisibilityKind? ExternalVisibility {
             get {
                 return Member.GetExternalVisibility();
             }
         }
 
+        /// <summary>
+        /// Determines if the wrapped member is static.
+        /// </summary>
         public override bool? IsStatic {
             get {
                 return Member.IsStatic();
             }
         }
 
+        /// <summary>
+        /// Determines if this member is obsolete.
+        /// </summary>
         public override bool? IsObsolete {
             get {
                 return Member.HasAttribute(typeof(ObsoleteAttribute));
@@ -77,6 +99,11 @@ namespace DandyDoc.CodeDoc
             return null;
         }
 
+        /// <summary>
+        /// Determines if the target parameter has null restrictions.
+        /// </summary>
+        /// <param name="parameterName">The target parameter name.</param>
+        /// <returns>A value indicating if the parameter is null restricted.</returns>
         public override bool? RequiresParameterNotEverNull(string parameterName) {
             var parameterInfo = GetParameterInfoByName(parameterName);
             if (parameterInfo != null) {
@@ -95,6 +122,9 @@ namespace DandyDoc.CodeDoc
             return base.RequiresParameterNotEverNull(parameterName);
         }
 
+        /// <summary>
+        /// Determines if the result has null restrictions.
+        /// </summary>
         public override bool? EnsuresResultNotEverNull {
             get {
                 var returnParameter = GetReturnParameterInfo();

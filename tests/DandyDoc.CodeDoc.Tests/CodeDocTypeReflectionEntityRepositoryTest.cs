@@ -149,7 +149,7 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual("FlagsEnum", model.Title);
             Assert.AreEqual("Enumeration", model.SubTitle);
             Assert.AreEqual("TestLibrary1", model.NamespaceName);
-            Assert.IsTrue(model.IsEnum);
+            Assert.IsTrue(model.IsEnum.GetValueOrDefault());
 
             Assert.IsTrue(model.HasSummaryContents);
             Assert.AreEqual("An enumeration to check detection of the flags attribute.", model.SummaryContents.First().Node.OuterXml);
@@ -221,11 +221,11 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual(
                 "<typeparam name=\"TA\">A</typeparam>",
                 model.GenericParameters[0].SummaryContents.First().Node.ParentNode.OuterXml);
-            Assert.IsFalse(model.GenericParameters[0].IsContravariant);
-            Assert.IsFalse(model.GenericParameters[0].IsCovariant);
-            Assert.IsTrue(model.GenericParameters[0].HasDefaultConstructorConstraint);
-            Assert.IsFalse(model.GenericParameters[0].HasReferenceTypeConstraint);
-            Assert.IsTrue(model.GenericParameters[0].HasNotNullableValueTypeConstraint);
+            Assert.IsFalse(model.GenericParameters[0].IsContravariant.GetValueOrDefault());
+            Assert.IsFalse(model.GenericParameters[0].IsCovariant.GetValueOrDefault());
+            Assert.IsTrue(model.GenericParameters[0].HasDefaultConstructorConstraint.GetValueOrDefault());
+            Assert.IsFalse(model.GenericParameters[0].HasReferenceTypeConstraint.GetValueOrDefault());
+            Assert.IsTrue(model.GenericParameters[0].HasNotNullableValueTypeConstraint.GetValueOrDefault());
             Assert.IsTrue(model.GenericParameters[0].HasTypeConstraints);
             Assert.AreEqual(1, model.GenericParameters[0].TypeConstraints.Count);
             Assert.AreEqual("T:System.ValueType", model.GenericParameters[0].TypeConstraints[0].CRef.FullCRef);
@@ -235,11 +235,11 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual(
                 "<typeparam name=\"TB\">B</typeparam>",
                 model.GenericParameters[1].SummaryContents.First().Node.ParentNode.OuterXml);
-            Assert.IsFalse(model.GenericParameters[1].IsContravariant);
-            Assert.IsFalse(model.GenericParameters[1].IsCovariant);
-            Assert.IsFalse(model.GenericParameters[1].HasDefaultConstructorConstraint);
-            Assert.IsTrue(model.GenericParameters[1].HasReferenceTypeConstraint);
-            Assert.IsFalse(model.GenericParameters[1].HasNotNullableValueTypeConstraint);
+            Assert.IsFalse(model.GenericParameters[1].IsContravariant.GetValueOrDefault());
+            Assert.IsFalse(model.GenericParameters[1].IsCovariant.GetValueOrDefault());
+            Assert.IsFalse(model.GenericParameters[1].HasDefaultConstructorConstraint.GetValueOrDefault());
+            Assert.IsTrue(model.GenericParameters[1].HasReferenceTypeConstraint.GetValueOrDefault());
+            Assert.IsFalse(model.GenericParameters[1].HasNotNullableValueTypeConstraint.GetValueOrDefault());
             Assert.IsTrue(model.GenericParameters[1].HasTypeConstraints);
             Assert.AreEqual(1, model.GenericParameters[1].TypeConstraints.Count);
             // TODO: this CRef could be a problem, need a solution... without context what is `0?
@@ -255,11 +255,11 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.IsTrue(model.HasGenericParameters);
             Assert.AreEqual(2, model.GenericParameters.Count);
             Assert.AreEqual("TIn", model.GenericParameters[0].Name);
-            Assert.IsTrue(model.GenericParameters[0].IsContravariant);
-            Assert.IsFalse(model.GenericParameters[0].IsCovariant);
+            Assert.IsTrue(model.GenericParameters[0].IsContravariant.GetValueOrDefault());
+            Assert.IsFalse(model.GenericParameters[0].IsCovariant.GetValueOrDefault());
             Assert.AreEqual("TOut", model.GenericParameters[1].Name);
-            Assert.IsFalse(model.GenericParameters[1].IsContravariant);
-            Assert.IsTrue(model.GenericParameters[1].IsCovariant);
+            Assert.IsFalse(model.GenericParameters[1].IsContravariant.GetValueOrDefault());
+            Assert.IsTrue(model.GenericParameters[1].IsCovariant.GetValueOrDefault());
         }
 
         [Test]
@@ -270,7 +270,7 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.IsTrue(model.HasGenericParameters);
             Assert.AreEqual(1, model.GenericParameters.Count);
             Assert.AreEqual("TConstraints", model.GenericParameters[0].Name);
-            Assert.IsTrue(model.GenericParameters[0].HasDefaultConstructorConstraint);
+            Assert.IsTrue(model.GenericParameters[0].HasDefaultConstructorConstraint.GetValueOrDefault());
             Assert.IsTrue(model.GenericParameters[0].HasTypeConstraints);
             Assert.AreEqual(2, model.GenericParameters[0].TypeConstraints.Count);
             Assert.AreEqual(
@@ -290,10 +290,10 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual("SomeClasses", field.ShortName);
             Assert.AreEqual("Field", field.SubTitle);
             Assert.AreEqual(new CRefIdentifier("T:TestLibrary1.Class1[]"), field.ValueType.CRef);
-            Assert.IsFalse(field.HasValueDescription);
-            Assert.IsFalse(field.IsLiteral);
-            Assert.IsFalse(field.IsInitOnly);
-            Assert.IsFalse(field.IsStatic);
+            Assert.IsFalse(field.HasValueDescriptionContents);
+            Assert.IsFalse(field.IsLiteral.GetValueOrDefault());
+            Assert.IsFalse(field.IsInitOnly.GetValueOrDefault());
+            Assert.IsFalse(field.IsStatic.GetValueOrDefault());
             Assert.IsNotNull(field.DeclaringType);
             Assert.AreEqual("T:TestLibrary1.Class1", field.DeclaringType.CRef.FullCRef);
         }
@@ -311,10 +311,10 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual("N:TestLibrary1", field.Namespace.CRef.FullCRef);
             Assert.IsNotNull(field.Assembly);
             Assert.AreEqual("A:" + typeof(Class1).Assembly.FullName, field.Assembly.CRef.FullCRef);
-            Assert.IsFalse(field.HasValueDescription);
-            Assert.IsFalse(field.IsLiteral);
-            Assert.IsFalse(field.IsInitOnly);
-            Assert.IsFalse(field.IsStatic);
+            Assert.IsFalse(field.HasValueDescriptionContents);
+            Assert.IsFalse(field.IsLiteral.GetValueOrDefault());
+            Assert.IsFalse(field.IsInitOnly.GetValueOrDefault());
+            Assert.IsFalse(field.IsStatic.GetValueOrDefault());
         }
 
         [Test]
@@ -328,9 +328,9 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual(new CRefIdentifier("T:System.Int32"), field.ValueType.CRef);
             Assert.IsTrue(field.HasValueDescriptionContents);
             Assert.AreEqual("1", field.ValueDescriptionContents.First().Node.OuterXml.Trim());
-            Assert.IsTrue(field.IsLiteral);
-            Assert.IsFalse(field.IsInitOnly);
-            Assert.IsTrue(field.IsStatic);
+            Assert.IsTrue(field.IsLiteral.GetValueOrDefault());
+            Assert.IsFalse(field.IsInitOnly.GetValueOrDefault());
+            Assert.IsTrue(field.IsStatic.GetValueOrDefault());
         }
 
         [Test]
@@ -344,9 +344,9 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual(new CRefIdentifier("T:System.Double"), field.ValueType.CRef);
             Assert.IsTrue(field.HasValueDescriptionContents);
             Assert.AreEqual("A double value.", field.ValueDescriptionContents.First().Node.OuterXml);
-            Assert.IsFalse(field.IsLiteral);
-            Assert.IsFalse(field.IsInitOnly);
-            Assert.IsTrue(field.IsStatic);
+            Assert.IsFalse(field.IsLiteral.GetValueOrDefault());
+            Assert.IsFalse(field.IsInitOnly.GetValueOrDefault());
+            Assert.IsTrue(field.IsStatic.GetValueOrDefault());
         }
 
         [Test]
@@ -358,10 +358,10 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual("ReadonlyField", field.ShortName);
             Assert.AreEqual("Field", field.SubTitle);
             Assert.AreEqual(new CRefIdentifier("T:System.Int32"), field.ValueType.CRef);
-            Assert.IsFalse(field.HasValueDescription);
-            Assert.IsFalse(field.IsLiteral);
-            Assert.IsTrue(field.IsInitOnly);
-            Assert.IsFalse(field.IsStatic);
+            Assert.IsFalse(field.HasValueDescriptionContents);
+            Assert.IsFalse(field.IsLiteral.GetValueOrDefault());
+            Assert.IsTrue(field.IsInitOnly.GetValueOrDefault());
+            Assert.IsFalse(field.IsStatic.GetValueOrDefault());
         }
 
         [Test]
@@ -372,7 +372,7 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual("M:TestLibrary1.Class1.HasStrangeParams(System.Nullable{System.Int32},TestLibrary1.Class1[])", method.CRef.FullCRef);
             Assert.AreEqual("HasStrangeParams(Nullable<Int32>, Class1[])", method.ShortName);
             Assert.AreEqual("Method", method.SubTitle);
-            Assert.IsFalse(method.IsStatic);
+            Assert.IsFalse(method.IsStatic.GetValueOrDefault());
             Assert.IsFalse(method.HasReturn);
             Assert.IsNotNull(method.Namespace);
             Assert.AreEqual("N:TestLibrary1", method.Namespace.CRef.FullCRef);
@@ -402,7 +402,7 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual("M:TestLibrary1.Class1.#ctor(System.String)", method.CRef.FullCRef);
             Assert.AreEqual("Class1(String)", method.ShortName);
             Assert.AreEqual("Constructor", method.SubTitle);
-            Assert.IsFalse(method.IsStatic);
+            Assert.IsFalse(method.IsStatic.GetValueOrDefault());
             Assert.IsFalse(method.HasReturn);
 
             Assert.IsNotNull(method.DeclaringType);
@@ -422,7 +422,7 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual("M:TestLibrary1.Class1.DoubleStatic(System.Double)", method.CRef.FullCRef);
             Assert.AreEqual("DoubleStatic(Double)", method.ShortName);
             Assert.AreEqual("Method", method.SubTitle);
-            Assert.IsTrue(method.IsStatic);
+            Assert.IsTrue(method.IsStatic.GetValueOrDefault());
             Assert.IsTrue(method.HasReturn);
             Assert.AreEqual("T:System.Double", method.Return.ParameterType.CRef.FullCRef);
             Assert.IsTrue(method.Return.HasSummaryContents);
@@ -610,10 +610,10 @@ namespace DandyDoc.CodeDoc.Tests
             var method = TestLibrary1Repository.GetMemberModel(
                 "TestLibrary1.Class1.TrySomeOutRefStuff(System.Int32@,System.Int32@)") as CodeDocMethod;
             Assert.IsNotNull(method);
-            Assert.IsTrue(method.Parameters[0].IsOut);
-            Assert.IsTrue(method.Parameters[0].IsByRef);
-            Assert.IsFalse(method.Parameters[1].IsOut);
-            Assert.IsTrue(method.Parameters[1].IsByRef);
+            Assert.IsTrue(method.Parameters[0].IsOut.GetValueOrDefault());
+            Assert.IsTrue(method.Parameters[0].IsByRef.GetValueOrDefault());
+            Assert.IsFalse(method.Parameters[1].IsOut.GetValueOrDefault());
+            Assert.IsTrue(method.Parameters[1].IsByRef.GetValueOrDefault());
         }
 
     }

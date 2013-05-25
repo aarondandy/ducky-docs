@@ -137,6 +137,11 @@ namespace DandyDoc.Cecil
             return method == null ? null : method.ReturnType;
         }
 
+        /// <summary>
+        /// Extracts the method return type (similar to a paremter definition) for the delegate.
+        /// </summary>
+        /// <param name="typeDefinition">The delegate to get return information for.</param>
+        /// <returns>A method return type for the delegate.</returns>
         public static MethodReturnType GetDelegateMethodReturn(this TypeDefinition typeDefinition) {
             Contract.Requires(typeDefinition != null);
             Contract.Requires(typeDefinition.IsDelegateType());

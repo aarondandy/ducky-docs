@@ -23,39 +23,21 @@ namespace DandyDoc.CodeDoc
         /// <inheritdoc/>
         public ICodeDocMember ValueType { get; set; }
 
-        [Obsolete]
-        public bool HasValueDescription{
-            get {
-                var valueDesc = ValueDescription;
-                return valueDesc != null && valueDesc.HasChildren;
-            }
-        }
-
-        [Obsolete]
-        public XmlDocElement ValueDescription { get { return XmlDocs == null ? null : XmlDocs.ValueElement; } }
-
         /// <inheritdoc/>
         public bool HasValueDescriptionContents { get { return ValueDescriptionContents != null && ValueDescriptionContents.Count > 0; } }
 
         /// <inheritdoc/>
-        public IList<XmlDocNode> ValueDescriptionContents {
-            /*get {
-                Contract.Ensures(Contract.Result<IList<XmlDocNode>>() != null);
-                return XmlDocs != null && XmlDocs.HasValueContents
-                    ? XmlDocs.ValueContents
-                    : new XmlDocNode[0];
-            }*/
-            get; set; }
+        public IList<XmlDocNode> ValueDescriptionContents { get; set; }
 
         /// <summary>
         /// Indicates that this field is a literal value.
         /// </summary>
-        public bool IsLiteral { get; set; }
+        public bool? IsLiteral { get; set; }
 
         /// <summary>
         /// Indicates that this field is an init-only field.
         /// </summary>
-        public bool IsInitOnly { get; set; }
+        public bool? IsInitOnly { get; set; }
 
     }
 }

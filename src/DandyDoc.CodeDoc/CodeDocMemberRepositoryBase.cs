@@ -39,39 +39,23 @@ namespace DandyDoc.CodeDoc
         public IList<CodeDocSimpleNamespace> Namespaces { get; protected set; }
 
         /// <inheritdoc/>
-        [Obsolete]
-        public virtual ICodeDocMember GetContentMember(string cRef) {
-            if (String.IsNullOrEmpty(cRef)) throw new ArgumentException("Code reference is not valid.", "cRef");
-            Contract.EndContractBlock();
-            return GetContentMember(new CRefIdentifier(cRef));
-        }
-
-        /// <inheritdoc/>
-        [Obsolete]
-        public abstract ICodeDocMember GetContentMember(CRefIdentifier cRef);
-
-        /// <inheritdoc/>
-        [Obsolete]
-        public ICodeDocMember GetSimpleMember(string cRef) {
-            if (String.IsNullOrEmpty(cRef)) throw new ArgumentException("Code reference is not valid.", "cRef");
-            Contract.EndContractBlock();
-            return GetSimpleMember(new CRefIdentifier(cRef));
-        }
-
-        /// <inheritdoc/>
-        [Obsolete]
-        public abstract ICodeDocMember GetSimpleMember(CRefIdentifier cRef);
-
         public ICodeDocMember GetMemberModel(string cRef) {
             if (String.IsNullOrEmpty(cRef)) throw new ArgumentException("Code reference is not valid.", "cRef");
             Contract.EndContractBlock();
             return GetMemberModel(new CRefIdentifier(cRef));
         }
 
+        /// <inheritdoc/>
         public virtual ICodeDocMember GetMemberModel(CRefIdentifier cRef) {
             return GetMemberModel(cRef, lite: false);
         }
 
+        /// <summary>
+        /// Creates a member model for the given code reference.
+        /// </summary>
+        /// <param name="cRef">The code reference to generate a model for.</param>
+        /// <param name="lite">Indicates if a lite version of the model should be generated.</param>
+        /// <returns>The generated member if possible.</returns>
         protected abstract ICodeDocMember GetMemberModel(CRefIdentifier cRef, bool lite);
 
         /// <summary>
@@ -97,7 +81,7 @@ namespace DandyDoc.CodeDoc
                 TypeCRefs = simpleNamespace.TypeCRefs
             };
             result.Assemblies = simpleNamespace.AssemblyCRefs.Select(GetCodeDocSimpleAssembly).ToList();
-            result.Types = simpleNamespace.TypeCRefs.Select(GetContentMember).Cast<CodeDocType>().ToList();
+            result.Types = simpleNamespace.TypeCRefs.Select(GetMemberModel).Cast<CodeDocType>().ToList();
             return result;
         }
 
@@ -106,9 +90,13 @@ namespace DandyDoc.CodeDoc
         /// </summary>
         /// <param name="namespaceName">The name of the namespace to find.</param>
         /// <returns>A namespace model matching the given name.</returns>
-        [Obsolete("This should be a final effort, best to get the namespace from the top of a search tree so it can be merged with other repositories covering the same namespaces.")]
-        protected CodeDocSimpleMember GetCodeDocNamespaceByName(string namespaceName) {
+        protected CodeDocSimpleMember GetOrCreateNamespaceByName(string namespaceName) {
             Contract.Ensures(Contract.Result<CodeDocSimpleMember>() != null);
+            // TODO: First try to get the namespace from a higher level repository so it can be merged
+            return GetOrCreateLocalNamespaceFromName(namespaceName);
+        }
+
+        private CodeDocSimpleMember GetOrCreateLocalNamespaceFromName(string namespaceName) {
             return Namespaces.FirstOrDefault(x => x.FullName == namespaceName)
                 ?? CreateNamespaceFromName(namespaceName);
         }
@@ -118,7 +106,7 @@ namespace DandyDoc.CodeDoc
         /// </summary>
         /// <param name="namespaceName">The name of the namespace to create.</param>
         /// <returns>A namespace model.</returns>
-        protected CodeDocSimpleMember CreateNamespaceFromName(string namespaceName) {
+        private CodeDocSimpleMember CreateNamespaceFromName(string namespaceName) {
             Contract.Ensures(Contract.Result<CodeDocSimpleMember>() != null);
             string namespaceFriendlyName;
             if (String.IsNullOrWhiteSpace(namespaceName)) {
@@ -150,25 +138,10 @@ namespace DandyDoc.CodeDoc
         }
 
         /// <summary>
-        /// Creates a simple type model placeholder for a code reference.
+        /// Creates a code doc placeholder model for a given code reference.
         /// </summary>
-        /// <param name="cRef">The code reference.</param>
-        /// <returns>A new simple model for a code reference.</returns>
-        [Obsolete]
-        protected ICodeDocMember CreateTypeMemberPlaceholder(CRefIdentifier cRef) {
-            Contract.Requires(cRef != null);
-            Contract.Ensures(Contract.Result<ICodeDocMember>() != null);
-            var cRefFullName = cRef.CoreName;
-            return new CodeDocSimpleMember(cRef) {
-                ShortName = cRefFullName,
-                Title = cRefFullName,
-                SubTitle = "Type",
-                FullName = cRefFullName,
-                NamespaceName = String.Empty,
-                ExternalVisibility = ExternalVisibilityKind.Public
-            };
-        }
-
+        /// <param name="cRef">The code reference to construct a model for.</param>
+        /// <returns>A code model representing the given code reference.</returns>
         protected ICodeDocMember CreateGeneralMemberPlaceholder(CRefIdentifier cRef) {
             Contract.Requires(cRef != null);
             Contract.Ensures(Contract.Result<ICodeDocMember>() != null);
@@ -202,6 +175,11 @@ namespace DandyDoc.CodeDoc
             };
         }
 
+        /// <summary>
+        /// Applies XML doc attributes from a provider to a content model.
+        /// </summary>
+        /// <param name="model">The model to apply attributes to.</param>
+        /// <param name="provider">The provider to get attributes from.</param>
         protected virtual void ApplyContentXmlDocs(CodeDocMemberContentBase model, ICodeDocMemberDataProvider provider) {
             Contract.Requires(model != null);
             Contract.Requires(provider != null);
@@ -211,7 +189,13 @@ namespace DandyDoc.CodeDoc
             model.Remarks = provider.GetRemarks().ToArray();
             model.SeeAlso = provider.GetSeeAlsos().ToArray();
         }
-
+        
+        /// <summary>
+        /// Gets a model for the given code reference or creates a new one.
+        /// </summary>
+        /// <param name="cRef">The code reference to get a model for.</param>
+        /// <param name="lite">Indicates that the model should be lite.</param>
+        /// <returns>A code doc model for the given code reference.</returns>
         protected ICodeDocMember GetOrConvert(CRefIdentifier cRef, bool lite = false) {
             Contract.Requires(cRef != null);
             // TODO:
@@ -227,6 +211,16 @@ namespace DandyDoc.CodeDoc
             return CreateGeneralMemberPlaceholder(cRef);
         }
 
+        /// <summary>
+        /// Creates exception models from a collection of XML doc exception elements.
+        /// </summary>
+        /// <param name="exceptionElement">The exception elements to convert to exception models.</param>
+        /// <returns>A collection of exception models.</returns>
+        /// <remarks>
+        /// The given XML doc exception elements could be merged together when converted to exception models.
+        /// This allows aggregation of exceptions by exception type rather than offering a flat list of exception conditions.
+        /// This also enable the association with code contract ensures with exceptions.
+        /// </remarks>
         protected IEnumerable<CodeDocException> CreateExceptionModels(IEnumerable<XmlDocRefElement> exceptionElement) {
             Contract.Requires(exceptionElement != null);
             Contract.Ensures(Contract.Result<IEnumerable<CodeDocException>>() != null);

@@ -15,12 +15,6 @@ namespace DandyDoc.CodeDoc
         /// </summary>
         ICodeDocMember ValueType { get; }
 
-        [Obsolete]
-        bool HasValueDescription { get; }
-
-        [Obsolete]
-        XmlDocElement ValueDescription { get; }
-
         /// <summary>
         /// Indicates that this member has value description contents.
         /// </summary>

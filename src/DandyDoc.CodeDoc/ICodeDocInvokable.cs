@@ -73,32 +73,32 @@ namespace DandyDoc.CodeDoc
         /// <summary>
         /// Indicates that this member is pure.
         /// </summary>
-        bool IsPure { get; }
+        bool? IsPure { get; }
 
         /// <summary>
         /// Indicates that this member is an extension method.
         /// </summary>
-        bool IsExtensionMethod { get; }
+        bool? IsExtensionMethod { get; }
 
         /// <summary>
         /// Indicates that this member is an operator overload.
         /// </summary>
-        bool IsOperatorOverload { get; }
+        bool? IsOperatorOverload { get; }
 
         /// <summary>
         /// Indicates that this member is sealed.
         /// </summary>
-        bool IsSealed { get; }
+        bool? IsSealed { get; }
 
         /// <summary>
         /// Indicates that this member is abstract.
         /// </summary>
-        bool IsAbstract { get; }
+        bool? IsAbstract { get; }
 
         /// <summary>
         /// Indicates that this member is virtual.
         /// </summary>
-        bool IsVirtual { get; }
+        bool? IsVirtual { get; }
 
     }
 }

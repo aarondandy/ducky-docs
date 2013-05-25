@@ -53,28 +53,11 @@ namespace DandyDoc.CodeDoc
         /// <inheritdoc/>
         public ICodeDocMember ValueType { get; set; }
 
-        [Obsolete]
-        public bool HasValueDescription {
-            get { return ValueDescription != null; }
-        }
-
-        [Obsolete]
-        public XmlDocElement ValueDescription {
-            get { return XmlDocs == null ? null : XmlDocs.ValueElement; }
-        }
-
         /// <inheritdoc/>
         public bool HasValueDescriptionContents { get { return ValueDescriptionContents != null && ValueDescriptionContents.Count > 0; } }
 
         /// <inheritdoc/>
-        public IList<XmlDocNode> ValueDescriptionContents {
-            /*get {
-                Contract.Ensures(Contract.Result<IList<XmlDocNode>>() != null);
-                return XmlDocs != null && XmlDocs.HasValueContents
-                    ? XmlDocs.ValueContents
-                    : new XmlDocNode[0];
-            }*/
-            get; set; }
+        public IList<XmlDocNode> ValueDescriptionContents { get; set; }
 
     }
 }

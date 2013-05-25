@@ -1,18 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using System.Text;
 using DandyDoc.ExternalVisibility;
 using Mono.Cecil;
 using DandyDoc.Cecil;
 
 namespace DandyDoc.CodeDoc
 {
+    /// <summary>
+    /// Provides various documentation properties based on a Cecil member reference and its child providers.
+    /// </summary>
+    /// <typeparam name="TMember">The member reference to handle.</typeparam>
     public class CodeDocMemberReferenceProvider<TMember> : CodeDocMemberDataProviderCollection
         where TMember : MemberReference
     {
 
+        /// <summary>
+        /// Creates a member data provider for the given member.
+        /// </summary>
+        /// <param name="member"></param>
         public CodeDocMemberReferenceProvider(TMember member) {
             if(member == null) throw new ArgumentNullException("member");
             Contract.EndContractBlock();
@@ -25,12 +31,24 @@ namespace DandyDoc.CodeDoc
             Contract.Invariant(Member != null);
         }
 
+        /// <summary>
+        /// The wrapped member.
+        /// </summary>
         public TMember Member { get; private set; }
 
+        /// <summary>
+        /// The definition of the wrapped member.
+        /// </summary>
         public IMemberDefinition Definition { get; private set; }
 
+        /// <summary>
+        /// Indicates that the wrapped member has a definition.
+        /// </summary>
         public bool HasDefinition { get { return Definition != null; } }
 
+        /// <summary>
+        /// Determines if the wrapped member is pure.
+        /// </summary>
         public override bool? IsPure {
             get {
                 if (HasDefinition && Definition.HasAttribute(t => t.Constructor.Name == "PureAttribute"))
@@ -39,6 +57,9 @@ namespace DandyDoc.CodeDoc
             }
         }
 
+        /// <summary>
+        /// Calculates the external visibility of the wrapped member.
+        /// </summary>
         public override ExternalVisibilityKind? ExternalVisibility {
             get {
                 if (HasDefinition)
@@ -47,6 +68,9 @@ namespace DandyDoc.CodeDoc
             }
         }
 
+        /// <summary>
+        /// Determines if the wrapped member is static.
+        /// </summary>
         public override bool? IsStatic {
             get {
                 if (HasDefinition)
@@ -55,6 +79,9 @@ namespace DandyDoc.CodeDoc
             }
         }
 
+        /// <summary>
+        /// Determines if this member is obsolete.
+        /// </summary>
         public override bool? IsObsolete {
             get {
                 if (HasDefinition && Definition.HasAttribute(t => t.Constructor.Name == "ObsoleteAttribute"))
@@ -93,6 +120,11 @@ namespace DandyDoc.CodeDoc
             return null;
         }
 
+        /// <summary>
+        /// Determines if the target parameter has null restrictions.
+        /// </summary>
+        /// <param name="parameterName">The target parameter name.</param>
+        /// <returns>A value indicating if the parameter is null restricted.</returns>
         public override bool? RequiresParameterNotEverNull(string parameterName) {
             var parameterReference = GetParameterReferenceByName(parameterName);
             if (parameterReference != null) {
@@ -114,6 +146,9 @@ namespace DandyDoc.CodeDoc
             return base.RequiresParameterNotEverNull(parameterName);
         }
 
+        /// <summary>
+        /// Determines if the result has null restrictions.
+        /// </summary>
         public override bool? EnsuresResultNotEverNull {
             get {
                 var methodReturn = GetMethodReturn();

@@ -12,9 +12,6 @@ namespace DandyDoc.CodeDoc
     public abstract class CodeDocMemberContentBase : CodeDocSimpleMember
     {
 
-        private static readonly XmlDocElement[] EmptyXmlDocElementArray = new XmlDocElement[0];
-        private static readonly XmlDocRefElement[] EmptyXmlDocRefElementArray = new XmlDocRefElement[0];
-
         /// <summary>
         /// Constructor for a code doc member model.
         /// </summary>
@@ -31,13 +28,7 @@ namespace DandyDoc.CodeDoc
         /// <summary>
         /// Gets the XML doc example elements.
         /// </summary>
-        public IList<XmlDocElement> Examples {
-            /*get {
-                Contract.Ensures(Contract.Result<IList<XmlDocElement>>() != null);
-                Contract.Ensures(Contract.ForAll(Contract.Result<IList<XmlDocElement>>(), x => x != null));
-                return XmlDocs == null ? EmptyXmlDocElementArray : XmlDocs.ExampleElements;
-            }*/
-            get; set; }
+        public IList<XmlDocElement> Examples { get; set; }
 
         /// <summary>
         /// Indicates that this model has XML doc permissions.
@@ -47,13 +38,7 @@ namespace DandyDoc.CodeDoc
         /// <summary>
         /// Gets the XML doc permissions elements.
         /// </summary>
-        public IList<XmlDocRefElement> Permissions {
-            /*get {
-                Contract.Ensures(Contract.Result<IList<XmlDocRefElement>>() != null);
-                Contract.Ensures(Contract.ForAll(Contract.Result<IList<XmlDocRefElement>>(), x => x != null));
-                return XmlDocs == null ? EmptyXmlDocRefElementArray : XmlDocs.PermissionElements;
-            }*/
-            get; set; }
+        public IList<XmlDocRefElement> Permissions { get; set; }
 
         /// <summary>
         /// Indicates that this model has XML doc remarks.
@@ -63,13 +48,7 @@ namespace DandyDoc.CodeDoc
         /// <summary>
         /// Gets the XML doc remarks elements.
         /// </summary>
-        public IList<XmlDocElement> Remarks {
-            /*get {
-                Contract.Ensures(Contract.Result<IList<XmlDocElement>>() != null);
-                Contract.Ensures(Contract.ForAll(Contract.Result<IList<XmlDocElement>>(), x => x != null));
-                return XmlDocs == null ? EmptyXmlDocElementArray : XmlDocs.RemarksElements;
-            }*/
-            get; set; }
+        public IList<XmlDocElement> Remarks { get; set; }
 
         /// <summary>
         /// Indicates that this model has XML doc see also links.
@@ -79,13 +58,7 @@ namespace DandyDoc.CodeDoc
         /// <summary>
         /// Gets the XML doc see also elements.
         /// </summary>
-        public IList<XmlDocRefElement> SeeAlso {
-            /*get {
-                Contract.Ensures(Contract.Result<IList<XmlDocRefElement>>() != null);
-                Contract.Ensures(Contract.ForAll(Contract.Result<IList<XmlDocRefElement>>(), x => x != null));
-                return XmlDocs == null ? EmptyXmlDocRefElementArray : XmlDocs.SeeAlsoElements;
-            }*/
-            get; set; }
+        public IList<XmlDocRefElement> SeeAlso { get; set; }
 
         /// <summary>
         /// Gets the declaring member model for this member model.
@@ -105,12 +78,12 @@ namespace DandyDoc.CodeDoc
         /// <summary>
         /// Indicates that this member is obsolete.
         /// </summary>
-        public bool IsObsolete { get; set; }
+        public bool? IsObsolete { get; set; }
 
         /// <summary>
         /// Indicates that this member is static.
         /// </summary>
-        public bool IsStatic { get; set; }
+        public bool? IsStatic { get; set; }
 
     }
 }

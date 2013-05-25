@@ -80,22 +80,22 @@ namespace DandyDoc.CodeDoc
         public IList<CodeDocGenericParameter> GenericParameters { get; set; }
 
         /// <inheritdoc/>
-        public bool IsPure { get; set; }
+        public bool? IsPure { get; set; }
 
         /// <inheritdoc/>
-        public bool IsExtensionMethod { get; set; }
+        public bool? IsExtensionMethod { get; set; }
 
         /// <inheritdoc/>
-        public bool IsOperatorOverload { get; set; }
+        public bool? IsOperatorOverload { get; set; }
 
         /// <inheritdoc/>
-        public bool IsSealed { get; set; }
+        public bool? IsSealed { get; set; }
 
         /// <inheritdoc/>
-        public bool IsAbstract { get; set; }
+        public bool? IsAbstract { get; set; }
 
         /// <inheritdoc/>
-        public bool IsVirtual { get; set; }
+        public bool? IsVirtual { get; set; }
 
     }
 }

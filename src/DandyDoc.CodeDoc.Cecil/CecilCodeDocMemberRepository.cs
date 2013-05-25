@@ -291,16 +291,7 @@ namespace DandyDoc.CodeDoc
             return (MemberReference)(memberReference.ToDefinition()) ?? memberReference;
         }
 
-        [Obsolete]
-        public override ICodeDocMember GetSimpleMember(CRefIdentifier cRef) {
-            throw new NotSupportedException();
-        }
-
-        [Obsolete]
-        public override ICodeDocMember GetContentMember(CRefIdentifier cRef) {
-            throw new NotSupportedException();
-        }
-
+        /// <inheritdoc/>
         protected override ICodeDocMember GetMemberModel(CRefIdentifier cRef, bool lite) {
             if (cRef == null) throw new ArgumentNullException("cRef");
             Contract.EndContractBlock();
@@ -321,6 +312,7 @@ namespace DandyDoc.CodeDoc
         /// Converts a Cecil member to a code doc model.
         /// </summary>
         /// <param name="memberReference">A Cecil member.</param>
+        /// <param name="lite">Indicates that the generated model should be a lite version.</param>
         /// <returns>A code doc model for the given member.</returns>
         protected virtual CodeDocMemberContentBase ConvertToModel(MemberReference memberReference, bool lite) {
             if(memberReference == null) throw new ArgumentNullException("memberReference");
@@ -452,7 +444,7 @@ namespace DandyDoc.CodeDoc
 
             model.DelegateType = GetOrConvert(eventReference.EventType, lite: true);
             Contract.Assume(eventReference.DeclaringType != null);
-            model.Namespace = GetCodeDocNamespaceByName(model.NamespaceName);
+            model.Namespace = GetOrCreateNamespaceByName(model.NamespaceName);
             model.Assembly = GetCodeDocAssembly(eventReference.DeclaringType.Module.Assembly);
             model.DeclaringType = GetOrConvert(eventReference.DeclaringType, lite: true);
             model.IsStatic = memberDataProvider.IsStatic.GetValueOrDefault();
@@ -508,7 +500,7 @@ namespace DandyDoc.CodeDoc
             model.IsObsolete = memberDataProvider.IsObsolete.GetValueOrDefault();
 
             Contract.Assume(fieldReference.DeclaringType != null);
-            model.Namespace = GetCodeDocNamespaceByName(model.NamespaceName);
+            model.Namespace = GetOrCreateNamespaceByName(model.NamespaceName);
             model.Assembly = GetCodeDocAssembly(fieldReference.DeclaringType.Module.Assembly);
             model.DeclaringType = GetOrConvert(fieldReference.DeclaringType, lite: true);
             return model;
@@ -548,7 +540,7 @@ namespace DandyDoc.CodeDoc
             model.ValueDescriptionContents = memberDataProvider.GeValueDescriptionContents().ToArray();
             model.ValueType = GetOrConvert(propertyReference.PropertyType, lite: true);
             Contract.Assume(propertyReference.DeclaringType != null);
-            model.Namespace = GetCodeDocNamespaceByName(model.NamespaceName);
+            model.Namespace = GetOrCreateNamespaceByName(model.NamespaceName);
             model.Assembly = GetCodeDocAssembly(propertyReference.DeclaringType.Module.Assembly);
             model.DeclaringType = GetOrConvert(propertyReference.DeclaringType, lite: true);
 
@@ -616,7 +608,7 @@ namespace DandyDoc.CodeDoc
                 model.SubTitle = "Method";
 
             Contract.Assume(methodReference.DeclaringType != null);
-            model.Namespace = GetCodeDocNamespaceByName(model.NamespaceName);
+            model.Namespace = GetOrCreateNamespaceByName(model.NamespaceName);
             model.Assembly = GetCodeDocAssembly(methodReference.DeclaringType.Module.Assembly);
             model.DeclaringType = GetOrConvert(methodReference.DeclaringType, lite: true);
             model.IsStatic = memberDataProvider.IsStatic.GetValueOrDefault();
@@ -719,7 +711,7 @@ namespace DandyDoc.CodeDoc
             else
                 model.SubTitle = "Class";
 
-            model.Namespace = GetCodeDocNamespaceByName(model.NamespaceName);
+            model.Namespace = GetOrCreateNamespaceByName(model.NamespaceName);
             model.Assembly = GetCodeDocAssembly(typeReference.Module.Assembly);
             model.IsEnum = isEnum;
             model.IsFlagsEnum = isEnum && hasFlagsAttribute;

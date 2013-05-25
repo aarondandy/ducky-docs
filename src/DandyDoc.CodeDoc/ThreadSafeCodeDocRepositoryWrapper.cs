@@ -36,54 +36,6 @@ namespace DandyDoc.CodeDoc
         private readonly object _mutex;
 
         /// <summary>
-        /// A locked request to the wrapped repository for a member.
-        /// </summary>
-        /// <param name="cRef">The code reference.</param>
-        /// <returns>The member.</returns>
-        [Obsolete]
-        public ICodeDocMember GetContentMember(string cRef) {
-            lock (_mutex) {
-                return Repository.GetContentMember(cRef);
-            }
-        }
-
-        /// <summary>
-        /// A locked request to the wrapped repository for a member.
-        /// </summary>
-        /// <param name="cRef">The code reference.</param>
-        /// <returns>The member.</returns>
-        [Obsolete]
-        public ICodeDocMember GetContentMember(CRefIdentifier cRef) {
-            lock (_mutex) {
-                return Repository.GetContentMember(cRef);
-            }
-        }
-
-        /// <summary>
-        /// A locked request to the wrapped repository for a member.
-        /// </summary>
-        /// <param name="cRef">The code reference.</param>
-        /// <returns>The member.</returns>
-        [Obsolete]
-        public ICodeDocMember GetSimpleMember(string cRef) {
-            lock (_mutex) {
-                return Repository.GetSimpleMember(cRef);
-            }
-        }
-
-        /// <summary>
-        /// A locked request to the wrapped repository for a member.
-        /// </summary>
-        /// <param name="cRef">The code reference.</param>
-        /// <returns>The member.</returns>
-        [Obsolete]
-        public ICodeDocMember GetSimpleMember(CRefIdentifier cRef) {
-            lock (_mutex) {
-                return Repository.GetSimpleMember(cRef);
-            }
-        }
-
-        /// <summary>
         /// A locked request to the wrapped repository for a member model.
         /// </summary>
         /// <param name="cRef">The code reference.</param>

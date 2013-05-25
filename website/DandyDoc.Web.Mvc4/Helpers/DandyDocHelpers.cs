@@ -184,7 +184,7 @@ namespace DandyDoc.Web.Mvc4.Helpers
                 ? new TagBuilder("code")
                 : new TagBuilder("pre");
 
-            // TODO: need to do something with the language? Maybe not if the google thing is used?
+            // TODO: need to do something with the language? Maybe not if the google code format thing is used?
 
             codeTag.InnerHtml = helper.XmlDocHtml(element.Children).ToString();
             return new MvcHtmlString(codeTag.ToString());
@@ -200,7 +200,7 @@ namespace DandyDoc.Web.Mvc4.Helpers
 
                 var repository = helper.ViewBag.CodeDocEntityRepository as ICodeDocMemberRepository;
                 if (repository != null) {
-                    var targetModel = repository.GetSimpleMember(new CRefIdentifier(element.CRef));
+                    var targetModel = repository.GetMemberModel(new CRefIdentifier(element.CRef));
                     if (targetModel != null) {
                         return helper.ActionLink(targetModel);
                     }
@@ -337,20 +337,20 @@ namespace DandyDoc.Web.Mvc4.Helpers
                     innerHtmlBuilder.Append("</p>");
                 }
 
-                if (parameter.IsContravariant)
+                if (parameter.IsContravariant.GetValueOrDefault())
                     innerHtmlBuilder.Append("<div><i class=\"icon-random\"></i>Contravariant: Type is used for input and can be used with a more specific type.</div>");
-                if (parameter.IsCovariant)
+                if (parameter.IsCovariant.GetValueOrDefault())
                     innerHtmlBuilder.Append("<div><i class=\"icon-random\"></i>Covariant: Type is used for output and can be used as a more general type.</div>");
 
                 if (parameter.HasAnyConstraints) {
                     innerHtmlBuilder.Append("<div>Constraints:<ul>");
 
-                    if (parameter.HasDefaultConstructorConstraint)
+                    if (parameter.HasDefaultConstructorConstraint.GetValueOrDefault())
                         innerHtmlBuilder.Append("<li>Default Constructor</li>");
 
-                    if (parameter.HasNotNullableValueTypeConstraint)
+                    if (parameter.HasNotNullableValueTypeConstraint.GetValueOrDefault())
                         ;//innerHtmlBuilder.Append("<li>Value Type</li>");
-                    else if (parameter.HasReferenceTypeConstraint)
+                    else if (parameter.HasReferenceTypeConstraint.GetValueOrDefault())
                         innerHtmlBuilder.Append("<li>Reference Type</li>");
 
                     if (parameter.HasTypeConstraints) {
@@ -643,23 +643,23 @@ namespace DandyDoc.Web.Mvc4.Helpers
             }
 
             if (content != null) {
-                if (content.IsStatic) {
-                    if (invokable == null || !invokable.IsOperatorOverload)
+                if (content.IsStatic.GetValueOrDefault()) {
+                    if (invokable == null || !invokable.IsOperatorOverload.GetValueOrDefault())
                         yield return DefaultStaticTag;
                 }
 
-                if (content.IsObsolete)
+                if (content.IsObsolete.GetValueOrDefault())
                     yield return DefaultObsoleteTag;
 
             }
             if (type != null) {
                 if (invokable == null) {
-                    if (type.IsFlagsEnum)
+                    if (type.IsFlagsEnum.GetValueOrDefault())
                         yield return DefaultFlagsTag;
 
-                    if (type.IsValueType)
+                    if (type.IsValueType.GetValueOrDefault())
                         yield return DefaultValueTypeTag;
-                    else if (type.IsSealed && !type.IsStatic)
+                    else if (type.IsSealed.GetValueOrDefault() && !type.IsStatic.GetValueOrDefault())
                         yield return DefaultSealedTag;
                 }
             }
@@ -667,27 +667,27 @@ namespace DandyDoc.Web.Mvc4.Helpers
             if (invokable != null) {
                 if (HasReferenceParamsOrReturnAndAllAreNullrestricted(invokable))
                     yield return DefaultNotNullTag;
-                if (invokable.IsPure)
+                if (invokable.IsPure.GetValueOrDefault())
                     yield return DefaultPureTag;
-                if (invokable.IsExtensionMethod)
+                if (invokable.IsExtensionMethod.GetValueOrDefault())
                     yield return DefaultExtensionMethodTag;
-                if (invokable.IsOperatorOverload)
+                if (invokable.IsOperatorOverload.GetValueOrDefault())
                     yield return DefaultOperatorTag;
 
                 if (type == null) {
-                    if (invokable.IsSealed)
+                    if (invokable.IsSealed.GetValueOrDefault())
                         yield return DefaultSealedTag;
-                    else if (invokable.IsAbstract)
+                    else if (invokable.IsAbstract.GetValueOrDefault())
                         yield return DefaultAbstractTag;
-                    else if (invokable.IsVirtual)
+                    else if (invokable.IsVirtual.GetValueOrDefault())
                         yield return DefaultVirtualTag;
                 }
             }
 
             if (field != null) {
-                if (field.IsLiteral)
+                if (field.IsLiteral.GetValueOrDefault())
                     yield return DefaultConstantTag;
-                if (field.IsInitOnly)
+                if (field.IsInitOnly.GetValueOrDefault())
                     yield return DefaultReadonlyTag;
             }
 
@@ -725,9 +725,9 @@ namespace DandyDoc.Web.Mvc4.Helpers
             if(parameter.NullRestricted.GetValueOrDefault())
                 throw new NotImplementedException();
 
-            if (parameter.IsOut)
+            if (parameter.IsOut.GetValueOrDefault())
                 throw new NotImplementedException();
-            else if(parameter.IsByRef)
+            else if(parameter.IsByRef.GetValueOrDefault())
                 throw new NotImplementedException();
 
             // TODO: instant handle?
@@ -736,9 +736,9 @@ namespace DandyDoc.Web.Mvc4.Helpers
 
         private static IEnumerable<FlairItem> GetFlair(CodeDocGenericParameter parameter) {
             Contract.Requires(parameter != null);
-            if(parameter.IsCovariant)
+            if(parameter.IsCovariant.GetValueOrDefault())
                 throw new NotImplementedException();
-            else if(parameter.IsContravariant)
+            else if(parameter.IsContravariant.GetValueOrDefault())
                 throw new NotImplementedException();
             yield break;
         } 

@@ -11,38 +11,6 @@ namespace DandyDoc.CodeDoc
     {
 
         /// <summary>
-        /// Gets a member entity for a code reference.
-        /// </summary>
-        /// <param name="cRef">The code reference.</param>
-        /// <returns>The member if found.</returns>
-        [Obsolete]
-        ICodeDocMember GetContentMember(string cRef);
-
-        /// <summary>
-        /// Gets a member entity for a code reference.
-        /// </summary>
-        /// <param name="cRef">The code reference.</param>
-        /// <returns>The member if found.</returns>
-        [Obsolete]
-        ICodeDocMember GetContentMember(CRefIdentifier cRef);
-
-        /// <summary>
-        /// Gets a simple member for a code reference.
-        /// </summary>
-        /// <param name="cRef">The code reference.</param>
-        /// <returns>The member if found.</returns>
-        [Obsolete]
-        ICodeDocMember GetSimpleMember(string cRef);
-
-        /// <summary>
-        /// Gets a simple member for a code reference.
-        /// </summary>
-        /// <param name="cRef">The code reference.</param>
-        /// <returns>The member if found.</returns>
-        [Obsolete]
-        ICodeDocMember GetSimpleMember(CRefIdentifier cRef);
-
-        /// <summary>
         /// Gets a member model for a code reference.
         /// </summary>
         /// <param name="cRef">The code reference.</param>

@@ -44,16 +44,6 @@ namespace DandyDoc.CodeDoc
         string NamespaceName { get; }
 
         /// <summary>
-        /// Indicates that this member has a summary.
-        /// </summary>
-        bool HasSummary { get; }
-
-        /// <summary>
-        /// The XML doc summary element for the member.
-        /// </summary>
-        XmlDocElement Summary { get; }
-
-        /// <summary>
         /// Indicates that there are XML doc summary contents.
         /// </summary>
         bool HasSummaryContents { get; }

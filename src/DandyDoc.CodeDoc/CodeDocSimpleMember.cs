@@ -50,22 +50,6 @@ namespace DandyDoc.CodeDoc
         /// <inheritdoc/>
         public ExternalVisibilityKind ExternalVisibility { get; set; }
 
-        [Obsolete]
-        public bool HasSummary {
-            get {
-                var summary = Summary;
-                return summary != null && summary.HasChildren;
-            }
-        }
-
-        [Obsolete]
-        public XmlDocElement Summary {
-            get { return XmlDocs == null ? null : XmlDocs.SummaryElement; }
-        }
-
-        [Obsolete]
-        public XmlDocMember XmlDocs { get; set; }
-
         /// <inheritdoc/>
         public override string ToString() {
             return FullName ?? base.ToString();
