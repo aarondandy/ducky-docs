@@ -12,6 +12,8 @@ namespace DandyDoc.Reflection
     public static class ReflectionUtilities
     {
 
+        private const BindingFlags BindAllTheThings = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
+
         /// <summary>
         /// Gets the full file path for a given assembly.
         /// </summary>
@@ -210,11 +212,7 @@ namespace DandyDoc.Reflection
         public static ConstructorInfo[] GetAllConstructors(this Type type) {
             if (type == null) throw new ArgumentNullException("type");
             Contract.Ensures(Contract.Result<ConstructorInfo[]>() != null);
-            return type.GetConstructors(
-                BindingFlags.Instance
-                | BindingFlags.Static
-                | BindingFlags.Public
-                | BindingFlags.NonPublic);
+            return type.GetConstructors(BindAllTheThings);
         }
 
         /// <summary>
@@ -228,11 +226,7 @@ namespace DandyDoc.Reflection
         public static MethodInfo[] GetAllMethods(this Type type) {
             if (type == null) throw new ArgumentNullException("type");
             Contract.Ensures(Contract.Result<MethodInfo[]>() != null);
-            return type.GetMethods(
-                BindingFlags.Instance
-                | BindingFlags.Static
-                | BindingFlags.Public
-                | BindingFlags.NonPublic);
+            return type.GetMethods(BindAllTheThings);
         }
 
         /// <summary>
@@ -243,11 +237,7 @@ namespace DandyDoc.Reflection
         public static PropertyInfo[] GetAllProperties(this Type type) {
             if (type == null) throw new ArgumentNullException("type");
             Contract.Ensures(Contract.Result<PropertyInfo[]>() != null);
-            return type.GetProperties(
-                BindingFlags.Instance
-                | BindingFlags.Static
-                | BindingFlags.Public
-                | BindingFlags.NonPublic);
+            return type.GetProperties(BindAllTheThings);
         }
 
         /// <summary>
@@ -258,11 +248,7 @@ namespace DandyDoc.Reflection
         public static FieldInfo[] GetAllFields(this Type type) {
             if (type == null) throw new ArgumentNullException("type");
             Contract.Ensures(Contract.Result<FieldInfo[]>() != null);
-            return type.GetFields(
-                BindingFlags.Instance
-                | BindingFlags.Static
-                | BindingFlags.Public
-                | BindingFlags.NonPublic);
+            return type.GetFields(BindAllTheThings);
         }
 
         /// <summary>
@@ -273,11 +259,7 @@ namespace DandyDoc.Reflection
         public static EventInfo[] GetAllEvents(this Type type) {
             if (type == null) throw new ArgumentNullException("type");
             Contract.Ensures(Contract.Result<EventInfo[]>() != null);
-            return type.GetEvents(
-                BindingFlags.Instance
-                | BindingFlags.Static
-                | BindingFlags.Public
-                | BindingFlags.NonPublic);
+            return type.GetEvents(BindAllTheThings);
         }
 
         /// <summary>
@@ -289,10 +271,7 @@ namespace DandyDoc.Reflection
             if (type == null) throw new ArgumentNullException("type");
             Contract.Ensures(Contract.Result<Type[]>() != null);
 
-            var result = type.GetNestedTypes(BindingFlags.Instance
-                | BindingFlags.Static
-                | BindingFlags.Public
-                | BindingFlags.NonPublic);
+            var result = type.GetNestedTypes(BindAllTheThings);
             return result;
         }
 
@@ -381,6 +360,89 @@ namespace DandyDoc.Reflection
         public static bool IsNullable(this Type type) {
             Contract.Requires(type != null);
             return type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
+        }
+
+        /// <summary>
+        /// Returns the base property of a property if found.
+        /// </summary>
+        /// <param name="propertyInfo">The property to find the base property of.</param>
+        /// <returns>A property or <c>null</c> if a base was not found.</returns>
+        public static PropertyInfo FindNextAncestor(this PropertyInfo propertyInfo) {
+            Contract.Requires(propertyInfo != null);
+            var propertyName = propertyInfo.Name;
+            foreach (var accessor in propertyInfo.GetAccessors(true)) {
+                var ancestor = accessor.FindNextAncestor();
+                if (ancestor == null)
+                    continue;
+                var baseType = ancestor.DeclaringType;
+                Contract.Assume(baseType != null);
+                var baseProperty = baseType.GetProperty(propertyName, BindAllTheThings);
+                if (Array.IndexOf(baseProperty.GetAccessors(), ancestor) >= 0)
+                    return baseProperty;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Returns the base of an event if one is found.
+        /// </summary>
+        /// <param name="eventInfo">The event to find the base event of.</param>
+        /// <returns>An event or <c>null</c> if a base was not found.</returns>
+        public static EventInfo FindNextAncestor(this EventInfo eventInfo) {
+            Contract.Requires(eventInfo != null);
+            var eventName = eventInfo.Name;
+            var invokeMethod = eventInfo.GetRaiseMethod(true);
+            if (invokeMethod == null)
+                return null; // nothing we can work with
+
+            var ancestor = invokeMethod.FindNextAncestor();
+            if (ancestor != null) {
+                Contract.Assume(ancestor.DeclaringType != null);
+                var baseEvent = ancestor.DeclaringType.GetEvent(eventName, BindAllTheThings);
+                if (baseEvent != null && baseEvent != eventInfo && baseEvent.GetRaiseMethod(true) == ancestor)
+                    return baseEvent;
+            }
+
+            return null;
+        }
+
+        public static MethodInfo FindNextAncestor(this MethodInfo methodInfo) {
+            Contract.Requires(methodInfo != null);
+            var methodName = methodInfo.Name;
+            var methodParameterTypes = Array.ConvertAll(methodInfo.GetParameters(), p => p.ParameterType);
+            Contract.Assume(methodInfo.DeclaringType != null);
+            var baseType = methodInfo.ReflectedType != methodInfo.DeclaringType
+                ? methodInfo.DeclaringType
+                : methodInfo.DeclaringType.BaseType;
+
+            while (baseType != null) {
+                var matchingMethod = baseType.GetMethod(methodName, BindAllTheThings, null, methodParameterTypes, null);
+                if (matchingMethod != null) {
+                    if (matchingMethod.DeclaringType == baseType)
+                        return matchingMethod;
+
+                    // skip ahead
+                    baseType = matchingMethod.DeclaringType;
+                }
+                else {
+                    baseType = baseType.BaseType;
+                }
+            }
+
+            if (methodInfo.DeclaringType.IsInterface)
+                return null;
+            
+            foreach (var interfaceType in methodInfo.DeclaringType.GetInterfaces()) {
+                var map = methodInfo.DeclaringType.GetInterfaceMap(interfaceType);
+                var targetMethods = map.TargetMethods;
+                for (int i = 0; i < targetMethods.Length; i++) {
+                    if (targetMethods[i] == methodInfo) {
+                        return map.InterfaceMethods[i];
+                    }
+                 }
+            }
+
+            return null;
         }
 
     }

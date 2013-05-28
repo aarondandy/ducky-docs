@@ -91,6 +91,7 @@
     <Compile Include="ReflectionCRefGeneratorTests.cs" />
     <Compile Include="ReflectionCRefLookupTests.cs" />
     <Compile Include="ReflectionDisplayNameGeneratorTests.cs" />
+    <Compile Include="ReflectionUtilityTests.cs" />
     <Compile Include="XmlDocCodeContracts.cs" />
     <Compile Include="XmlDocTests.cs" />
   </ItemGroup>

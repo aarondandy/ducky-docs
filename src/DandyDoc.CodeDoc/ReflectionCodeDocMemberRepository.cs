@@ -126,7 +126,7 @@ namespace DandyDoc.CodeDoc
                     }
 
                     namespaceModel.TypeCRefs.Add(typeCRef);
-                    
+
                     if (assemblyNamespaceNames.Add(namespaceName)) {
                         // this is the first time this assembly has seen this namespace
                         namespaceModel.AssemblyCRefs.Add(assemblyModel.CRef);
@@ -429,6 +429,12 @@ namespace DandyDoc.CodeDoc
             if (xmlDocs != null)
                 memberDataProvider.Add(new CodeDocMemberXmlDataProvider(xmlDocs));
 
+            var baseEvent = eventInfo.FindNextAncestor();
+            if (baseEvent != null) {
+                var baseEventModel = GetOrConvert(GetCRefIdentifier(baseEvent), lite: true);
+                memberDataProvider.Add(new CodeDocMemberDataProvider(baseEventModel));
+            }
+
             ApplyContentXmlDocs(model, memberDataProvider);
 
             model.ExternalVisibility = memberDataProvider.ExternalVisibility ?? ExternalVisibilityKind.Public;
@@ -509,6 +515,12 @@ namespace DandyDoc.CodeDoc
             if (xmlDocs != null)
                 memberDataProvider.Add(new CodeDocMemberXmlDataProvider(xmlDocs));
 
+            var propertyBase = propertyInfo.FindNextAncestor();
+            if (propertyBase != null) {
+                var propertyBaseModel = GetOrConvert(GetCRefIdentifier(propertyBase), lite: true);
+                memberDataProvider.Add(new CodeDocMemberDataProvider(propertyBaseModel));
+            }
+
             ApplyContentXmlDocs(model, memberDataProvider);
 
             model.ExternalVisibility = memberDataProvider.ExternalVisibility ?? ExternalVisibilityKind.Public;
@@ -562,6 +574,7 @@ namespace DandyDoc.CodeDoc
             Contract.Ensures(Contract.Result<CodeDocMethod>().Title == Contract.Result<CodeDocMethod>().ShortName);
             Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<CodeDocMethod>().SubTitle));
 
+            var methodInfo = methodBase as MethodInfo;
             var methodCRef = GetCRefIdentifier(methodBase);
             var model = new CodeDocMethod(methodCRef);
 
@@ -571,6 +584,14 @@ namespace DandyDoc.CodeDoc
                 memberDataProvider.Add(new CodeDocMemberXmlDataProvider(xmlDocs));
             if (extraMemberDataProvider != null)
                 memberDataProvider.Add(extraMemberDataProvider);
+            if (methodInfo != null) {
+                var baseDefinition = methodInfo.FindNextAncestor();
+                if (baseDefinition != null) {
+                    var baseDefinitionModel = GetOrConvert(GetCRefIdentifier(baseDefinition), lite: true);
+                    memberDataProvider.Add(new CodeDocMemberDataProvider(baseDefinitionModel));
+                }
+                // TODO: what about interfaces
+            }
 
             ApplyContentXmlDocs(model, memberDataProvider);
 
@@ -610,7 +631,6 @@ namespace DandyDoc.CodeDoc
                 methodBase.GetParameters(),
                 p => CreateArgument(p, memberDataProvider));
 
-            var methodInfo = methodBase as MethodInfo;
             if (methodInfo != null && methodInfo.ReturnParameter != null && methodInfo.ReturnType != typeof(void))
                 model.Return = CreateReturn(methodInfo.ReturnParameter, memberDataProvider);
 
@@ -657,6 +677,11 @@ namespace DandyDoc.CodeDoc
             var xmlDocs = XmlDocs.GetMember(cRef.FullCRef);
             if (xmlDocs != null)
                 memberDataProvider.Add(new CodeDocMemberXmlDataProvider(xmlDocs));
+
+            if (type.BaseType != null) {
+                var baseModel = GetOrConvert(type.BaseType, lite: true);
+                memberDataProvider.Add(new CodeDocMemberDataProvider(baseModel));
+            }
 
             ApplyContentXmlDocs(model, memberDataProvider);
 

@@ -198,6 +198,8 @@ namespace DandyDoc.CodeDoc
         /// <returns>A code doc model for the given code reference.</returns>
         protected ICodeDocMember GetOrConvert(CRefIdentifier cRef, bool lite = false) {
             Contract.Requires(cRef != null);
+            Contract.Ensures(Contract.Result<ICodeDocMember>() != null);
+
             // TODO:
             // 1) Use the repository tree to get the model by cRef (so we can use a cache)
             // 1a) Make sure to include this repostitory in the search, but last (should be behind a cache)
