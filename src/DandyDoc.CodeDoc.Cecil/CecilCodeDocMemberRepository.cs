@@ -689,7 +689,7 @@ namespace DandyDoc.CodeDoc
             bool isInterface;
             if (typeDefinition != null) {
                 isEnum = typeDefinition.IsEnum;
-                hasFlagsAttribute = typeDefinition.HasAttribute(t => t.Constructor.FullName == "System.FlagsAttribute");
+                hasFlagsAttribute = typeDefinition.HasAttribute(t => t.AttributeType.FullName == "System.FlagsAttribute");
                 isSealed = typeDefinition.IsSealed;
                 isInterface = typeDefinition.IsInterface;
             }
@@ -714,7 +714,7 @@ namespace DandyDoc.CodeDoc
             model.Namespace = GetOrCreateNamespaceByName(model.NamespaceName);
             model.Assembly = GetCodeDocAssembly(typeReference.Module.Assembly);
             model.IsEnum = isEnum;
-            model.IsFlagsEnum = isEnum && hasFlagsAttribute;
+            model.IsFlagsEnum = isEnum ? hasFlagsAttribute : (bool?)null;
             model.IsSealed = isSealed;
             model.IsValueType = typeReference.IsValueType;
             model.IsStatic = memberDataProvider.IsStatic.GetValueOrDefault();

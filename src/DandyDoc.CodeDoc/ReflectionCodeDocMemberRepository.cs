@@ -395,8 +395,10 @@ namespace DandyDoc.CodeDoc
                 .GetGenericTypeSummaryContents(argumentName)
                 .ToArray();
 
-            if (typeConstraints.Length > 0)
+            if (typeConstraints.Length > 0) {
                 model.TypeConstraints = Array.ConvertAll(typeConstraints, t => GetOrConvert(t, lite: true));
+                
+            }
 
             model.IsContravariant = genericArgument.GenericParameterAttributes.HasFlag(
                 GenericParameterAttributes.Contravariant);

@@ -349,14 +349,15 @@ namespace DandyDoc.Cecil
         /// <param name="filter">An optional filter for the members.</param>
         /// <param name="skipInheritance">Indicates if inherited types should be checked for members.</param>
         /// <returns>Members that are found for the type.</returns>
-        public static List<EventDefinition> GetAllEvents(this TypeDefinition typeDefinition, Func<EventDefinition, bool> filter = null, bool skipInheritance = false) {
+        public static List<EventDefinition> GetAllEvents(this TypeDefinition typeDefinition, Func<EventDefinition, bool> filter = null, bool skipInheritance = false, bool inheritStatic = false) {
             Contract.Requires(typeDefinition != null);
             Contract.Ensures(Contract.Result<List<EventDefinition>>() != null);
             return typeDefinition.GetAllMembers(
                 d => d.HasEvents,
                 d => d.Events,
                 filter,
-                skipInheritance);
+                skipInheritance,
+                inheritStatic);
         }
 
         /// <summary>
@@ -366,14 +367,15 @@ namespace DandyDoc.Cecil
         /// <param name="filter">An optional filter for the members.</param>
         /// <param name="skipInheritance">Indicates if inherited types should be checked for members.</param>
         /// <returns>Members that are found for the type.</returns>
-        public static List<FieldDefinition> GetAllFields(this TypeDefinition typeDefinition, Func<FieldDefinition, bool> filter = null, bool skipInheritance = false) {
+        public static List<FieldDefinition> GetAllFields(this TypeDefinition typeDefinition, Func<FieldDefinition, bool> filter = null, bool skipInheritance = false, bool inheritStatic = false) {
             Contract.Requires(typeDefinition != null);
             Contract.Ensures(Contract.Result<List<FieldDefinition>>() != null);
             return typeDefinition.GetAllMembers(
                 d => d.HasFields,
                 d => d.Fields,
                 filter,
-                skipInheritance);
+                skipInheritance,
+                inheritStatic);
         }
 
         /// <summary>
@@ -383,14 +385,15 @@ namespace DandyDoc.Cecil
         /// <param name="filter">An optional filter for the members.</param>
         /// <param name="skipInheritance">Indicates if inherited types should be checked for members.</param>
         /// <returns>Members that are found for the type.</returns>
-        public static List<MethodDefinition> GetAllMethods(this TypeDefinition typeDefinition, Func<MethodDefinition, bool> filter = null, bool skipInheritance = false) {
+        public static List<MethodDefinition> GetAllMethods(this TypeDefinition typeDefinition, Func<MethodDefinition, bool> filter = null, bool skipInheritance = false, bool inheritStatic = false) {
             Contract.Requires(typeDefinition != null);
             Contract.Ensures(Contract.Result<List<MethodDefinition>>() != null);
             return typeDefinition.GetAllMembers(
                 d => d.HasMethods,
                 d => d.Methods,
                 filter,
-                skipInheritance);
+                skipInheritance,
+                inheritStatic);
         }
 
         /// <summary>
@@ -400,14 +403,15 @@ namespace DandyDoc.Cecil
         /// <param name="filter">An optional filter for the members.</param>
         /// <param name="skipInheritance">Indicates if inherited types should be checked for members.</param>
         /// <returns>Members that are found for the type.</returns>
-        public static List<PropertyDefinition> GetAllProperties(this TypeDefinition typeDefinition, Func<PropertyDefinition, bool> filter = null, bool skipInheritance = false) {
+        public static List<PropertyDefinition> GetAllProperties(this TypeDefinition typeDefinition, Func<PropertyDefinition, bool> filter = null, bool skipInheritance = false, bool inheritStatic = false) {
             Contract.Requires(typeDefinition != null);
             Contract.Ensures(Contract.Result<List<PropertyDefinition>>() != null);
             return typeDefinition.GetAllMembers(
                 d => d.HasProperties,
                 d => d.Properties,
                 filter,
-                skipInheritance);
+                skipInheritance,
+                inheritStatic);
         }
 
         private static List<TResult> GetAllMembers<TResult>(
@@ -415,7 +419,8 @@ namespace DandyDoc.Cecil
             Func<TypeDefinition, bool> hasMembers,
             Func<TypeDefinition, IEnumerable<TResult>> getMembers,
             Func<TResult, bool> memberFilter = null,
-            bool skipInheritance = false
+            bool skipInheritance = false,
+            bool inheritStatic = false
         )
             where TResult : MemberReference
         {
@@ -441,6 +446,12 @@ namespace DandyDoc.Cecil
             Func<TResult, bool> addIfNotFound = definition => nameSet.Add(definition.Name);
             foreach (var baseTypeDefinition in typeDefinition.GetBaseChainDefinitions().Where(hasMembers)) {
                 var members = getMembers(baseTypeDefinition).Where(addIfNotFound);
+                if (!inheritStatic)
+                    members = members.Where(r => {
+                        var d = r.ToDefinition();
+                        return d == null || !d.IsStatic();
+                    });
+
                 if (memberFilter != null)
                     members = members.Where(memberFilter);
                 results.AddRange(members);

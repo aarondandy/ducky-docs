@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace DandyDoc.CodeDoc.Cecil.Tests
 {
     [TestFixture]
-    public class CodeDocTypeCecilEntityRepositoryTest : CodeDocTypeReflectionEntityRepositoryTest
+    public class CodeDocCecilEntityRepositoryTest : CodeDocEntityRepositoryTest
     {
 
         public override ICodeDocMemberRepository TestLibrary1Repository {

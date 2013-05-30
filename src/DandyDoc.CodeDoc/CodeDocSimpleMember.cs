@@ -13,6 +13,7 @@ namespace DandyDoc.CodeDoc
     /// </summary>
     public class CodeDocSimpleMember : ICodeDocMember
     {
+        private CRefIdentifier _cRef;
 
         /// <summary>
         /// Creates a new code doc model.
@@ -26,11 +27,19 @@ namespace DandyDoc.CodeDoc
 
         [ContractInvariantMethod]
         private void CodeContractInvariants() {
+            Contract.Invariant(_cRef != null);
             Contract.Invariant(CRef != null);
         }
 
         /// <inheritdoc/>
-        public CRefIdentifier CRef { get; private set; }
+        public CRefIdentifier CRef {
+            get { return _cRef; }
+            set {
+                if(value == null) throw new ArgumentNullException("value");
+                Contract.EndContractBlock();
+                _cRef = value;
+            }
+        }
 
         /// <inheritdoc/>
         public string Title { get; set; }
@@ -45,6 +54,7 @@ namespace DandyDoc.CodeDoc
         public string FullName { get; set; }
 
         /// <inheritdoc/>
+        [Obsolete("This is redundant with Namesapce.Something")]
         public string NamespaceName { get; set; }
 
         /// <inheritdoc/>

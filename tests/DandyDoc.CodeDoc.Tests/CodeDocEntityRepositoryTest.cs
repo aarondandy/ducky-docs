@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using DandyDoc.CRef;
@@ -13,7 +14,7 @@ namespace DandyDoc.CodeDoc.Tests
 {
 
     [TestFixture]
-    public class CodeDocTypeReflectionEntityRepositoryTest
+    public class CodeDocEntityRepositoryTest
     {
 
         public virtual ICodeDocMemberRepository TestLibrary1Repository {
@@ -28,19 +29,36 @@ namespace DandyDoc.CodeDoc.Tests
             }
         }
 
-        [Test]
-        public void invalid_requests() {
-            Assert.Throws<ArgumentException>(
-                () => TestLibrary1Repository.GetMemberModel(String.Empty));
-            Assert.Throws<ArgumentNullException>(
-                () => TestLibrary1Repository.GetMemberModel((CRefIdentifier)null));
+        public virtual CodeDocType GetCodeDocType(string cRef) {
+            Contract.Ensures(Contract.Result<CodeDocType>() != null);
+            var model = TestLibrary1Repository.GetMemberModel(cRef);
+            Assert.IsNotNull(model);
+            Assert.That(model is CodeDocType);
+            return (CodeDocType)model;
+        }
+
+        public virtual CodeDocMethod GetCodeDocMethod(string cRef) {
+            Contract.Ensures(Contract.Result<CodeDocMethod>() != null);
+            var model = TestLibrary1Repository.GetMemberModel(cRef);
+            Assert.IsNotNull(model);
+            Assert.That(model is CodeDocMethod);
+            return (CodeDocMethod)model;
         }
 
         [Test]
-        public void namespace_assembly_test() {
+        public void constructor_throws_on_invalid_requests() {
+            Assert.Throws<ArgumentException>(() => TestLibrary1Repository.GetMemberModel(String.Empty));
+            Assert.Throws<ArgumentNullException>(() => TestLibrary1Repository.GetMemberModel((CRefIdentifier)null));
+        }
+
+        [Test]
+        public void namespaces_and_assembly_counts_match_test_library() {
             Assert.AreEqual(1, TestLibrary1Repository.Assemblies.Count);
             Assert.AreEqual(5, TestLibrary1Repository.Namespaces.Count);
-            Assert.Less(0, TestLibrary1Repository.Assemblies.Single().TypeCRefs.Count);
+        }
+
+        [Test]
+        public void namespaces_and_assemblies_have_same_number_of_types() {
             Assert.AreEqual(
                 TestLibrary1Repository.Assemblies.Sum(x => x.TypeCRefs.Count),
                 TestLibrary1Repository.Namespaces.Sum(x => x.TypeCRefs.Count)
@@ -48,9 +66,18 @@ namespace DandyDoc.CodeDoc.Tests
         }
 
         [Test]
-        public void type_test_for_Class1() {
-            var model = TestLibrary1Repository
-                .GetMemberModel("TestLibrary1.Class1") as CodeDocType;
+        public void no_empty_namespaces() {
+            Assert.That(TestLibrary1Repository.Namespaces.All(x => x.TypeCRefs.Any()));
+        }
+
+        [Test]
+        public void no_empty_assemblies() {
+            Assert.That(TestLibrary1Repository.Assemblies.All(x => x.TypeCRefs.Any()));
+        }
+
+        [Test]
+        public void verify_basic_attributes_for_simple_type() {
+            var model = GetCodeDocType("TestLibrary1.Class1");
             Assert.AreEqual("Class1", model.ShortName);
             Assert.AreEqual("TestLibrary1.Class1", model.FullName);
             Assert.AreEqual("T:TestLibrary1.Class1", model.CRef.FullCRef);
@@ -70,10 +97,8 @@ namespace DandyDoc.CodeDoc.Tests
         }
 
         [Test]
-        public void type_xmldoc_test_for_Class1() {
-            var model = TestLibrary1Repository
-                .GetMemberModel("TestLibrary1.Class1") as CodeDocType;
-
+        public void verify_basic_xml_doc_for_simple_type() {
+            var model = GetCodeDocType("TestLibrary1.Class1");
             Assert.IsTrue(model.HasSummaryContents);
             Assert.AreEqual("This class is just for testing and has no real use outside of generating some documentation.", model.SummaryContents.First().Node.OuterXml);
             Assert.IsTrue(model.HasExamples);
@@ -85,64 +110,134 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual(1, model.Remarks.Count);
             Assert.AreEqual("These are some remarks.", model.Remarks[0].Node.InnerText);
             Assert.IsFalse(model.HasSeeAlso);
-
         }
 
         [Test]
-        public void type_members_test_for_Class1() {
-            var model = TestLibrary1Repository
-                .GetMemberModel("TestLibrary1.Class1") as CodeDocType;
+        public void get_nested_types_from_simple_type() {
+            var model = GetCodeDocType("TestLibrary1.Class1");
+            var expectedNestedTypeShortNames =
+                new[] {"Inherits", "Inner", "NoRemarks", "NoDocs", "ProtectedStruct", "IThing"}
+                .OrderBy(x => x)
+                .ToArray();
+            Array.Sort(expectedNestedTypeShortNames);
 
             Assert.IsTrue(model.HasNestedTypes);
-            Assert.AreEqual(6, model.NestedTypes.Count);
-            Assert.Contains("Inherits", model.NestedTypes.Select(x => x.ShortName).ToList());
-            Assert.Contains("Inner", model.NestedTypes.Select(x => x.ShortName).ToList());
-            Assert.Contains("NoRemarks", model.NestedTypes.Select(x => x.ShortName).ToList());
-            Assert.Contains("NoDocs", model.NestedTypes.Select(x => x.ShortName).ToList());
-            Assert.Contains("ProtectedStruct", model.NestedTypes.Select(x => x.ShortName).ToList());
-            Assert.Contains("IThing", model.NestedTypes.Select(x => x.ShortName).ToList());
-
-            Assert.AreEqual(
-                "no remarks here",
+            var nestedTypeNames =
                 model.NestedTypes
-                    .First(x => x.ShortName == "NoRemarks")
-                    .SummaryContents.First().Node.OuterXml);
+                .Select(x => x.ShortName)
+                .OrderBy(x => x)
+                .ToArray();
+            Assert.AreEqual(expectedNestedTypeShortNames, nestedTypeNames);
+        }
+
+        [Test]
+        public void nested_type_member_of_type_has_summary() {
+            var model = GetCodeDocType("TestLibrary1.Class1")
+                .NestedTypes
+                .Single(x => x.ShortName == "NoRemarks");
+
+            Assert.IsTrue(model.HasSummaryContents);
+            Assert.AreEqual("no remarks here", model.SummaryContents.First().Node.OuterXml);
+        }
+
+        [Test]
+        public void get_nested_delegate_from_simple_type() {
+            var model = GetCodeDocType("TestLibrary1.Class1");
+            var expectedNestedDelegateCRefNames =
+                new[] { "T:TestLibrary1.Class1.MyFunc" }
+                .OrderBy(x => x)
+                .ToArray();
+            Array.Sort(expectedNestedDelegateCRefNames);
 
             Assert.IsTrue(model.HasNestedDelegates);
-            Assert.AreEqual(1, model.NestedDelegates.Count);
-            Assert.AreEqual("T:TestLibrary1.Class1.MyFunc", model.NestedDelegates.Single().CRef.FullCRef);
+            var nestedDelegateCRefs =
+                model.NestedDelegates
+                .Select(x => x.CRef.FullCRef)
+                .OrderBy(x => x)
+                .ToArray();
+            Assert.AreEqual(expectedNestedDelegateCRefNames, nestedDelegateCRefs);
+            Assert.That(model.NestedDelegates.All(x => x.SubTitle == "Delegate"));
+        }
+
+        [Test]
+        public void nested_delegate_member_of_type_has_summary() {
+            var model = GetCodeDocType("TestLibrary1.Class1")
+                .NestedDelegates
+                .Single(x => x.CRef.FullCRef == "T:TestLibrary1.Class1.MyFunc");
+
+            Assert.IsTrue(model.HasSummaryContents);
+            Assert.AreEqual("My delegate.", model.SummaryContents.First().Node.OuterXml);
+        }
+
+        [Test]
+        public void simple_type_has_constructors() {
+            var model = GetCodeDocType("TestLibrary1.Class1");
 
             Assert.IsTrue(model.HasConstructors);
             Assert.AreEqual(2, model.Constructors.Count);
-            Assert.That(model.Constructors, Has.All.Property("SubTitle").EqualTo("Constructor"));
-
-            Assert.IsTrue(model.HasMethods);
-            Assert.Less(5, model.Methods.Count);
-            Assert.That(model.Methods, Has.All.Property("SubTitle").EqualTo("Method"));
-
-            Assert.IsTrue(model.HasOperators);
-            Assert.AreEqual(1, model.Operators.Count);
-            Assert.That(model.Operators.Single().Title.Contains('+'));
-            Assert.That(model.Operators, Has.All.Property("SubTitle").EqualTo("Operator"));
-
-            Assert.IsTrue(model.HasEvents);
-            Assert.AreEqual(2, model.Events.Count);
-
-            Assert.IsTrue(model.HasFields);
-            Assert.AreEqual(5, model.Fields.Count);
-            Assert.That(model.Fields, Has.Some.Property("SubTitle").EqualTo("Constant"));
-            Assert.That(model.Fields, Has.Some.Property("SubTitle").EqualTo("Field"));
-
-            Assert.IsTrue(model.HasProperties);
-            Assert.AreEqual(3, model.Properties.Count);
-            Assert.That(model.Properties, Has.Some.Property("SubTitle").EqualTo("Indexer"));
-            Assert.That(model.Properties, Has.Some.Property("SubTitle").EqualTo("Property"));
+            Assert.That(model.Constructors.All(x => x.SubTitle == "Constructor"));
         }
 
         [Test]
-        public void type_test_for_FlagsEnum() {
-            var model = TestLibrary1Repository
-                .GetMemberModel("TestLibrary1.FlagsEnum") as CodeDocType;
+        public void simple_type_has_methods() {
+            var model = GetCodeDocType("TestLibrary1.Class1");
+
+            Assert.IsTrue(model.HasMethods);
+            Assert.AreEqual(11, model.Methods.Count);
+            Assert.That(model.Methods.OfType<CodeDocMethod>().Any(x => x.IsStatic.GetValueOrDefault()));
+            Assert.That(model.Methods.OfType<CodeDocMethod>().Any(x => !x.IsStatic.GetValueOrDefault()));
+            Assert.That(model.Methods.All(x => x.SubTitle == "Method"));
+        }
+
+        [Test]
+        public void simple_type_has_operators() {
+            var model = GetCodeDocType("TestLibrary1.Class1");
+            Assert.IsTrue(model.HasOperators);
+            Assert.AreEqual(1, model.Operators.Count);
+            Assert.That(model.Operators.OfType<CodeDocMethod>().All(x => x.IsStatic.GetValueOrDefault()));
+            Assert.That(model.Operators.All(x => x.SubTitle == "Operator"));
+            Assert.That(model.Operators.Any(x => x.Title.Contains('+')));
+        }
+
+        [Test]
+        public void simple_type_has_events() {
+            var model = GetCodeDocType("TestLibrary1.Class1");
+            var names = new[] {"DoStuff", "DoStuffInstance"};
+            Array.Sort(names);
+
+            Assert.IsTrue(model.HasEvents);
+            Assert.AreEqual(names, model.Events.Select(x => x.ShortName).OrderBy(x => x).ToArray());
+        }
+
+        [Test]
+        public void simple_type_has_fields() {
+            var model = GetCodeDocType("TestLibrary1.Class1");
+            var names = new[] { "SomeClasses", "SomeNullableInt", "MyConst", "SomeField", "ReadonlyField" };
+            Array.Sort(names);
+
+            Assert.IsTrue(model.HasFields);
+            Assert.AreEqual(names, model.Fields.Select(x => x.ShortName).OrderBy(x => x).ToArray());
+            Assert.That(model.Fields.OfType<CodeDocField>().Any(x => x.IsInitOnly.GetValueOrDefault()));
+            Assert.That(model.Fields.OfType<CodeDocField>().Any(x => x.IsLiteral.GetValueOrDefault()));
+            Assert.That(model.Fields.OfType<CodeDocField>().All(
+                x => x.SubTitle == (x.IsLiteral.GetValueOrDefault() ? "Constant" : "Field")));
+        }
+
+        [Test]
+        public void simple_type_has_properties() {
+            var model = GetCodeDocType("TestLibrary1.Class1");
+            var names = new[] {"HasTableInRemarks", "Item[Int32]", "SomeProperty"};
+            Array.Sort(names);
+
+            Assert.IsTrue(model.HasProperties);
+            Assert.AreEqual(names, model.Properties.Select(x => x.ShortName).OrderBy(x => x).ToArray());
+            Assert.That(model.Properties.Any(x => x.SubTitle == "Property"));
+            Assert.That(model.Properties.Any(x => x.SubTitle == "Indexer"));
+        }
+
+        [Test]
+        public void check_basic_enum_values() {
+            var model = GetCodeDocType("TestLibrary1.FlagsEnum");
             Assert.AreEqual("FlagsEnum", model.ShortName);
             Assert.AreEqual("TestLibrary1.FlagsEnum", model.FullName);
             Assert.AreEqual("T:TestLibrary1.FlagsEnum", model.CRef.FullCRef);
@@ -150,7 +245,12 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual("Enumeration", model.SubTitle);
             Assert.AreEqual("TestLibrary1", model.NamespaceName);
             Assert.IsTrue(model.IsEnum.GetValueOrDefault());
+            Assert.IsTrue(model.IsFlagsEnum.GetValueOrDefault());
+        }
 
+        [Test]
+        public void check_enum_xml_doc_details() {
+            var model = GetCodeDocType("TestLibrary1.FlagsEnum");
             Assert.IsTrue(model.HasSummaryContents);
             Assert.AreEqual("An enumeration to check detection of the flags attribute.", model.SummaryContents.First().Node.OuterXml);
             Assert.IsTrue(model.HasExamples);
@@ -159,15 +259,26 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.IsFalse(model.HasPermissions);
             Assert.IsFalse(model.HasRemarks);
             Assert.IsFalse(model.HasSeeAlso);
+        }
+
+        [Test]
+        public void get_base_chain_for_type() {
+            var model = GetCodeDocType("TestLibrary1.FlagsEnum");
+            var expected = new[] {
+                new CRefIdentifier("T:System.Enum"),
+                new CRefIdentifier("T:System.ValueType"),
+                new CRefIdentifier("T:System.Object")
+            };
+
+            var actual = model.BaseChain.Select(x => x.CRef).ToArray();
 
             Assert.IsTrue(model.HasBaseChain);
-            Assert.AreEqual(
-                new[] {
-                    new CRefIdentifier("T:System.Enum"),
-                    new CRefIdentifier("T:System.ValueType"),
-                    new CRefIdentifier("T:System.Object")
-                },
-                model.BaseChain.Select(x => x.CRef).ToArray());
+            Assert.AreEqual(expected,actual);
+        }
+
+        [Test]
+        public void get_interfaces_for_type() {
+            var model = GetCodeDocType("TestLibrary1.FlagsEnum");
             Assert.IsTrue(model.HasInterfaces);
             Assert.That(model.Interfaces.Select(x => x.CRef), Contains.Item(new CRefIdentifier("T:System.IComparable")));
             Assert.That(model.Interfaces.Select(x => x.CRef), Contains.Item(new CRefIdentifier("T:System.IConvertible")));
@@ -175,10 +286,8 @@ namespace DandyDoc.CodeDoc.Tests
         }
 
         [Test]
-        public void type_test_for_Class1_Inner() {
-            var model = TestLibrary1Repository
-                .GetMemberModel("TestLibrary1.Class1.Inner") as CodeDocType;
-            Assert.IsNotNull(model);
+        public void basic_values_for_nested_type() {
+            var model = GetCodeDocType("TestLibrary1.Class1.Inner");
             Assert.AreEqual("Inner", model.ShortName);
             Assert.AreEqual("TestLibrary1.Class1.Inner", model.FullName);
             Assert.AreEqual("T:TestLibrary1.Class1.Inner", model.CRef.FullCRef);
@@ -189,15 +298,6 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual("N:TestLibrary1", model.Namespace.CRef.FullCRef);
             Assert.IsNotNull(model.DeclaringType);
             Assert.AreEqual("T:TestLibrary1.Class1", model.DeclaringType.CRef.FullCRef);
-
-            Assert.IsFalse(model.HasSummaryContents);
-            Assert.IsFalse(model.HasExamples);
-            Assert.IsFalse(model.HasPermissions);
-            Assert.IsFalse(model.HasSeeAlso);
-            Assert.IsTrue(model.HasRemarks);
-            Assert.AreEqual(1, model.Remarks.Count);
-            Assert.AreEqual("This is just some class.", model.Remarks[0].Node.InnerText);
-
             Assert.IsTrue(model.HasBaseChain);
             Assert.AreEqual(
                 new[] { new CRefIdentifier("T:System.Object") },
@@ -206,12 +306,28 @@ namespace DandyDoc.CodeDoc.Tests
         }
 
         [Test]
-        public void type_test_for_Generic1() {
-            var model = TestLibrary1Repository
-                .GetMemberModel("TestLibrary1.Generic1`2") as CodeDocType;
+        public void check_xml_docs_for_nested_type() {
+            var model = GetCodeDocType("TestLibrary1.Class1.Inner");
+            Assert.IsFalse(model.HasSummaryContents);
+            Assert.IsFalse(model.HasExamples);
+            Assert.IsFalse(model.HasPermissions);
+            Assert.IsFalse(model.HasSeeAlso);
+            Assert.IsTrue(model.HasRemarks);
+            Assert.AreEqual(1, model.Remarks.Count);
+            Assert.AreEqual("This is just some class.", model.Remarks[0].Node.InnerText);
+        }
+
+        [Test]
+        public void basic_generic_type_values() {
+            var model = GetCodeDocType("TestLibrary1.Generic1`2");
             Assert.IsNotNull(model);
             Assert.AreEqual("Generic1<TA, TB>", model.ShortName);
             Assert.IsNull(model.DeclaringType);
+        }
+
+        [Test]
+        public void generic_type_type_parameters() {
+            var model = GetCodeDocType("TestLibrary1.Generic1`2");
 
             Assert.IsTrue(model.HasGenericParameters);
             Assert.AreEqual(2, model.GenericParameters.Count);
@@ -242,16 +358,16 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.IsFalse(model.GenericParameters[1].HasNotNullableValueTypeConstraint.GetValueOrDefault());
             Assert.IsTrue(model.GenericParameters[1].HasTypeConstraints);
             Assert.AreEqual(1, model.GenericParameters[1].TypeConstraints.Count);
-            // TODO: this CRef could be a problem, need a solution... without context what is `0?
-            // TODO: perhaps this would be better as an ICodeDocMember
+
+            // the short name should contain the specific generic type
+            Assert.That(model.GenericParameters[1].TypeConstraints[0].ShortName.Contains("TA"));
+            // the generic type reference was converted to the definition
             Assert.AreEqual("T:System.Collections.Generic.IEnumerable{`0}", model.GenericParameters[1].TypeConstraints[0].CRef.FullCRef);
         }
 
         [Test]
         public void type_test_for_generic_variance() {
-            var model = TestLibrary1Repository
-                .GetMemberModel("T:TestLibrary1.Generic1`2.IVariance`2") as CodeDocType;
-            Assert.IsNotNull(model);
+            var model = GetCodeDocType("T:TestLibrary1.Generic1`2.IVariance`2");
             Assert.IsTrue(model.HasGenericParameters);
             Assert.AreEqual(2, model.GenericParameters.Count);
             Assert.AreEqual("TIn", model.GenericParameters[0].Name);
@@ -264,9 +380,7 @@ namespace DandyDoc.CodeDoc.Tests
 
         [Test]
         public void type_generic_contraint_test() {
-            var model = TestLibrary1Repository
-                .GetMemberModel("TestLibrary1.Generic1`2.Constraints`1") as CodeDocType;
-            Assert.IsNotNull(model);
+            var model = GetCodeDocType("TestLibrary1.Generic1`2.Constraints`1");
             Assert.IsTrue(model.HasGenericParameters);
             Assert.AreEqual(1, model.GenericParameters.Count);
             Assert.AreEqual("TConstraints", model.GenericParameters[0].Name);
@@ -614,6 +728,18 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.IsTrue(method.Parameters[0].IsByRef.GetValueOrDefault());
             Assert.IsFalse(method.Parameters[1].IsOut.GetValueOrDefault());
             Assert.IsTrue(method.Parameters[1].IsByRef.GetValueOrDefault());
+        }
+
+        [Test]
+        public void simple_inheritance_check() {
+            var a = GetCodeDocMethod("TestLibrary1.Seal.BaseClassToSeal.SealMe(System.Int32)");
+            var b = GetCodeDocMethod("TestLibrary1.Seal.KickSealingCan.SealMe(System.Int32)");
+            var c = GetCodeDocMethod("TestLibrary1.Seal.SealIt.SealMe(System.Int32)");
+            var d = GetCodeDocMethod("TestLibrary1.Seal.SealSomeOfIt.SealMe(System.Int32)");
+            Assert.AreEqual("From BaseClassToSeal.", a.SummaryContents.First().Node.OuterXml);
+            Assert.AreEqual("From BaseClassToSeal.", b.SummaryContents.First().Node.OuterXml);
+            Assert.AreEqual("From SealIt.", c.SummaryContents.First().Node.OuterXml);
+            Assert.AreEqual("From BaseClassToSeal.", d.SummaryContents.First().Node.OuterXml);
         }
 
     }
