@@ -424,6 +424,7 @@ namespace DandyDoc.CodeDoc
             Contract.Ensures(Contract.Result<CodeDocEvent>().Title == Contract.Result<CodeDocEvent>().ShortName);
             Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<CodeDocEvent>().SubTitle));
 
+            var eventDefinition = eventReference.ToDefinition();
             var eventCRef = GetCRefIdentifier(eventReference);
             var model = new CodeDocEvent(eventCRef);
 
@@ -431,6 +432,14 @@ namespace DandyDoc.CodeDoc
             var xmlDocs = XmlDocs.GetMember(eventCRef.FullCRef);
             if (xmlDocs != null)
                 memberDataProvider.Add(new CodeDocMemberXmlDataProvider(xmlDocs));
+
+            if (eventDefinition != null) {
+                var baseEvent = eventDefinition.FindNextAncestor();
+                if (baseEvent != null) {
+                    var baseEventModel = GetOrConvert(GetCRefIdentifier(baseEvent), lite: true);
+                    memberDataProvider.Add(new CodeDocMemberDataProvider(baseEventModel));
+                }
+            }
 
             ApplyContentXmlDocs(model, memberDataProvider);
 
@@ -523,6 +532,15 @@ namespace DandyDoc.CodeDoc
             if (xmlDocs != null)
                 memberDataProvider.Add(new CodeDocMemberXmlDataProvider(xmlDocs));
 
+            var propertyDefinition = memberDataProvider.Definition as PropertyDefinition;
+            if (propertyDefinition != null) {
+                var propertyBase = propertyDefinition.FindNextAncestor();
+                if (propertyBase != null) {
+                    var propertyBaseModel = GetOrConvert(GetCRefIdentifier(propertyBase), lite: true);
+                    memberDataProvider.Add(new CodeDocMemberDataProvider(propertyBaseModel));
+                }
+            }
+
             ApplyContentXmlDocs(model, memberDataProvider);
 
             model.ExternalVisibility = memberDataProvider.ExternalVisibility ?? ExternalVisibilityKind.Public;
@@ -548,7 +566,6 @@ namespace DandyDoc.CodeDoc
             if (parameters.Length > 0)
                 model.Parameters = Array.ConvertAll(parameters, p => CreateArgument(p, memberDataProvider));
 
-            var propertyDefinition = memberDataProvider.Definition as PropertyDefinition;
             if (propertyDefinition != null) {
                 var getterMethodInfo = propertyDefinition.GetMethod;
                 if (getterMethodInfo != null && MemberFilter(getterMethodInfo, true)) {
@@ -589,6 +606,15 @@ namespace DandyDoc.CodeDoc
             if (extraMemberDataProvider != null)
                 memberDataProvider.Add(extraMemberDataProvider);
 
+            var methodDefinition = memberDataProvider.Definition as MethodDefinition;
+            if (methodDefinition != null) {
+                var baseDefinition = methodDefinition.FindNextAncestor();
+                if (baseDefinition != null) {
+                    var baseDefinitionModel = GetOrConvert(GetCRefIdentifier(baseDefinition), lite: true);
+                    memberDataProvider.Add(new CodeDocMemberDataProvider(baseDefinitionModel));
+                }
+            }
+
             ApplyContentXmlDocs(model, memberDataProvider);
 
             model.ExternalVisibility = memberDataProvider.ExternalVisibility ?? ExternalVisibilityKind.Public;
@@ -597,8 +623,6 @@ namespace DandyDoc.CodeDoc
             model.Title = model.ShortName;
             Contract.Assume(methodReference.DeclaringType != null);
             model.NamespaceName = methodReference.DeclaringType.GetOuterType().Namespace;
-
-            var methodDefinition = memberDataProvider.Definition as MethodDefinition;
 
             if (methodDefinition != null && methodDefinition.IsConstructor)
                 model.SubTitle = "Constructor";

@@ -490,5 +490,108 @@ namespace DandyDoc.Cecil
                 && typeReference.Namespace == "System";
         }
 
+        public static PropertyDefinition FindNextAncestor(this PropertyDefinition propertyDefinition) {
+            Contract.Requires(propertyDefinition != null);
+            var propertyName = propertyDefinition.Name;
+            var ancestorMethods = new[] {propertyDefinition.GetMethod, propertyDefinition.SetMethod}
+                .Where(x => x != null)
+                .Select(FindNextAncestor)
+                .Where(a => a != null);
+            foreach (var ancestor in ancestorMethods) {
+                var baseTypeDefinition = ancestor.DeclaringType;
+                Contract.Assume(baseTypeDefinition != null);
+                var basePropertyDefinition = baseTypeDefinition.Properties
+                    .FirstOrDefault(p => p.Name == propertyName);
+                if (MembersAreEqual(basePropertyDefinition.GetMethod, ancestor) || MembersAreEqual(basePropertyDefinition.SetMethod, ancestor))
+                    return basePropertyDefinition;
+            }
+            return null;
+        }
+
+        public static EventDefinition FindNextAncestor(this EventDefinition eventDefinition) {
+            Contract.Requires(eventDefinition != null);
+            var eventName = eventDefinition.Name;
+            var invokeMethod = eventDefinition.InvokeMethod;
+            if (invokeMethod == null)
+                return null; // nothing we can work with
+
+            var ancestorMethod = invokeMethod.FindNextAncestor();
+            if (ancestorMethod != null) {
+                var baseEventDefinition = ancestorMethod.DeclaringType.Events
+                    .FirstOrDefault(e => e.Name == eventName);
+                if (baseEventDefinition != null && !MembersAreEqual(baseEventDefinition, eventDefinition) && MembersAreEqual(baseEventDefinition.InvokeMethod, ancestorMethod))
+                    return baseEventDefinition;
+            }
+            return null;
+        }
+
+        private static bool MembersAreEqual(MemberReference a, MemberReference b) {
+            if (a == b)
+                return true;
+            if (a == null)
+                return b == null;
+            if (b == null)
+                return false;
+            return a.FullName == b.FullName;
+        }
+
+        private static bool ParameterTypesAreEqual(TypeReference[] a, TypeReference[] b) {
+            Contract.Requires(a != null);
+            Contract.Requires(b != null);
+            if (a.Length != b.Length)
+                return false;
+            for (int i = 0; i < a.Length; i++) {
+                var ta = a[i];
+                var tb = b[i];
+                if (MembersAreEqual(ta,tb))
+                    return true;
+            }
+            return false;
+        }
+
+        private static MethodDefinition FindMatchingMethod(TypeDefinition typeDefinition, string methodName, TypeReference[] parameterTypes) {
+            return typeDefinition.Methods.FirstOrDefault(m =>
+                m.Name == methodName
+                && ParameterTypesAreEqual(parameterTypes, m.Parameters.Select(p => p.ParameterType).ToArray()));
+        }
+
+        public static MethodDefinition FindNextAncestor(this MethodDefinition methodDefinition) {
+            Contract.Requires(methodDefinition != null);
+            var methodName = methodDefinition.Name;
+            var methodParameterTypes = methodDefinition.Parameters.Select(p => p.ParameterType).ToArray();
+            var baseTypeDefinition = methodDefinition.DeclaringType.BaseType == null
+                ? null
+                : methodDefinition.DeclaringType.BaseType.ToDefinition();
+            while (baseTypeDefinition != null) {
+                var matchingMethod = FindMatchingMethod(baseTypeDefinition, methodName, methodParameterTypes);
+                if (matchingMethod != null) {
+                    if (MembersAreEqual(matchingMethod.DeclaringType, baseTypeDefinition))
+                        return matchingMethod;
+
+                    // skip ahead
+                    baseTypeDefinition = matchingMethod.DeclaringType;
+                }
+                else {
+                    if (baseTypeDefinition.BaseType == null)
+                        break;
+                    baseTypeDefinition = baseTypeDefinition.BaseType.ToDefinition();
+                }
+            }
+
+            if (methodDefinition.DeclaringType.IsInterface)
+                return null;
+
+            var interfaceDefinitions = methodDefinition.DeclaringType.Interfaces
+                .Select(x => x.ToDefinition())
+                .Where(x => x != null);
+            foreach (var interfaceTypeReference in interfaceDefinitions) {
+                var matchingMethod = FindMatchingMethod(interfaceTypeReference, methodName, methodParameterTypes);
+                if (matchingMethod != null)
+                    return matchingMethod;
+            }
+
+            return null;
+        }
+
     }
 }

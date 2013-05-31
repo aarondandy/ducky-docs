@@ -223,10 +223,15 @@ namespace DandyDoc.Reflection
         /// <remarks>
         /// This methods will not return constructors.
         /// </remarks>
-        public static MethodInfo[] GetAllMethods(this Type type) {
+        public static MethodInfo[] GetAllMethods(this Type type, bool inheritStatic = false) {
             if (type == null) throw new ArgumentNullException("type");
             Contract.Ensures(Contract.Result<MethodInfo[]>() != null);
-            return type.GetMethods(BindAllTheThings);
+            var members = type.GetMethods(BindAllTheThings);
+            if (!inheritStatic)
+                members = type.IsStatic()
+                    ? members.Where(m => m.DeclaringType == type).ToArray()
+                    : members.Where(m => m.DeclaringType == type || !m.IsStatic).ToArray();
+            return members;
         }
 
         /// <summary>
@@ -234,10 +239,15 @@ namespace DandyDoc.Reflection
         /// </summary>
         /// <param name="type">The type to extract members from.</param>
         /// <returns>The requested members from the type.</returns>
-        public static PropertyInfo[] GetAllProperties(this Type type) {
+        public static PropertyInfo[] GetAllProperties(this Type type, bool inheritStatic = false) {
             if (type == null) throw new ArgumentNullException("type");
             Contract.Ensures(Contract.Result<PropertyInfo[]>() != null);
-            return type.GetProperties(BindAllTheThings);
+            var members = type.GetProperties(BindAllTheThings);
+            if (!inheritStatic)
+                members = type.IsStatic()
+                    ? members.Where(m => m.DeclaringType == type).ToArray()
+                    : members.Where(m => m.DeclaringType == type || !m.IsStatic()).ToArray();
+            return members;
         }
 
         /// <summary>
@@ -245,10 +255,15 @@ namespace DandyDoc.Reflection
         /// </summary>
         /// <param name="type">The type to extract members from.</param>
         /// <returns>The requested members from the type.</returns>
-        public static FieldInfo[] GetAllFields(this Type type) {
+        public static FieldInfo[] GetAllFields(this Type type, bool inheritStatic = false) {
             if (type == null) throw new ArgumentNullException("type");
             Contract.Ensures(Contract.Result<FieldInfo[]>() != null);
-            return type.GetFields(BindAllTheThings);
+            var members = type.GetFields(BindAllTheThings);
+            if (!inheritStatic)
+                members = type.IsStatic()
+                    ? members.Where(m => m.DeclaringType == type).ToArray()
+                    : members.Where(m => m.DeclaringType == type || !m.IsStatic).ToArray();
+            return members;
         }
 
         /// <summary>
@@ -256,10 +271,15 @@ namespace DandyDoc.Reflection
         /// </summary>
         /// <param name="type">The type to extract members from.</param>
         /// <returns>The requested members from the type.</returns>
-        public static EventInfo[] GetAllEvents(this Type type) {
+        public static EventInfo[] GetAllEvents(this Type type, bool inheritStatic = false) {
             if (type == null) throw new ArgumentNullException("type");
             Contract.Ensures(Contract.Result<EventInfo[]>() != null);
-            return type.GetEvents(BindAllTheThings);
+            var members = type.GetEvents(BindAllTheThings);
+            if (!inheritStatic)
+                members = type.IsStatic()
+                    ? members.Where(m => m.DeclaringType == type).ToArray()
+                    : members.Where(m => m.DeclaringType == type || !m.IsStatic()).ToArray();
+            return members;
         }
 
         /// <summary>
@@ -270,9 +290,7 @@ namespace DandyDoc.Reflection
         public static Type[] GetAllNestedTypes(this Type type) {
             if (type == null) throw new ArgumentNullException("type");
             Contract.Ensures(Contract.Result<Type[]>() != null);
-
-            var result = type.GetNestedTypes(BindAllTheThings);
-            return result;
+            return type.GetNestedTypes(BindAllTheThings);
         }
 
         /// <summary>
@@ -370,10 +388,11 @@ namespace DandyDoc.Reflection
         public static PropertyInfo FindNextAncestor(this PropertyInfo propertyInfo) {
             Contract.Requires(propertyInfo != null);
             var propertyName = propertyInfo.Name;
-            foreach (var accessor in propertyInfo.GetAccessors(true)) {
-                var ancestor = accessor.FindNextAncestor();
-                if (ancestor == null)
-                    continue;
+            var ancestorMethods = propertyInfo
+                .GetAccessors(true)
+                .Select(FindNextAncestor)
+                .Where(a => a != null);
+            foreach (var ancestor in ancestorMethods) {
                 var baseType = ancestor.DeclaringType;
                 Contract.Assume(baseType != null);
                 var baseProperty = baseType.GetProperty(propertyName, BindAllTheThings);

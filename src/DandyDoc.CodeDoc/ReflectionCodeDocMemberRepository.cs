@@ -592,7 +592,6 @@ namespace DandyDoc.CodeDoc
                     var baseDefinitionModel = GetOrConvert(GetCRefIdentifier(baseDefinition), lite: true);
                     memberDataProvider.Add(new CodeDocMemberDataProvider(baseDefinitionModel));
                 }
-                // TODO: what about interfaces
             }
 
             ApplyContentXmlDocs(model, memberDataProvider);

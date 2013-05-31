@@ -561,8 +561,12 @@ namespace DandyDoc.Web.Mvc4.Helpers
             return new MvcHtmlString(tagbuilder.ToString());
         }
 
-        private static bool HasReferenceParamsOrReturnAndAllAreNullrestricted(ICodeDocInvokable invokable) {
+        private static bool HasReferenceParamsOrReturnAndAllAreNullRestricted(ICodeDocInvokable invokable) {
             Contract.Requires(invokable != null);
+
+            if (!invokable.HasParameters)
+                return false;
+
             IEnumerable<CodeDocParameter> parameters = invokable.Parameters;
             if (invokable.HasReturn)
                 parameters = parameters.Concat(new[] { invokable.Return });
@@ -596,7 +600,7 @@ namespace DandyDoc.Web.Mvc4.Helpers
         }
 
         private static readonly FlairItem DefaultStaticTag = new FlairItem("static", "Static", "Accessible relative to a type rather than an object instance.");
-        private static readonly FlairItem DefaultObsoleteTag = new FlairItem("obsolete", "Warning", "<strong>This is deprecated.</strong>");
+        private static readonly FlairItem DefaultObsoleteTag = new FlairItem("obsolete", "Warning", "<strong>Deprecated.</strong>");
         private static readonly FlairItem DefaultPublicTag = new FlairItem("public", "Visibility", "Externally visible.");
         private static readonly FlairItem DefaultProtectedTag = new FlairItem("protected", "Visibility", "Externally visible only through inheritance.");
         private static readonly FlairItem DefaultHiddenTag = new FlairItem("hidden", "Visibility", "Not externally visible.");
@@ -605,14 +609,14 @@ namespace DandyDoc.Web.Mvc4.Helpers
         private static readonly FlairItem DefaultPureTag = new FlairItem("pure", "Purity", "Does not have side effects.");
         private static readonly FlairItem DefaultOperatorTag = new FlairItem("operator", "Operator", "Invoked through a language operator.");
         private static readonly FlairItem DefaultFlagsTag = new FlairItem("flags", "Enumeration", "Bitwise combination is allowed.");
-        private static readonly FlairItem DefaultSealedTag = new FlairItem("sealed", "Inheritance", "This is sealed, preventing inheritance.");
-        private static readonly FlairItem DefaultValueTypeTag = new FlairItem("value-type", "Type", "This type is a value type.");
-        private static readonly FlairItem DefaultExtensionMethodTag = new FlairItem("extension", "Extension", "This method is an extension method.");
-        private static readonly FlairItem DefaultAbstractTag = new FlairItem("abstract", "Inheritance", "This is abstract and <strong>must</strong> be implemented by inheriting types.");
-        private static readonly FlairItem DefaultVirtualTag = new FlairItem("virtual", "Inheritance", "This is virtual and can be overridden by inheriting types.");
-        private static readonly FlairItem DefaultOverrideTag = new FlairItem("override", "Inheritance", "This overrides functionality from its parent.");
-        private static readonly FlairItem DefaultConstantTag = new FlairItem("constant", "Value", "This field is a constant.");
-        private static readonly FlairItem DefaultReadonlyTag = new FlairItem("readonly", "Value", "This field is only assignable during instantiation.");
+        private static readonly FlairItem DefaultSealedTag = new FlairItem("sealed", "Inheritance", "Member is sealed, preventing inheritance.");
+        private static readonly FlairItem DefaultValueTypeTag = new FlairItem("value-type", "Type", "Type is a value type.");
+        private static readonly FlairItem DefaultExtensionMethodTag = new FlairItem("extension", "Extension", "Method is an extension method.");
+        private static readonly FlairItem DefaultAbstractTag = new FlairItem("abstract", "Inheritance", "Member is abstract and <strong>must</strong> be implemented by inheriting types.");
+        private static readonly FlairItem DefaultVirtualTag = new FlairItem("virtual", "Inheritance", "Member is virtual and can be overridden by inheriting types.");
+        private static readonly FlairItem DefaultOverrideTag = new FlairItem("override", "Inheritance", "Member overrides functionality from its parent.");
+        private static readonly FlairItem DefaultConstantTag = new FlairItem("constant", "Value", "Field contains a constant compile-time value.");
+        private static readonly FlairItem DefaultReadonlyTag = new FlairItem("readonly", "Value", "Member is only assignable during instantiation.");
         private static readonly FlairItem DefaultIndexerOperatorTag = new FlairItem("indexer", "Operator", "This property is invoked through a language index operator.");
         private static readonly FlairItem DefaultGetTag = new FlairItem("get", "Property", "Value can be read externally.");
         private static readonly FlairItem DefaultProGetTag = new FlairItem("proget", "Property", "Value can be read through inheritance.");
@@ -665,7 +669,7 @@ namespace DandyDoc.Web.Mvc4.Helpers
             }
 
             if (invokable != null) {
-                if (HasReferenceParamsOrReturnAndAllAreNullrestricted(invokable))
+                if (HasReferenceParamsOrReturnAndAllAreNullRestricted(invokable))
                     yield return DefaultNotNullTag;
                 if (invokable.IsPure.GetValueOrDefault())
                     yield return DefaultPureTag;
