@@ -38,18 +38,7 @@ namespace DandyDoc.CRef
         /// </summary>
         /// <param name="cRef">The code reference to search for.</param>
         /// <returns>The member if found.</returns>
-        public override MemberInfo GetMember(string cRef) {
-            if (String.IsNullOrEmpty(cRef)) throw new ArgumentException("CRef is not valid.", "cRef");
-            Contract.EndContractBlock();
-            return GetMember(new CRefIdentifier(cRef));
-        }
-
-        /// <summary>
-        /// Locates a member based on a code reference.
-        /// </summary>
-        /// <param name="cRef">The code reference to search for.</param>
-        /// <returns>The member if found.</returns>
-        public override MemberInfo GetMember(CRefIdentifier cRef) {
+        public override MemberInfo GetMemberCore(CRefIdentifier cRef) {
             if (cRef == null) throw new ArgumentNullException("cRef");
             Contract.EndContractBlock();
             return Assemblies

@@ -80,6 +80,7 @@ namespace DandyDoc.CodeDoc
                 AssemblyCRefs = simpleNamespace.AssemblyCRefs,
                 TypeCRefs = simpleNamespace.TypeCRefs
             };
+            result.Uri = simpleNamespace.Uri ?? simpleNamespace.CRef.ToUri();
             result.Assemblies = simpleNamespace.AssemblyCRefs.Select(GetCodeDocSimpleAssembly).ToList();
             result.Types = simpleNamespace.TypeCRefs.Select(GetMemberModel).Cast<CodeDocType>().ToList();
             return result;
@@ -116,7 +117,9 @@ namespace DandyDoc.CodeDoc
             else {
                 namespaceFriendlyName = namespaceName;
             }
-            return new CodeDocSimpleMember(new CRefIdentifier("N:" + namespaceName)) {
+            var cRef = new CRefIdentifier("N:" + namespaceName);
+            return new CodeDocSimpleMember(cRef) {
+                Uri = cRef.ToUri(),
                 FullName = namespaceFriendlyName,
                 ShortName = namespaceFriendlyName,
                 SubTitle = "Namespace",
@@ -166,6 +169,7 @@ namespace DandyDoc.CodeDoc
 
             var cRefFullName = cRef.CoreName;
             return new CodeDocSimpleMember(cRef) {
+                Uri = cRef.ToUri(),
                 ShortName = cRefFullName,
                 Title = cRefFullName,
                 SubTitle = subTitle,
@@ -189,6 +193,23 @@ namespace DandyDoc.CodeDoc
             model.Remarks = provider.GetRemarks().ToArray();
             model.SeeAlso = provider.GetSeeAlsos().ToArray();
         }
+
+        protected ICodeDocMember GetOnly(CRefIdentifier cRef, bool lite = false) {
+            Contract.Requires(cRef != null);
+
+            // TODO:
+            // 1) Use the repository tree to get the model by cRef (so we can use a cache)
+            // 1a) Make sure to include this repostitory in the search, but last (should be behind a cache)
+            // 2) Try to make a model for it
+
+            var localModel = GetMemberModel(cRef, lite: lite);
+            if (localModel != null)
+                return localModel;
+
+            // TODO: need to look elsewhere for a model.
+
+            return null;
+        }
         
         /// <summary>
         /// Gets a model for the given code reference or creates a new one.
@@ -199,18 +220,8 @@ namespace DandyDoc.CodeDoc
         protected ICodeDocMember GetOrConvert(CRefIdentifier cRef, bool lite = false) {
             Contract.Requires(cRef != null);
             Contract.Ensures(Contract.Result<ICodeDocMember>() != null);
-
-            // TODO:
-            // 1) Use the repository tree to get the model by cRef (so we can use a cache)
-            // 1a) Make sure to include this repostitory in the search, but last (should be behind a cache)
-            // 2) Try to make a model for it
-
-            // TODO: need to look elsewhere for a model.
-            var localModel = GetMemberModel(cRef, lite: lite);
-            if (localModel != null)
-                return localModel;
-
-            return CreateGeneralMemberPlaceholder(cRef);
+            return GetOnly(cRef, lite: lite)
+                ?? CreateGeneralMemberPlaceholder(cRef);
         }
 
         /// <summary>

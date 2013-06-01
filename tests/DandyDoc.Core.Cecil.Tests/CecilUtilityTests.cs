@@ -25,10 +25,6 @@ namespace DandyDoc.Core.Cecil.Tests
 
         public CecilCRefLookup Lookup { get; private set; }
 
-        public TypeDefinition GetType(string cRef) {
-            return Lookup.GetMember(cRef) as TypeDefinition;
-        }
-
         public IMemberDefinition GetMember(string cRef) {
             return Lookup.GetMember(cRef) as IMemberDefinition;
         }

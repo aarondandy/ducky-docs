@@ -42,6 +42,9 @@ namespace DandyDoc.CodeDoc
         }
 
         /// <inheritdoc/>
+        public Uri Uri { get; set; }
+
+        /// <inheritdoc/>
         public string Title { get; set; }
 
         /// <inheritdoc/>

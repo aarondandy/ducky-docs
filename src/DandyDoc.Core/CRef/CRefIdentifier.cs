@@ -18,6 +18,21 @@ namespace DandyDoc.CRef
             @"((?<targetType>\w)[:])?(?<coreName>[^():]+)([(](?<params>.*)[)])?",
             RegexOptions.Compiled);
 
+        public static bool TryParse(Uri uri, out CRefIdentifier cRef) {
+            if (uri != null) {
+                var scheme = uri.Scheme;
+                if (String.IsNullOrWhiteSpace(scheme) || "CREF".Equals(scheme, StringComparison.OrdinalIgnoreCase)) {
+                    var decodedCRef = Uri.UnescapeDataString(uri.PathAndQuery);
+                    if (!String.IsNullOrEmpty(decodedCRef)) {
+                        cRef = new CRefIdentifier(decodedCRef);
+                        return true;
+                    }
+                }
+            }
+            cRef = null;
+            return false;
+        }
+
         /// <summary>
         /// Creates a new code reference identifier by parsing it from a given string.
         /// </summary>
@@ -30,7 +45,7 @@ namespace DandyDoc.CRef
 
             TargetType = String.Empty;
             CoreName = String.Empty;
-            ParamParts = String.Empty;
+            ParamPart = String.Empty;
 
             if ("N:".Equals(cRef)) {
                 TargetType = "N";
@@ -50,7 +65,7 @@ namespace DandyDoc.CRef
                             TargetType = targetTypeGroup.Value;
                         var paramsGroup = match.Groups["params"];
                         if (paramsGroup.Success) {
-                            ParamParts = paramsGroup.Value;
+                            ParamPart = paramsGroup.Value;
                         }
                     }
                 }
@@ -89,28 +104,26 @@ namespace DandyDoc.CRef
         /// <summary>
         /// The parsed parameters if they exist.
         /// </summary>
-        public string ParamParts { get; private set; }
+        public string ParamPart { get; private set; }
 
-        /// <summary>
-        /// Generates a list of parsed parameter types.
-        /// </summary>
-        public IList<string> ParamPartTypes {
-            get {
-                if (String.IsNullOrEmpty(ParamParts))
-                    return null;
+        private static List<string> ExtractParams(string paramPartText, char splitChar = ',') {
+            Contract.Ensures(Contract.Result<List<string>>() != null);
+            if (String.IsNullOrEmpty(paramPartText))
+                return new List<string>(0);
 
-                var results = new List<String>();
-                int depth = 0;
-                int partStartIndex = 0;
-                for (int i = 0; i < ParamParts.Length; i++) {
-                    var c = ParamParts[i];
+            var results = new List<String>();
+            int depth = 0;
+            int partStartIndex = 0;
+            for (int i = 0; i < paramPartText.Length; i++) {
+                var c = paramPartText[i];
+                if (c == splitChar) {
+                    if (depth == 0) {
+                        results.Add(paramPartText.Substring(partStartIndex, i - partStartIndex));
+                        partStartIndex = i + 1;
+                    }
+                }
+                else {
                     switch (c) {
-                    case ',':
-                        if (depth == 0) {
-                            results.Add(ParamParts.Substring(partStartIndex, i - partStartIndex));
-                            partStartIndex = i + 1;
-                        }
-                        break;
                     case '[':
                     case '(':
                     case '<':
@@ -125,11 +138,21 @@ namespace DandyDoc.CRef
                         break;
                     }
                 }
+            }
 
-                if (partStartIndex < ParamParts.Length)
-                    results.Add(ParamParts.Substring(partStartIndex));
+            if (partStartIndex <= paramPartText.Length)
+                results.Add(paramPartText.Substring(partStartIndex));
 
-                return results;
+            return results;
+        }
+
+        /// <summary>
+        /// Generates a list of parsed parameter types.
+        /// </summary>
+        public List<string> ParamPartTypes {
+            get {
+                Contract.Ensures(Contract.Result<List<string>>() != null);
+                return ExtractParams(ParamPart);
             }
         }
 
@@ -160,6 +183,58 @@ namespace DandyDoc.CRef
             if (ReferenceEquals(this, obj))
                 return true;
             return obj.FullCRef == FullCRef;
+        }
+
+        public Uri ToUri() {
+            Contract.Ensures(Contract.Result<Uri>() != null);
+            return new Uri("cref:" + Uri.EscapeDataString(FullCRef), UriKind.Absolute);
+        }
+
+        [Obsolete]
+        public CRefIdentifier GetGenericDefinitionCRef() {
+            Contract.Ensures(Contract.Result<CRefIdentifier>() != null);
+            var coreNameParts = ExtractParams(CoreName,'.');
+            var hasParamText = !String.IsNullOrWhiteSpace(ParamPart);
+            if (coreNameParts.Count > 0) {
+                var mayBeMethod = String.Equals("M",TargetType, StringComparison.OrdinalIgnoreCase)
+                    || (
+                        !String.Equals("T", TargetType, StringComparison.OrdinalIgnoreCase)
+                        && hasParamText
+                    );
+                var lastIndex = coreNameParts.Count - 1;
+                coreNameParts[lastIndex] = NamePartToGenericCardinality(coreNameParts[lastIndex], tickCount: mayBeMethod ? 2 : 1);
+
+                for (int i = coreNameParts.Count - 1; i >= 0; i--) {
+                    coreNameParts[i] = NamePartToGenericCardinality(coreNameParts[i]);
+                }
+            }
+
+            var result = String.Join(".", coreNameParts);
+            if (!String.IsNullOrWhiteSpace(TargetType))
+                result = String.Concat(TargetType, ':', result);
+
+            if (hasParamText) {
+                var paramParts = ParamPartTypes.ConvertAll(t => NamePartToGenericCardinality(t));
+                result = String.Concat(result, '(', String.Join(",", paramParts), ')');
+            }
+
+            return new CRefIdentifier(String.IsNullOrEmpty(result) ? "!:" : result);
+        }
+
+        private string NamePartToGenericCardinality(string part, int tickCount = 1) {
+            var genericParamListOpenAt = part.IndexOfAny(new[] {'{', '<', '(', '['});
+            var firstParamPartChar = genericParamListOpenAt + 1;
+            if (genericParamListOpenAt < 0 || firstParamPartChar >= part.Length)
+                return part; // if an open is not found, don't mess with it
+            var genericParamListCloseAt = part.LastIndexOfAny(new[] {'}', '>', ')', ']'});
+            if (genericParamListCloseAt != part.Length - 1)
+                return part; // must be the last character
+
+            var correctedParts = ExtractParams(part.Substring(firstParamPartChar));
+            var tickText = "`";
+            for (int tickIndex = 1; tickIndex < tickCount; tickIndex++)
+                tickText += '`';
+            return String.Concat(part.Substring(0, genericParamListOpenAt), tickText, correctedParts.Count);
         }
 
     }

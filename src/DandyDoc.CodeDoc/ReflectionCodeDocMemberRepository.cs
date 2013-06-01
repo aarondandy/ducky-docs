@@ -95,6 +95,7 @@ namespace DandyDoc.CodeDoc
                     SubTitle = "Assembly",
                     NamespaceCRefs = new List<CRefIdentifier>()
                 };
+                assemblyModel.Uri = assemblyModel.CRef.ToUri();
 
                 var assemblyTypeCRefs = new List<CRefIdentifier>();
                 var assemblyNamespaceNames = new HashSet<string>();
@@ -120,8 +121,9 @@ namespace DandyDoc.CodeDoc
                             NamespaceName = namespaceTitle,
                             SubTitle = "Namespace",
                             TypeCRefs = new List<CRefIdentifier>(),
-                            AssemblyCRefs = new List<CRefIdentifier>()
+                            AssemblyCRefs = new List<CRefIdentifier>(),
                         };
+                        namespaceModel.Uri = namespaceModel.CRef.ToUri();
                         namespaceModels.Add(namespaceName, namespaceModel);
                     }
 
@@ -331,7 +333,7 @@ namespace DandyDoc.CodeDoc
             Contract.Ensures(Contract.Result<CodeDocType>() != null);
             // TODO:
             // 1) Use the repository tree to get the model by cRef (so we can use a cache)
-            // 1a) Make sure to include this repostitory in the search, but last (should be behind a cache)
+            // 1a) Make sure to include this repository in the search, but last (should be behind a cache)
             // 2) Try to make a model for it
             return ConvertToModel(type, lite: lite);
         }
@@ -425,6 +427,7 @@ namespace DandyDoc.CodeDoc
 
             var eventCRef = GetCRefIdentifier(eventInfo);
             var model = new CodeDocEvent(eventCRef);
+            model.Uri = eventCRef.ToUri();
 
             var memberDataProvider = new CodeDocMemberInfoProvider<EventInfo>(eventInfo);
             var xmlDocs = XmlDocs.GetMember(eventCRef.FullCRef);
@@ -433,8 +436,9 @@ namespace DandyDoc.CodeDoc
 
             var baseEvent = eventInfo.FindNextAncestor();
             if (baseEvent != null) {
-                var baseEventModel = GetOrConvert(GetCRefIdentifier(baseEvent), lite: true);
-                memberDataProvider.Add(new CodeDocMemberDataProvider(baseEventModel));
+                var baseEventModel = GetOnly(GetCRefIdentifier(baseEvent), lite: true);
+                if(baseEventModel != null)
+                    memberDataProvider.Add(new CodeDocMemberDataProvider(baseEventModel));
             }
 
             ApplyContentXmlDocs(model, memberDataProvider);
@@ -469,6 +473,7 @@ namespace DandyDoc.CodeDoc
 
             var fieldCRef = GetCRefIdentifier(fieldInfo);
             var model = new CodeDocField(fieldCRef);
+            model.Uri = fieldCRef.ToUri();
 
             var memberDataProvider = new CodeDocMemberInfoProvider<FieldInfo>(fieldInfo);
             var xmlDocs = XmlDocs.GetMember(fieldCRef.FullCRef);
@@ -511,6 +516,7 @@ namespace DandyDoc.CodeDoc
 
             var propertyCRef = GetCRefIdentifier(propertyInfo);
             var model = new CodeDocProperty(propertyCRef);
+            model.Uri = propertyCRef.ToUri();
 
             var memberDataProvider = new CodeDocMemberInfoProvider<PropertyInfo>(propertyInfo);
             var xmlDocs = XmlDocs.GetMember(propertyCRef.FullCRef);
@@ -519,8 +525,9 @@ namespace DandyDoc.CodeDoc
 
             var propertyBase = propertyInfo.FindNextAncestor();
             if (propertyBase != null) {
-                var propertyBaseModel = GetOrConvert(GetCRefIdentifier(propertyBase), lite: true);
-                memberDataProvider.Add(new CodeDocMemberDataProvider(propertyBaseModel));
+                var propertyBaseModel = GetOnly(GetCRefIdentifier(propertyBase), lite: true);
+                if(propertyBaseModel != null)
+                    memberDataProvider.Add(new CodeDocMemberDataProvider(propertyBaseModel));
             }
 
             ApplyContentXmlDocs(model, memberDataProvider);
@@ -579,6 +586,7 @@ namespace DandyDoc.CodeDoc
             var methodInfo = methodBase as MethodInfo;
             var methodCRef = GetCRefIdentifier(methodBase);
             var model = new CodeDocMethod(methodCRef);
+            model.Uri = methodCRef.ToUri();
 
             var memberDataProvider = new CodeDocMemberInfoProvider<MethodBase>(methodBase);
             var xmlDocs = XmlDocs.GetMember(methodCRef.FullCRef);
@@ -589,8 +597,9 @@ namespace DandyDoc.CodeDoc
             if (methodInfo != null) {
                 var baseDefinition = methodInfo.FindNextAncestor();
                 if (baseDefinition != null) {
-                    var baseDefinitionModel = GetOrConvert(GetCRefIdentifier(baseDefinition), lite: true);
-                    memberDataProvider.Add(new CodeDocMemberDataProvider(baseDefinitionModel));
+                    var baseDefinitionModel = GetOnly(GetCRefIdentifier(baseDefinition), lite: true);
+                    if(baseDefinitionModel != null)
+                        memberDataProvider.Add(new CodeDocMemberDataProvider(baseDefinitionModel));
                 }
             }
 
@@ -672,6 +681,7 @@ namespace DandyDoc.CodeDoc
             var model = type.IsDelegateType()
                 ? new CodeDocDelegate(cRef)
                 : new CodeDocType(cRef);
+            model.Uri = cRef.ToUri();
             var delegateModel = model as CodeDocDelegate;
 
             var memberDataProvider = new CodeDocMemberInfoProvider<Type>(type);

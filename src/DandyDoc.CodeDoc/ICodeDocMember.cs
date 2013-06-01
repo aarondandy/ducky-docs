@@ -39,6 +39,11 @@ namespace DandyDoc.CodeDoc
         CRefIdentifier CRef { get; }
 
         /// <summary>
+        /// A URI that can be used to locate the member.
+        /// </summary>
+        Uri Uri { get; }
+
+        /// <summary>
         /// The namespace containing this member.
         /// </summary>
         string NamespaceName { get; }
