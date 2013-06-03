@@ -1,6 +1,4 @@
-﻿using System;
-using System.Web;
-using DandyDoc.CRef;
+﻿using DandyDoc.CRef;
 using NUnit.Framework;
 
 namespace DandyDoc.Core.Tests
@@ -34,7 +32,7 @@ namespace DandyDoc.Core.Tests
             Assert.AreEqual("cref",uri.Scheme);
 
             Assert.AreEqual(
-                "!:Fake%7BFake.Enumerable%7BSystem.Int32%7D%7D.Method(%60%600)",
+                "!%3AFake%7BFake.Enumerable%7BSystem.Int32%7D%7D.Method(%60%600)",
                 uri.PathAndQuery);
         }
 
@@ -60,6 +58,12 @@ namespace DandyDoc.Core.Tests
 
             Assert.IsNotNull(actualCRef);
             Assert.AreEqual(expectedCRef, actualCRef);
+        }
+
+        [Test]
+        public void extract_return_type(){
+            var cRef = new CRefIdentifier("M:Some.Method(Some.ParamType)~System.String");
+            Assert.AreEqual("System.String", cRef.ReturnTypePart);
         }
 
     }

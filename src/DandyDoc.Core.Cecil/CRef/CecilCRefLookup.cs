@@ -139,14 +139,14 @@ namespace DandyDoc.CRef
 
             if (String.IsNullOrEmpty(cRef.TargetType) || "!".Equals(cRef.TargetType)) {
                 var paramTypes = cRef.ParamPartTypes;
-                return type.Methods.FirstOrDefault(m => MethodMatches(m, memberName, paramTypes))
+                return type.Methods.FirstOrDefault(m => MethodMatches(m, memberName, paramTypes, cRef.ReturnTypePart))
                     ?? type.Properties.FirstOrDefault(p => PropertyMatches(p, memberName, paramTypes))
                     ?? type.Events.FirstOrDefault(e => EventMatches(e, memberName))
                     ?? (type.Fields.FirstOrDefault(f => FieldMatches(f, memberName)) as MemberReference);
             }
 
             if ("M".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
-                return type.Methods.FirstOrDefault(m => MethodMatches(m, memberName, cRef.ParamPartTypes));
+                return type.Methods.FirstOrDefault(m => MethodMatches(m, memberName, cRef.ParamPartTypes, cRef.ReturnTypePart));
             if ("P".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
                 return type.Properties.FirstOrDefault(p => PropertyMatches(p, memberName, cRef.ParamPartTypes));
             if ("F".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
@@ -156,16 +156,10 @@ namespace DandyDoc.CRef
             return null;
         }
 
-        private static bool MethodMatches(MethodDefinition methodDefinition, string nameTest, IList<string> paramTypeTest) {
+        private static bool MethodMatches(MethodDefinition methodDefinition, string nameTest, IList<string> paramTypeTest, string returnTest) {
             Contract.Requires(methodDefinition != null);
             Contract.Requires(!String.IsNullOrEmpty(nameTest));
-            if (nameTest[0] == '#' && methodDefinition.Name[0] == '.') {
-                if (nameTest.Length != methodDefinition.Name.Length)
-                    return false;
-                if (!nameTest.Substring(1).Equals(methodDefinition.Name.Substring(1)))
-                    return false;
-            }
-            else if (!nameTest.Equals(methodDefinition.Name)) {
+            if (!nameTest.Equals(methodDefinition.Name.Replace('.', '#'))) {
                 if (methodDefinition.HasGenericParameters && nameTest.StartsWith(methodDefinition.Name)) {
                     var methodGenericParamCount = methodDefinition.GenericParameters
                         .Count(x => x.Owner == methodDefinition);
@@ -178,9 +172,13 @@ namespace DandyDoc.CRef
                 }
             }
 
-            return methodDefinition.HasParameters
-                ? ParametersMatch(methodDefinition.Parameters, paramTypeTest)
-                : null == paramTypeTest || paramTypeTest.Count == 0;
+            if (methodDefinition.HasParameters ? !ParametersMatch(methodDefinition.Parameters, paramTypeTest) : null != paramTypeTest && paramTypeTest.Count != 0)
+                return false; // parameters to not match
+
+            if (!String.IsNullOrEmpty(returnTest) && !( ParametersMatch(methodDefinition.ReturnType, returnTest)))
+                return false; // if a CRef return type is specified the return type must match
+
+            return true;
         }
 
         private static bool PropertyMatches(PropertyDefinition propertyDefinition, string nameTest, IList<String> paramTypeTest) {
@@ -201,11 +199,16 @@ namespace DandyDoc.CRef
             if (paramTypeTest.Count != parameters.Count)
                 return false;
             for (int i = 0; i < paramTypeTest.Count; i++) {
-                Contract.Assume(null != parameters[i].ParameterType);
-                if (!String.Equals(paramTypeTest[i], CecilCRefGenerator.NoPrefix.GetCRef(parameters[i].ParameterType)))
+                Contract.Assume(parameters[i].ParameterType != null);
+                if (!ParametersMatch(parameters[i].ParameterType, paramTypeTest[i]))
                     return false;
             }
             return true;
+        }
+
+        private static bool ParametersMatch(TypeReference parameterType, string paramTypeTest) {
+            Contract.Requires(parameterType != null);
+            return String.Equals(paramTypeTest, CecilCRefGenerator.NoPrefix.GetCRef(parameterType));
         }
 
         private static bool FieldMatches(FieldDefinition fieldDefinition, string nameTest) {

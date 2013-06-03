@@ -361,5 +361,15 @@ namespace DandyDoc.Core.Tests
             Assert.AreEqual(2, m.GetParameters().Length);
         }
 
+        [Test]
+        public void can_lookup_conversion_operator_by_return_type(){
+            var convertToString = Lookup.GetMember("M:TestLibrary1.Class1.op_Implicit(TestLibrary1.Class1)~System.String") as MethodInfo;
+            Assert.IsNotNull(convertToString);
+            Assert.AreEqual(typeof(string), convertToString.ReturnType);
+            var convertToInt32 = Lookup.GetMember("M:TestLibrary1.Class1.op_Implicit(TestLibrary1.Class1)~System.Int32") as MethodInfo;
+            Assert.IsNotNull(convertToInt32);
+            Assert.AreEqual(typeof(int), convertToInt32.ReturnType);
+        }
+
     }
 }

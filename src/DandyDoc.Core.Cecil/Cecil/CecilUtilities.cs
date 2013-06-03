@@ -593,5 +593,15 @@ namespace DandyDoc.Cecil
             return null;
         }
 
+        /// <summary>
+        /// Determines if a method has a non-void return type.
+        /// </summary>
+        /// <param name="methodReference">The method to test.</param>
+        /// <returns><c>true</c> when the method returns a non-void type.</returns>
+        public static bool HasNonVoidReturn(this MethodReference methodReference) {
+            Contract.Requires(methodReference != null);
+            return methodReference.ReturnType != null && !methodReference.ReturnType.IsVoid();
+        }
+
     }
 }

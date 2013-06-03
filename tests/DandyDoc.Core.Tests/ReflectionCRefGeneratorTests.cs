@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using DandyDoc.CRef;
+using DandyDoc.Reflection;
 using NUnit.Framework;
 using TestLibrary1;
 
@@ -208,6 +209,12 @@ namespace DandyDoc.Core.Tests
         public void ref_out_param_method() {
             var member = typeof(Class1).GetMethods().Single(x => x.Name == "TrySomeOutRefStuff");
             Assert.AreEqual("M:TestLibrary1.Class1.TrySomeOutRefStuff(System.Int32@,System.Int32@)", Generator.GetCRef(member));
+        }
+
+        [Test]
+        public void conversion_operator(){
+            var member = typeof(Class1).GetAllMethods().Single(x => x.Name == "op_Implicit" && x.ReturnType == typeof(string));
+            Assert.AreEqual("M:TestLibrary1.Class1.op_Implicit(TestLibrary1.Class1)~System.String", Generator.GetCRef(member));
         }
 
     }

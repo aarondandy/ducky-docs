@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace DandyDoc.Utility
 {
@@ -51,8 +52,20 @@ namespace DandyDoc.Utility
         /// </summary>
         /// <param name="name">The method name to test.</param>
         /// <returns><c>true</c> when the method name is an operator.</returns>
+        [Obsolete("This may move to a language agnostic class.")]
         public static bool IsOperatorName(string name) {
-            return NameToSymbol.ContainsKey(name);
+            return NameToSymbol.ContainsKey(name)
+                || IsConversionOperatorMethodName(name);
+        }
+
+        /// <summary>
+        /// Determines if a given method <paramref name="name"/> is an implicit or explicit conversion operator.
+        /// </summary>
+        /// <param name="name">The method name to test.</param>
+        /// <returns><c>true</c> when the method name is a conversion.</returns>
+        [Obsolete("This may move to a language agnostic class.")]
+        public static bool IsConversionOperatorMethodName(string name){
+            return "op_Implicit".Equals(name) || "op_Explicit".Equals(name);
         }
 
         /// <summary>

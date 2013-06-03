@@ -15,7 +15,7 @@ namespace DandyDoc.CRef
         /// The core parser regular expression.
         /// </summary>
         private static readonly Regex CRefRegex = new Regex(
-            @"((?<targetType>\w)[:])?(?<coreName>[^():]+)([(](?<params>.*)[)])?",
+            @"((?<targetType>\w)[:])?(?<coreName>[^():]+)([(](?<params>.*)[)])?([~](?<returnType>.+))?",
             RegexOptions.Compiled);
 
         public static bool TryParse(Uri uri, out CRefIdentifier cRef) {
@@ -46,8 +46,10 @@ namespace DandyDoc.CRef
             TargetType = String.Empty;
             CoreName = String.Empty;
             ParamPart = String.Empty;
+            ReturnTypePart = String.Empty;
 
             if ("N:".Equals(cRef)) {
+                CoreName = cRef.Substring(2);
                 TargetType = "N";
             }
             else if (cRef.StartsWith("A:", StringComparison.InvariantCultureIgnoreCase)) {
@@ -60,13 +62,18 @@ namespace DandyDoc.CRef
                     var coreGroup = match.Groups["coreName"];
                     if (coreGroup.Success) {
                         CoreName = coreGroup.Value;
+
                         var targetTypeGroup = match.Groups["targetType"];
                         if (targetTypeGroup.Success)
                             TargetType = targetTypeGroup.Value;
+
                         var paramsGroup = match.Groups["params"];
-                        if (paramsGroup.Success) {
+                        if (paramsGroup.Success)
                             ParamPart = paramsGroup.Value;
-                        }
+
+                        var returnTypeGroup = match.Groups["returnType"];
+                        if (returnTypeGroup.Success)
+                            ReturnTypePart = returnTypeGroup.Value;
                     }
                 }
             }
@@ -105,6 +112,14 @@ namespace DandyDoc.CRef
         /// The parsed parameters if they exist.
         /// </summary>
         public string ParamPart { get; private set; }
+
+        /// <summary>
+        /// The return type part of the code reference.
+        /// </summary>
+        /// <remarks>
+        /// Return types in code references are only expected with conversion operators.
+        /// </remarks>
+        public string ReturnTypePart { get; private set; }
 
         private static List<string> ExtractParams(string paramPartText, char splitChar = ',') {
             Contract.Ensures(Contract.Result<List<string>>() != null);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 
 #pragma warning disable 1591,0067,0169,0649
 
@@ -22,6 +23,21 @@ namespace TestLibrary1
 	/// </example>
 	public class Class1
 	{
+
+        public static implicit operator string(Class1 input){
+            Contract.Ensures(Contract.Result<string>() == String.Empty);
+            return String.Empty;
+        }
+
+        public static implicit operator int(Class1 input) {
+            Contract.Ensures(Contract.Result<int>() == 0);
+            return 0;
+        }
+
+        public static explicit operator Class1(string input){
+            Contract.Ensures(Contract.Result<Class1>() == null);
+            return null;
+        }
 
 		
 		/// <inheritdoc/>

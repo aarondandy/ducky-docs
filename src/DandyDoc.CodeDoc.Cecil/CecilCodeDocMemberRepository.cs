@@ -9,6 +9,7 @@ using DandyDoc.Cecil;
 using DandyDoc.CodeDoc.Utility;
 using DandyDoc.DisplayName;
 using DandyDoc.ExternalVisibility;
+using DandyDoc.Utility;
 using DandyDoc.XmlDoc;
 using Mono.Cecil;
 
@@ -633,13 +634,6 @@ namespace DandyDoc.CodeDoc
             Contract.Assume(methodReference.DeclaringType != null);
             model.NamespaceName = methodReference.DeclaringType.GetOuterType().Namespace;
 
-            if (methodDefinition != null && methodDefinition.IsConstructor)
-                model.SubTitle = "Constructor";
-            else if (methodDefinition != null && methodDefinition.IsOperatorOverload())
-                model.SubTitle = "Operator";
-            else
-                model.SubTitle = "Method";
-
             Contract.Assume(methodReference.DeclaringType != null);
             model.Namespace = GetOrCreateNamespaceByName(model.NamespaceName);
             model.Assembly = GetCodeDocAssembly(methodReference.DeclaringType.Module.Assembly);
@@ -647,6 +641,41 @@ namespace DandyDoc.CodeDoc
             model.IsStatic = memberDataProvider.IsStatic.GetValueOrDefault();
             model.IsObsolete = memberDataProvider.IsObsolete.GetValueOrDefault();
             model.IsPure = memberDataProvider.IsPure.GetValueOrDefault();
+
+            model.Parameters = Array.ConvertAll(
+                methodReference.Parameters.ToArray(),
+                p => CreateArgument(p, memberDataProvider));
+
+            if (methodReference.MethodReturnType != null && !methodReference.ReturnType.IsVoid())
+                model.Return = CreateReturn(methodReference.MethodReturnType, memberDataProvider);
+
+            if (methodDefinition != null && methodDefinition.IsConstructor)
+                model.SubTitle = "Constructor";
+            else if (model.Parameters.Count == 1 && model.HasReturn && CSharpOperatorNameSymbolMap.IsConversionOperatorMethodName(methodReference.Name)) {
+                model.SubTitle = "Conversion";
+
+                string conversionOperationName;
+                if (methodReference.Name.EndsWith("Explicit", StringComparison.OrdinalIgnoreCase))
+                    conversionOperationName = "Explicit";
+                else if (methodReference.Name.EndsWith("Implicit", StringComparison.OrdinalIgnoreCase))
+                    conversionOperationName = "Implicit";
+                else
+                    conversionOperationName = String.Empty;
+
+                var conversionParameterPart = String.Concat(
+                    model.Parameters[0].ParameterType.ShortName,
+                    " to ",
+                    model.Return.ParameterType.ShortName);
+
+                model.ShortName = String.IsNullOrEmpty(conversionOperationName)
+                    ? conversionParameterPart
+                    : String.Concat(conversionOperationName, ' ', conversionParameterPart);
+                model.Title = model.ShortName;
+            }
+            else if (methodDefinition != null && methodDefinition.IsOperatorOverload())
+                model.SubTitle = "Operator";
+            else
+                model.SubTitle = "Method";
 
             if (methodDefinition != null) {
                 model.IsOperatorOverload = methodDefinition.IsOperatorOverload();
@@ -659,13 +688,6 @@ namespace DandyDoc.CodeDoc
                         model.IsVirtual = true;
                 }
             }
-
-            model.Parameters = Array.ConvertAll(
-                methodReference.Parameters.ToArray(),
-                p => CreateArgument(p, memberDataProvider));
-
-            if (methodReference.MethodReturnType != null && !methodReference.ReturnType.IsVoid())
-                model.Return = CreateReturn(methodReference.MethodReturnType, memberDataProvider);
 
             if (memberDataProvider.HasExceptions)
                 model.Exceptions = CreateExceptionModels(memberDataProvider.GetExceptions()).ToArray();

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using DandyDoc.Cecil;
+using DandyDoc.Utility;
 using Mono.Cecil;
 
 namespace DandyDoc.CRef
@@ -65,34 +67,36 @@ namespace DandyDoc.CRef
             var type = reference.DeclaringType;
             Contract.Assume(null != type);
             var typeCRef = NoPrefix.GetCRef(type);
-            var memberCRef = reference.Name;
+            var memberCRef = reference.Name.Replace('.','#');
             Contract.Assume(!String.IsNullOrEmpty(memberCRef));
 
             char crefTypePrefix = '\0';
-            var methodDefinition = reference as MethodDefinition;
-            if (null != methodDefinition) {
-                if (methodDefinition.IsConstructor && memberCRef.Length > 1 && memberCRef[0] == '.') {
-                    memberCRef = '#' + memberCRef.Substring(1);
-                }
-                else if (methodDefinition.HasGenericParameters) {
-                    memberCRef += String.Concat("``", methodDefinition.GenericParameters.Count);
-                }
-                if (methodDefinition.HasParameters) {
-                    memberCRef += '(' + String.Join(",", methodDefinition.Parameters.Select(GetCRefParamTypeName)) + ')';
-                }
+            var methodReference = reference as MethodReference;
+            if (null != methodReference) {
+                //var methodDefinition = reference as MethodDefinition;
+                if (methodReference.HasGenericParameters)
+                    memberCRef += String.Concat("``", methodReference.GenericParameters.Count);
+
+                if (methodReference.HasParameters)
+                    memberCRef += '(' + String.Join(",", methodReference.Parameters.Select(GetCRefParamTypeName)) + ')';
+
+                if (methodReference.HasNonVoidReturn() && CSharpOperatorNameSymbolMap.IsConversionOperatorMethodName(methodReference.Name))
+                    memberCRef += String.Concat('~', NoPrefix.GetCRef(methodReference.ReturnType));
+
                 crefTypePrefix = 'M';
             }
-            else if (reference is PropertyDefinition) {
-                var propertyDefinition = ((PropertyDefinition)reference);
-                if (propertyDefinition.HasParameters) {
+            else if (reference is PropertyReference) {
+                var propertyReference = reference as PropertyReference;
+                var propertyDefinition = propertyReference.ToDefinition();
+                if (propertyDefinition != null && propertyDefinition.HasParameters)
                     memberCRef += '(' + String.Join(",", propertyDefinition.Parameters.Select(GetCRefParamTypeName)) + ')';
-                }
+
                 crefTypePrefix = 'P';
             }
-            else if (reference is FieldDefinition) {
+            else if (reference is FieldReference) {
                 crefTypePrefix = 'F';
             }
-            else if (reference is EventDefinition) {
+            else if (reference is EventReference) {
                 crefTypePrefix = 'E';
             }
 

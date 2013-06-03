@@ -145,16 +145,16 @@ namespace DandyDoc.CRef
             if (String.IsNullOrEmpty(cRef.TargetType) || "!".Equals(cRef.TargetType)) {
                 var paramTypes = cRef.ParamPartTypes;
                 return type.GetAllConstructors().FirstOrDefault(m => ConstructorMatches(m, memberName, paramTypes))
-                    ?? type.GetAllMethods().FirstOrDefault(m => MethodMatches(m, memberName, paramTypes))
+                    ?? type.GetAllMethods().FirstOrDefault(m => MethodMatches(m, memberName, paramTypes, cRef.ReturnTypePart))
                     ?? type.GetAllProperties().FirstOrDefault(p => PropertyMatches(p, memberName, paramTypes))
                     ?? type.GetAllEvents().FirstOrDefault(e => EventMatches(e, memberName))
                     ?? (type.GetAllFields().FirstOrDefault(f => FieldMatches(f, memberName)) as MemberInfo);
             }
 
             if ("M".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase)) {
-                if (memberName.Length > 0 && memberName[0] == '#')
+                if (memberName.Length > 0 && memberName[0] == '#') // TODO: it would be better to handle the '#' as an escape of '.'
                     return type.GetAllConstructors().FirstOrDefault(m => ConstructorMatches(m, memberName, cRef.ParamPartTypes));
-                return type.GetAllMethods().FirstOrDefault(m => MethodMatches(m, memberName, cRef.ParamPartTypes));
+                return type.GetAllMethods().FirstOrDefault(m => MethodMatches(m, memberName, cRef.ParamPartTypes, cRef.ReturnTypePart));
             }
 
             if ("P".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
@@ -166,13 +166,14 @@ namespace DandyDoc.CRef
             return null;
         }
 
+        [Obsolete("It may be good to merge ConstructorMatches and MethodMatches.")]
         private static bool ConstructorMatches(ConstructorInfo methodInfo, string nameTest, IList<string> paramTypeTest) {
             Contract.Requires(methodInfo != null);
             Contract.Requires(!String.IsNullOrEmpty(nameTest));
 
             if (nameTest.Length != methodInfo.Name.Length)
                 return false;
-            if (!nameTest.Substring(1).Equals(methodInfo.Name.Substring(1)))
+            if (!nameTest.Equals(methodInfo.Name.Replace('.','#')))
                 return false;
 
             var parameters = methodInfo.GetParameters();
@@ -181,15 +182,15 @@ namespace DandyDoc.CRef
                 : null == paramTypeTest || paramTypeTest.Count == 0;
         }
 
-        private static bool MethodMatches(MethodInfo methodInfo, string nameTest, IList<string> paramTypeTest) {
+        [Obsolete("It may be good to merge ConstructorMatches and MethodMatches.")]
+        private static bool MethodMatches(MethodInfo methodInfo, string nameTest, IList<string> paramTypeTest, string returnTest) {
             Contract.Requires(methodInfo != null);
             Contract.Requires(!String.IsNullOrEmpty(nameTest));
 
             if (!nameTest.Equals(methodInfo.Name)) {
                 var genericArguments = methodInfo.GetGenericArguments();
                 if (genericArguments.Length > 0 && nameTest.StartsWith(methodInfo.Name)) {
-                    var methodGenericParamCount = genericArguments
-                        .Length;//.Count(x => x == methodDefinition);
+                    var methodGenericParamCount = genericArguments.Length;
                     if (!nameTest.Equals(methodInfo.Name + "``" + methodGenericParamCount)) {
                         return false;
                     }
@@ -200,12 +201,16 @@ namespace DandyDoc.CRef
             }
 
             var parameters = methodInfo.GetParameters();
-            return parameters.Length > 0
-                ? ParametersMatch(parameters, paramTypeTest)
-                : null == paramTypeTest || paramTypeTest.Count == 0;
+            if (parameters.Length > 0 ? !ParametersMatch(parameters, paramTypeTest) : null != paramTypeTest && paramTypeTest.Count != 0)
+                return false; // parameters to not match
+
+            if(!String.IsNullOrEmpty(returnTest) && !ParametersMatch(methodInfo.ReturnType, returnTest))
+                return false; // if a CRef return type is specified the return type must match
+
+            return true;
         }
 
-        private static bool PropertyMatches(PropertyInfo propertyInfo, string nameTest, IList<String> paramTypeTest) {
+        private static bool PropertyMatches(PropertyInfo propertyInfo, string nameTest, IList<string> paramTypeTest) {
             Contract.Requires(propertyInfo != null);
             Contract.Requires(!String.IsNullOrEmpty(nameTest));
             if (!nameTest.Equals(propertyInfo.Name))
@@ -217,18 +222,23 @@ namespace DandyDoc.CRef
                 : null == paramTypeTest || paramTypeTest.Count == 0;
         }
 
-        private static bool ParametersMatch(IList<ParameterInfo> parameters, IList<String> paramTypeTest) {
+        private static bool ParametersMatch(IList<ParameterInfo> parameters, IList<string> paramTypeTest) {
             Contract.Requires(parameters != null);
             if (null == paramTypeTest)
                 return false;
             if (paramTypeTest.Count != parameters.Count)
                 return false;
             for (int i = 0; i < paramTypeTest.Count; i++) {
-                Contract.Assume(null != parameters[i].ParameterType);
-                if (!String.Equals(paramTypeTest[i], ReflectionCRefGenerator.NoPrefixForceGenericExpansion.GetCRef(parameters[i].ParameterType)))
+                Contract.Assume(parameters[i].ParameterType != null);
+                if (!ParametersMatch(parameters[i].ParameterType, paramTypeTest[i]))
                     return false;
             }
             return true;
+        }
+
+        private static bool ParametersMatch(Type parameterType, string paramTypeTest){
+            Contract.Requires(parameterType != null);
+            return String.Equals(paramTypeTest, ReflectionCRefGenerator.NoPrefixForceGenericExpansion.GetCRef(parameterType));
         }
 
         private static bool FieldMatches(FieldInfo fieldInfo, string nameTest) {

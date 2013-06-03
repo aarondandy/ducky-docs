@@ -464,5 +464,15 @@ namespace DandyDoc.Reflection
             return null;
         }
 
+        /// <summary>
+        /// Determines if a method has a non-void return type.
+        /// </summary>
+        /// <param name="methodInfo">The method to test.</param>
+        /// <returns><c>true</c> when the method returns a non-void type.</returns>
+        public static bool HasNonVoidReturn(this MethodInfo methodInfo){
+            Contract.Requires(methodInfo != null);
+            return methodInfo.ReturnParameter != null && methodInfo.ReturnType != typeof(void);
+        }
+
     }
 }

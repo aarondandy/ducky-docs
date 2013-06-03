@@ -193,10 +193,19 @@ namespace DandyDoc.CodeDoc.Tests
         public void simple_type_has_operators() {
             var model = GetCodeDocType("TestLibrary1.Class1");
             Assert.IsTrue(model.HasOperators);
-            Assert.AreEqual(1, model.Operators.Count);
+            Assert.AreEqual(4, model.Operators.Count);
             Assert.That(model.Operators.OfType<CodeDocMethod>().All(x => x.IsStatic.GetValueOrDefault()));
-            Assert.That(model.Operators.All(x => x.SubTitle == "Operator"));
+            Assert.That(model.Operators.Any(x => x.SubTitle == "Operator"));
+            Assert.That(model.Operators.Any(x => x.SubTitle == "Conversion"));
             Assert.That(model.Operators.Any(x => x.Title.Contains('+')));
+        }
+
+        [Test]
+        public void simple_conversion_attribute_check(){
+            var model = GetCodeDocMethod("M:TestLibrary1.Class1.op_Implicit(TestLibrary1.Class1)~System.String");
+            Assert.IsNotNull(model);
+            Assert.AreEqual("Implicit Class1 to String", model.Title);
+            Assert.AreEqual("Conversion", model.SubTitle);
         }
 
         [Test]

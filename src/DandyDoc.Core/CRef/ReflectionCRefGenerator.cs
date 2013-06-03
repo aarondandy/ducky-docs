@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
+using DandyDoc.Reflection;
+using DandyDoc.Utility;
 
 namespace DandyDoc.CRef
 {
@@ -86,22 +88,24 @@ namespace DandyDoc.CRef
             var type = info.DeclaringType;
             Contract.Assume(null != type);
             var typeCRef = NoPrefix.GetCRef(type);
-            var memberCRef = info.Name;
-            Contract.Assume(!String.IsNullOrEmpty(memberCRef));
+            Contract.Assume(!String.IsNullOrEmpty(info.Name));
+            var memberCRef = info.Name.Replace('.','#');
 
-            char crefTypePrefix = '\0';
-            var methodInfo = info as MethodBase;
-            if (null != methodInfo) {
-                if (methodInfo is ConstructorInfo && memberCRef.Length > 1 && memberCRef[0] == '.') {
+            char crefTypePrefix = '!';
+            var methodBase = info as MethodBase;
+            if (null != methodBase) {
+                /*if (methodInfo is ConstructorInfo && memberCRef.Length > 1 && memberCRef[0] == '.')
                     memberCRef = '#' + memberCRef.Substring(1);
-                }
-                else if (methodInfo.IsGenericMethod) {
-                    memberCRef += String.Concat("``", methodInfo.GetGenericArguments().Length);
-                }
-                var methodParameters = methodInfo.GetParameters();
-                if (methodParameters.Length > 0) {
+                else */if (methodBase.IsGenericMethod)
+                    memberCRef += String.Concat("``", methodBase.GetGenericArguments().Length);
+
+                var methodParameters = methodBase.GetParameters();
+                if (methodParameters.Length > 0)
                     memberCRef += '(' + String.Join(",", methodParameters.Select(GetCRefParamTypeName)) + ')';
-                }
+
+                var methodInfo = methodBase as MethodInfo;
+                if (methodInfo != null && methodInfo.HasNonVoidReturn() && CSharpOperatorNameSymbolMap.IsConversionOperatorMethodName(methodBase.Name))
+                    memberCRef += String.Concat('~', NoPrefixForceGenericExpansion.GetCRef(methodInfo.ReturnType));
                 crefTypePrefix = 'M';
             }
             else if (info is PropertyInfo) {

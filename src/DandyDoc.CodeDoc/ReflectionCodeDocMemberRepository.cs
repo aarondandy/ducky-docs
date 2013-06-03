@@ -10,6 +10,7 @@ using DandyDoc.CodeDoc.Utility;
 using DandyDoc.DisplayName;
 using DandyDoc.ExternalVisibility;
 using DandyDoc.Reflection;
+using DandyDoc.Utility;
 using DandyDoc.XmlDoc;
 
 namespace DandyDoc.CodeDoc
@@ -219,10 +220,15 @@ namespace DandyDoc.CodeDoc
             var name = methodBase.Name;
             if (name.Length >= 2 && (name[0] == '$' || name[name.Length - 1] == '$'))
                 return false;
-            if (!isPropertyMethod && methodBase.IsSpecialName && !methodBase.IsConstructor && !methodBase.IsOperatorOverload())
-                return false;
             if (methodBase.IsFinalizer())
                 return false;
+            if(!isPropertyMethod && methodBase.IsSpecialName){
+                if(methodBase.IsConstructor)
+                    return true;
+                if(methodBase.IsOperatorOverload())
+                    return true;
+                return false;
+            }
             return true;
         }
 
@@ -397,10 +403,8 @@ namespace DandyDoc.CodeDoc
                 .GetGenericTypeSummaryContents(argumentName)
                 .ToArray();
 
-            if (typeConstraints.Length > 0) {
+            if (typeConstraints.Length > 0)
                 model.TypeConstraints = Array.ConvertAll(typeConstraints, t => GetOrConvert(t, lite: true));
-                
-            }
 
             model.IsContravariant = genericArgument.GenericParameterAttributes.HasFlag(
                 GenericParameterAttributes.Contravariant);
@@ -612,8 +616,36 @@ namespace DandyDoc.CodeDoc
             Contract.Assume(methodBase.DeclaringType != null);
             model.NamespaceName = methodBase.DeclaringType.Namespace;
 
+            model.Parameters = Array.ConvertAll(
+                methodBase.GetParameters(),
+                p => CreateArgument(p, memberDataProvider));
+
+            if (methodInfo != null && methodInfo.ReturnParameter != null && methodInfo.ReturnType != typeof(void))
+                model.Return = CreateReturn(methodInfo.ReturnParameter, memberDataProvider);
+
             if (methodBase.IsConstructor)
                 model.SubTitle = "Constructor";
+            else if (model.Parameters.Count == 1 && model.HasReturn && CSharpOperatorNameSymbolMap.IsConversionOperatorMethodName(methodBase.Name)) {
+                model.SubTitle = "Conversion";
+
+                string conversionOperationName;
+                if (methodBase.Name.EndsWith("Explicit", StringComparison.OrdinalIgnoreCase))
+                    conversionOperationName = "Explicit";
+                else if (methodBase.Name.EndsWith("Implicit", StringComparison.OrdinalIgnoreCase))
+                    conversionOperationName = "Implicit";
+                else
+                    conversionOperationName = String.Empty;
+
+                var conversionParameterPart = String.Concat(
+                    model.Parameters[0].ParameterType.ShortName,
+                    " to ",
+                    model.Return.ParameterType.ShortName);
+
+                model.ShortName = String.IsNullOrEmpty(conversionOperationName)
+                    ? conversionParameterPart
+                    : String.Concat(conversionOperationName, ' ', conversionParameterPart);
+                model.Title = model.ShortName;
+            }
             else if (methodBase.IsOperatorOverload())
                 model.SubTitle = "Operator";
             else
@@ -636,13 +668,6 @@ namespace DandyDoc.CodeDoc
                 else if (methodBase.IsVirtual && !methodBase.IsFinal && methodBase.Attributes.HasFlag(MethodAttributes.NewSlot))
                     model.IsVirtual = true;
             }
-
-            model.Parameters = Array.ConvertAll(
-                methodBase.GetParameters(),
-                p => CreateArgument(p, memberDataProvider));
-
-            if (methodInfo != null && methodInfo.ReturnParameter != null && methodInfo.ReturnType != typeof(void))
-                model.Return = CreateReturn(methodInfo.ReturnParameter, memberDataProvider);
 
             if (memberDataProvider.HasExceptions)
                 model.Exceptions = CreateExceptionModels(memberDataProvider.GetExceptions()).ToArray();

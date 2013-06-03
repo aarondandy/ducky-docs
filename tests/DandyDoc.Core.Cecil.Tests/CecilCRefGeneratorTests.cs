@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using DandyDoc.CRef;
+using DandyDoc.Cecil;
 using Mono.Cecil;
 using NUnit.Framework;
 
@@ -224,6 +225,12 @@ namespace DandyDoc.Core.Cecil.Tests
         public void ref_out_param_method() {
             var member = GetType("Class1").Methods.Single(x => x.Name == "TrySomeOutRefStuff");
             Assert.AreEqual("M:TestLibrary1.Class1.TrySomeOutRefStuff(System.Int32@,System.Int32@)", Generator.GetCRef(member));
+        }
+
+        [Test]
+        public void conversion_operator() {
+            var member = GetType("Class1").GetAllMethods().Single(x => x.Name == "op_Implicit" && x.ReturnType.FullName == "System.String");
+            Assert.AreEqual("M:TestLibrary1.Class1.op_Implicit(TestLibrary1.Class1)~System.String", Generator.GetCRef(member));
         }
 
     }
