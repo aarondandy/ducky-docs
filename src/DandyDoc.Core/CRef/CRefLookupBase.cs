@@ -25,7 +25,7 @@ namespace DandyDoc.CRef
             if (assemblies == null) throw new ArgumentNullException("assemblies");
             Contract.EndContractBlock();
             _assemblies = new ReadOnlyCollection<TAssembly>(assemblies.ToArray());
-            ResolveGenericInstanceAsDefinition = true;
+            AttemptSimplifiedResolution = true;
         }
 
         /// <summary>
@@ -39,9 +39,9 @@ namespace DandyDoc.CRef
         }
 
         /// <summary>
-        /// Indicates that the lookup will attempt resolution of a generic instance code reference as a generic definition.
+        /// Indicates that the lookup will make another attempt at resolution using a simplified code reference.
         /// </summary>
-        public bool ResolveGenericInstanceAsDefinition { get; set; }
+        public bool AttemptSimplifiedResolution { get; set; }
 
         /// <summary>
         /// Locates a member based on a code reference.
@@ -58,8 +58,8 @@ namespace DandyDoc.CRef
             if (cRef == null) throw new ArgumentNullException("cRef");
             Contract.EndContractBlock();
             var result = GetMemberCore(cRef);
-            if (result == null && ResolveGenericInstanceAsDefinition)
-                result = GetMemberCore(cRef.GetGenericDefinitionCRef());
+            if (result == null && AttemptSimplifiedResolution)
+                result = GetMemberCore(CRefTransformer.FullSimplification.Transform(cRef));
             return result;
         }
 

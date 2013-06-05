@@ -11,7 +11,7 @@ namespace DandyDoc.Core.Tests
         public void generic_type_instance_to_definition_cref() {
             var genericInstanceCRef = new CRefIdentifier("T:Fake.Type{System.Int32}");
             var expectedCRef = new CRefIdentifier("T:Fake.Type`1");
-            var actualCRef = genericInstanceCRef.GetGenericDefinitionCRef();
+            var actualCRef = CRefTransformer.FullSimplification.Transform(genericInstanceCRef);
             Assert.AreEqual(expectedCRef, actualCRef);
         }
 
@@ -20,7 +20,7 @@ namespace DandyDoc.Core.Tests
             var genericInstanceCRef = new CRefIdentifier("M:Fake.Type{System.Int32}.Method{System.String}( Fake.IEnumerable{`0}, ``0)");
             var expectedCRef = new CRefIdentifier("M:Fake.Type`1.Method``1( Fake.IEnumerable`1, ``0)");
             // NOTE: Whitespace is preserved in the parameters. Good or bad?
-            var actualCRef = genericInstanceCRef.GetGenericDefinitionCRef();
+            var actualCRef = CRefTransformer.FullSimplification.Transform(genericInstanceCRef);
             Assert.AreEqual(expectedCRef, actualCRef);
         }
 

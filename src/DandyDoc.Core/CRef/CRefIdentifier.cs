@@ -121,7 +121,7 @@ namespace DandyDoc.CRef
         /// </remarks>
         public string ReturnTypePart { get; private set; }
 
-        private static List<string> ExtractParams(string paramPartText, char splitChar = ',') {
+        internal static List<string> ExtractParams(string paramPartText, char splitChar = ',') {
             Contract.Ensures(Contract.Result<List<string>>() != null);
             if (String.IsNullOrEmpty(paramPartText))
                 return new List<string>(0);
@@ -203,53 +203,6 @@ namespace DandyDoc.CRef
         public Uri ToUri() {
             Contract.Ensures(Contract.Result<Uri>() != null);
             return new Uri("cref:" + Uri.EscapeDataString(FullCRef), UriKind.Absolute);
-        }
-
-        [Obsolete]
-        public CRefIdentifier GetGenericDefinitionCRef() {
-            Contract.Ensures(Contract.Result<CRefIdentifier>() != null);
-            var coreNameParts = ExtractParams(CoreName,'.');
-            var hasParamText = !String.IsNullOrWhiteSpace(ParamPart);
-            if (coreNameParts.Count > 0) {
-                var mayBeMethod = String.Equals("M",TargetType, StringComparison.OrdinalIgnoreCase)
-                    || (
-                        !String.Equals("T", TargetType, StringComparison.OrdinalIgnoreCase)
-                        && hasParamText
-                    );
-                var lastIndex = coreNameParts.Count - 1;
-                coreNameParts[lastIndex] = NamePartToGenericCardinality(coreNameParts[lastIndex], tickCount: mayBeMethod ? 2 : 1);
-
-                for (int i = coreNameParts.Count - 1; i >= 0; i--) {
-                    coreNameParts[i] = NamePartToGenericCardinality(coreNameParts[i]);
-                }
-            }
-
-            var result = String.Join(".", coreNameParts);
-            if (!String.IsNullOrWhiteSpace(TargetType))
-                result = String.Concat(TargetType, ':', result);
-
-            if (hasParamText) {
-                var paramParts = ParamPartTypes.ConvertAll(t => NamePartToGenericCardinality(t));
-                result = String.Concat(result, '(', String.Join(",", paramParts), ')');
-            }
-
-            return new CRefIdentifier(String.IsNullOrEmpty(result) ? "!:" : result);
-        }
-
-        private string NamePartToGenericCardinality(string part, int tickCount = 1) {
-            var genericParamListOpenAt = part.IndexOfAny(new[] {'{', '<', '(', '['});
-            var firstParamPartChar = genericParamListOpenAt + 1;
-            if (genericParamListOpenAt < 0 || firstParamPartChar >= part.Length)
-                return part; // if an open is not found, don't mess with it
-            var genericParamListCloseAt = part.LastIndexOfAny(new[] {'}', '>', ')', ']'});
-            if (genericParamListCloseAt != part.Length - 1)
-                return part; // must be the last character
-
-            var correctedParts = ExtractParams(part.Substring(firstParamPartChar));
-            var tickText = "`";
-            for (int tickIndex = 1; tickIndex < tickCount; tickIndex++)
-                tickText += '`';
-            return String.Concat(part.Substring(0, genericParamListOpenAt), tickText, correctedParts.Count);
         }
 
     }
