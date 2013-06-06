@@ -60,6 +60,11 @@ namespace DandyDoc.CodeDoc
         [Obsolete("This is redundant with Namesapce.Something")]
         public string NamespaceName { get; set; }
 
+        /// <summary>
+        /// Gets the namespace for this model.
+        /// </summary>
+        public ICodeDocMember Namespace { get; set; }
+
         /// <inheritdoc/>
         public ExternalVisibilityKind ExternalVisibility { get; set; }
 

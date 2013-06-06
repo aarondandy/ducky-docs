@@ -47,9 +47,15 @@ namespace DandyDoc.XmlDoc
         public string Language {
             get {
                 Contract.Ensures(Contract.Result<string>() != null);
-                return Element.Attributes.GetValueOrDefault("lang")
-                    ?? Element.Attributes.GetValueOrDefault("language")
-                    ?? String.Empty;
+                var result = Element.GetAttribute("lang");
+                if (!String.IsNullOrEmpty(result))
+                    return result;
+
+                result = Element.GetAttribute("language");
+                if (!String.IsNullOrEmpty(result))
+                    return result;
+
+                return String.Empty;
             }
         }
 

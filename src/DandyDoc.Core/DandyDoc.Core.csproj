@@ -175,7 +175,6 @@
     <Compile Include="Utility\CSharpOperatorNameSymbolMap.cs" />
     <Compile Include="Utility\NameUtility.cs" />
     <Compile Include="Utility\TextUtility.cs" />
-    <Compile Include="Utility\XmlUtility.cs" />
     <Compile Include="XmlDoc\IXmlDocMemberProvider.cs" />
     <Compile Include="XmlDoc\XmlAssemblyDocument.cs" />
     <Compile Include="XmlDoc\XmlAssemblyDocumentCollection.cs" />
@@ -193,9 +192,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

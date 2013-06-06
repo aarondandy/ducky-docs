@@ -143,6 +143,8 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -177,8 +179,14 @@
     <Compile Include="ICodeDocMemberRepository.cs" />
     <Compile Include="ICodeDocInvokable.cs" />
     <Compile Include="ICodeDocValueMember.cs" />
+    <Compile Include="MsdnCodeDocMemberRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReflectionCodeDocMemberRepository.cs" />
+    <Compile Include="Service References\MtpsServiceReference\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
     <Compile Include="ThreadSafeCodeDocRepositoryWrapper.cs" />
     <Compile Include="Utility\EnumerableUtility.cs" />
     <Compile Include="Utility\ListUtility.cs" />
@@ -188,6 +196,79 @@
       <Project>{a09f4dac-290c-4abe-b053-071ec966008f}</Project>
       <Name>DandyDoc.Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="Service References\MtpsServiceReference\atoms.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\MtpsServiceReference\atoms1.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\MtpsServiceReference\atoms2.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\MtpsServiceReference\atoms3.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\MtpsServiceReference\atoms4.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\MtpsServiceReference\atoms5.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\MtpsServiceReference\atoms6.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\MtpsServiceReference\atoms7.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\MtpsServiceReference\atoms8.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\MtpsServiceReference\ContentService.wsdl" />
+    <None Include="Service References\MtpsServiceReference\DandyDoc.CodeDoc.MtpsServiceReference.getContentResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\MtpsServiceReference\DandyDoc.CodeDoc.MtpsServiceReference.getNavigationPathsResponse.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Service References\MtpsServiceReference\default.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\MtpsServiceReference\default1.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\MtpsServiceReference\default2.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\MtpsServiceReference\default3.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\MtpsServiceReference\urn_msdn_com_public_content_syndication_2006_09_common.xsd">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Service References\MtpsServiceReference\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\MtpsServiceReference\ContentService.disco" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\MtpsServiceReference\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\MtpsServiceReference\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\MtpsServiceReference\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

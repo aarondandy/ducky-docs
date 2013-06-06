@@ -66,11 +66,6 @@ namespace DandyDoc.CodeDoc
         public ICodeDocMember DeclaringType { get; set; }
 
         /// <summary>
-        /// Gets the namespace for this model.
-        /// </summary>
-        public ICodeDocMember Namespace { get; set; }
-
-        /// <summary>
         /// Gets the assembly for this model.
         /// </summary>
         public ICodeDocMember Assembly { get; set; }
