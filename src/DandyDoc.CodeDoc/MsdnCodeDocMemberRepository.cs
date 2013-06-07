@@ -9,6 +9,7 @@ using System.Xml;
 using DandyDoc.CRef;
 using DandyDoc.CodeDoc.MtpsServiceReference;
 using DandyDoc.ExternalVisibility;
+using DandyDoc.XmlDoc;
 
 namespace DandyDoc.CodeDoc
 {
@@ -368,6 +369,21 @@ namespace DandyDoc.CodeDoc
 
             model.ExternalVisibility = ExternalVisibilityKind.Public;
 
+            var contentXml = GetContent(bestTocResult.ContentId);
+            if(contentXml != null) {
+                XmlNode summaryElement = contentXml.GetElementsByTagName("div")
+                    .OfType<XmlElement>()
+                    .FirstOrDefault(x => String.Equals(x.GetAttribute("class"), "summary", StringComparison.OrdinalIgnoreCase));
+                if (summaryElement != null) {
+                    if (summaryElement.ChildNodes.Count == 1 && summaryElement.ChildNodes[0].Name == "p") {
+                        // unwrap the lone p tag.
+                        summaryElement = summaryElement.ChildNodes[0];
+                    }
+                    var summaryXmlDoc = XmlDocParser.Default.Parse(summaryElement);
+                    model.SummaryContents = summaryXmlDoc.Children;
+                }
+            }
+
             return model;
         }
 
@@ -649,6 +665,28 @@ namespace DandyDoc.CodeDoc
                 memberName = memberName.Substring(2);
             Contract.Assume(!String.IsNullOrEmpty(memberName));
             return SearchToc(memberName, root);
+        }
+
+        private XmlElement GetContent(string assetId) {
+            var rawResult = Client.GetContent(
+                _appId,
+                new getContentRequest {
+                    contentIdentifier = assetId,
+                    locale = Locale,
+                    version = Version,
+                    requestedDocuments = new [] {
+                        new requestedDocument {
+                            selector = "Mtps.Xhtml",
+                            type = documentTypes.primary
+                        }
+                    }
+                });
+
+            var bestNode = rawResult.primaryDocuments.FirstOrDefault(x => x.primaryFormat == "Mtps.Xhtml");
+            if (bestNode == null)
+                return null;
+
+            return bestNode.Any;
         }
 
     }

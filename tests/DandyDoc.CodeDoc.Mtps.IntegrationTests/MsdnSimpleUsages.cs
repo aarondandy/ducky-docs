@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace DandyDoc.CodeDoc.Mtps.IntegrationTests
 {
     [TestFixture]
-    public class SimpleUsages
+    public class MsdnSimpleUsages
     {
 
         [Test]
@@ -15,6 +15,8 @@ namespace DandyDoc.CodeDoc.Mtps.IntegrationTests
             var repository = new MsdnCodeDocMemberRepository();
             var model = repository.GetMemberModel("System.Guid");
             Assert.IsNotNull(model);
+            Assert.IsTrue(model.HasSummaryContents);
+            Assert.That(model.SummaryContents.First().Node.OuterXml.Contains("GUID"));
         }
 
     }
