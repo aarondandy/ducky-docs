@@ -326,12 +326,12 @@ namespace DandyDoc.CodeDoc
 
         public string ServiceUrl { get; private set; }
 
-        public ICodeDocMember GetMemberModel(string cRef) {
+        public ICodeDocMember GetMemberModel(string cRef, CodeDocRepositorySearchContext searchContext = null) {
             Contract.Requires(!String.IsNullOrEmpty(cRef));
             return GetMemberModel(new CRefIdentifier(cRef));
         }
 
-        public ICodeDocMember GetMemberModel(CRefIdentifier cRef) {
+        public ICodeDocMember GetMemberModel(CRefIdentifier cRef, CodeDocRepositorySearchContext searchContext = null) {
             if(cRef == null) throw new ArgumentNullException("cRef");
             Contract.EndContractBlock();
 

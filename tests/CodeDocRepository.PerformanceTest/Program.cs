@@ -49,7 +49,7 @@ namespace CodeDocRepository.PerformanceTest
             stopwatch.Start();
             var repository = CreateRepository();
             var rootTypeCRefs = repository.Namespaces.SelectMany(x => x.TypeCRefs);
-            var rootTypes = rootTypeCRefs.Select(repository.GetMemberModel);
+            var rootTypes = rootTypeCRefs.Select(cRef => repository.GetMemberModel(cRef));
             var typeCount = CountTypes(rootTypes);
             stopwatch.Stop();
             Console.WriteLine("TypeCount:\t" + typeCount);

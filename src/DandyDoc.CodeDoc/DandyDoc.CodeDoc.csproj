@@ -159,6 +159,7 @@
     <Compile Include="CodeDocMemberDataProviderCollection.cs" />
     <Compile Include="CodeDocMemberXmlDataProvider.cs" />
     <Compile Include="CodeDocMemberInfoDataProvider.cs" />
+    <Compile Include="CodeDocRepositorySearchContext.cs" />
     <Compile Include="CodeDocSimpleAssembly.cs" />
     <Compile Include="CodeDocDelegate.cs" />
     <Compile Include="CodeDocMemberContentBase.cs" />
