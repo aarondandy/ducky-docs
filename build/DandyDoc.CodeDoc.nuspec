@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>DandyDoc.CodeDoc</id>
+    <version>$version$</version>
+    <title>Dandy Doc: API Documentation Models</title>
+    <authors>aarondandy</authors>
+    <description>
+      A simple documentation generation library to help you make documentation how you want it.
+    </description>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <tags>documentation</tags>
+    <projectUrl>http://mediocresoft.com/dandydoc/</projectUrl>
+    <dependencies>
+      <dependency id="DandyDoc.Core" version="$version$"/>
+    </dependencies>
+    <references>
+      <reference file="DandyDoc.CodeDoc.dll" />
+    </references>
+  </metadata>
+  <files>
+    <file src="..\bin\$configuration$\DandyDoc.CodeDoc.dll" target="lib\net-40" />
+    <file src="..\bin\$configuration$\DandyDoc.CodeDoc.pdb" target="lib\net-40" />
+    <file src="..\bin\$configuration$\DandyDoc.CodeDoc.XML" target="lib\net-40" />
+    <file src="..\bin\$configuration$\CodeContracts\DandyDoc.CodeDoc.Contracts.dll" target="lib\net-40\CodeContracts" />
+    <file src="..\src\DandyDoc.CodeDoc\**.cs" target="src" />
+  </files>
+</package>

@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>DandyDoc.Core.Cecil</id>
+    <version>$version$</version>
+    <title>Dandy Doc: Cecil Core</title>
+    <authors>aarondandy</authors>
+    <description>
+      A simple documentation generation library to help you make documentation how you want it.
+    </description>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <tags>documentation</tags>
+    <projectUrl>http://mediocresoft.com/dandydoc/</projectUrl>
+    <dependencies>
+      <dependency id="Mono.Cecil" version="$cecilVersion$"/>
+      <dependency id="DandyDoc.Core" version="$version$"/>
+    </dependencies>
+    <references>
+      <reference file="DandyDoc.Core.Cecil.dll" />
+    </references>
+  </metadata>
+  <files>
+    <file src="..\bin\$configuration$\DandyDoc.Core.Cecil.dll" target="lib\net-40" />
+    <file src="..\bin\$configuration$\DandyDoc.Core.Cecil.pdb" target="lib\net-40" />
+    <file src="..\bin\$configuration$\DandyDoc.Core.Cecil.XML" target="lib\net-40" />
+    <file src="..\bin\$configuration$\CodeContracts\DandyDoc.Core.Cecil.Contracts.dll" target="lib\net-40\CodeContracts" />
+    <file src="..\src\DandyDoc.Core.Cecil\**.cs" target="src" />
+  </files>
+</package>
