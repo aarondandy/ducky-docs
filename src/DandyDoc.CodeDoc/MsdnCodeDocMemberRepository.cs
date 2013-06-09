@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Runtime.Caching;
 using System.ServiceModel;
 using System.Text;
 using System.Xml;
@@ -316,6 +318,20 @@ namespace DandyDoc.CodeDoc
             }
         }
 
+
+        private ObjectCache _cache;
+        public ObjectCache Cache{
+            get{
+                Contract.Ensures(Contract.Result<ObjectCache>() != null);
+                return _cache ?? MemoryCache.Default;
+            }
+            set{
+                if(value == null) throw new ArgumentNullException("value");
+                Contract.EndContractBlock();
+                _cache = value;
+            }
+        }
+
         private readonly appId _appId;
 
         public string RootAssetId { get; private set; }
@@ -389,12 +405,14 @@ namespace DandyDoc.CodeDoc
 
         public IList<CodeDocSimpleAssembly> Assemblies {
             get{
+                // NOTE: I am not even sure how to get assemblies from MTPS
                 return new CodeDocSimpleAssembly[0];
             }
         }
 
         public IList<CodeDocSimpleNamespace> Namespaces {
             get{
+                // TODO: a list of namespaces may be useful in the future, but would be costly at startup
                 return new CodeDocSimpleNamespace[0];
             }
         }
@@ -425,6 +443,27 @@ namespace DandyDoc.CodeDoc
             return String.Format("http://msdn.microsoft.com/{0}/library/{1}.aspx", locale ?? Locale, id);
         }
 
+        private string CreateGetContentRequestKey(getContentRequest request){
+            return String.Format(
+                "MTPS_GetContent({0},{1},{2},[{3}])",
+                request.contentIdentifier,
+                request.locale,
+                request.version,
+                String.Join(",",request.requestedDocuments.Select(d => String.Concat(d.type,d.selector)))
+            );
+        }
+
+        private getContentResponse CachedGetContentRequest(appId appId, getContentRequest request) {
+            var requestKey = CreateGetContentRequestKey(request);
+            var rawResult = Cache[requestKey] as getContentResponse;
+            if (rawResult == null) {
+                rawResult = Client.GetContent(appId, request);
+                if (rawResult != null)
+                    Cache[requestKey] = rawResult;
+            }
+            return rawResult;
+        }
+
         private XmlElement GetTocXmlElementRequest(string assetId, string version, string locale) {
             Contract.Requires(!String.IsNullOrEmpty(assetId));
             var request = new getContentRequest {
@@ -438,9 +477,16 @@ namespace DandyDoc.CodeDoc
                     }
                 }
             };
-            var root = Client.GetContent(_appId, request).primaryDocuments.SingleOrDefault();
+
+            var rawResult = CachedGetContentRequest(_appId, request);
+
+            if (rawResult == null)
+                return null;
+
+            var root = rawResult.primaryDocuments.SingleOrDefault();
             if (null == root)
                 return null;
+
             return root.Any;
         }
 
@@ -618,25 +664,27 @@ namespace DandyDoc.CodeDoc
             Contract.Requires(children != null);
             Contract.Ensures(Contract.Result<IEnumerable<MtpsNavigationNode>>() != null);
 
-            var results = new List<MtpsNavigationNode>(0);
-            foreach (var childNode in children.Where(c => !c.IsPhantom)) {
-                if (childNode.IsNamespace || childNode.IsTypeOrMember) {
-                    var fullName = childNode.GetFullName();
-                    if (!String.IsNullOrEmpty(fullName) && searchName.StartsWith(fullName)) {
-                        results.AddRange(SearchChild(searchName, node, childNode));
-                    }
-                }
-                else if (childNode.IsNodeGroup) {
-                    var groupReferenceName = childNode.GetFullName();
-                    if (!String.IsNullOrEmpty(groupReferenceName)) {
-                        if (!searchName.StartsWith(groupReferenceName)) {
-                            continue;
+
+            // NOTE: while it would be easy to make this parallel it could result in a performance loss
+            // The search collections use enumerable to allow for early search termination when a result matches.
+            // Execution in parallel may cause service requests to be invoked even after the correct nodes have been located.
+            return children
+                .Where(c => !c.IsPhantom)
+                .SelectMany(childNode => {
+                    if (childNode.IsNamespace || childNode.IsTypeOrMember) {
+                        var fullName = childNode.GetFullName();
+                        if (!String.IsNullOrEmpty(fullName) && searchName.StartsWith(fullName)) {
+                            return SearchChild(searchName, node, childNode);
                         }
                     }
-                    results.AddRange(SearchWithinGroup(searchName, node, childNode));
-                }
-            }
-            return results;
+                    else if (childNode.IsNodeGroup) {
+                        var groupReferenceName = childNode.GetFullName();
+                        if (String.IsNullOrEmpty(groupReferenceName) || searchName.StartsWith(groupReferenceName)){
+                            return SearchWithinGroup(searchName, node, childNode);
+                        }
+                    }
+                    return Enumerable.Empty<MtpsNavigationNode>();
+                });
         }
 
         private IEnumerable<MtpsNavigationNode> SearchToc(string searchName, MtpsNavigationNode node) {
@@ -644,13 +692,11 @@ namespace DandyDoc.CodeDoc
             Contract.Requires(node != null);
             Contract.Ensures(Contract.Result<IEnumerable<MtpsNavigationNode>>() != null);
 
-            var results = new List<MtpsNavigationNode>(0);
+            var results = SearchChildren(searchName, node, node.ChildLinks);
             var nodeFullName = node.GetFullName();
             if (searchName.Equals(nodeFullName)) {
-                results.Add(node);
+                results = new[] { node }.Concat(results);
             }
-
-            results.AddRange(SearchChildren(searchName, node, node.ChildLinks));
             return results;
         }
 
@@ -668,19 +714,19 @@ namespace DandyDoc.CodeDoc
         }
 
         private XmlElement GetContent(string assetId) {
-            var rawResult = Client.GetContent(
-                _appId,
-                new getContentRequest {
-                    contentIdentifier = assetId,
-                    locale = Locale,
-                    version = Version,
-                    requestedDocuments = new [] {
-                        new requestedDocument {
-                            selector = "Mtps.Xhtml",
-                            type = documentTypes.primary
-                        }
+            var request = new getContentRequest {
+                contentIdentifier = assetId,
+                locale = Locale,
+                version = Version,
+                requestedDocuments = new [] {
+                    new requestedDocument {
+                        selector = "Mtps.Xhtml",
+                        type = documentTypes.primary
                     }
-                });
+                }
+            };
+
+            var rawResult = CachedGetContentRequest(_appId, request);
 
             var bestNode = rawResult.primaryDocuments.FirstOrDefault(x => x.primaryFormat == "Mtps.Xhtml");
             if (bestNode == null)
