@@ -757,5 +757,11 @@ namespace DandyDoc.CodeDoc.Tests
             Assert.AreEqual("From BaseClassToSeal.", d.SummaryContents.First().Node.OuterXml);
         }
 
+        [Test]
+        public void explicit_interface_implementation_is_hidden(){
+            var type = GetCodeDocType("T:TestLibrary1.Class1.ProtectedStruct");
+            Assert.That(type.Methods.All(m => m.NamespaceName.StartsWith("System")));
+        }
+
     }
 }

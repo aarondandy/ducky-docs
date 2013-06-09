@@ -100,12 +100,17 @@ namespace TestLibrary1
 			
 		}
 
-		public interface IThing { }
+		public interface IThing
+		{
+            string DoIt();
+		}
 
 		protected struct ProtectedStruct : IThing
 		{
-			
-		}
+		    string IThing.DoIt() {
+                throw new NotImplementedException();
+            }
+        }
 
 		/// <summary>
 		/// The static constructor.
