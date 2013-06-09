@@ -15,7 +15,7 @@ namespace DandyDoc.CodeDoc
         /// Creates a new exception for the given exception type.
         /// </summary>
         /// <param name="exceptionType">The exception type model for this exception.</param>
-        public CodeDocException(ICodeDocMember exceptionType) {
+        public CodeDocException(CodeDocType exceptionType) {
             if (exceptionType == null) throw new ArgumentNullException("exceptionType");
             Contract.EndContractBlock();
             ExceptionType = exceptionType;
@@ -29,7 +29,7 @@ namespace DandyDoc.CodeDoc
         /// <summary>
         /// The exception type model.
         /// </summary>
-        public ICodeDocMember ExceptionType { get; private set; }
+        public CodeDocType ExceptionType { get; private set; }
 
         /// <summary>
         /// Indicates that the exception has conditions.

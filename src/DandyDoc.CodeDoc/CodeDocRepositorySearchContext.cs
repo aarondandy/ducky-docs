@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using DandyDoc.CRef;
 
 namespace DandyDoc.CodeDoc
 {
@@ -66,6 +67,13 @@ namespace DandyDoc.CodeDoc
             }
         }
 
+        public ICodeDocMemberRepository PopUnvisitedRepository(){
+            var nextRepository = UnvisitedRepositories.FirstOrDefault();
+            if (nextRepository != null)
+                Visit(nextRepository);
+            return nextRepository;
+        }
+
         public CodeDocRepositorySearchContext CloneWithoutVisits() {
             return new CodeDocRepositorySearchContext(_allRepositories);
         }
@@ -76,6 +84,16 @@ namespace DandyDoc.CodeDoc
             var result = CloneWithoutVisits();
             result.Visit(repository);
             return result;
+        }
+
+        public ICodeDocMember Search(CRefIdentifier cRef) {
+            ICodeDocMemberRepository repository;
+            while((repository = PopUnvisitedRepository()) != null){
+                var model = repository.GetMemberModel(cRef, this);
+                if (model != null)
+                    return model;
+            }
+            return null;
         }
 
     }

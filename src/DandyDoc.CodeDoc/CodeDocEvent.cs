@@ -21,7 +21,7 @@ namespace DandyDoc.CodeDoc
         /// <summary>
         /// The delegate type of the event.
         /// </summary>
-        public ICodeDocMember DelegateType { get; set; }
+        public CodeDocType DelegateType { get; set; }
 
     }
 }

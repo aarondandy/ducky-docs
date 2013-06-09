@@ -79,13 +79,19 @@ namespace DandyDoc.CodeDoc
         {
             if(cRefLookup == null) throw new ArgumentNullException("cRefLookup");
             Contract.EndContractBlock();
-
             CRefLookup = cRefLookup;
+        }
 
+        [ContractInvariantMethod]
+        private void CodeContractInvariant() {
+            Contract.Invariant(CRefLookup != null);
+        }
+
+        protected override SimpleAssemblyNamespaceColleciton CreateSimpleAssemblyNamespaceCollection() {
             var assemblyModels = new List<CodeDocSimpleAssembly>();
             var namespaceModels = new Dictionary<string, CodeDocSimpleNamespace>();
 
-            foreach (var assembly in CRefLookup.Assemblies){
+            foreach (var assembly in CRefLookup.Assemblies) {
                 var assemblyShortName = assembly.GetName().Name;
                 var assemblyModel = new CodeDocSimpleAssembly(GetCRefIdentifier(assembly)) {
                     AssemblyFileName = Path.GetFileName(assembly.GetFilePath()),
@@ -104,7 +110,7 @@ namespace DandyDoc.CodeDoc
                     .GetTypes()
                     .Where(t => !t.IsNested)
                     .Where(MemberFilter)
-                ){
+                ) {
                     var typeCRef = GetCRefIdentifier(type);
                     assemblyTypeCRefs.Add(typeCRef);
                     var namespaceName = type.Namespace;
@@ -115,7 +121,7 @@ namespace DandyDoc.CodeDoc
                     if (!namespaceModels.TryGetValue(namespaceName, out namespaceModel)) {
                         var namespaceTitle = String.IsNullOrEmpty(namespaceName) ? "global" : namespaceName;
                         Contract.Assume(!String.IsNullOrEmpty("N:" + namespaceName));
-                        namespaceModel = new CodeDocSimpleNamespace(new CRefIdentifier("N:" + namespaceName)){
+                        namespaceModel = new CodeDocSimpleNamespace(new CRefIdentifier("N:" + namespaceName)) {
                             Title = namespaceTitle,
                             ShortName = namespaceTitle,
                             FullName = namespaceTitle,
@@ -150,13 +156,9 @@ namespace DandyDoc.CodeDoc
                 assemblyModel.NamespaceCRefs = assemblyModel.NamespaceCRefs.AsReadOnly();
             }
 
-            Assemblies = new ReadOnlyCollection<CodeDocSimpleAssembly>(assemblyModels.OrderBy(x => x.Title).ToArray());
-            Namespaces = new ReadOnlyCollection<CodeDocSimpleNamespace>(namespaceModels.Values.OrderBy(x => x.Title).ToArray());
-        }
-
-        [ContractInvariantMethod]
-        private void CodeContractInvariant() {
-            Contract.Invariant(CRefLookup != null);
+            return new SimpleAssemblyNamespaceColleciton(
+                assemblyModels.OrderBy(x => x.Title).ToArray(),
+                namespaceModels.Values.OrderBy(x => x.Title).ToArray());
         }
 
         /// <summary>
@@ -366,10 +368,11 @@ namespace DandyDoc.CodeDoc
             private CodeDocType GetOrConvert(Type type, bool lite = false) {
                 Contract.Requires(type != null);
                 Contract.Ensures(Contract.Result<CodeDocType>() != null);
-                // TODO:
-                // 1) Use the repository tree to get the model by cRef (so we can use a cache)
-                // 1a) Make sure to include this repository in the search, but last (should be behind a cache)
-                // 2) Try to make a model for it
+
+                var getAttemtpResult = GetOnlyType(GetCRefIdentifier(type), lite: lite);
+                if (getAttemtpResult != null)
+                    return getAttemtpResult;
+
                 return ConvertToModel(type, lite: lite);
             }
 

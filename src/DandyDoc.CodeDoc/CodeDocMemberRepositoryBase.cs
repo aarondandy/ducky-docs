@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using DandyDoc.CRef;
@@ -14,18 +15,44 @@ namespace DandyDoc.CodeDoc
     public abstract class CodeDocMemberRepositoryBase : ICodeDocMemberRepository
     {
 
+        protected class SimpleAssemblyNamespaceColleciton
+        {
+
+            public SimpleAssemblyNamespaceColleciton(IList<CodeDocSimpleAssembly> assemblies, IList<CodeDocSimpleNamespace> namespaces){
+                if(assemblies == null) throw new ArgumentNullException("assemblies");
+                if(namespaces == null) throw new ArgumentNullException("namespaces");
+                Contract.EndContractBlock();
+                Assemblies = new ReadOnlyCollection<CodeDocSimpleAssembly>(assemblies);
+                Namespaces = new ReadOnlyCollection<CodeDocSimpleNamespace>(namespaces);
+            }
+
+            private void CodeContractInvariant(){
+                Contract.Invariant(Assemblies != null);
+                Contract.Invariant(Namespaces != null);
+            }
+
+            public ReadOnlyCollection<CodeDocSimpleAssembly> Assemblies { get; private set; }
+            public ReadOnlyCollection<CodeDocSimpleNamespace> Namespaces { get; private set; }
+        }
+
+        private readonly Lazy<SimpleAssemblyNamespaceColleciton> _simpleAssemblyNamespaceCollection;
+
         /// <summary>
         /// A base constructor for code doc repositories.
         /// </summary>
         /// <param name="xmlDocs">The optional XML assembly documentation files.</param>
         protected CodeDocMemberRepositoryBase(IEnumerable<XmlAssemblyDocument> xmlDocs) {
             XmlDocs = new XmlAssemblyDocumentCollection(xmlDocs);
+            _simpleAssemblyNamespaceCollection = new Lazy<SimpleAssemblyNamespaceColleciton>(CreateSimpleAssemblyNamespaceCollection, true);
         }
 
         [ContractInvariantMethod]
         private void CodeContractInvariants() {
             Contract.Invariant(XmlDocs != null);
+            Contract.Invariant(_simpleAssemblyNamespaceCollection != null);
         }
+
+        protected abstract SimpleAssemblyNamespaceColleciton CreateSimpleAssemblyNamespaceCollection();
 
         /// <summary>
         /// Assembly XML docs.
@@ -33,10 +60,10 @@ namespace DandyDoc.CodeDoc
         public XmlAssemblyDocumentCollection XmlDocs { get; private set; }
 
         /// <inheritdoc/>
-        public IList<CodeDocSimpleAssembly> Assemblies { get; protected set; }
+        public IList<CodeDocSimpleAssembly> Assemblies { get { return _simpleAssemblyNamespaceCollection.Value.Assemblies; } }
 
         /// <inheritdoc/>
-        public IList<CodeDocSimpleNamespace> Namespaces { get; protected set; }
+        public IList<CodeDocSimpleNamespace> Namespaces { get { return _simpleAssemblyNamespaceCollection.Value.Namespaces; } }
 
         /// <inheritdoc/>
         public ICodeDocMember GetMemberModel(string cRef, CodeDocRepositorySearchContext searchContext = null) {
@@ -255,18 +282,23 @@ namespace DandyDoc.CodeDoc
             protected ICodeDocMember GetOnly(CRefIdentifier cRef, bool lite = false) {
                 Contract.Requires(cRef != null);
 
-                // TODO:
-                // 1) Use the repository tree to get the model by cRef (so we can use a cache)
-                // 1a) Make sure to include this repostitory in the search, but last (should be behind a cache)
-                // 2) Try to make a model for it
+                if(HasSearchContext){
+                    var searchContext = SearchContext.CloneWithSingleVisit(Repository);
+                    var searchResult = searchContext.Search(cRef);
+                    if (searchResult != null)
+                        return searchResult;
+                }
 
                 var localModel = GetMemberModel(cRef, lite: lite);
                 if (localModel != null)
                     return localModel;
 
-                // TODO: need to look elsewhere for a model.
-
                 return null;
+            }
+
+            protected CodeDocType GetOnlyType(CRefIdentifier cRef, bool lite = false) {
+                Contract.Requires(cRef != null);
+                return ToTypeModel(GetOnly(cRef, lite: lite));
             }
 
             /// <summary>
@@ -280,6 +312,42 @@ namespace DandyDoc.CodeDoc
                 Contract.Ensures(Contract.Result<ICodeDocMember>() != null);
                 return GetOnly(cRef, lite: lite)
                     ?? CreateGeneralMemberPlaceholder(cRef);
+            }
+
+            /// <summary>
+            /// Gets a type model for the given code reference or creates a new one.
+            /// </summary>
+            /// <param name="cRef">The code reference to get a model for.</param>
+            /// <param name="lite">Indicates that the model should be lite.</param>
+            /// <returns>A code doc model for the given code reference.</returns>
+            protected CodeDocType GetOrConvertType(CRefIdentifier cRef, bool lite = false) {
+                Contract.Requires(cRef != null);
+                Contract.Ensures(Contract.Result<ICodeDocMember>() != null);
+                return ToTypeModel(GetOrConvert(cRef, lite));
+            }
+
+            protected CodeDocType ToTypeModel(ICodeDocMember member){
+                if (member == null)
+                    return null;
+                if (member is CodeDocType)
+                    return (CodeDocType)member;
+
+                var typeModel = new CodeDocType(member.CRef.WithTargetType("T"));
+
+                var simpleMember = member as CodeDocSimpleMember;
+                if(simpleMember != null){
+                    typeModel.Uri = simpleMember.Uri;
+                    typeModel.Title = simpleMember.Title;
+                    typeModel.SubTitle = simpleMember.SubTitle;
+                    typeModel.ShortName = simpleMember.ShortName;
+                    typeModel.FullName = simpleMember.FullName;
+                    typeModel.NamespaceName = simpleMember.NamespaceName;
+                    typeModel.Namespace = simpleMember.Namespace;
+                    typeModel.ExternalVisibility = simpleMember.ExternalVisibility;
+                    typeModel.SummaryContents = simpleMember.SummaryContents;
+                }
+
+                return typeModel;
             }
 
             /// <summary>
@@ -302,7 +370,7 @@ namespace DandyDoc.CodeDoc
                         : new CRefIdentifier(xmlDocException.CRef);
                     CodeDocException exceptionModel;
                     if (!exceptionLookup.TryGetValue(exceptionCRef, out exceptionModel)) {
-                        exceptionModel = new CodeDocException(GetOrConvert(exceptionCRef, lite: true));
+                        exceptionModel = new CodeDocException(GetOrConvertType(exceptionCRef, lite: true));
                         exceptionModel.Ensures = new List<XmlDocNode>();
                         exceptionModel.Conditions = new List<XmlDocNode>();
                         exceptionLookup.Add(exceptionCRef, exceptionModel);

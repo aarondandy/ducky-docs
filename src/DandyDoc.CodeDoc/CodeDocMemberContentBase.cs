@@ -68,7 +68,7 @@ namespace DandyDoc.CodeDoc
         /// <summary>
         /// Gets the assembly for this model.
         /// </summary>
-        public ICodeDocMember Assembly { get; set; }
+        public CodeDocSimpleAssembly Assembly { get; set; }
 
         /// <summary>
         /// Indicates that this member is obsolete.

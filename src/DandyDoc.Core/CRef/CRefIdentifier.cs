@@ -205,5 +205,16 @@ namespace DandyDoc.CRef
             return new Uri("cref:" + Uri.EscapeDataString(FullCRef), UriKind.Absolute);
         }
 
+        public CRefIdentifier WithTargetType(string targetType){
+            if(String.IsNullOrWhiteSpace(targetType))
+                targetType = "!";
+
+            var primaryCRefPart = FullCRef;
+            var firstColonIndex = primaryCRefPart.IndexOf(':');
+            if (firstColonIndex >= 0)
+                primaryCRefPart = primaryCRefPart.Substring(firstColonIndex + 1);
+            return new CRefIdentifier(String.Concat(targetType, ':', primaryCRefPart));
+
+        }
     }
 }

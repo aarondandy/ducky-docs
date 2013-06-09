@@ -79,7 +79,14 @@ namespace DandyDoc.CodeDoc
             if (cRefLookup == null) throw new ArgumentNullException("cRefLookup");
             Contract.EndContractBlock();
             CRefLookup = cRefLookup;
+        }
 
+        [ContractInvariantMethod]
+        private void CodeContractInvariant() {
+            Contract.Invariant(CRefLookup != null);
+        }
+
+        protected override SimpleAssemblyNamespaceColleciton CreateSimpleAssemblyNamespaceCollection() {
             var assemblyModels = new List<CodeDocSimpleAssembly>();
             var namespaceModels = new Dictionary<string, CodeDocSimpleNamespace>();
 
@@ -146,13 +153,9 @@ namespace DandyDoc.CodeDoc
                 assemblyModel.NamespaceCRefs = assemblyModel.NamespaceCRefs.AsReadOnly();
             }
 
-            Assemblies = new ReadOnlyCollection<CodeDocSimpleAssembly>(assemblyModels.OrderBy(x => x.Title).ToArray());
-            Namespaces = new ReadOnlyCollection<CodeDocSimpleNamespace>(namespaceModels.Values.OrderBy(x => x.Title).ToArray());
-        }
-
-        [ContractInvariantMethod]
-        private void CodeContractInvariant() {
-            Contract.Invariant(CRefLookup != null);
+            return new SimpleAssemblyNamespaceColleciton(
+                assemblyModels.OrderBy(x => x.Title).ToArray(),
+                namespaceModels.Values.OrderBy(x => x.Title).ToArray());
         }
 
         /// <summary>
@@ -365,10 +368,11 @@ namespace DandyDoc.CodeDoc
             private CodeDocType GetOrConvert(TypeReference typeReference, bool lite = false) {
                 Contract.Requires(typeReference != null);
                 Contract.Ensures(Contract.Result<CodeDocType>() != null);
-                // TODO:
-                // 1) Use the repository tree to get the model by cRef (so we can use a cache)
-                // 1a) Make sure to include this repostitory in the search, but last (should be behind a cache)
-                // 2) Try to make a model for it
+
+                var getAttemtpResult = GetOnlyType(GetCRefIdentifier(typeReference), lite: lite);
+                if (getAttemtpResult != null)
+                    return getAttemtpResult;
+
                 return ConvertToModel(typeReference, lite: lite);
             }
 
