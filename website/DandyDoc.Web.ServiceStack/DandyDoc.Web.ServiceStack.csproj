@@ -113,15 +113,15 @@
     <Content Include="packages.config" />
     <Content Include="default.cshtml" />
     <Content Include="test.md" />
-    <Content Include="Docs\default.cshtml" />
-    <Content Include="Views\_DocsLayout.cshtml" />
+    <Content Include="_SubLayout.cshtml" />
+    <Content Include="sub.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
-    <Content Include="Views\_Layout.cshtml" />
+    <Content Include="_Layout.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\DandyDoc.CodeDoc.Cecil\DandyDoc.CodeDoc.Cecil.csproj">
@@ -141,7 +141,10 @@
       <Name>DandyDoc.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="SubFolder\" />
+    <Folder Include="Views\" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
