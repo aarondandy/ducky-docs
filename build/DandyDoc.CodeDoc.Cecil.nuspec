@@ -3,7 +3,7 @@
   <metadata>
     <id>DandyDoc.CodeDoc.Cecil</id>
     <version>$version$</version>
-    <title>Dandy Doc API: Documentation Models (Using Cecil)</title>
+    <title>Dandy Doc: API Documentation Models (Using Cecil)</title>
     <authors>aarondandy</authors>
     <description>
       A simple documentation generation library to help you make documentation how you want it.
