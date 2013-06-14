@@ -48,9 +48,21 @@
     <Reference Include="Microsoft.Practices.ServiceLocation">
       <HintPath>..\..\packages\CommonServiceLocator.1.0\lib\NET35\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
+    <Reference Include="Mono.Cecil">
+      <HintPath>..\..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Mdb">
+      <HintPath>..\..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Mdb.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Pdb">
+      <HintPath>..\..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Pdb.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Cecil.Rocks">
+      <HintPath>..\..\packages\Mono.Cecil.0.9.5.4\lib\net40\Mono.Cecil.Rocks.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Newtonsoft.Json.5.0.2\lib\net40\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\packages\Newtonsoft.Json.5.0.6\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Ninject">
       <HintPath>..\..\packages\Ninject.3.0.1.10\lib\net40\Ninject.dll</HintPath>
@@ -276,9 +288,17 @@
     <Content Include="Views\Docs\Api\_Layout.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\DandyDoc.CodeDoc.Cecil\DandyDoc.CodeDoc.Cecil.csproj">
+      <Project>{800519b7-8f27-4f5d-94cc-9868add9559f}</Project>
+      <Name>DandyDoc.CodeDoc.Cecil</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\DandyDoc.CodeDoc\DandyDoc.CodeDoc.csproj">
       <Project>{01cce4b1-8bd1-4c4f-8080-9a9bb19f05a9}</Project>
       <Name>DandyDoc.CodeDoc</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\DandyDoc.Core.Cecil\DandyDoc.Core.Cecil.csproj">
+      <Project>{d231f05e-033a-4666-8c40-6837bfc8a989}</Project>
+      <Name>DandyDoc.Core.Cecil</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\DandyDoc.Core\DandyDoc.Core.csproj">
       <Project>{a09f4dac-290c-4abe-b053-071ec966008f}</Project>

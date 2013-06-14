@@ -58,8 +58,8 @@ namespace DandyDoc.CRef
             if (cRef == null) throw new ArgumentNullException("cRef");
             Contract.EndContractBlock();
             var result = GetMemberCore(cRef);
-            if (result == null && AttemptSimplifiedResolution)
-                result = GetMemberCore(CRefTransformer.FullSimplification.Transform(cRef));
+            //if (result == null && AttemptSimplifiedResolution)
+            //    result = GetMemberCore(CRefTransformer.FullSimplification.Transform(cRef));
             return result;
         }
 

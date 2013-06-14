@@ -361,5 +361,19 @@ namespace DandyDoc.Core.Cecil.Tests
             Assert.AreEqual("System.Int32", convertToInt32.ReturnType.FullName);
         }
 
+        [Test]
+        public void can_find_array_type() {
+            var type = Lookup.GetMember("T:TestLibrary1.Class1[]") as TypeReference;
+            Assert.IsNotNull(type);
+            Assert.AreEqual("TestLibrary1.Class1[]", type.FullName);
+        }
+
+        [Test]
+        public void can_find_ref_type() {
+            var type = Lookup.GetMember("T:TestLibrary1.Class1@") as TypeReference;
+            Assert.IsNotNull(type);
+            Assert.AreEqual("TestLibrary1.Class1&", type.FullName);
+        }
+
     }
 }

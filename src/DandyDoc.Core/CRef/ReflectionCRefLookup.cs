@@ -64,9 +64,6 @@ namespace DandyDoc.CRef
             Contract.Requires(assembly != null);
             Contract.Requires(!String.IsNullOrEmpty(typeName));
 
-            if (typeName.Contains(','))
-                return null;
-
             foreach (var type in assembly.GetTypes()) {
                 var typeNamespace = type.Namespace ?? String.Empty;
                 if (typeName.Length <= typeNamespace.Length)
@@ -106,8 +103,26 @@ namespace DandyDoc.CRef
             Contract.Requires(type != null);
             Contract.Requires(!String.IsNullOrEmpty(typeName));
             var firstDotIndex = typeName.IndexOf('.');
-            if (firstDotIndex < 0)
-                return type.Name == typeName ? type : null;
+            if (firstDotIndex < 0) {
+                if (type.Name == typeName)
+                    return type;
+                
+                if (typeName.StartsWith(type.Name)) {
+                    var typeNameSuffix = typeName.Substring(type.Name.Length);
+                    if (typeNameSuffix == "&" || typeNameSuffix == "@")
+                        return type.MakeByRefType();
+                    if (typeNameSuffix.Length >= 2 && typeNameSuffix[0] == '[' && typeNameSuffix[typeNameSuffix.Length - 1] == ']') {
+                        int commaCount = 0;
+                        for (int i = 1; i < typeNameSuffix.Length - 1; i++) {
+                            if (typeNameSuffix[i] == ',')
+                                commaCount++;
+                        }
+                        return commaCount == 0 ? type.MakeArrayType() : type.MakeArrayType(commaCount + 1);
+                    }
+                }
+
+                return null;
+            }
 
             var nestedTypes = type.GetAllNestedTypes();
             if (nestedTypes.Length == 0)

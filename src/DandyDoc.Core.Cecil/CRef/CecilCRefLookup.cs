@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using DandyDoc.Cecil;
 using Mono.Cecil;
 
 namespace DandyDoc.CRef
@@ -51,15 +52,15 @@ namespace DandyDoc.CRef
             Contract.EndContractBlock();
 
             if ("T".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
-                return GetTypeDefinition(assembly, cRef);
+                return GetTypeReference(assembly, cRef);
             if (cRef.HasTargetType)
                 return GetNonTypeMemberDefinition(assembly, cRef);
 
-            return GetTypeDefinition(assembly, cRef)
+            return GetTypeReference(assembly, cRef)
                 ?? GetNonTypeMemberDefinition(assembly, cRef);
         }
 
-        private static TypeDefinition GetTypeDefinition(AssemblyDefinition assembly, string typeName) {
+        private static TypeReference GetTypeReference(AssemblyDefinition assembly, string typeName) {
             Contract.Requires(assembly != null);
             Contract.Requires(!String.IsNullOrEmpty(typeName));
             Contract.Assume(null != assembly.Modules);
@@ -88,22 +89,43 @@ namespace DandyDoc.CRef
             return null;
         }
 
-        private static TypeDefinition GetTypeDefinition(AssemblyDefinition assembly, CRefIdentifier cRef) {
+        private static TypeReference GetTypeReference(AssemblyDefinition assembly, CRefIdentifier cRef) {
             Contract.Requires(assembly != null);
             Contract.Requires(cRef != null);
             var typeName = cRef.CoreName;
             if (String.IsNullOrEmpty(typeName))
                 return null;
-            return GetTypeDefinition(assembly, typeName);
+            return GetTypeReference(assembly, typeName);
 
         }
 
-        private static TypeDefinition ResolveTypeByName(TypeDefinition type, string typeName) {
+        private static TypeReference ResolveTypeByName(TypeDefinition type, string typeName) {
             Contract.Requires(type != null);
             Contract.Requires(!String.IsNullOrEmpty(typeName));
             var firstDotIndex = typeName.IndexOf('.');
-            if (firstDotIndex < 0)
-                return type.Name == typeName ? type : null;
+            if (firstDotIndex < 0) {
+                //return type.Name == typeName ? type : null;
+                if (type.Name == typeName)
+                    return type;
+
+                if (typeName.StartsWith(type.Name)) {
+                    var typeNameSuffix = typeName.Substring(type.Name.Length);
+                    if (typeNameSuffix == "&" || typeNameSuffix == "@")
+                        return new ByReferenceType(type);
+                    if (typeNameSuffix.Length >= 2 && typeNameSuffix[0] == '[' && typeNameSuffix[typeNameSuffix.Length - 1] == ']') {
+                        int commaCount = 0;
+                        for (int i = 1; i < typeNameSuffix.Length - 1; i++) {
+                            if (typeNameSuffix[i] == ',')
+                                commaCount++;
+                        }
+                        return commaCount == 0
+                            ? new ArrayType(type)
+                            : new ArrayType(type, commaCount + 1);
+                    }
+                }
+
+                return null;
+            }
 
             if (!type.HasNestedTypes)
                 return null;
@@ -130,29 +152,32 @@ namespace DandyDoc.CRef
                 return null;
 
             var typeName = cRef.CoreName.Substring(0, lastDotIndex);
-            var type = GetTypeDefinition(assembly, typeName);
-            if (null == type)
+            var typeReference = GetTypeReference(assembly, typeName);
+            if (null == typeReference)
                 return null;
 
             var memberName = cRef.CoreName.Substring(lastDotIndex + 1);
             Contract.Assume(!String.IsNullOrEmpty(memberName));
 
-            if (String.IsNullOrEmpty(cRef.TargetType) || "!".Equals(cRef.TargetType)) {
-                var paramTypes = cRef.ParamPartTypes;
-                return type.Methods.FirstOrDefault(m => MethodMatches(m, memberName, paramTypes, cRef.ReturnTypePart))
-                    ?? type.Properties.FirstOrDefault(p => PropertyMatches(p, memberName, paramTypes))
-                    ?? type.Events.FirstOrDefault(e => EventMatches(e, memberName))
-                    ?? (type.Fields.FirstOrDefault(f => FieldMatches(f, memberName)) as MemberReference);
-            }
+            var typeDefinition = typeReference.ToDefinition();
+            if (typeDefinition != null) {
+                if (String.IsNullOrEmpty(cRef.TargetType) || "!".Equals(cRef.TargetType)) {
+                    var paramTypes = cRef.ParamPartTypes;
+                    return typeDefinition.Methods.FirstOrDefault(m => MethodMatches(m, memberName, paramTypes, cRef.ReturnTypePart))
+                        ?? typeDefinition.Properties.FirstOrDefault(p => PropertyMatches(p, memberName, paramTypes))
+                        ?? typeDefinition.Events.FirstOrDefault(e => EventMatches(e, memberName))
+                        ?? (typeDefinition.Fields.FirstOrDefault(f => FieldMatches(f, memberName)) as MemberReference);
+                }
 
-            if ("M".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
-                return type.Methods.FirstOrDefault(m => MethodMatches(m, memberName, cRef.ParamPartTypes, cRef.ReturnTypePart));
-            if ("P".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
-                return type.Properties.FirstOrDefault(p => PropertyMatches(p, memberName, cRef.ParamPartTypes));
-            if ("F".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
-                return type.Fields.FirstOrDefault(f => FieldMatches(f, memberName));
-            if ("E".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
-                return type.Events.FirstOrDefault(e => EventMatches(e, memberName));
+                if ("M".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
+                    return typeDefinition.Methods.FirstOrDefault(m => MethodMatches(m, memberName, cRef.ParamPartTypes, cRef.ReturnTypePart));
+                if ("P".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
+                    return typeDefinition.Properties.FirstOrDefault(p => PropertyMatches(p, memberName, cRef.ParamPartTypes));
+                if ("F".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
+                    return typeDefinition.Fields.FirstOrDefault(f => FieldMatches(f, memberName));
+                if ("E".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
+                    return typeDefinition.Events.FirstOrDefault(e => EventMatches(e, memberName));
+            }
             return null;
         }
 

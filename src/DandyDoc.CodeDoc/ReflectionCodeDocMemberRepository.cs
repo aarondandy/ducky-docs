@@ -368,12 +368,36 @@ namespace DandyDoc.CodeDoc
             private CodeDocType GetOrConvert(Type type, bool lite = false) {
                 Contract.Requires(type != null);
                 Contract.Ensures(Contract.Result<CodeDocType>() != null);
+                var result = GetOnlyType(GetCRefIdentifier(type), lite: lite);
+                return result ?? ConvertToModel(type, lite: lite);
+            }
 
-                var getAttemtpResult = GetOnlyType(GetCRefIdentifier(type), lite: lite);
-                if (getAttemtpResult != null)
-                    return getAttemtpResult;
+            private CodeDocMethod GetOrConvert(MethodBase methodBase, bool lite = false) {
+                Contract.Requires(methodBase != null);
+                Contract.Ensures(Contract.Result<CodeDocMethod>() != null);
+                var result = GetOnlyMethod(GetCRefIdentifier(methodBase), lite: lite);
+                return result ?? ConvertToModel(methodBase, null);
+            }
 
-                return ConvertToModel(type, lite: lite);
+            private CodeDocProperty GetOrConvert(PropertyInfo propertyInfo, bool lite = false) {
+                Contract.Requires(propertyInfo != null);
+                Contract.Ensures(Contract.Result<CodeDocProperty>() != null);
+                var result = GetOnlyProperty(GetCRefIdentifier(propertyInfo), lite: lite);
+                return result ?? ConvertToModel(propertyInfo);
+            }
+
+            private CodeDocField GetOrConvert(FieldInfo fieldInfo, bool lite = false) {
+                Contract.Requires(fieldInfo != null);
+                Contract.Ensures(Contract.Result<CodeDocField>() != null);
+                var result = GetOnlyField(GetCRefIdentifier(fieldInfo), lite: lite);
+                return result ?? ConvertToModel(fieldInfo);
+            }
+
+            private CodeDocEvent GetOrConvert(EventInfo eventInfo, bool lite = false) {
+                Contract.Requires(eventInfo != null);
+                Contract.Ensures(Contract.Result<CodeDocEvent>() != null);
+                var result = GetOnlyEvent(GetCRefIdentifier(eventInfo), lite: lite);
+                return result ?? ConvertToModel(eventInfo);
             }
 
             private CodeDocParameter CreateArgument(ParameterInfo parameterInfo, ICodeDocMemberDataProvider provider) {
@@ -452,6 +476,10 @@ namespace DandyDoc.CodeDoc
                 return model;
             }
 
+            protected virtual Uri GetUri(CRefIdentifier cRef, MemberInfo memberInfo) {
+                return cRef.ToUri();
+            }
+
             private CodeDocEvent ConvertToModel(EventInfo eventInfo) {
                 Contract.Requires(eventInfo != null);
                 Contract.Ensures(Contract.Result<CodeDocEvent>() != null);
@@ -463,7 +491,7 @@ namespace DandyDoc.CodeDoc
 
                 var eventCRef = GetCRefIdentifier(eventInfo);
                 var model = new CodeDocEvent(eventCRef);
-                model.Uri = eventCRef.ToUri();
+                model.Uri = GetUri(eventCRef, eventInfo);
 
                 var memberDataProvider = new CodeDocMemberInfoProvider<EventInfo>(eventInfo);
                 var xmlDocs = XmlDocs.GetMember(eventCRef.FullCRef);
@@ -509,7 +537,7 @@ namespace DandyDoc.CodeDoc
 
                 var fieldCRef = GetCRefIdentifier(fieldInfo);
                 var model = new CodeDocField(fieldCRef);
-                model.Uri = fieldCRef.ToUri();
+                model.Uri = GetUri(fieldCRef, fieldInfo);
 
                 var memberDataProvider = new CodeDocMemberInfoProvider<FieldInfo>(fieldInfo);
                 var xmlDocs = XmlDocs.GetMember(fieldCRef.FullCRef);
@@ -552,7 +580,7 @@ namespace DandyDoc.CodeDoc
 
                 var propertyCRef = GetCRefIdentifier(propertyInfo);
                 var model = new CodeDocProperty(propertyCRef);
-                model.Uri = propertyCRef.ToUri();
+                model.Uri = GetUri(propertyCRef, propertyInfo);
 
                 var memberDataProvider = new CodeDocMemberInfoProvider<PropertyInfo>(propertyInfo);
                 var xmlDocs = XmlDocs.GetMember(propertyCRef.FullCRef);
@@ -622,7 +650,7 @@ namespace DandyDoc.CodeDoc
                 var methodInfo = methodBase as MethodInfo;
                 var methodCRef = GetCRefIdentifier(methodBase);
                 var model = new CodeDocMethod(methodCRef);
-                model.Uri = methodCRef.ToUri();
+                model.Uri = GetUri(methodCRef, methodInfo);
 
                 var memberDataProvider = new CodeDocMemberInfoProvider<MethodBase>(methodBase);
                 var xmlDocs = XmlDocs.GetMember(methodCRef.FullCRef);
@@ -738,7 +766,7 @@ namespace DandyDoc.CodeDoc
                 var model = type.IsDelegateType()
                     ? new CodeDocDelegate(cRef)
                     : new CodeDocType(cRef);
-                model.Uri = cRef.ToUri();
+                model.Uri = GetUri(cRef, type);
                 var delegateModel = model as CodeDocDelegate;
 
                 var memberDataProvider = new CodeDocMemberInfoProvider<Type>(type);
@@ -813,7 +841,7 @@ namespace DandyDoc.CodeDoc
                 var nestedTypeModels = new List<ICodeDocMember>();
                 var nestedDelegateModels = new List<ICodeDocMember>();
                 foreach (var nestedType in type.GetAllNestedTypes().Where(ReflectionRepository.MemberFilter)) {
-                    var nestedTypeModel = ConvertToModel(nestedType, lite: true);
+                    var nestedTypeModel = GetOrConvert(nestedType, lite: true);
                     if (nestedType.IsDelegateType())
                         nestedDelegateModels.Add(nestedTypeModel);
                     else
@@ -825,7 +853,7 @@ namespace DandyDoc.CodeDoc
                 var methodModels = new List<ICodeDocMember>();
                 var operatorModels = new List<ICodeDocMember>();
                 foreach (var methodInfo in type.GetAllMethods().Where(ReflectionRepository.MemberFilter)) {
-                    var methodModel = ConvertToModel(methodInfo);
+                    var methodModel = GetOrConvert(methodInfo, lite: true);
                     if (methodInfo.IsOperatorOverload())
                         operatorModels.Add(methodModel);
                     else
@@ -837,25 +865,25 @@ namespace DandyDoc.CodeDoc
                 model.Constructors = type
                     .GetAllConstructors()
                     .Where(ReflectionRepository.MemberFilter)
-                    .Select(m => ConvertToModel(m))
+                    .Select(methodInfo => GetOrConvert(methodInfo, lite: true))
                     .ToArray();
 
                 model.Properties = type
                     .GetAllProperties()
                     .Where(ReflectionRepository.MemberFilter)
-                    .Select(ConvertToModel)
+                    .Select(propertyInfo => GetOrConvert(propertyInfo, lite: true))
                     .ToArray();
 
                 model.Fields = type
                     .GetAllFields()
                     .Where(ReflectionRepository.MemberFilter)
-                    .Select(ConvertToModel)
+                    .Select(fieldInfo => GetOrConvert(fieldInfo, lite: true))
                     .ToArray();
 
                 model.Events = type
                     .GetAllEvents()
                     .Where(ReflectionRepository.MemberFilter)
-                    .Select(ConvertToModel)
+                    .Select(eventInfo => GetOrConvert(eventInfo, lite: true))
                     .ToArray();
 
                 if (delegateModel != null) {

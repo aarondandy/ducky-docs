@@ -321,11 +321,6 @@ namespace DandyDoc.CodeDoc
                 return GetCodeDocSimpleAssembly(GetCRefIdentifier(assembly));
             }
 
-            private MemberReference GetMemberReferencePreferDefinition(CRefIdentifier cRef) {
-                var memberReference = CRefLookup.GetMember(cRef);
-                return (MemberReference)(memberReference.ToDefinition()) ?? memberReference;
-            }
-
             /// <inheritdoc/>
             public override ICodeDocMember GetMemberModel(CRefIdentifier cRef, bool lite) {
                 if (cRef == null) throw new ArgumentNullException("cRef");
@@ -336,7 +331,7 @@ namespace DandyDoc.CodeDoc
                 if ("A".Equals(cRef.TargetType, StringComparison.OrdinalIgnoreCase))
                     return GetCodeDocSimpleAssembly(cRef);
 
-                var memberReference = GetMemberReferencePreferDefinition(cRef);
+                var memberReference = CRefLookup.GetMember(cRef);
                 if (memberReference == null || !CecilRepository.MemberFilter(memberReference))
                     return null;
 
@@ -368,12 +363,36 @@ namespace DandyDoc.CodeDoc
             private CodeDocType GetOrConvert(TypeReference typeReference, bool lite = false) {
                 Contract.Requires(typeReference != null);
                 Contract.Ensures(Contract.Result<CodeDocType>() != null);
+                var result = GetOnlyType(GetCRefIdentifier(typeReference), lite: lite);
+                return result ?? ConvertToModel(typeReference, lite: lite);
+            }
 
-                var getAttemtpResult = GetOnlyType(GetCRefIdentifier(typeReference), lite: lite);
-                if (getAttemtpResult != null)
-                    return getAttemtpResult;
+            private CodeDocMethod GetOrConvert(MethodReference methodReference, bool lite = false) {
+                Contract.Requires(methodReference != null);
+                Contract.Ensures(Contract.Result<CodeDocMethod>() != null);
+                var result = GetOnlyMethod(GetCRefIdentifier(methodReference), lite: lite);
+                return result ?? ConvertToModel(methodReference, null);
+            }
 
-                return ConvertToModel(typeReference, lite: lite);
+            private CodeDocProperty GetOrConvert(PropertyReference propertyReference, bool lite = false) {
+                Contract.Requires(propertyReference != null);
+                Contract.Ensures(Contract.Result<CodeDocProperty>() != null);
+                var result = GetOnlyProperty(GetCRefIdentifier(propertyReference), lite: lite);
+                return result ?? ConvertToModel(propertyReference);
+            }
+
+            private CodeDocField GetOrConvert(FieldReference fieldReference, bool lite = false) {
+                Contract.Requires(fieldReference != null);
+                Contract.Ensures(Contract.Result<CodeDocField>() != null);
+                var result = GetOnlyField(GetCRefIdentifier(fieldReference), lite: lite);
+                return result ?? ConvertToModel(fieldReference);
+            }
+
+            private CodeDocEvent GetOrConvert(EventReference eventReference, bool lite = false) {
+                Contract.Requires(eventReference != null);
+                Contract.Ensures(Contract.Result<CodeDocEvent>() != null);
+                var result = GetOnlyEvent(GetCRefIdentifier(eventReference), lite: lite);
+                return result ?? ConvertToModel(eventReference);
             }
 
             private CodeDocParameter CreateArgument(ParameterReference parameterReference, ICodeDocMemberDataProvider provider) {
@@ -846,7 +865,7 @@ namespace DandyDoc.CodeDoc
                     var nestedTypeModels = new List<ICodeDocMember>();
                     var nestedDelegateModels = new List<ICodeDocMember>();
                     foreach (var nestedType in typeDefinition.NestedTypes.Where(CecilRepository.MemberFilter)) {
-                        var nestedTypeModel = ConvertToModel(nestedType, lite: true);
+                        var nestedTypeModel = GetOrConvert(nestedType, lite: true);
                         if (nestedType.IsDelegateType())
                             nestedDelegateModels.Add(nestedTypeModel);
                         else
@@ -859,7 +878,7 @@ namespace DandyDoc.CodeDoc
                     var operatorModels = new List<ICodeDocMember>();
                     var constructorModels = new List<ICodeDocMember>();
                     foreach (var methodDefinition in typeDefinition.GetAllMethods(CecilRepository.MemberFilter)) {
-                        var methodModel = ConvertToModel(methodDefinition);
+                        var methodModel = GetOrConvert(methodDefinition, lite: true);
                         if (methodDefinition.IsConstructor)
                             constructorModels.Add(methodModel);
                         else if (methodDefinition.IsOperatorOverload())
@@ -873,17 +892,17 @@ namespace DandyDoc.CodeDoc
 
                     model.Properties = typeDefinition
                         .GetAllProperties(CecilRepository.MemberFilter)
-                        .Select(ConvertToModel)
+                        .Select(p => GetOrConvert(p, lite: true))
                         .ToArray();
 
                     model.Fields = typeDefinition
                         .GetAllFields(CecilRepository.MemberFilter)
-                        .Select(ConvertToModel)
+                        .Select(f => GetOrConvert(f, lite: true))
                         .ToArray();
 
                     model.Events = typeDefinition
                         .GetAllEvents(CecilRepository.MemberFilter)
-                        .Select(ConvertToModel)
+                        .Select(e => GetOrConvert(e, lite: true))
                         .ToArray();
                 }
 

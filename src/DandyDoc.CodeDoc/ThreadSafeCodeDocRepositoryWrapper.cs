@@ -23,7 +23,7 @@ namespace DandyDoc.CodeDoc
         }
 
         [ContractInvariantMethod]
-        private void CodeContractInvaraints() {
+        private void CodeContractInvariants() {
             Contract.Invariant(Repository != null);
             Contract.Invariant(_mutex != null);
         }
@@ -40,9 +40,9 @@ namespace DandyDoc.CodeDoc
         /// </summary>
         /// <param name="cRef">The code reference.</param>
         /// <returns>The member model.</returns>
-        public ICodeDocMember GetMemberModel(CRefIdentifier cRef, CodeDocRepositorySearchContext searchContext = null) {
+        public ICodeDocMember GetMemberModel(CRefIdentifier cRef, CodeDocRepositorySearchContext searchContext = null, bool lite = false) {
             lock (_mutex) {
-                return Repository.GetMemberModel(cRef, searchContext);
+                return Repository.GetMemberModel(cRef, searchContext, lite);
             }
         }
 

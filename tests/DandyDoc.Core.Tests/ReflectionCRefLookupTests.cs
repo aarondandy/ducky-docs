@@ -371,5 +371,19 @@ namespace DandyDoc.Core.Tests
             Assert.AreEqual(typeof(int), convertToInt32.ReturnType);
         }
 
+        [Test]
+        public void can_find_array_type() {
+            var type = Lookup.GetMember("T:TestLibrary1.Class1[]") as Type;
+            Assert.IsNotNull(type);
+            Assert.AreEqual("TestLibrary1.Class1[]", type.FullName);
+        }
+
+        [Test]
+        public void can_find_ref_type() {
+            var type = Lookup.GetMember("T:TestLibrary1.Class1@") as Type;
+            Assert.IsNotNull(type);
+            Assert.AreEqual("TestLibrary1.Class1&", type.FullName);
+        }
+
     }
 }

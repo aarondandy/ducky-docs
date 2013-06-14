@@ -10,15 +10,16 @@ namespace DandyDoc.CodeDoc
     public class CodeDocRepositorySearchContext
     {
 
-        public CodeDocRepositorySearchContext(IEnumerable<ICodeDocMemberRepository> allRepositories)
-            : this(allRepositories.ToArray()){
+        public CodeDocRepositorySearchContext(IEnumerable<ICodeDocMemberRepository> allRepositories, bool liteModels = false)
+            : this(allRepositories.ToArray(), liteModels){
             Contract.Requires(allRepositories != null);
         }
 
-        private CodeDocRepositorySearchContext(ICodeDocMemberRepository[] allRepositories) {
+        private CodeDocRepositorySearchContext(ICodeDocMemberRepository[] allRepositories, bool liteModels) {
             Contract.Requires(allRepositories != null);
             _visitedRepositories = new HashSet<ICodeDocMemberRepository>();
             _allRepositories = allRepositories.ToArray();
+            LiteModels = liteModels;
         }
 
         [ContractInvariantMethod]
@@ -29,6 +30,8 @@ namespace DandyDoc.CodeDoc
 
         private readonly HashSet<ICodeDocMemberRepository> _visitedRepositories;
         private readonly ICodeDocMemberRepository[] _allRepositories;
+
+        public bool LiteModels { get; set; }
 
         [Pure]
         public bool IsReferenced(ICodeDocMemberRepository repository) {
@@ -44,8 +47,9 @@ namespace DandyDoc.CodeDoc
 
         public bool Visit(ICodeDocMemberRepository repository) {
             if(repository == null) throw new ArgumentNullException("repository");
-            if(!IsReferenced(repository)) throw new ArgumentException("Given repository must be referenced by this search context.", "repository");
             Contract.EndContractBlock();
+            if (!IsReferenced(repository))
+                return false;
             return _visitedRepositories.Add(repository);
         }
 
@@ -75,13 +79,21 @@ namespace DandyDoc.CodeDoc
         }
 
         public CodeDocRepositorySearchContext CloneWithoutVisits() {
-            return new CodeDocRepositorySearchContext(_allRepositories);
+            return CloneWithoutVisits(LiteModels);
+        }
+
+        public CodeDocRepositorySearchContext CloneWithoutVisits(bool liteModels) {
+            return new CodeDocRepositorySearchContext(_allRepositories, liteModels);
         }
 
         public CodeDocRepositorySearchContext CloneWithSingleVisit(ICodeDocMemberRepository repository) {
+            return CloneWithSingleVisit(repository, LiteModels);
+        }
+
+        public CodeDocRepositorySearchContext CloneWithSingleVisit(ICodeDocMemberRepository repository, bool liteModels) {
             if(repository == null) throw new ArgumentNullException("repository");
             Contract.EndContractBlock();
-            var result = CloneWithoutVisits();
+            var result = CloneWithoutVisits(liteModels);
             result.Visit(repository);
             return result;
         }
@@ -89,12 +101,23 @@ namespace DandyDoc.CodeDoc
         public ICodeDocMember Search(CRefIdentifier cRef) {
             ICodeDocMemberRepository repository;
             while((repository = PopUnvisitedRepository()) != null){
-                var model = repository.GetMemberModel(cRef, this);
+                var model = repository.GetMemberModel(cRef, this, lite: LiteModels);
                 if (model != null)
                     return model;
             }
             return null;
         }
 
+        public CodeDocRepositorySearchContext CloneWithOneUnvisited(ICodeDocMemberRepository targetRepository) {
+            return CloneWithOneUnvisited(targetRepository, LiteModels);
+        }
+
+        public CodeDocRepositorySearchContext CloneWithOneUnvisited(ICodeDocMemberRepository targetRepository, bool liteModels) {
+            var result = CloneWithoutVisits(liteModels);
+            foreach (var repository in result.AllRepositories)
+                if (repository != targetRepository)
+                    result.Visit(repository);
+            return result;
+        }
     }
 }

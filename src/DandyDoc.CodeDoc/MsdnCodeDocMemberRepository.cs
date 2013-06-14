@@ -318,7 +318,6 @@ namespace DandyDoc.CodeDoc
             }
         }
 
-
         private ObjectCache _cache;
         public ObjectCache Cache{
             get{
@@ -342,12 +341,12 @@ namespace DandyDoc.CodeDoc
 
         public string ServiceUrl { get; private set; }
 
-        public ICodeDocMember GetMemberModel(string cRef, CodeDocRepositorySearchContext searchContext = null) {
+        public ICodeDocMember GetMemberModel(string cRef, CodeDocRepositorySearchContext searchContext = null, bool lite = false) {
             Contract.Requires(!String.IsNullOrEmpty(cRef));
-            return GetMemberModel(new CRefIdentifier(cRef));
+            return GetMemberModel(new CRefIdentifier(cRef), searchContext, lite);
         }
 
-        public ICodeDocMember GetMemberModel(CRefIdentifier cRef, CodeDocRepositorySearchContext searchContext = null) {
+        public ICodeDocMember GetMemberModel(CRefIdentifier cRef, CodeDocRepositorySearchContext searchContext = null, bool lite = false) {
             if(cRef == null) throw new ArgumentNullException("cRef");
             Contract.EndContractBlock();
 
@@ -438,8 +437,8 @@ namespace DandyDoc.CodeDoc
         private string GetUrl(MtpsNavigationNode node) {
             Contract.Requires(node != null);
             Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
-            string locale = GetBestLocale(node);
-            string id = String.IsNullOrEmpty(node.Alias) ? node.ContentId : node.Alias;
+            var locale = GetBestLocale(node);
+            var id = String.IsNullOrEmpty(node.Alias) ? node.ContentId : node.Alias;
             return String.Format("http://msdn.microsoft.com/{0}/library/{1}.aspx", locale ?? Locale, id);
         }
 
@@ -449,7 +448,7 @@ namespace DandyDoc.CodeDoc
                 request.contentIdentifier,
                 request.locale,
                 request.version,
-                String.Join(",",request.requestedDocuments.Select(d => String.Concat(d.type,d.selector)))
+                String.Join(",",(request.requestedDocuments ?? Enumerable.Empty<requestedDocument>()).Select(d => String.Concat(d.type,d.selector)))
             );
         }
 
@@ -506,7 +505,8 @@ namespace DandyDoc.CodeDoc
             if (String.IsNullOrEmpty(locale))
                 locale = Locale;
 
-            return Client.GetContent(_appId, new getContentRequest { contentIdentifier = assetId, locale = locale, version = version });
+            //return Client.GetContent(_appId, new getContentRequest { contentIdentifier = assetId, locale = locale, version = version });
+            return CachedGetContentRequest(_appId, new getContentRequest {contentIdentifier = assetId, locale = locale, version = version});
         }
 
         private getContentResponse GetContentResponse(MtpsIdentifier identifier) {

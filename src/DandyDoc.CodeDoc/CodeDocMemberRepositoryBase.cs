@@ -66,24 +66,20 @@ namespace DandyDoc.CodeDoc
         public IList<CodeDocSimpleNamespace> Namespaces { get { return _simpleAssemblyNamespaceCollection.Value.Namespaces; } }
 
         /// <inheritdoc/>
-        public ICodeDocMember GetMemberModel(string cRef, CodeDocRepositorySearchContext searchContext = null) {
+        public ICodeDocMember GetMemberModel(string cRef, CodeDocRepositorySearchContext searchContext = null, bool lite = false) {
             if (String.IsNullOrEmpty(cRef)) throw new ArgumentException("Code reference is not valid.", "cRef");
             Contract.EndContractBlock();
-            return GetMemberModel(new CRefIdentifier(cRef), searchContext);
-        }
-
-        /// <inheritdoc/>
-        public virtual ICodeDocMember GetMemberModel(CRefIdentifier cRef, CodeDocRepositorySearchContext searchContext) {
-            return GetMemberModel(cRef, searchContext, lite: false);
+            return GetMemberModel(new CRefIdentifier(cRef), searchContext, lite: lite);
         }
 
         /// <summary>
         /// Creates a member model for the given code reference.
         /// </summary>
         /// <param name="cRef">The code reference to generate a model for.</param>
+        /// <param name="searchContext">The serach context to use when locating related members.</param>
         /// <param name="lite">Indicates if a lite version of the model should be generated.</param>
         /// <returns>The generated member if possible.</returns>
-        protected virtual ICodeDocMember GetMemberModel(CRefIdentifier cRef, CodeDocRepositorySearchContext searchContext, bool lite) {
+        public virtual ICodeDocMember GetMemberModel(CRefIdentifier cRef, CodeDocRepositorySearchContext searchContext, bool lite) {
             return CreateGenerator(searchContext).GetMemberModel(cRef, lite: lite);
         }
 
@@ -174,18 +170,6 @@ namespace DandyDoc.CodeDoc
                 return Repository.Namespaces.FirstOrDefault(x => cRef.Equals(x.CRef));
             }
 
-            /// <inheritdoc/>
-            public ICodeDocMember GetMemberModel(string cRef) {
-                if (String.IsNullOrEmpty(cRef)) throw new ArgumentException("Code reference is not valid.", "cRef");
-                Contract.EndContractBlock();
-                return GetMemberModel(new CRefIdentifier(cRef));
-            }
-
-            /// <inheritdoc/>
-            public virtual ICodeDocMember GetMemberModel(CRefIdentifier cRef) {
-                return GetMemberModel(cRef, lite: false);
-            }
-
             /// <summary>
             /// Creates a member model for the given code reference.
             /// </summary>
@@ -208,7 +192,7 @@ namespace DandyDoc.CodeDoc
                 };
                 result.Uri = simpleNamespace.Uri ?? simpleNamespace.CRef.ToUri();
                 result.Assemblies = simpleNamespace.AssemblyCRefs.Select(GetCodeDocSimpleAssembly).ToList();
-                result.Types = simpleNamespace.TypeCRefs.Select(GetMemberModel).Cast<CodeDocType>().ToList();
+                result.Types = simpleNamespace.TypeCRefs.Select(cRef => GetMemberModel(cRef, lite: true)).Cast<CodeDocType>().ToList();
                 return result;
             }
 
@@ -279,11 +263,11 @@ namespace DandyDoc.CodeDoc
                 model.SeeAlso = provider.GetSeeAlsos().ToArray();
             }
 
-            protected ICodeDocMember GetOnly(CRefIdentifier cRef, bool lite = false) {
+            protected ICodeDocMember GetOnly(CRefIdentifier cRef, bool lite) {
                 Contract.Requires(cRef != null);
 
                 if(HasSearchContext){
-                    var searchContext = SearchContext.CloneWithSingleVisit(Repository);
+                    var searchContext = SearchContext.CloneWithSingleVisit(Repository, liteModels: lite);
                     var searchResult = searchContext.Search(cRef);
                     if (searchResult != null)
                         return searchResult;
@@ -299,6 +283,26 @@ namespace DandyDoc.CodeDoc
             protected CodeDocType GetOnlyType(CRefIdentifier cRef, bool lite = false) {
                 Contract.Requires(cRef != null);
                 return ToTypeModel(GetOnly(cRef, lite: lite));
+            }
+
+            protected CodeDocMethod GetOnlyMethod(CRefIdentifier cRef, bool lite = false) {
+                Contract.Requires(cRef != null);
+                return ToMethodModel(GetOnly(cRef, lite: lite));
+            }
+
+            protected CodeDocProperty GetOnlyProperty(CRefIdentifier cRef, bool lite = false) {
+                Contract.Requires(cRef != null);
+                return ToPropertyModel(GetOnly(cRef, lite: lite));
+            }
+
+            protected CodeDocField GetOnlyField(CRefIdentifier cRef, bool lite = false) {
+                Contract.Requires(cRef != null);
+                return ToFieldModel(GetOnly(cRef, lite: lite));
+            }
+
+            protected CodeDocEvent GetOnlyEvent(CRefIdentifier cRef, bool lite = false) {
+                Contract.Requires(cRef != null);
+                return ToEventModel(GetOnly(cRef, lite: lite));
             }
 
             /// <summary>
@@ -326,6 +330,20 @@ namespace DandyDoc.CodeDoc
                 return ToTypeModel(GetOrConvert(cRef, lite));
             }
 
+            private void CopySimpleMemberAttributes(CodeDocSimpleMember target, CodeDocSimpleMember source) {
+                Contract.Requires(target != null);
+                Contract.Requires(source != null);
+                target.Uri = source.Uri;
+                target.Title = source.Title;
+                target.SubTitle = source.SubTitle;
+                target.ShortName = source.ShortName;
+                target.FullName = source.FullName;
+                target.NamespaceName = source.NamespaceName;
+                target.Namespace = source.Namespace;
+                target.ExternalVisibility = source.ExternalVisibility;
+                target.SummaryContents = source.SummaryContents;
+            }
+
             protected CodeDocType ToTypeModel(ICodeDocMember member){
                 if (member == null)
                     return null;
@@ -335,19 +353,70 @@ namespace DandyDoc.CodeDoc
                 var typeModel = new CodeDocType(member.CRef.WithTargetType("T"));
 
                 var simpleMember = member as CodeDocSimpleMember;
-                if(simpleMember != null){
-                    typeModel.Uri = simpleMember.Uri;
-                    typeModel.Title = simpleMember.Title;
-                    typeModel.SubTitle = simpleMember.SubTitle;
-                    typeModel.ShortName = simpleMember.ShortName;
-                    typeModel.FullName = simpleMember.FullName;
-                    typeModel.NamespaceName = simpleMember.NamespaceName;
-                    typeModel.Namespace = simpleMember.Namespace;
-                    typeModel.ExternalVisibility = simpleMember.ExternalVisibility;
-                    typeModel.SummaryContents = simpleMember.SummaryContents;
-                }
+                if(simpleMember != null)
+                    CopySimpleMemberAttributes(typeModel, simpleMember);
 
                 return typeModel;
+            }
+
+            protected CodeDocMethod ToMethodModel(ICodeDocMember member) {
+                if (member == null)
+                    return null;
+                if (member is CodeDocMethod)
+                    return (CodeDocMethod)member;
+
+                var methodModel = new CodeDocMethod(member.CRef.WithTargetType("M"));
+
+                var simpleMember = member as CodeDocSimpleMember;
+                if (simpleMember != null)
+                    CopySimpleMemberAttributes(methodModel, simpleMember);
+
+                return methodModel;
+            }
+
+            protected CodeDocProperty ToPropertyModel(ICodeDocMember member) {
+                if (member == null)
+                    return null;
+                if (member is CodeDocProperty)
+                    return (CodeDocProperty)member;
+
+                var propertyModel = new CodeDocProperty(member.CRef.WithTargetType("P"));
+
+                var simpleMember = member as CodeDocSimpleMember;
+                if(simpleMember != null)
+                    CopySimpleMemberAttributes(propertyModel, simpleMember);
+
+                return propertyModel;
+            }
+
+            protected CodeDocField ToFieldModel(ICodeDocMember member) {
+                if (member == null)
+                    return null;
+                if (member is CodeDocField)
+                    return (CodeDocField)member;
+
+                var fieldModel = new CodeDocField(member.CRef.WithTargetType("F"));
+
+                var simpleMember = member as CodeDocSimpleMember;
+                if (simpleMember != null)
+                    CopySimpleMemberAttributes(fieldModel, simpleMember);
+
+                return fieldModel;
+            }
+
+            protected CodeDocEvent ToEventModel(ICodeDocMember member) {
+                if (member == null)
+                    return null;
+                if (member is CodeDocEvent)
+                    return (CodeDocEvent)member;
+
+                var eventModel = new CodeDocEvent(member.CRef.WithTargetType("F"));
+
+                var simpleMember = member as CodeDocSimpleMember;
+                if (simpleMember != null)
+                    CopySimpleMemberAttributes(eventModel, simpleMember);
+
+                return eventModel;
             }
 
             /// <summary>

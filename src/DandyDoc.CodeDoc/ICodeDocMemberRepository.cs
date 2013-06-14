@@ -14,7 +14,7 @@ namespace DandyDoc.CodeDoc
         /// </summary>
         /// <param name="cRef">The code reference.</param>
         /// <returns>The member model if found.</returns>
-        ICodeDocMember GetMemberModel(CRefIdentifier cRef, CodeDocRepositorySearchContext searchContext = null);
+        ICodeDocMember GetMemberModel(CRefIdentifier cRef, CodeDocRepositorySearchContext searchContext = null, bool lite = false);
 
         /// <summary>
         /// The assemblies exposed by the repository.

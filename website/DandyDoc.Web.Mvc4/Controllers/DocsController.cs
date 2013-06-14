@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Web.Mvc;
 using DandyDoc.CRef;
 using DandyDoc.CodeDoc;
@@ -8,11 +9,11 @@ namespace DandyDoc.Web.Mvc4.Controllers
     public class DocsController : Controller
     {
 
-        public DocsController(ICodeDocMemberRepository codeDocMemberRepository){
-            CodeDocMemberRepository = codeDocMemberRepository;
+        public DocsController(MvcApplication.CodeDocRepositories codeDocRepositories) {
+            CodeDocRepositories = codeDocRepositories;
         }
 
-        ICodeDocMemberRepository CodeDocMemberRepository { get; set; }
+        MvcApplication.CodeDocRepositories CodeDocRepositories { get; set; }
 
         public ActionResult Index()
         {
@@ -20,13 +21,18 @@ namespace DandyDoc.Web.Mvc4.Controllers
         }
 
         public ActionResult Api(string cRef) {
-            ViewBag.CodeDocEntityRepository = CodeDocMemberRepository;
+            var targetRepository = CodeDocRepositories.TargetRepository;
+            ViewBag.CodeDocEntityRepository = targetRepository;
 
             if (String.IsNullOrWhiteSpace(cRef))
-                return View("Api/Index", CodeDocMemberRepository);
+                return View("Api/Index", targetRepository);
+
+            var searchContext = CodeDocRepositories
+                .CreateSearchContext()
+                .CloneWithOneUnvisited(targetRepository);
 
             var cRefIdentifier = new CRefIdentifier(cRef);
-            var model = CodeDocMemberRepository.GetMemberModel(cRefIdentifier);
+            var model = searchContext.Search(cRefIdentifier);
             if (model == null)
                 return HttpNotFound();
 
