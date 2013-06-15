@@ -286,6 +286,14 @@ namespace TestLibrary1
         /// <param name="a">An 'out' parameter.</param>
         /// <param name="b">A 'ref' parameter.</param>
         /// <returns><code>true</code></returns>
+        /// <remarks>
+        /// <para>
+        /// P1
+        /// </para>
+        /// <para>
+        /// P2
+        /// </para>
+        /// </remarks>
         public bool TrySomeOutRefStuff(out int a, ref int b) {
             a = 2 + b;
             b = 1;

@@ -83,9 +83,9 @@
           }
         }
       </section>
-      @if(Model.CRef != null){
+      @if(entityModel != null){
         var uriString = new UriBuilder("https://github.com/aarondandy/dandy-doc/issues/new") {
-          Query = String.Format("title=Documentation:+{0}&body=CRef:+{0}", Uri.EscapeDataString(Model.CRef.ToString()))
+          Query = String.Format("title=[docs]:+{0}&body=CRef:+{0}", Uri.EscapeDataString(entityModel.CRef.ToString()))
         }.ToString();
         <div><i class="icon-exclamation-sign"></i> <a href="@uriString" target="_blank">Report an issue with this documentation.</a></div>
       }

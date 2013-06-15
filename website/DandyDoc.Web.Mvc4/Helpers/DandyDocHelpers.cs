@@ -205,7 +205,7 @@ namespace DandyDoc.Web.Mvc4.Helpers
             if (node is XmlDocElement) {
                 var element = (XmlDocElement)node;
                 var nodeName = element.Name;
-                if (String.Equals("PARA", nodeName))
+                if (String.Equals("PARA", nodeName, StringComparison.OrdinalIgnoreCase))
                     return new HtmlString("<p>" + helper.XmlDocHtml(element.Children) + "</p>");
                 return new HtmlString(element.Node.OuterXml); // just use it in the raw
             }
