@@ -43,9 +43,10 @@ namespace DandyDoc.Web.Mvc4.Helpers
                 if ("HTTP".Equals(uri.Scheme, StringComparison.OrdinalIgnoreCase) | "HTTPS".Equals(uri.Scheme, StringComparison.OrdinalIgnoreCase))
                     return uri.ToString();
 
-                /*CRefIdentifier cRef;
+                // while it is less efficient the Uri may contain a more accurate linking CRef than the CRef itself due to byref and arrays
+                CRefIdentifier cRef;
                 if (CRefIdentifier.TryParse(uri, out cRef))
-                    return helper.LocalCRefUri(cRef);*/
+                    return helper.LocalCRefUri(cRef);
             }
 
             return helper.LocalCRefUri(member.CRef);

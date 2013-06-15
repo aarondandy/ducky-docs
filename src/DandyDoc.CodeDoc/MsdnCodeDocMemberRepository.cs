@@ -384,19 +384,23 @@ namespace DandyDoc.CodeDoc
 
             model.ExternalVisibility = ExternalVisibilityKind.Public;
 
-            var contentXml = GetContent(bestTocResult.ContentId);
-            if(contentXml != null) {
-                XmlNode summaryElement = contentXml.GetElementsByTagName("div")
-                    .OfType<XmlElement>()
-                    .FirstOrDefault(x => String.Equals(x.GetAttribute("class"), "summary", StringComparison.OrdinalIgnoreCase));
-                if (summaryElement != null) {
-                    if (summaryElement.ChildNodes.Count == 1 && summaryElement.ChildNodes[0].Name == "p") {
-                        // unwrap the lone p tag.
-                        summaryElement = summaryElement.ChildNodes[0];
+            if (!lite) {
+
+                var contentXml = GetContent(bestTocResult.ContentId);
+                if (contentXml != null) {
+                    XmlNode summaryElement = contentXml.GetElementsByTagName("div")
+                        .OfType<XmlElement>()
+                        .FirstOrDefault(x => String.Equals(x.GetAttribute("class"), "summary", StringComparison.OrdinalIgnoreCase));
+                    if (summaryElement != null) {
+                        if (summaryElement.ChildNodes.Count == 1 && summaryElement.ChildNodes[0].Name == "p") {
+                            // unwrap the lone p tag.
+                            summaryElement = summaryElement.ChildNodes[0];
+                        }
+                        var summaryXmlDoc = XmlDocParser.Default.Parse(summaryElement);
+                        model.SummaryContents = summaryXmlDoc.Children;
                     }
-                    var summaryXmlDoc = XmlDocParser.Default.Parse(summaryElement);
-                    model.SummaryContents = summaryXmlDoc.Children;
                 }
+
             }
 
             return model;
@@ -709,6 +713,13 @@ namespace DandyDoc.CodeDoc
 
             if (memberName.Length > 2 && memberName[1] == ':')
                 memberName = memberName.Substring(2);
+            if (memberName.EndsWith("&") || memberName.EndsWith("@"))
+                memberName = memberName.Substring(0, memberName.Length - 1);
+            if(memberName.EndsWith("]")){
+                var lastOpenSquareBraceIndex = memberName.LastIndexOf('[');
+                if(lastOpenSquareBraceIndex >= 0)
+                    memberName = memberName.Substring(0,lastOpenSquareBraceIndex);
+            }
             Contract.Assume(!String.IsNullOrEmpty(memberName));
             return SearchToc(memberName, root);
         }

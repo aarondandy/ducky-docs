@@ -477,6 +477,16 @@ namespace DandyDoc.CodeDoc
             }
 
             protected virtual Uri GetUri(CRefIdentifier cRef, MemberInfo memberInfo) {
+                if(cRef.TargetType == "T"){
+                    if(cRef.FullCRef.EndsWith("&") || cRef.FullCRef.EndsWith("@"))
+                        cRef = new CRefIdentifier(cRef.FullCRef.Substring(0,cRef.FullCRef.Length-1));
+                    if(cRef.FullCRef.EndsWith("]")){
+                        var lastOpenSquareBracket = cRef.FullCRef.LastIndexOf('[');
+                        if(lastOpenSquareBracket >= 0){
+                            cRef = new CRefIdentifier(cRef.FullCRef.Substring(0, lastOpenSquareBracket));
+                        }
+                    }
+                }
                 return cRef.ToUri();
             }
 
