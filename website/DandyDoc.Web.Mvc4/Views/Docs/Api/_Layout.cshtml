@@ -69,7 +69,7 @@
             }
           </section>
           }
-          if (Model.HasSeeAlso) {
+          if (contentModel.HasSeeAlso) {
           <section>
             <h2>See Also</h2>
             <ul>
@@ -83,6 +83,12 @@
           }
         }
       </section>
+      @if(Model.CRef != null){
+        var uriString = new UriBuilder("https://github.com/aarondandy/dandy-doc/issues/new") {
+          Query = String.Format("title=Documentation:+{0}&body=CRef:+{0}", Uri.EscapeDataString(Model.CRef.ToString()))
+        }.ToString();
+        <div><i class="icon-exclamation-sign"></i> <a href="@uriString" target="_blank">Report an issue with this documentation.</a></div>
+      }
     </div>
   </div>
 </div>
