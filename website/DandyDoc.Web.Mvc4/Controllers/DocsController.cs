@@ -9,14 +9,18 @@ namespace DandyDoc.Web.Mvc4.Controllers
     public class DocsController : Controller
     {
 
-        public DocsController(MvcApplication.CodeDocRepositories codeDocRepositories) {
+        public DocsController(MvcApplication.CodeDocRepositories codeDocRepositories, MvcApplication.NavNode navRoot) {
             CodeDocRepositories = codeDocRepositories;
+            NavRoot = navRoot;
         }
 
         MvcApplication.CodeDocRepositories CodeDocRepositories { get; set; }
 
+        MvcApplication.NavNode NavRoot { get; set; }
+
         public ActionResult Index()
         {
+            ViewBag.NavRoot = NavRoot;
             return View();
         }
 
@@ -24,6 +28,7 @@ namespace DandyDoc.Web.Mvc4.Controllers
             var targetRepository = CodeDocRepositories.TargetRepository;
             ViewBag.CodeDocEntityRepository = targetRepository;
             ViewBag.CRefToModel = new Func<CRefIdentifier,ICodeDocMember>(searchCRef => CodeDocRepositories.CreateSearchContext().Search(searchCRef));
+            ViewBag.NavRoot = NavRoot;
 
             if (String.IsNullOrWhiteSpace(cRef))
                 return View("Api/Index", targetRepository);

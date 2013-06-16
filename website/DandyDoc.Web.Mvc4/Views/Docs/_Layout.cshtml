@@ -1,0 +1,16 @@
+﻿@model dynamic
+@{
+  Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container">
+  <div class="row">
+    <nav class="span3 namespace-nav">
+      <ul class="nav-list unstyled">
+        nav
+      </ul>
+    </nav>
+    <div class="span9">
+      @RenderBody()
+    </div>
+  </div>
+</div>

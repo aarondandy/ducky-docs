@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Runtime.Caching;
@@ -350,8 +351,13 @@ namespace DandyDoc.CodeDoc
             if(cRef == null) throw new ArgumentNullException("cRef");
             Contract.EndContractBlock();
 
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
             var tocResults = SearchToc(cRef.FullCRef);
             var bestTocResult = tocResults.FirstOrDefault();
+            stopwatch.Stop();
+            Debug.WriteLine("Search for {0} returned in {1}", cRef, stopwatch.Elapsed);
+
             if (bestTocResult == null)
                 return null;
 

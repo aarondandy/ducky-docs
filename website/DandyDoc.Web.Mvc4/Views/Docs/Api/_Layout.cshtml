@@ -2,7 +2,7 @@
 @using DandyDoc.Web.Mvc4.Helpers
 @model dynamic
 @{
-  Layout = "~/Views/Shared/_Layout.cshtml";
+  Layout = "~/Views/Docs/_Layout.cshtml";
   ViewBag.Title = "Dandy Doc";
   ViewBag.SubTitle = "API Reference";
   var entityModel = Model as ICodeDocMember;
@@ -12,83 +12,74 @@
   }
   var contentModel = Model as CodeDocMemberContentBase;
 }
-<div class="container">
-  <div class="row">
-    <nav class="span3 namespace-nav">
-      Nav Menu
-    </nav>
-    <div class="span9">
-      <section>
-        @{
-          var entityTitle = ViewBag.EntityTitle as string;
-          var entitySubTitle = ViewBag.EntitySubTitle as string;
-          if (!String.IsNullOrWhiteSpace(entityTitle)) {
-          <h1>@Html.BreakIntoCodeNamePartElements(entityTitle)
-            @if (!String.IsNullOrWhiteSpace(entitySubTitle)) {
-              <small>@entitySubTitle</small>
-            }
-          </h1>
-          }
-        }
-        @if (entityModel != null) {
-          if (entityModel.HasSummaryContents) {
-          <p class="lead">@Html.XmlDocHtml(entityModel.SummaryContents)</p>
-          }
-          @Html.FlairTable(entityModel)
-        }
-        @if (contentModel != null) {
-          if (contentModel.Namespace != null) {
-          <div>Namespace: @Html.ActionLinkFull(contentModel.Namespace)</div>
-          }
-          if (contentModel.Assembly != null) {
-          <div>Assembly: @contentModel.Assembly.AssemblyFileName</div>
-          }
-          if (contentModel.DeclaringType != null) {
-          <div>Declaring Type: @Html.ActionLinkFull(contentModel.DeclaringType)</div>
-          }
-        }
-        @RenderBody()
-        @if (contentModel != null) {
-          if (contentModel.HasRemarks) {
-          <section>
-            <h2>Remarks</h2>
-            @foreach (var section in contentModel.Remarks.Where(x => x.HasChildren)) {
-              <div>
-                @Html.XmlDocHtml(section.Children)
-              </div>
-            }
-          </section>
-          }
-          if (contentModel.HasExamples) {
-          <section>
-            <h2>Examples</h2>
-            @foreach (var section in contentModel.Examples.Where(x => x.HasChildren)) {
-              <div>
-                @Html.XmlDocHtml(section.Children)
-              </div>
-            }
-          </section>
-          }
-          if (contentModel.HasSeeAlso) {
-          <section>
-            <h2>See Also</h2>
-            <ul>
-              @foreach (var section in contentModel.SeeAlso) {
-                <li>
-                  @Html.XmlDocHtml(section)
-                </li>
-              }
-            </ul>
-          </section>
-          }
-        }
-      </section>
-      @if(entityModel != null){
-        var uriString = new UriBuilder("https://github.com/aarondandy/dandy-doc/issues/new") {
-          Query = String.Format("title=[docs]:+{0}&body=CRef:+{0}", Uri.EscapeDataString(entityModel.CRef.ToString()))
-        }.ToString();
-        <div class="muted pull-right"><a href="@uriString" target="_blank" title="Report an issue with this documentation."> <i class="icon-exclamation-sign"> </i> </a></div>
+<section>
+  @{
+    var entityTitle = ViewBag.EntityTitle as string;
+    var entitySubTitle = ViewBag.EntitySubTitle as string;
+    if (!String.IsNullOrWhiteSpace(entityTitle)) {
+    <h1>@Html.BreakIntoCodeNamePartElements(entityTitle)
+      @if (!String.IsNullOrWhiteSpace(entitySubTitle)) {
+        <small>@entitySubTitle</small>
       }
-    </div>
-  </div>
-</div>
+    </h1>
+    }
+  }
+  @if (entityModel != null) {
+    if (entityModel.HasSummaryContents) {
+    <p class="lead">@Html.XmlDocHtml(entityModel.SummaryContents)</p>
+    }
+    @Html.FlairTable(entityModel)
+  }
+  @if (contentModel != null) {
+    if (contentModel.Namespace != null) {
+    <div>Namespace: @Html.ActionLinkFull(contentModel.Namespace)</div>
+    }
+    if (contentModel.Assembly != null) {
+    <div>Assembly: @contentModel.Assembly.AssemblyFileName</div>
+    }
+    if (contentModel.DeclaringType != null) {
+    <div>Declaring Type: @Html.ActionLinkFull(contentModel.DeclaringType)</div>
+    }
+  }
+  @RenderBody()
+  @if (contentModel != null) {
+    if (contentModel.HasRemarks) {
+    <section>
+      <h2>Remarks</h2>
+      @foreach (var section in contentModel.Remarks.Where(x => x.HasChildren)) {
+        <div>
+          @Html.XmlDocHtml(section.Children)
+        </div>
+      }
+    </section>
+    }
+    if (contentModel.HasExamples) {
+    <section>
+      <h2>Examples</h2>
+      @foreach (var section in contentModel.Examples.Where(x => x.HasChildren)) {
+        <div>
+          @Html.XmlDocHtml(section.Children)
+        </div>
+      }
+    </section>
+    }
+    if (contentModel.HasSeeAlso) {
+    <section>
+      <h2>See Also</h2>
+      <ul>
+        @foreach (var section in contentModel.SeeAlso) {
+          <li>
+            @Html.XmlDocHtml(section)
+          </li>
+        }
+      </ul>
+    </section>
+    }
+  }
+</section>
+@if (entityModel != null) {
+  var uriString = new UriBuilder("https://github.com/aarondandy/dandy-doc/issues/new") {
+    Query = String.Format("title=[docs]:+{0}&body=CRef:+{0}", Uri.EscapeDataString(entityModel.CRef.ToString()))
+  }.ToString();
+  <div class="muted pull-right"><a href="@uriString" target="_blank" title="Report an issue with this documentation."><i class="icon-exclamation-sign"></i></a></div>
+}

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Net;
 using System.Reflection;
 using System.Runtime.Caching;
@@ -22,15 +23,27 @@ namespace DandyDoc.Web.Mvc4
     public class MvcApplication : NinjectHttpApplication
     {
 
+        public class NavNode : Collection<NavNode>
+        {
+            public string Title { get; set; }
+            public Uri Link { get; set; }
+            public string Icon { get; set; }
+        }
+
+        public class CRefNavNode : NavNode
+        {
+            public CRefIdentifier CRef { get; set; }
+        }
+
         public class CodeDocRepositories
         {
-
-
-
             public CodeDocRepositories(ICodeDocMemberRepository targetRepository, ICodeDocMemberRepository supportingRepository) {
                 TargetRepository = targetRepository;
                 SupportingRepository = supportingRepository;
+                _navRoot = new Lazy<NavNode>(CreateApiNavTree, true);
             }
+
+            private Lazy<NavNode> _navRoot; 
 
             public ICodeDocMemberRepository TargetRepository { get; private set; }
 
@@ -39,6 +52,37 @@ namespace DandyDoc.Web.Mvc4
             public CodeDocRepositorySearchContext CreateSearchContext() {
                 return new CodeDocRepositorySearchContext(new[] { TargetRepository, SupportingRepository });
             }
+
+            public NavNode NavRoot { get { return _navRoot.Value; } }
+
+            private NavNode CreateApiNavTree(){
+                var root = new NavNode {
+                    Title = "API",
+                    Icon = null,
+                    Link = new Uri("~/Docs/Api", UriKind.Relative)
+                };
+                foreach(var namespaceModel in TargetRepository.Namespaces){
+                    var namespaceNode = new CRefNavNode {
+                        Title = namespaceModel.Title,
+                        Icon = null,
+                        Link = namespaceModel.Uri,
+                        CRef = namespaceModel.CRef
+                    };
+                    root.Add(namespaceNode);
+                    foreach(var typeCRef in namespaceModel.TypeCRefs){
+                        var typeModel = CreateSearchContext().Search(typeCRef);
+                        var typeNode = new CRefNavNode {
+                            Title = typeModel.Title,
+                            Icon = null,
+                            Link = typeModel.Uri,
+                            CRef = typeModel.CRef
+                        };
+                        namespaceNode.Add(typeNode);
+                    }
+                }
+                return root;
+            }
+
         }
 
         public class CecilMemberRepository : ReflectionCodeDocMemberRepository
@@ -67,7 +111,7 @@ namespace DandyDoc.Web.Mvc4
                                     namespaceName,
                                     typeName),
                                 UriKind.Absolute);
-                            // TODO: if the class file is found, use that
+                            /*// TODO: if the class file is found, use that
                             try{
                                 var request = WebRequest.Create(classFileUri);
                                 request.Timeout = 5000;
@@ -76,7 +120,7 @@ namespace DandyDoc.Web.Mvc4
                                     return classFileUri;
                             }catch{
                                 ; // exception monster ate all the exceptions
-                            }
+                            }*/
                         }
                         return new Uri(
                             String.Format(
@@ -132,6 +176,19 @@ namespace DandyDoc.Web.Mvc4
 
                 return new CodeDocRepositories(targetRepository, supportingRepository);
             }).InSingletonScope();
+
+            kernel.Bind<NavNode>().ToMethod(x => {
+                var apiNavRoot = x.Kernel.Get<CodeDocRepositories>().NavRoot;
+                return new NavNode(){
+                    new NavNode{
+                        Title = "Getting Started",
+                        Icon = null,
+                        Link = new Uri("~/Docs", UriKind.Relative)
+                    },
+                    apiNavRoot
+                };
+            });
+
             return kernel;
         }
 

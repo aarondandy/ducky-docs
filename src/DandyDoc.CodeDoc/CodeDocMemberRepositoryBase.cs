@@ -267,15 +267,17 @@ namespace DandyDoc.CodeDoc
                 Contract.Requires(cRef != null);
 
                 if(HasSearchContext){
-                    var searchContext = SearchContext.CloneWithSingleVisit(Repository, liteModels: lite);
+                    var searchContext = SearchContext.CloneWithoutVisits(liteModels: lite);
                     var searchResult = searchContext.Search(cRef);
                     if (searchResult != null)
                         return searchResult;
                 }
 
-                var localModel = GetMemberModel(cRef, lite: lite);
-                if (localModel != null)
-                    return localModel;
+                if (!SearchContext.IsReferenced(Repository)) {
+                    var localModel = GetMemberModel(cRef, lite: lite);
+                    if (localModel != null)
+                        return localModel;
+                }
 
                 return null;
             }
