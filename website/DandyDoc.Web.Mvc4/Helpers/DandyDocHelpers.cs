@@ -108,9 +108,10 @@ namespace DandyDoc.Web.Mvc4.Helpers
             Contract.Requires(helper != null);
             Contract.Requires(cRef != null);
 
-            ICodeDocMemberRepository repository = helper.ViewBag.CodeDocEntityRepository;
-            if (repository != null) {
-                var member = repository.GetMemberModel(cRef);
+            Func<CRefIdentifier, ICodeDocMember> cRefToMember = helper.ViewBag.CRefToModel;
+
+            if (cRefToMember != null) {
+                var member = cRefToMember(cRef);
                 if (member != null) {
                     return helper.ActionLink(member, linkText);
                 }

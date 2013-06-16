@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Net;
 using System.Reflection;
+using System.Runtime.Caching;
 using System.Text;
 using System.Web;
 using System.Web.Hosting;
@@ -23,6 +25,8 @@ namespace DandyDoc.Web.Mvc4
         public class CodeDocRepositories
         {
 
+
+
             public CodeDocRepositories(ICodeDocMemberRepository targetRepository, ICodeDocMemberRepository supportingRepository) {
                 TargetRepository = targetRepository;
                 SupportingRepository = supportingRepository;
@@ -42,19 +46,56 @@ namespace DandyDoc.Web.Mvc4
 
             protected class MemberGenerator : ReflectionCodeDocMemberRepository.MemberGenerator
             {
+
+                private readonly ObjectCache _cache = MemoryCache.Default;
+
                 public MemberGenerator(ReflectionCodeDocMemberRepository repository, CodeDocRepositorySearchContext searchContext)
                     :base(repository, searchContext) { }
 
-                protected override Uri GetUri(CRefIdentifier cRef, MemberInfo memberInfo) {
+                private Uri CreateUri(CRefIdentifier cRef, MemberInfo memberInfo){
                     if (memberInfo != null) {
                         var type = memberInfo as Type ?? memberInfo.DeclaringType;
+                        var searchKeywords = memberInfo.Name;
                         if (type != null) {
+                            if(type != memberInfo)
+                                searchKeywords += " " + type.Name;
                             var namespaceName = type.Namespace;
                             var typeName = type.Name;
-                            return new Uri(String.Format("https://github.com/jbevain/cecil/blob/master/{0}/{1}.cs", namespaceName, typeName), UriKind.Absolute);
+                            var classFileUri = new Uri(
+                                String.Format(
+                                    "https://github.com/jbevain/cecil/blob/master/{0}/{1}.cs",
+                                    namespaceName,
+                                    typeName),
+                                UriKind.Absolute);
+                            // TODO: if the class file is found, use that
+                            try{
+                                var request = WebRequest.Create(classFileUri);
+                                request.Timeout = 5000;
+                                var response = request.GetResponse() as HttpWebResponse;
+                                if (response.StatusCode == HttpStatusCode.OK)
+                                    return classFileUri;
+                            }catch{
+                                ; // exception monster ate all the exceptions
+                            }
                         }
+                        return new Uri(
+                            String.Format(
+                                "https://github.com/jbevain/cecil/search?q={0}+repo%3Ajbevain%2Fcecil+extension%3Acs&type=Code",
+                                Uri.EscapeDataString(searchKeywords)),
+                            UriKind.Absolute);
                     }
                     return base.GetUri(cRef, memberInfo);
+                }
+
+                protected override Uri GetUri(CRefIdentifier cRef, MemberInfo memberInfo) {
+                    var cacheKey = String.Format("{0}_GetUri({1})", GetType().FullName, cRef);
+                    var uri = _cache[cacheKey] as Uri;
+                    if(uri == null){
+                        uri = CreateUri(cRef, memberInfo);
+                        if (uri != null)
+                            _cache[cacheKey] = uri;
+                    }
+                    return uri;
                 }
             }
 

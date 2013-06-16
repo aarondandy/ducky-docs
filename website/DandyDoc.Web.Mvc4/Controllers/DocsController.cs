@@ -23,6 +23,7 @@ namespace DandyDoc.Web.Mvc4.Controllers
         public ActionResult Api(string cRef) {
             var targetRepository = CodeDocRepositories.TargetRepository;
             ViewBag.CodeDocEntityRepository = targetRepository;
+            ViewBag.CRefToModel = new Func<CRefIdentifier,ICodeDocMember>(searchCRef => CodeDocRepositories.CreateSearchContext().Search(searchCRef));
 
             if (String.IsNullOrWhiteSpace(cRef))
                 return View("Api/Index", targetRepository);

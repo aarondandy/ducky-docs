@@ -10,7 +10,8 @@ namespace DandyDoc.Cecil
     /// <remarks>
     /// This resolver is useful in situations that require thread safety
     /// when using a version of Mono Cecil that is not thread safe.
-    /// Be warned however that this will cause Cecil to be very slow.
+    /// Be warned however that this will cause Cecil to be very slow
+    /// and to consume more resources.
     /// </remarks>
     /// <seealso cref="T:DandyDoc.CodeDoc.ThreadSafeCodeDocRepositoryWrapper"/>
     public class CecilImmediateAssemblyResolver : IAssemblyResolver
