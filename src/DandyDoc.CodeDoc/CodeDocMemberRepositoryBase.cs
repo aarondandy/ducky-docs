@@ -66,10 +66,10 @@ namespace DandyDoc.CodeDoc
         public IList<CodeDocSimpleNamespace> Namespaces { get { return _simpleAssemblyNamespaceCollection.Value.Namespaces; } }
 
         /// <inheritdoc/>
-        public ICodeDocMember GetMemberModel(string cRef, CodeDocRepositorySearchContext searchContext = null, bool lite = false) {
+        public ICodeDocMember GetMemberModel(string cRef, CodeDocRepositorySearchContext searchContext = null, CodeDocMemberDetailLevel detailLevel = CodeDocMemberDetailLevel.Full) {
             if (String.IsNullOrEmpty(cRef)) throw new ArgumentException("Code reference is not valid.", "cRef");
             Contract.EndContractBlock();
-            return GetMemberModel(new CRefIdentifier(cRef), searchContext, lite: lite);
+            return GetMemberModel(new CRefIdentifier(cRef), searchContext, detailLevel);
         }
 
         /// <summary>
@@ -79,8 +79,8 @@ namespace DandyDoc.CodeDoc
         /// <param name="searchContext">The serach context to use when locating related members.</param>
         /// <param name="lite">Indicates if a lite version of the model should be generated.</param>
         /// <returns>The generated member if possible.</returns>
-        public virtual ICodeDocMember GetMemberModel(CRefIdentifier cRef, CodeDocRepositorySearchContext searchContext, bool lite) {
-            return CreateGenerator(searchContext).GetMemberModel(cRef, lite: lite);
+        public virtual ICodeDocMember GetMemberModel(CRefIdentifier cRef, CodeDocRepositorySearchContext searchContext, CodeDocMemberDetailLevel detailLevel = CodeDocMemberDetailLevel.Full) {
+            return CreateGenerator(searchContext).GetMemberModel(cRef, detailLevel);
         }
 
         protected abstract MemberGeneratorBase CreateGenerator(CodeDocRepositorySearchContext searchContext);
@@ -176,7 +176,7 @@ namespace DandyDoc.CodeDoc
             /// <param name="cRef">The code reference to generate a model for.</param>
             /// <param name="lite">Indicates if a lite version of the model should be generated.</param>
             /// <returns>The generated member if possible.</returns>
-            public abstract ICodeDocMember GetMemberModel(CRefIdentifier cRef, bool lite);
+            public abstract ICodeDocMember GetMemberModel(CRefIdentifier cRef, CodeDocMemberDetailLevel detailLevel);
 
             /// <summary>
             /// Converts the simple namespace into a full namespace.
@@ -192,7 +192,7 @@ namespace DandyDoc.CodeDoc
                 };
                 result.Uri = simpleNamespace.Uri ?? simpleNamespace.CRef.ToUri();
                 result.Assemblies = simpleNamespace.AssemblyCRefs.Select(GetCodeDocSimpleAssembly).ToList();
-                result.Types = simpleNamespace.TypeCRefs.Select(cRef => GetMemberModel(cRef, lite: true)).Cast<CodeDocType>().ToList();
+                result.Types = simpleNamespace.TypeCRefs.Select(cRef => GetMemberModel(cRef, CodeDocMemberDetailLevel.Minimum)).Cast<CodeDocType>().ToList();
                 return result;
             }
 
@@ -263,18 +263,18 @@ namespace DandyDoc.CodeDoc
                 model.SeeAlso = provider.GetSeeAlsos().ToArray();
             }
 
-            protected ICodeDocMember GetOnly(CRefIdentifier cRef, bool lite) {
+            protected ICodeDocMember GetOnly(CRefIdentifier cRef, CodeDocMemberDetailLevel detailLevel) {
                 Contract.Requires(cRef != null);
 
                 if(HasSearchContext){
-                    var searchContext = SearchContext.CloneWithoutVisits(liteModels: lite);
+                    var searchContext = SearchContext.CloneWithoutVisits(detailLevel);
                     var searchResult = searchContext.Search(cRef);
                     if (searchResult != null)
                         return searchResult;
                 }
 
-                if (!SearchContext.IsReferenced(Repository)) {
-                    var localModel = GetMemberModel(cRef, lite: lite);
+                if (!HasSearchContext || !SearchContext.IsReferenced(Repository)) {
+                    var localModel = GetMemberModel(cRef, detailLevel);
                     if (localModel != null)
                         return localModel;
                 }
@@ -282,29 +282,29 @@ namespace DandyDoc.CodeDoc
                 return null;
             }
 
-            protected CodeDocType GetOnlyType(CRefIdentifier cRef, bool lite = false) {
+            protected CodeDocType GetOnlyType(CRefIdentifier cRef, CodeDocMemberDetailLevel detailLevel) {
                 Contract.Requires(cRef != null);
-                return ToTypeModel(GetOnly(cRef, lite: lite));
+                return ToTypeModel(GetOnly(cRef, detailLevel));
             }
 
-            protected CodeDocMethod GetOnlyMethod(CRefIdentifier cRef, bool lite = false) {
+            protected CodeDocMethod GetOnlyMethod(CRefIdentifier cRef, CodeDocMemberDetailLevel detailLevel) {
                 Contract.Requires(cRef != null);
-                return ToMethodModel(GetOnly(cRef, lite: lite));
+                return ToMethodModel(GetOnly(cRef, detailLevel));
             }
 
-            protected CodeDocProperty GetOnlyProperty(CRefIdentifier cRef, bool lite = false) {
+            protected CodeDocProperty GetOnlyProperty(CRefIdentifier cRef, CodeDocMemberDetailLevel detailLevel) {
                 Contract.Requires(cRef != null);
-                return ToPropertyModel(GetOnly(cRef, lite: lite));
+                return ToPropertyModel(GetOnly(cRef, detailLevel));
             }
 
-            protected CodeDocField GetOnlyField(CRefIdentifier cRef, bool lite = false) {
+            protected CodeDocField GetOnlyField(CRefIdentifier cRef, CodeDocMemberDetailLevel detailLevel) {
                 Contract.Requires(cRef != null);
-                return ToFieldModel(GetOnly(cRef, lite: lite));
+                return ToFieldModel(GetOnly(cRef, detailLevel));
             }
 
-            protected CodeDocEvent GetOnlyEvent(CRefIdentifier cRef, bool lite = false) {
+            protected CodeDocEvent GetOnlyEvent(CRefIdentifier cRef, CodeDocMemberDetailLevel detailLevel) {
                 Contract.Requires(cRef != null);
-                return ToEventModel(GetOnly(cRef, lite: lite));
+                return ToEventModel(GetOnly(cRef, detailLevel));
             }
 
             /// <summary>
@@ -313,10 +313,10 @@ namespace DandyDoc.CodeDoc
             /// <param name="cRef">The code reference to get a model for.</param>
             /// <param name="lite">Indicates that the model should be lite.</param>
             /// <returns>A code doc model for the given code reference.</returns>
-            protected ICodeDocMember GetOrConvert(CRefIdentifier cRef, bool lite = false) {
+            protected ICodeDocMember GetOrConvert(CRefIdentifier cRef, CodeDocMemberDetailLevel detailLevel) {
                 Contract.Requires(cRef != null);
                 Contract.Ensures(Contract.Result<ICodeDocMember>() != null);
-                return GetOnly(cRef, lite: lite)
+                return GetOnly(cRef, detailLevel)
                     ?? CreateGeneralMemberPlaceholder(cRef);
             }
 
@@ -326,10 +326,10 @@ namespace DandyDoc.CodeDoc
             /// <param name="cRef">The code reference to get a model for.</param>
             /// <param name="lite">Indicates that the model should be lite.</param>
             /// <returns>A code doc model for the given code reference.</returns>
-            protected CodeDocType GetOrConvertType(CRefIdentifier cRef, bool lite = false) {
+            protected CodeDocType GetOrConvertType(CRefIdentifier cRef, CodeDocMemberDetailLevel detailLevel) {
                 Contract.Requires(cRef != null);
                 Contract.Ensures(Contract.Result<ICodeDocMember>() != null);
-                return ToTypeModel(GetOrConvert(cRef, lite));
+                return ToTypeModel(GetOrConvert(cRef, detailLevel));
             }
 
             private void CopySimpleMemberAttributes(CodeDocSimpleMember target, CodeDocSimpleMember source) {
@@ -441,7 +441,7 @@ namespace DandyDoc.CodeDoc
                         : new CRefIdentifier(xmlDocException.CRef);
                     CodeDocException exceptionModel;
                     if (!exceptionLookup.TryGetValue(exceptionCRef, out exceptionModel)) {
-                        exceptionModel = new CodeDocException(GetOrConvertType(exceptionCRef, lite: true));
+                        exceptionModel = new CodeDocException(GetOrConvertType(exceptionCRef, CodeDocMemberDetailLevel.Minimum));
                         exceptionModel.Ensures = new List<XmlDocNode>();
                         exceptionModel.Conditions = new List<XmlDocNode>();
                         exceptionLookup.Add(exceptionCRef, exceptionModel);

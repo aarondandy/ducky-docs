@@ -40,9 +40,9 @@ namespace DandyDoc.CodeDoc
         /// </summary>
         /// <param name="cRef">The code reference.</param>
         /// <returns>The member model.</returns>
-        public ICodeDocMember GetMemberModel(CRefIdentifier cRef, CodeDocRepositorySearchContext searchContext = null, bool lite = false) {
+        public ICodeDocMember GetMemberModel(CRefIdentifier cRef, CodeDocRepositorySearchContext searchContext = null, CodeDocMemberDetailLevel detailLevel = CodeDocMemberDetailLevel.Full) {
             lock (_mutex) {
-                return Repository.GetMemberModel(cRef, searchContext, lite);
+                return Repository.GetMemberModel(cRef, searchContext, detailLevel);
             }
         }
 

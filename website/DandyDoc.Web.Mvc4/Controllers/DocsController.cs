@@ -27,7 +27,7 @@ namespace DandyDoc.Web.Mvc4.Controllers
         public ActionResult Api(string cRef) {
             var targetRepository = CodeDocRepositories.TargetRepository;
             ViewBag.CodeDocEntityRepository = targetRepository;
-            ViewBag.CRefToModel = new Func<CRefIdentifier,ICodeDocMember>(searchCRef => CodeDocRepositories.CreateSearchContext().Search(searchCRef));
+            ViewBag.CRefToMinimumModel = new Func<CRefIdentifier, ICodeDocMember>(searchCRef => CodeDocRepositories.CreateSearchContext(CodeDocMemberDetailLevel.Minimum).Search(searchCRef));
             ViewBag.NavRoot = NavRoot;
 
             if (String.IsNullOrWhiteSpace(cRef))

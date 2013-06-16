@@ -342,12 +342,12 @@ namespace DandyDoc.CodeDoc
 
         public string ServiceUrl { get; private set; }
 
-        public ICodeDocMember GetMemberModel(string cRef, CodeDocRepositorySearchContext searchContext = null, bool lite = false) {
+        public ICodeDocMember GetMemberModel(string cRef, CodeDocRepositorySearchContext searchContext = null, CodeDocMemberDetailLevel detailLevel = CodeDocMemberDetailLevel.Full) {
             Contract.Requires(!String.IsNullOrEmpty(cRef));
-            return GetMemberModel(new CRefIdentifier(cRef), searchContext, lite);
+            return GetMemberModel(new CRefIdentifier(cRef), searchContext, detailLevel);
         }
 
-        public ICodeDocMember GetMemberModel(CRefIdentifier cRef, CodeDocRepositorySearchContext searchContext = null, bool lite = false) {
+        public ICodeDocMember GetMemberModel(CRefIdentifier cRef, CodeDocRepositorySearchContext searchContext = null, CodeDocMemberDetailLevel detailLevel = CodeDocMemberDetailLevel.Full) {
             if(cRef == null) throw new ArgumentNullException("cRef");
             Contract.EndContractBlock();
 
@@ -390,7 +390,7 @@ namespace DandyDoc.CodeDoc
 
             model.ExternalVisibility = ExternalVisibilityKind.Public;
 
-            if (!lite) {
+            if (detailLevel.HasFlag(CodeDocMemberDetailLevel.AdditionalContents) || detailLevel.HasFlag(CodeDocMemberDetailLevel.Summary)) {
 
                 var contentXml = GetContent(bestTocResult.ContentId);
                 if (contentXml != null) {

@@ -10,16 +10,16 @@ namespace DandyDoc.CodeDoc
     public class CodeDocRepositorySearchContext
     {
 
-        public CodeDocRepositorySearchContext(IEnumerable<ICodeDocMemberRepository> allRepositories, bool liteModels = false)
-            : this(allRepositories.ToArray(), liteModels){
+        public CodeDocRepositorySearchContext(IEnumerable<ICodeDocMemberRepository> allRepositories, CodeDocMemberDetailLevel detailLevel = CodeDocMemberDetailLevel.Full)
+            : this(allRepositories.ToArray(), detailLevel){
             Contract.Requires(allRepositories != null);
         }
 
-        private CodeDocRepositorySearchContext(ICodeDocMemberRepository[] allRepositories, bool liteModels) {
+        private CodeDocRepositorySearchContext(ICodeDocMemberRepository[] allRepositories, CodeDocMemberDetailLevel detailLevel = CodeDocMemberDetailLevel.Full) {
             Contract.Requires(allRepositories != null);
             _visitedRepositories = new HashSet<ICodeDocMemberRepository>();
             _allRepositories = allRepositories.ToArray();
-            LiteModels = liteModels;
+            DetailLevel = detailLevel;
         }
 
         [ContractInvariantMethod]
@@ -31,7 +31,7 @@ namespace DandyDoc.CodeDoc
         private readonly HashSet<ICodeDocMemberRepository> _visitedRepositories;
         private readonly ICodeDocMemberRepository[] _allRepositories;
 
-        public bool LiteModels { get; set; }
+        public CodeDocMemberDetailLevel DetailLevel { get; set; }
 
         [Pure]
         public bool IsReferenced(ICodeDocMemberRepository repository) {
@@ -79,21 +79,21 @@ namespace DandyDoc.CodeDoc
         }
 
         public CodeDocRepositorySearchContext CloneWithoutVisits() {
-            return CloneWithoutVisits(LiteModels);
+            return CloneWithoutVisits(DetailLevel);
         }
 
-        public CodeDocRepositorySearchContext CloneWithoutVisits(bool liteModels) {
-            return new CodeDocRepositorySearchContext(_allRepositories, liteModels);
+        public CodeDocRepositorySearchContext CloneWithoutVisits(CodeDocMemberDetailLevel detailLevel) {
+            return new CodeDocRepositorySearchContext(_allRepositories, detailLevel);
         }
 
         public CodeDocRepositorySearchContext CloneWithSingleVisit(ICodeDocMemberRepository repository) {
-            return CloneWithSingleVisit(repository, LiteModels);
+            return CloneWithSingleVisit(repository, DetailLevel);
         }
 
-        public CodeDocRepositorySearchContext CloneWithSingleVisit(ICodeDocMemberRepository repository, bool liteModels) {
+        public CodeDocRepositorySearchContext CloneWithSingleVisit(ICodeDocMemberRepository repository, CodeDocMemberDetailLevel detailLevel) {
             if(repository == null) throw new ArgumentNullException("repository");
             Contract.EndContractBlock();
-            var result = CloneWithoutVisits(liteModels);
+            var result = CloneWithoutVisits(detailLevel);
             result.Visit(repository);
             return result;
         }
@@ -101,7 +101,7 @@ namespace DandyDoc.CodeDoc
         public ICodeDocMember Search(CRefIdentifier cRef) {
             ICodeDocMemberRepository repository;
             while((repository = PopUnvisitedRepository()) != null){
-                var model = repository.GetMemberModel(cRef, this, lite: LiteModels);
+                var model = repository.GetMemberModel(cRef, this, DetailLevel);
                 if (model != null)
                     return model;
             }
@@ -109,11 +109,11 @@ namespace DandyDoc.CodeDoc
         }
 
         public CodeDocRepositorySearchContext CloneWithOneUnvisited(ICodeDocMemberRepository targetRepository) {
-            return CloneWithOneUnvisited(targetRepository, LiteModels);
+            return CloneWithOneUnvisited(targetRepository, DetailLevel);
         }
 
-        public CodeDocRepositorySearchContext CloneWithOneUnvisited(ICodeDocMemberRepository targetRepository, bool liteModels) {
-            var result = CloneWithoutVisits(liteModels);
+        public CodeDocRepositorySearchContext CloneWithOneUnvisited(ICodeDocMemberRepository targetRepository, CodeDocMemberDetailLevel detailLevel) {
+            var result = CloneWithoutVisits(detailLevel);
             foreach (var repository in result.AllRepositories)
                 if (repository != targetRepository)
                     result.Visit(repository);

@@ -43,19 +43,19 @@ namespace DandyDoc.Web.Mvc4
                 _navRoot = new Lazy<NavNode>(CreateApiNavTree, true);
             }
 
-            private Lazy<NavNode> _navRoot; 
+            private readonly Lazy<NavNode> _navRoot; 
 
             public ICodeDocMemberRepository TargetRepository { get; private set; }
 
             public ICodeDocMemberRepository SupportingRepository { get; private set; }
 
-            public CodeDocRepositorySearchContext CreateSearchContext() {
-                return new CodeDocRepositorySearchContext(new[] { TargetRepository, SupportingRepository });
+            public CodeDocRepositorySearchContext CreateSearchContext(CodeDocMemberDetailLevel detailLevel = CodeDocMemberDetailLevel.Full) {
+                return new CodeDocRepositorySearchContext(new[] { TargetRepository, SupportingRepository }, detailLevel);
             }
 
             public NavNode NavRoot { get { return _navRoot.Value; } }
 
-            private NavNode CreateApiNavTree(){
+            private NavNode CreateApiNavTree() {
                 var root = new NavNode {
                     Title = "API",
                     Icon = null,
@@ -70,7 +70,7 @@ namespace DandyDoc.Web.Mvc4
                     };
                     root.Add(namespaceNode);
                     foreach(var typeCRef in namespaceModel.TypeCRefs){
-                        var typeModel = CreateSearchContext().Search(typeCRef);
+                        var typeModel = CreateSearchContext(CodeDocMemberDetailLevel.Minimum).Search(typeCRef);
                         var typeNode = new CRefNavNode {
                             Title = typeModel.Title,
                             Icon = null,

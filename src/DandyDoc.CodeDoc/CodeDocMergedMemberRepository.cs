@@ -51,8 +51,8 @@ namespace DandyDoc.CodeDoc
             Contract.Invariant(_assembliesAndNamespaces != null);
         }
 
-        public ICodeDocMember GetMemberModel(CRefIdentifier cRef, CodeDocRepositorySearchContext searchContext = null, bool lite = false) {
-            return this.Select(r => r.GetMemberModel(cRef, searchContext, lite)).FirstOrDefault(m => m != null);
+        public ICodeDocMember GetMemberModel(CRefIdentifier cRef, CodeDocRepositorySearchContext searchContext = null, CodeDocMemberDetailLevel detailLevel = CodeDocMemberDetailLevel.Full) {
+            return this.Select(r => r.GetMemberModel(cRef, searchContext, detailLevel)).FirstOrDefault(m => m != null);
         }
 
         private void ClearAssemblyNamespaceCache() {

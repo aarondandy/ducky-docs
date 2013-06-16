@@ -158,6 +158,7 @@
     </Compile>
     <Compile Include="CodeDocMemberDataProvider.cs" />
     <Compile Include="CodeDocMemberDataProviderCollection.cs" />
+    <Compile Include="CodeDocMemberDetailLevel.cs" />
     <Compile Include="CodeDocMemberXmlDataProvider.cs" />
     <Compile Include="CodeDocMemberInfoDataProvider.cs" />
     <Compile Include="CodeDocMergedMemberRepository.cs" />

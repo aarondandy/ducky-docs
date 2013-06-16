@@ -108,7 +108,7 @@ namespace DandyDoc.Web.Mvc4.Helpers
             Contract.Requires(helper != null);
             Contract.Requires(cRef != null);
 
-            Func<CRefIdentifier, ICodeDocMember> cRefToMember = helper.ViewBag.CRefToModel;
+            Func<CRefIdentifier, ICodeDocMember> cRefToMember = helper.ViewBag.CRefToMinimumModel;
 
             if (cRefToMember != null) {
                 var member = cRefToMember(cRef);
