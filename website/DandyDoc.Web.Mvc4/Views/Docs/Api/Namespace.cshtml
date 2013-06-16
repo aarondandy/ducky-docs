@@ -21,9 +21,11 @@
 @if(Model.Assemblies.Count > 0){
   <section>
     @if(Model.Assemblies.Count == 1){
-      <div>Assembly: @Html.ActionLinkFull(Model.Assemblies[0])</div>
+      <div>Assembly: @Model.Assemblies[0].AssemblyFileName</div>
     }else{
-      <div>Assemblies: @Html.ActionLinkList(Model.Assemblies, new{@class="inline"})</div>
+      <div>Assemblies: <ul class="inline">@foreach (var asm in Model.Assemblies) {
+        <li>@asm.AssemblyFileName</li>
+      }</ul></div>
     }
   </section>
 }

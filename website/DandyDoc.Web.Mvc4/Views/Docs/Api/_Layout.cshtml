@@ -41,7 +41,7 @@
           <div>Namespace: @Html.ActionLinkFull(contentModel.Namespace)</div>
           }
           if (contentModel.Assembly != null) {
-          <div>Assembly: @Html.ActionLinkFull(contentModel.Assembly)</div>
+          <div>Assembly: @contentModel.Assembly.AssemblyFileName</div>
           }
           if (contentModel.DeclaringType != null) {
           <div>Declaring Type: @Html.ActionLinkFull(contentModel.DeclaringType)</div>
