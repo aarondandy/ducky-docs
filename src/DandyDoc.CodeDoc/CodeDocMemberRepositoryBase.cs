@@ -192,7 +192,7 @@ namespace DandyDoc.CodeDoc
                 };
                 result.Uri = simpleNamespace.Uri ?? simpleNamespace.CRef.ToUri();
                 result.Assemblies = simpleNamespace.AssemblyCRefs.Select(GetCodeDocSimpleAssembly).ToList();
-                result.Types = simpleNamespace.TypeCRefs.Select(cRef => GetMemberModel(cRef, CodeDocMemberDetailLevel.Minimum)).Cast<CodeDocType>().ToList();
+                result.Types = simpleNamespace.TypeCRefs.Select(cRef => GetMemberModel(cRef, CodeDocMemberDetailLevel.QuickSummary)).Cast<CodeDocType>().ToList();
                 return result;
             }
 

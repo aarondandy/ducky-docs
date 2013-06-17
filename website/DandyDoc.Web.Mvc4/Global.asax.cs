@@ -59,13 +59,13 @@ namespace DandyDoc.Web.Mvc4
             private NavNode CreateApiNavTree() {
                 var root = new NavNode {
                     Title = "API",
-                    Icon = null,
+                    Icon = "icon-th",
                     Link = new Uri("~/Docs/Api", UriKind.Relative)
                 };
                 foreach(var namespaceModel in TargetRepository.Namespaces){
                     var namespaceNode = new CRefNavNode {
                         Title = namespaceModel.Title,
-                        Icon = null,
+                        Icon = "icon-gift",
                         Link = namespaceModel.Uri,
                         CRef = namespaceModel.CRef
                     };
@@ -74,7 +74,7 @@ namespace DandyDoc.Web.Mvc4
                         var typeModel = CreateSearchContext(CodeDocMemberDetailLevel.Minimum).Search(typeCRef);
                         var typeNode = new CRefNavNode {
                             Title = typeModel.Title,
-                            Icon = null,
+                            Icon = "icon-cog",
                             Link = typeModel.Uri,
                             CRef = typeModel.CRef
                         };
@@ -195,7 +195,7 @@ namespace DandyDoc.Web.Mvc4
                 return new NavNode(){
                     new NavNode{
                         Title = "Getting Started",
-                        Icon = null,
+                        Icon = "icon-play",
                         Link = new Uri("~/Docs", UriKind.Relative)
                     },
                     apiNavRoot
