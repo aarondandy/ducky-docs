@@ -18,8 +18,7 @@ namespace DandyDoc.Web.Mvc4.Controllers
 
         MvcApplication.NavNode NavRoot { get; set; }
 
-        public ActionResult Index()
-        {
+        public ActionResult Index() {
             ViewBag.NavRoot = NavRoot;
             return View();
         }

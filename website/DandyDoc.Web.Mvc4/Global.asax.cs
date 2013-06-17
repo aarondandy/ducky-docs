@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Net;
 using System.Reflection;
 using System.Runtime.Caching;
@@ -151,7 +152,19 @@ namespace DandyDoc.Web.Mvc4
 
         }
 
+        private static Assembly ReflectionOnlyResolveEventHandler(object sender, ResolveEventArgs args) {
+            var assemblyName = new AssemblyName(args.Name);
+            var binPath = HostingEnvironment.MapPath(String.Format("~/bin/{0}.dll", assemblyName.Name));
+            if (File.Exists(binPath))
+                return Assembly.ReflectionOnlyLoadFrom(binPath);
+            return Assembly.ReflectionOnlyLoad(args.Name);
+        }
+
         protected override IKernel CreateKernel() {
+
+            // this is needed so reflection only load can find the other assemblies
+            AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve += ReflectionOnlyResolveEventHandler;
+
             var kernel = new StandardKernel();
 
             kernel.Bind<CodeDocRepositories>().ToMethod(x => {
@@ -159,8 +172,8 @@ namespace DandyDoc.Web.Mvc4
                     new ReflectionCRefLookup(
                         typeof(ReflectionCRefLookup).Assembly,
                         typeof(ICodeDocMemberRepository).Assembly,
-                        typeof(CecilCRefLookup).Assembly,
-                        typeof(CecilCodeDocMemberRepository).Assembly,
+                        Assembly.ReflectionOnlyLoadFrom(HostingEnvironment.MapPath("~/bin/DandyDoc.Core.Cecil.dll")),
+                        Assembly.ReflectionOnlyLoadFrom(HostingEnvironment.MapPath("~/bin/DandyDoc.CodeDoc.Cecil.dll")),
                         Assembly.ReflectionOnlyLoadFrom(HostingEnvironment.MapPath("~/bin/TestLibrary1.dll"))
                     ),
                     new XmlAssemblyDocument(HostingEnvironment.MapPath("~/bin/DandyDoc.Core.XML")),
