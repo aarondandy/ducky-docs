@@ -21,10 +21,10 @@
     </references>
   </metadata>
   <files>
-    <file src="..\bin\$configuration$\DandyDoc.CodeDoc.Cecil.dll" target="lib\net-40" />
-    <file src="..\bin\$configuration$\DandyDoc.CodeDoc.Cecil.pdb" target="lib\net-40" />
-    <file src="..\bin\$configuration$\DandyDoc.CodeDoc.Cecil.XML" target="lib\net-40" />
-    <file src="..\bin\$configuration$\CodeContracts\DandyDoc.CodeDoc.Cecil.Contracts.dll" target="lib\net-40\CodeContracts" />
+    <file src="..\bin\$configuration$\DandyDoc.CodeDoc.Cecil.dll" target="lib\net40" />
+    <file src="..\bin\$configuration$\DandyDoc.CodeDoc.Cecil.pdb" target="lib\net40" />
+    <file src="..\bin\$configuration$\DandyDoc.CodeDoc.Cecil.XML" target="lib\net40" />
+    <file src="..\bin\$configuration$\CodeContracts\DandyDoc.CodeDoc.Cecil.Contracts.dll" target="lib\net40\CodeContracts" />
     <file src="..\src\DandyDoc.CodeDoc.Cecil\**.cs" target="src" />
   </files>
 </package>

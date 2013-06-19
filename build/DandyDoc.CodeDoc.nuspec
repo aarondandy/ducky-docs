@@ -19,10 +19,10 @@
     </references>
   </metadata>
   <files>
-    <file src="..\bin\$configuration$\DandyDoc.CodeDoc.dll" target="lib\net-40" />
-    <file src="..\bin\$configuration$\DandyDoc.CodeDoc.pdb" target="lib\net-40" />
-    <file src="..\bin\$configuration$\DandyDoc.CodeDoc.XML" target="lib\net-40" />
-    <file src="..\bin\$configuration$\CodeContracts\DandyDoc.CodeDoc.Contracts.dll" target="lib\net-40\CodeContracts" />
+    <file src="..\bin\$configuration$\DandyDoc.CodeDoc.dll" target="lib\net40" />
+    <file src="..\bin\$configuration$\DandyDoc.CodeDoc.pdb" target="lib\net40" />
+    <file src="..\bin\$configuration$\DandyDoc.CodeDoc.XML" target="lib\net40" />
+    <file src="..\bin\$configuration$\CodeContracts\DandyDoc.CodeDoc.Contracts.dll" target="lib\net40\CodeContracts" />
     <file src="..\src\DandyDoc.CodeDoc\**.cs" target="src" />
   </files>
 </package>
