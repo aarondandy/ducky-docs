@@ -344,55 +344,60 @@ namespace DandyDoc.CodeDoc
             /// <param name="memberReference">A Cecil member.</param>
             /// <param name="lite">Indicates that the generated model should be a lite version.</param>
             /// <returns>A code doc model for the given member.</returns>
-            protected virtual CodeDocMemberContentBase ConvertToModel(MemberReference memberReference, CodeDocMemberDetailLevel detailLevel) {
+            protected virtual CodeDocMemberContentBase ConvertToModel(MemberReference memberReference, CodeDocMemberDetailLevel detailLevel, ICodeDocMemberDataProvider extraMemberDataProvider = null) {
                 if (memberReference == null) throw new ArgumentNullException("memberReference");
                 Contract.Ensures(Contract.Result<ICodeDocMember>() != null);
                 if (memberReference is TypeReference)
-                    return ConvertToModel((TypeReference)memberReference, detailLevel);
+                    return ConvertToModel((TypeReference)memberReference, detailLevel, extraMemberDataProvider);
                 if (memberReference is FieldReference)
-                    return ConvertToModel((FieldReference)memberReference, detailLevel);
+                    return ConvertToModel((FieldReference)memberReference, detailLevel, extraMemberDataProvider);
                 if (memberReference is MethodReference)
-                    return ConvertToModel((MethodReference)memberReference, detailLevel);
+                    return ConvertToModel((MethodReference)memberReference, detailLevel, extraMemberDataProvider);
                 if (memberReference is EventReference)
-                    return ConvertToModel((EventReference)memberReference, detailLevel);
+                    return ConvertToModel((EventReference)memberReference, detailLevel, extraMemberDataProvider);
                 if (memberReference is PropertyReference)
-                    return ConvertToModel((PropertyReference)memberReference, detailLevel);
+                    return ConvertToModel((PropertyReference)memberReference, detailLevel, extraMemberDataProvider);
                 throw new NotSupportedException();
             }
 
             private CodeDocType GetOrConvert(TypeReference typeReference, CodeDocMemberDetailLevel detailLevel) {
                 Contract.Requires(typeReference != null);
                 Contract.Ensures(Contract.Result<CodeDocType>() != null);
-                var result = GetOnlyType(GetCRefIdentifier(typeReference), detailLevel);
-                return result ?? ConvertToModel(typeReference, detailLevel);
+                var getResult = GetOnlyType(GetCRefIdentifier(typeReference), detailLevel);
+                var getProvider = getResult != null ? new CodeDocMemberDataProvider(getResult) : null;
+                return ConvertToModel(typeReference, detailLevel, getProvider);
             }
 
             private CodeDocMethod GetOrConvert(MethodReference methodReference, CodeDocMemberDetailLevel detailLevel) {
                 Contract.Requires(methodReference != null);
                 Contract.Ensures(Contract.Result<CodeDocMethod>() != null);
-                var result = GetOnlyMethod(GetCRefIdentifier(methodReference), detailLevel);
-                return result ?? ConvertToModel(methodReference, detailLevel, null);
+                var getResult = GetOnlyMethod(GetCRefIdentifier(methodReference), detailLevel);
+                var getProvider = getResult != null ? new CodeDocMemberDataProvider(getResult) : null;
+                return ConvertToModel(methodReference, detailLevel, getProvider);
             }
 
             private CodeDocProperty GetOrConvert(PropertyReference propertyReference, CodeDocMemberDetailLevel detailLevel) {
                 Contract.Requires(propertyReference != null);
                 Contract.Ensures(Contract.Result<CodeDocProperty>() != null);
-                var result = GetOnlyProperty(GetCRefIdentifier(propertyReference), detailLevel);
-                return result ?? ConvertToModel(propertyReference, detailLevel);
+                var getResult = GetOnlyProperty(GetCRefIdentifier(propertyReference), detailLevel);
+                var getProvider = getResult != null ? new CodeDocMemberDataProvider(getResult) : null;
+                return ConvertToModel(propertyReference, detailLevel, getProvider);
             }
 
             private CodeDocField GetOrConvert(FieldReference fieldReference, CodeDocMemberDetailLevel detailLevel) {
                 Contract.Requires(fieldReference != null);
                 Contract.Ensures(Contract.Result<CodeDocField>() != null);
-                var result = GetOnlyField(GetCRefIdentifier(fieldReference), detailLevel);
-                return result ?? ConvertToModel(fieldReference, detailLevel);
+                var getResult = GetOnlyField(GetCRefIdentifier(fieldReference), detailLevel);
+                var getProvider = getResult != null ? new CodeDocMemberDataProvider(getResult) : null;
+                return ConvertToModel(fieldReference, detailLevel, getProvider);
             }
 
             private CodeDocEvent GetOrConvert(EventReference eventReference, CodeDocMemberDetailLevel detailLevel) {
                 Contract.Requires(eventReference != null);
                 Contract.Ensures(Contract.Result<CodeDocEvent>() != null);
-                var result = GetOnlyEvent(GetCRefIdentifier(eventReference), detailLevel);
-                return result ?? ConvertToModel(eventReference, detailLevel);
+                var getResult = GetOnlyEvent(GetCRefIdentifier(eventReference), detailLevel);
+                var getProvider = getResult != null ? new CodeDocMemberDataProvider(getResult) : null;
+                return ConvertToModel(eventReference, detailLevel, getProvider);
             }
 
             private CodeDocParameter CreateArgument(ParameterReference parameterReference, ICodeDocMemberDataProvider provider) {
@@ -468,7 +473,7 @@ namespace DandyDoc.CodeDoc
                 return model;
             }
 
-            private CodeDocEvent ConvertToModel(EventReference eventReference, CodeDocMemberDetailLevel detailLevel) {
+            private CodeDocEvent ConvertToModel(EventReference eventReference, CodeDocMemberDetailLevel detailLevel, ICodeDocMemberDataProvider extraMemberDataProvider = null) {
                 Contract.Requires(eventReference != null);
                 Contract.Ensures(Contract.Result<CodeDocEvent>() != null);
                 Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<CodeDocEvent>().ShortName));
@@ -493,6 +498,9 @@ namespace DandyDoc.CodeDoc
                     if (xmlDocs != null)
                         memberDataProvider.Add(new CodeDocMemberXmlDataProvider(xmlDocs));
                 }
+
+                if (extraMemberDataProvider != null)
+                    memberDataProvider.Add(extraMemberDataProvider);
 
                 if (includeInheritance && eventDefinition != null) {
                     var baseEvent = eventDefinition.FindNextAncestor();
@@ -525,7 +533,7 @@ namespace DandyDoc.CodeDoc
                 return model;
             }
 
-            private CodeDocField ConvertToModel(FieldReference fieldReference, CodeDocMemberDetailLevel detailLevel) {
+            private CodeDocField ConvertToModel(FieldReference fieldReference, CodeDocMemberDetailLevel detailLevel, ICodeDocMemberDataProvider extraMemberDataProvider = null) {
                 Contract.Requires(fieldReference != null);
                 Contract.Ensures(Contract.Result<CodeDocField>() != null);
                 Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<CodeDocField>().ShortName));
@@ -548,6 +556,9 @@ namespace DandyDoc.CodeDoc
                     if (xmlDocs != null)
                         memberDataProvider.Add(new CodeDocMemberXmlDataProvider(xmlDocs));
                 }
+
+                if (extraMemberDataProvider != null)
+                    memberDataProvider.Add(extraMemberDataProvider);
 
                 if (appendXmlDoc) {
                     model.ValueDescriptionContents = memberDataProvider.GeValueDescriptionContents().ToArray();
@@ -588,7 +599,7 @@ namespace DandyDoc.CodeDoc
                 return model;
             }
 
-            private CodeDocProperty ConvertToModel(PropertyReference propertyReference, CodeDocMemberDetailLevel detailLevel) {
+            private CodeDocProperty ConvertToModel(PropertyReference propertyReference, CodeDocMemberDetailLevel detailLevel, ICodeDocMemberDataProvider extraMemberDataProvider = null) {
                 Contract.Requires(propertyReference != null);
                 Contract.Ensures(Contract.Result<CodeDocProperty>() != null);
                 Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<CodeDocProperty>().ShortName));
@@ -615,6 +626,9 @@ namespace DandyDoc.CodeDoc
                     if (xmlDocs != null)
                         memberDataProvider.Add(new CodeDocMemberXmlDataProvider(xmlDocs));
                 }
+
+                if (extraMemberDataProvider != null)
+                    memberDataProvider.Add(extraMemberDataProvider);
 
                 var propertyDefinition = memberDataProvider.Definition as PropertyDefinition;
                 if (includeInheritance && propertyDefinition != null) {
@@ -815,7 +829,7 @@ namespace DandyDoc.CodeDoc
                 return true;
             }
 
-            private CodeDocType ConvertToModel(TypeReference typeReference, CodeDocMemberDetailLevel detailLevel) {
+            private CodeDocType ConvertToModel(TypeReference typeReference, CodeDocMemberDetailLevel detailLevel, ICodeDocMemberDataProvider extraMemberDataProvider = null) {
                 Contract.Requires(typeReference != null);
                 Contract.Ensures(Contract.Result<CodeDocType>() != null);
                 Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<CodeDocType>().ShortName));
@@ -840,6 +854,9 @@ namespace DandyDoc.CodeDoc
                     if (xmlDocs != null)
                         memberDataProvider.Add(new CodeDocMemberXmlDataProvider(xmlDocs));
                 }
+
+                if (extraMemberDataProvider != null)
+                    memberDataProvider.Add(extraMemberDataProvider);
 
                 var typeDefinition = memberDataProvider.Definition as TypeDefinition;
                 if (includeInheritance && typeDefinition != null && typeDefinition.BaseType != null) {
