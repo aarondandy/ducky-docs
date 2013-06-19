@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics.Contracts;
 using System.IO;
 using System.Net;
 using System.Reflection;
@@ -97,46 +98,29 @@ namespace DandyDoc.Web.Mvc4
                 public MemberGenerator(ReflectionCodeDocMemberRepository repository, CodeDocRepositorySearchContext searchContext)
                     :base(repository, searchContext) { }
 
-                private Uri CreateUri(CRefIdentifier cRef, MemberInfo memberInfo){
-                    if (memberInfo != null) {
-                        var type = memberInfo as Type ?? memberInfo.DeclaringType;
-                        var searchKeywords = memberInfo.Name;
-                        if (type != null) {
-                            if(type != memberInfo)
-                                searchKeywords += " " + type.Name;
-                            var namespaceName = type.Namespace;
-                            var typeName = type.Name;
-                            var classFileUri = new Uri(
-                                String.Format(
-                                    "https://github.com/jbevain/cecil/blob/master/{0}/{1}.cs",
-                                    namespaceName,
-                                    typeName),
-                                UriKind.Absolute);
-                            /*// TODO: if the class file is found, use that
-                            try{
-                                var request = WebRequest.Create(classFileUri);
-                                request.Timeout = 5000;
-                                var response = request.GetResponse() as HttpWebResponse;
-                                if (response.StatusCode == HttpStatusCode.OK)
-                                    return classFileUri;
-                            }catch{
-                                ; // exception monster ate all the exceptions
-                            }*/
-                        }
-                        return new Uri(
-                            String.Format(
-                                "https://github.com/jbevain/cecil/search?q={0}+repo%3Ajbevain%2Fcecil+extension%3Acs&type=Code",
-                                Uri.EscapeDataString(searchKeywords)),
-                            UriKind.Absolute);
-                    }
-                    return base.GetUri(cRef, memberInfo);
+                private Uri CreateUri(MemberInfo memberInfo){
+                    Contract.Requires(memberInfo != null);
+                    var type = memberInfo as Type ?? memberInfo.DeclaringType;
+                    var searchKeywords = memberInfo.Name;
+                    if (type != null && type != memberInfo)
+                        searchKeywords += " " + type.Name;
+
+                    return new Uri(
+                        String.Format(
+                            "https://github.com/jbevain/cecil/search?q={0}+repo%3Ajbevain%2Fcecil+extension%3Acs&type=Code",
+                            Uri.EscapeDataString(searchKeywords)),
+                        UriKind.Absolute);
                 }
 
-                protected override Uri GetUri(CRefIdentifier cRef, MemberInfo memberInfo) {
+                protected override Uri GetUri(MemberInfo memberInfo) {
+                    if (memberInfo == null)
+                        return null;
+
+                    var cRef = GetCRefIdentifier(memberInfo);
                     var cacheKey = String.Format("{0}_GetUri({1})", GetType().FullName, cRef);
                     var uri = _cache[cacheKey] as Uri;
                     if(uri == null){
-                        uri = CreateUri(cRef, memberInfo);
+                        uri = CreateUri(memberInfo);
                         if (uri != null)
                             _cache[cacheKey] = uri;
                     }

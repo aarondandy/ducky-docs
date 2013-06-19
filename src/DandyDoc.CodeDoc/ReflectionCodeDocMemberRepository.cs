@@ -38,13 +38,13 @@ namespace DandyDoc.CodeDoc
                 IncludeNamespaceForTypes = true
             };
 
-        private static CRefIdentifier GetCRefIdentifier(MemberInfo memberInfo){
+        protected static CRefIdentifier GetCRefIdentifier(MemberInfo memberInfo){
             Contract.Requires(memberInfo != null);
             Contract.Ensures(Contract.Result<CRefIdentifier>() != null);
             return new CRefIdentifier(ReflectionCRefGenerator.WithPrefix.GetCRef(memberInfo));
         }
 
-        private static CRefIdentifier GetCRefIdentifier(Assembly assembly) {
+        protected static CRefIdentifier GetCRefIdentifier(Assembly assembly) {
             Contract.Requires(assembly != null);
             Contract.Ensures(Contract.Result<CRefIdentifier>() != null);
             return new CRefIdentifier(ReflectionCRefGenerator.WithPrefix.GetCRef(assembly));
@@ -479,7 +479,20 @@ namespace DandyDoc.CodeDoc
                 return model;
             }
 
-            protected virtual Uri GetUri(CRefIdentifier cRef, MemberInfo memberInfo) {
+            protected virtual Uri GetUri(MemberInfo memberInfo) {
+
+                if (memberInfo is Type) {
+                    var type = memberInfo as Type;
+                    if (type.IsGenericType && !type.IsGenericTypeDefinition)
+                        memberInfo = type.GetGenericTypeDefinition();
+                }
+                else if (memberInfo is MethodInfo) {
+                    var methodInfo = memberInfo as MethodInfo;
+                    if (methodInfo.IsGenericMethod && !methodInfo.IsGenericMethodDefinition)
+                        memberInfo = methodInfo.GetGenericMethodDefinition();
+                }
+
+                var cRef = GetCRefIdentifier(memberInfo);
                 if(cRef.TargetType == "T"){
                     if(cRef.FullCRef.EndsWith("&") || cRef.FullCRef.EndsWith("@"))
                         cRef = new CRefIdentifier(cRef.FullCRef.Substring(0,cRef.FullCRef.Length-1));
@@ -508,7 +521,7 @@ namespace DandyDoc.CodeDoc
 
                 var eventCRef = GetCRefIdentifier(eventInfo);
                 var model = new CodeDocEvent(eventCRef);
-                model.Uri = GetUri(eventCRef, eventInfo);
+                model.Uri = GetUri(eventInfo);
 
                 var memberDataProvider = new CodeDocMemberInfoProvider<EventInfo>(eventInfo);
 
@@ -566,7 +579,7 @@ namespace DandyDoc.CodeDoc
 
                 var fieldCRef = GetCRefIdentifier(fieldInfo);
                 var model = new CodeDocField(fieldCRef);
-                model.Uri = GetUri(fieldCRef, fieldInfo);
+                model.Uri = GetUri(fieldInfo);
 
                 var memberDataProvider = new CodeDocMemberInfoProvider<FieldInfo>(fieldInfo);
 
@@ -623,7 +636,7 @@ namespace DandyDoc.CodeDoc
 
                 var propertyCRef = GetCRefIdentifier(propertyInfo);
                 var model = new CodeDocProperty(propertyCRef);
-                model.Uri = GetUri(propertyCRef, propertyInfo);
+                model.Uri = GetUri(propertyInfo);
 
                 var memberDataProvider = new CodeDocMemberInfoProvider<PropertyInfo>(propertyInfo);
 
@@ -711,7 +724,7 @@ namespace DandyDoc.CodeDoc
                 var methodInfo = methodBase as MethodInfo;
                 var methodCRef = GetCRefIdentifier(methodBase);
                 var model = new CodeDocMethod(methodCRef);
-                model.Uri = GetUri(methodCRef, methodInfo);
+                model.Uri = GetUri(methodBase);
 
                 var memberDataProvider = new CodeDocMemberInfoProvider<MethodBase>(methodBase);
 
@@ -855,7 +868,7 @@ namespace DandyDoc.CodeDoc
                 var model = type.IsDelegateType()
                     ? new CodeDocDelegate(cRef)
                     : new CodeDocType(cRef);
-                model.Uri = GetUri(cRef, type);
+                model.Uri = GetUri(type);
                 var delegateModel = model as CodeDocDelegate;
 
                 var memberDataProvider = new CodeDocMemberInfoProvider<Type>(type);

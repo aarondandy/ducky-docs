@@ -473,6 +473,39 @@ namespace DandyDoc.CodeDoc
                 return model;
             }
 
+            protected virtual Uri GetUri(MemberReference memberReference) {
+
+                if (memberReference is TypeReference) {
+                    var typeReference = memberReference as TypeReference;
+                    if (typeReference.IsGenericInstance) {
+                        var typeDefinition = typeReference.ToDefinition();
+                        if (typeDefinition != null)
+                            memberReference = typeDefinition;
+                    }
+                }
+                else if (memberReference is MethodReference) {
+                    var methodReference = memberReference as MethodReference;
+                    if (methodReference.IsGenericInstance) {
+                        var methodDefinition = methodReference.ToDefinition();
+                        if (methodDefinition != null)
+                            memberReference = methodDefinition;
+                    }
+                }
+
+                var cRef = GetCRefIdentifier(memberReference);
+                if (cRef.TargetType == "T") {
+                    if (cRef.FullCRef.EndsWith("&") || cRef.FullCRef.EndsWith("@"))
+                        cRef = new CRefIdentifier(cRef.FullCRef.Substring(0, cRef.FullCRef.Length - 1));
+                    if (cRef.FullCRef.EndsWith("]")) {
+                        var lastOpenSquareBracket = cRef.FullCRef.LastIndexOf('[');
+                        if (lastOpenSquareBracket >= 0) {
+                            cRef = new CRefIdentifier(cRef.FullCRef.Substring(0, lastOpenSquareBracket));
+                        }
+                    }
+                }
+                return cRef.ToUri();
+            }
+
             private CodeDocEvent ConvertToModel(EventReference eventReference, CodeDocMemberDetailLevel detailLevel, ICodeDocMemberDataProvider extraMemberDataProvider = null) {
                 Contract.Requires(eventReference != null);
                 Contract.Ensures(Contract.Result<CodeDocEvent>() != null);
@@ -489,7 +522,7 @@ namespace DandyDoc.CodeDoc
                 var eventDefinition = eventReference.ToDefinition();
                 var eventCRef = GetCRefIdentifier(eventReference);
                 var model = new CodeDocEvent(eventCRef);
-                model.Uri = eventCRef.ToUri();
+                model.Uri = GetUri(eventReference);
 
                 var memberDataProvider = new CodeDocMemberReferenceProvider<EventReference>(eventReference);
 
@@ -547,7 +580,7 @@ namespace DandyDoc.CodeDoc
 
                 var fieldCRef = GetCRefIdentifier(fieldReference);
                 var model = new CodeDocField(fieldCRef);
-                model.Uri = fieldCRef.ToUri();
+                model.Uri = GetUri(fieldReference);
 
                 var memberDataProvider = new CodeDocMemberReferenceProvider<FieldReference>(fieldReference);
 
@@ -616,7 +649,7 @@ namespace DandyDoc.CodeDoc
 
                 var propertyCRef = GetCRefIdentifier(propertyReference);
                 var model = new CodeDocProperty(propertyCRef);
-                model.Uri = propertyCRef.ToUri();
+                model.Uri = GetUri(propertyReference);
 
                 var memberDataProvider = new CodeDocMemberReferenceProvider<PropertyReference>(propertyReference);
 
@@ -707,7 +740,7 @@ namespace DandyDoc.CodeDoc
 
                 var methodCRef = GetCRefIdentifier(methodReference);
                 var model = new CodeDocMethod(methodCRef);
-                model.Uri = methodCRef.ToUri();
+                model.Uri = GetUri(methodReference);
 
                 var memberDataProvider = new CodeDocMemberReferenceProvider<MethodReference>(methodReference);
 
@@ -869,7 +902,7 @@ namespace DandyDoc.CodeDoc
                 var model = typeDefinition != null && typeDefinition.IsDelegateType()
                     ? new CodeDocDelegate(cRef)
                     : new CodeDocType(cRef);
-                model.Uri = cRef.ToUri();
+                model.Uri = GetUri(typeReference);
                 var delegateModel = model as CodeDocDelegate;
 
                 if(appendXmlDoc)
