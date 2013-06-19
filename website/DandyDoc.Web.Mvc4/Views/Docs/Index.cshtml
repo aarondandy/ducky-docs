@@ -58,41 +58,65 @@ foreach (var namespaceModel in repository.Namespaces){
           <figcaption>A simple example that outputs types to the console.</figcaption>
           <pre>
 using System;
+using System.IO;
 using System.Linq;
-using DandyDoc;
-using DandyDoc.SimpleModels;
+using DandyDoc.CRef;
+using DandyDoc.CodeDoc;
+using DandyDoc.Reflection;
+using DandyDoc.XmlDoc;
 
-namespace QuickStartSample
+namespace ConsoleApplication2
 {
-	class Program
-	{
-		static void Main(string[] args) {
 
-			// first you need some assemblies
-			var assemblies = new AssemblyDefinitionCollection("QuickStartSample.exe");
+    /// &lt;summary&gt;
+    /// Just a thing.
+    /// &lt;/summary&gt;
+    public class Thing1 { }
 
-			// NOTE: due to threading issues you may want to use immediate mode:
-			// new AssemblyDefinitionCollection(true, "QuickStartSample.exe");
+    public class Thing2 : Thing1 { }
+      
+    /// &lt;inheritdoc/&gt;
+    public class MyObject : object { }
 
-			// Next you can create the models. The SimpleModels assembly has a repository class you can use.
-			var repository = new SimpleModelRepository(assemblies);
+    class Program
+    {
+        static void Main(string[] args) {
 
-			// A good place to start is with namespaces.
-			foreach (var namespaceModel in repository.Namespaces){
-				Console.WriteLine("NAMESPACE: {0}", namespaceModel.Title);
+            // just find some random assembly to document
+            var assemblyToDocument = typeof (Program).Assembly;
+            
+            // locate the XML doc file by first finding the assembly file then change the extension
+            var assemblyFilePath = Uri.UnescapeDataString(assemblyToDocument.GetFilePath()); // TODO: remove UnescapeDataString after 5.1.3
+            var xmlDocFilePath = Path.ChangeExtension(assemblyFilePath, "XML");
+            // if the file was found, use it
+            var xmlDocs = new XmlAssemblyDocumentCollection();
+            if(File.Exists(xmlDocFilePath))
+                xmlDocs.Add(new XmlAssemblyDocument(xmlDocFilePath));
+            // create a code reference lookup from the assembly
+            var cRefLookup = new ReflectionCRefLookup(assemblyToDocument);
+            // bring all those things together to make a repository for our types
+            var myRepository = new ReflectionCodeDocMemberRepository(cRefLookup, xmlDocs);
 
-				// You can quickly get the types (and delegates) within the namespace.
-				foreach (var types in namespaceModel.Types){
+            // lets make an msdn repository too so we can merge information from there
+            var msdnRepository = new MsdnCodeDocMemberRepository();
+            var searchContext = new CodeDocRepositorySearchContext(new ICodeDocMemberRepository[]{myRepository, msdnRepository});
 
-					// As an example we can get the flair tags associated with a type.
-					var flairTags = String.Join(",", types.FlairTags.Select(x => x.IconId));
+            // just spit out all the namespaces and types as an example
+            foreach (var namespaceModel in myRepository.Namespaces) {
+                Console.WriteLine("Namespace: {0}", namespaceModel.FullName);
+                foreach (var typeCRef in namespaceModel.TypeCRefs) {
+                    var model = searchContext.CloneWithOneUnvisited(myRepository).Search(typeCRef);
+                    Console.WriteLine("Type: {0} {1}", model.Title, model.SubTitle);
+                    if(model.HasSummaryContents)
+                        Console.WriteLine(String.Concat("\t",String.Concat(model.SummaryContents.Select(x => x.Node.OuterXml))));
+                }
+            }
+            
+            Console.WriteLine("Press the [Any] key to terminate.");
+            Console.ReadKey();
 
-					Console.WriteLine("\t{0}: {1}", types.Title, flairTags);
-				}
-			}
-
-		}
-	}
+        }
+    }
 }
 </pre>
         </figure>

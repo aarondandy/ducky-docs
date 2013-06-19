@@ -31,7 +31,7 @@ namespace DandyDoc.Reflection
             var codeBase = assembly.CodeBase;
             Uri uri;
             if (Uri.TryCreate(codeBase, UriKind.Absolute, out uri) && "FILE".Equals(uri.Scheme, StringComparison.OrdinalIgnoreCase))
-                return uri.AbsolutePath;
+                return Uri.UnescapeDataString(uri.AbsolutePath);
 
             return assembly.Location;
         }

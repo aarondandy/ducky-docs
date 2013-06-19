@@ -79,7 +79,7 @@ namespace DandyDoc.CodeDoc
         /// <param name="searchContext">The serach context to use when locating related members.</param>
         /// <param name="lite">Indicates if a lite version of the model should be generated.</param>
         /// <returns>The generated member if possible.</returns>
-        public virtual ICodeDocMember GetMemberModel(CRefIdentifier cRef, CodeDocRepositorySearchContext searchContext, CodeDocMemberDetailLevel detailLevel = CodeDocMemberDetailLevel.Full) {
+        public virtual ICodeDocMember GetMemberModel(CRefIdentifier cRef, CodeDocRepositorySearchContext searchContext = null, CodeDocMemberDetailLevel detailLevel = CodeDocMemberDetailLevel.Full) {
             return CreateGenerator(searchContext).GetMemberModel(cRef, detailLevel);
         }
 
