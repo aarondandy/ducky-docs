@@ -364,40 +364,35 @@ namespace DandyDoc.CodeDoc
                 Contract.Requires(typeReference != null);
                 Contract.Ensures(Contract.Result<CodeDocType>() != null);
                 var getResult = GetOnlyType(GetCRefIdentifier(typeReference), detailLevel);
-                var getProvider = getResult != null ? new CodeDocMemberDataProvider(getResult) : null;
-                return ConvertToModel(typeReference, detailLevel, getProvider);
+                return getResult ?? ConvertToModel(typeReference, detailLevel);
             }
 
             private CodeDocMethod GetOrConvert(MethodReference methodReference, CodeDocMemberDetailLevel detailLevel) {
                 Contract.Requires(methodReference != null);
                 Contract.Ensures(Contract.Result<CodeDocMethod>() != null);
                 var getResult = GetOnlyMethod(GetCRefIdentifier(methodReference), detailLevel);
-                var getProvider = getResult != null ? new CodeDocMemberDataProvider(getResult) : null;
-                return ConvertToModel(methodReference, detailLevel, getProvider);
+                return getResult ?? ConvertToModel(methodReference, detailLevel);
             }
 
             private CodeDocProperty GetOrConvert(PropertyReference propertyReference, CodeDocMemberDetailLevel detailLevel) {
                 Contract.Requires(propertyReference != null);
                 Contract.Ensures(Contract.Result<CodeDocProperty>() != null);
                 var getResult = GetOnlyProperty(GetCRefIdentifier(propertyReference), detailLevel);
-                var getProvider = getResult != null ? new CodeDocMemberDataProvider(getResult) : null;
-                return ConvertToModel(propertyReference, detailLevel, getProvider);
+                return getResult ?? ConvertToModel(propertyReference, detailLevel);
             }
 
             private CodeDocField GetOrConvert(FieldReference fieldReference, CodeDocMemberDetailLevel detailLevel) {
                 Contract.Requires(fieldReference != null);
                 Contract.Ensures(Contract.Result<CodeDocField>() != null);
                 var getResult = GetOnlyField(GetCRefIdentifier(fieldReference), detailLevel);
-                var getProvider = getResult != null ? new CodeDocMemberDataProvider(getResult) : null;
-                return ConvertToModel(fieldReference, detailLevel, getProvider);
+                return getResult ?? ConvertToModel(fieldReference, detailLevel);
             }
 
             private CodeDocEvent GetOrConvert(EventReference eventReference, CodeDocMemberDetailLevel detailLevel) {
                 Contract.Requires(eventReference != null);
                 Contract.Ensures(Contract.Result<CodeDocEvent>() != null);
                 var getResult = GetOnlyEvent(GetCRefIdentifier(eventReference), detailLevel);
-                var getProvider = getResult != null ? new CodeDocMemberDataProvider(getResult) : null;
-                return ConvertToModel(eventReference, detailLevel, getProvider);
+                return getResult ?? ConvertToModel(eventReference, detailLevel);
             }
 
             private CodeDocParameter CreateArgument(ParameterReference parameterReference, ICodeDocMemberDataProvider provider) {

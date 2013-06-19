@@ -390,8 +390,7 @@ namespace DandyDoc.CodeDoc
 
             model.ExternalVisibility = ExternalVisibilityKind.Public;
 
-            if (detailLevel.HasFlag(CodeDocMemberDetailLevel.AdditionalContents) || detailLevel.HasFlag(CodeDocMemberDetailLevel.Summary)) {
-
+            if (detailLevel != CodeDocMemberDetailLevel.Minimum) {
                 var contentXml = GetContent(bestTocResult.ContentId);
                 if (contentXml != null) {
                     XmlNode summaryElement = contentXml.GetElementsByTagName("div")
@@ -405,6 +404,7 @@ namespace DandyDoc.CodeDoc
                         var summaryXmlDoc = XmlDocParser.Default.Parse(summaryElement);
                         model.SummaryContents = summaryXmlDoc.Children;
                     }
+                    ;
                 }
 
             }
