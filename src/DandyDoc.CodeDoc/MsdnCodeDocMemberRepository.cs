@@ -365,34 +365,86 @@ namespace DandyDoc.CodeDoc
             if (!Uri.TryCreate(GetUrl(bestTocResult), UriKind.Absolute, out uri))
                 uri = cRef.ToUri();
 
-            var model = new CodeDocSimpleMember(cRef);
-            model.Uri = uri;
-            model.FullName = bestTocResult.GetFullName();
-
-            int lastTitleSpaceIndex = bestTocResult.Title.LastIndexOf(' ');
-            if(lastTitleSpaceIndex >= 0){
-                model.Title = bestTocResult.Title.Substring(0, lastTitleSpaceIndex);
-                model.SubTitle = bestTocResult.Title.Substring(lastTitleSpaceIndex + 1);
-            }else{
-                model.Title = bestTocResult.Title;
-                model.SubTitle = String.Empty;
-            }
-            model.ShortName = model.Title;
-
-            MtpsNodeCore namespaceNode = bestTocResult;
-            while(namespaceNode != null && !namespaceNode.IsNamespace){
-                namespaceNode = namespaceNode.Parent;
-            }
-            if (namespaceNode != null) {
-                model.NamespaceName = namespaceNode.GetNamespaceName();
-                model.Namespace = GetNamespaceByName(model.NamespaceName);
-            }
-
-            model.ExternalVisibility = ExternalVisibilityKind.Public;
+            CodeDocSimpleMember model = null;
 
             if (detailLevel != CodeDocMemberDetailLevel.Minimum) {
                 var contentXml = GetContent(bestTocResult.ContentId);
                 if (contentXml != null) {
+
+                    bool? isSealed = null;
+                    bool? isValueType = null;
+                    bool? isReferenceType = null;
+                    bool? isEnum = null;
+                    bool? isVirtual = null;
+                    bool? isAbstract = null;
+                    bool? isMethod = null;
+                    ExternalVisibilityKind? visibility = null;
+
+                    var titleDiv = contentXml.GetElementsByTagName("div")
+                        .OfType<XmlElement>()
+                        .FirstOrDefault(x => "TITLE".Equals(x.GetAttribute("class"), StringComparison.OrdinalIgnoreCase));
+
+                    if (titleDiv != null) {
+                        var innerTitleText = titleDiv.InnerText.Trim();
+                        if (innerTitleText.EndsWith("Method", StringComparison.OrdinalIgnoreCase)) {
+                            isMethod = true;
+                        }
+                    }
+
+                    var syntaxElement = contentXml.GetElementsByTagName("mtps:CollapsibleArea")
+                        .OfType<XmlElement>()
+                        .FirstOrDefault(x => "SYNTAX".Equals(x.GetAttribute("Title"), StringComparison.OrdinalIgnoreCase));
+                    var codeSnippets = syntaxElement.GetElementsByTagName("mtps:CodeSnippet").OfType<XmlElement>().ToList();
+
+                    foreach (var snippet in codeSnippets) {
+                        var inputSpans = snippet.GetElementsByTagName("span")
+                            .OfType<XmlElement>()
+                            .Where(e => e.GetAttribute("class") == "input")
+                            .ToList();
+                        if (snippet.GetAttribute("Language") == "CSharp") {
+                            foreach (var inputSpan in inputSpans) {
+                                var innerText = inputSpan.InnerText;
+                                if ("PUBLIC".Equals(innerText, StringComparison.OrdinalIgnoreCase))
+                                    visibility = ExternalVisibilityKind.Public;
+                                else if ("PROTECTED".Equals(innerText, StringComparison.OrdinalIgnoreCase))
+                                    visibility = ExternalVisibilityKind.Protected;
+                                else if ("SEALED".Equals(innerText, StringComparison.OrdinalIgnoreCase))
+                                    isSealed = true;
+                                else if ("CLASS".Equals(innerText, StringComparison.OrdinalIgnoreCase))
+                                    isReferenceType = true;
+                                else if ("STRUCT".Equals(innerText, StringComparison.OrdinalIgnoreCase))
+                                    isValueType = true;
+                                else if ("ENUM".Equals(innerText, StringComparison.OrdinalIgnoreCase))
+                                    isEnum = true;
+                                else if ("VIRTUAL".Equals(innerText, StringComparison.OrdinalIgnoreCase))
+                                    isVirtual = true;
+                                else if ("ABSTRACT".Equals(innerText, StringComparison.OrdinalIgnoreCase))
+                                    isAbstract = true;
+                            }
+                        }
+                    }
+
+                    if (model == null) {
+                        if (isReferenceType ?? isValueType ?? isEnum ?? false) {
+                            var typeModel = new CodeDocType(cRef);
+                            typeModel.IsSealed = isSealed;
+                            typeModel.IsValueType = isValueType;
+                            typeModel.IsEnum = isEnum;
+                            model = typeModel;
+                        }
+                        else if (isMethod ?? false) {
+                            var methodModel = new CodeDocMethod(cRef);
+                            methodModel.IsSealed = isSealed;
+                            methodModel.IsVirtual = isVirtual;
+                            methodModel.IsAbstract = isAbstract;
+                            model = methodModel;
+                        }
+                        else {
+                            model = new CodeDocSimpleMember(cRef);
+                        }
+                        model.ExternalVisibility = visibility ?? ExternalVisibilityKind.Hidden;
+                    }
+
                     XmlNode summaryElement = contentXml.GetElementsByTagName("div")
                         .OfType<XmlElement>()
                         .FirstOrDefault(x => String.Equals(x.GetAttribute("class"), "summary", StringComparison.OrdinalIgnoreCase));
@@ -404,9 +456,40 @@ namespace DandyDoc.CodeDoc
                         var summaryXmlDoc = XmlDocParser.Default.Parse(summaryElement);
                         model.SummaryContents = summaryXmlDoc.Children;
                     }
-                    ;
+
                 }
 
+            }
+
+            if (model == null)
+                model = new CodeDocSimpleMember(cRef);
+
+            if(model.ExternalVisibility == ExternalVisibilityKind.Hidden)
+                model.ExternalVisibility = ExternalVisibilityKind.Public;
+
+            model.Uri = uri;
+            model.FullName = bestTocResult.GetFullName();
+
+            int lastTitleSpaceIndex = bestTocResult.Title.LastIndexOf(' ');
+            if (lastTitleSpaceIndex >= 0) {
+                model.Title = bestTocResult.Title.Substring(0, lastTitleSpaceIndex);
+                model.SubTitle = bestTocResult.Title.Substring(lastTitleSpaceIndex + 1);
+            }
+            else {
+                model.Title = bestTocResult.Title;
+                model.SubTitle = String.Empty;
+            }
+            model.ShortName = model.Title;
+
+            if (String.IsNullOrEmpty(model.NamespaceName)) {
+                MtpsNodeCore namespaceNode = bestTocResult;
+                while (namespaceNode != null && !namespaceNode.IsNamespace) {
+                    namespaceNode = namespaceNode.Parent;
+                }
+                if (namespaceNode != null) {
+                    model.NamespaceName = namespaceNode.GetNamespaceName();
+                    model.Namespace = GetNamespaceByName(model.NamespaceName);
+                }
             }
 
             return model;
