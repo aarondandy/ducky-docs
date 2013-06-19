@@ -811,6 +811,16 @@ namespace DandyDoc.CodeDoc
                 return model;
             }
 
+            private bool ImplicitlyInheritDataProvider(Type type) {
+                if (type == null)
+                    return false;
+                if (type.IsValueType || type.IsEnum)
+                    return false;
+                if (type == typeof (object) || type == typeof (Enum))
+                    return false;
+                return true;
+            }
+
             private CodeDocType ConvertToModel(Type type, CodeDocMemberDetailLevel detailLevel) {
                 Contract.Requires(type != null);
                 Contract.Ensures(Contract.Result<CodeDocType>() != null);
@@ -836,15 +846,18 @@ namespace DandyDoc.CodeDoc
 
                 var memberDataProvider = new CodeDocMemberInfoProvider<Type>(type);
 
+                XmlDocMember xmlDocs = null;
                 if (provideXmlDoc) {
-                    var xmlDocs = XmlDocs.GetMember(cRef.FullCRef);
+                    xmlDocs = XmlDocs.GetMember(cRef.FullCRef);
                     if (xmlDocs != null)
                         memberDataProvider.Add(new CodeDocMemberXmlDataProvider(xmlDocs));
                 }
 
                 if (includeInheritance && type.BaseType != null) {
-                    var baseModel = GetOrConvert(type.BaseType, detailLevel);
-                    memberDataProvider.Add(new CodeDocMemberDataProvider(baseModel));
+                    if (ImplicitlyInheritDataProvider(type.BaseType) || (xmlDocs != null && xmlDocs.HasInheritDoc)) {
+                        var baseModel = GetOrConvert(type.BaseType, detailLevel);
+                        memberDataProvider.Add(new CodeDocMemberDataProvider(baseModel));
+                    }
                 }
 
                 if (appendXmlDoc)

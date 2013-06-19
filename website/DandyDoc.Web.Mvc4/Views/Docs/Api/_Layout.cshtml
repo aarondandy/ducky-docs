@@ -81,5 +81,5 @@
   var uriString = new UriBuilder("https://github.com/aarondandy/dandy-doc/issues/new") {
     Query = String.Format("title=[docs]:+{0}&body=CRef:+{0}", Uri.EscapeDataString(entityModel.CRef.ToString()))
   }.ToString();
-  <div class="muted pull-right"><a href="@uriString" target="_blank" title="Report an issue with this documentation."><i class="icon-exclamation-sign"></i></a></div>
+  <div class="muted pull-right"><a href="@uriString" target="_blank" title="Report an issue with this documentation." rel="nofollow"><i class="icon-exclamation-sign"></i></a></div>
 }

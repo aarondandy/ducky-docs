@@ -552,7 +552,8 @@ namespace DandyDoc.Web.Mvc4.Helpers
             {"abstract","icon-edit"},
             {"obsolete","icon-warning-sign"},
             {"instant","icon-tasks"},
-            {"value-type","icon-th-large"}
+            {"value-type","icon-th-large"},
+            {"enum","icon-th-list"}
         };
 
         public static HtmlString FlairIcon(this HtmlHelper helper, FlairItem item) {
@@ -644,6 +645,7 @@ namespace DandyDoc.Web.Mvc4.Helpers
         private static readonly FlairItem DefaultPureTag = new FlairItem("pure", "Purity", "Does not have side effects.");
         private static readonly FlairItem DefaultOperatorTag = new FlairItem("operator", "Operator", "Invoked through a language operator.");
         private static readonly FlairItem DefaultFlagsTag = new FlairItem("flags", "Enumeration", "Bitwise combination is allowed.");
+        private static readonly FlairItem DefaultEnumTypeTag = new FlairItem("enum", "Type", "An enumeration type.");
         private static readonly FlairItem DefaultSealedTag = new FlairItem("sealed", "Inheritance", "Member is sealed, preventing inheritance.");
         private static readonly FlairItem DefaultValueTypeTag = new FlairItem("value-type", "Type", "Type is a value type.");
         private static readonly FlairItem DefaultExtensionMethodTag = new FlairItem("extension", "Extension", "Method is an extension method.");
@@ -696,7 +698,9 @@ namespace DandyDoc.Web.Mvc4.Helpers
                     if (type.IsFlagsEnum.GetValueOrDefault())
                         yield return DefaultFlagsTag;
 
-                    if (type.IsValueType.GetValueOrDefault())
+                    if (type.IsEnum.GetValueOrDefault())
+                        yield return DefaultEnumTypeTag;
+                    else if (type.IsValueType.GetValueOrDefault())
                         yield return DefaultValueTypeTag;
                     else if (type.IsSealed.GetValueOrDefault() && !type.IsStatic.GetValueOrDefault())
                         yield return DefaultSealedTag;

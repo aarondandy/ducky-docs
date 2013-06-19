@@ -805,6 +805,16 @@ namespace DandyDoc.CodeDoc
                 return model;
             }
 
+            private bool ImplicitlyInheritDataProvider(TypeReference typeReference) {
+                if (typeReference == null)
+                    return false;
+                if (typeReference.IsValueType)
+                    return false;
+                if (typeReference.FullName == "System.Object" || typeReference.FullName == "System.Enum")
+                    return false;
+                return true;
+            }
+
             private CodeDocType ConvertToModel(TypeReference typeReference, CodeDocMemberDetailLevel detailLevel) {
                 Contract.Requires(typeReference != null);
                 Contract.Ensures(Contract.Result<CodeDocType>() != null);
@@ -824,16 +834,19 @@ namespace DandyDoc.CodeDoc
                 var cRef = GetCRefIdentifier(typeReference);
                 var memberDataProvider = new CodeDocMemberReferenceProvider<TypeReference>(typeReference);
 
+                XmlDocMember xmlDocs = null;
                 if (provideXmlDoc) {
-                    var xmlDocs = XmlDocs.GetMember(cRef.FullCRef);
+                    xmlDocs = XmlDocs.GetMember(cRef.FullCRef);
                     if (xmlDocs != null)
                         memberDataProvider.Add(new CodeDocMemberXmlDataProvider(xmlDocs));
                 }
 
                 var typeDefinition = memberDataProvider.Definition as TypeDefinition;
-                if (includeInheritance && typeDefinition.BaseType != null) {
-                    var baseModel = GetOrConvert(typeDefinition.BaseType, detailLevel);
-                    memberDataProvider.Add(new CodeDocMemberDataProvider(baseModel));
+                if (includeInheritance && typeDefinition != null && typeDefinition.BaseType != null) {
+                    if (ImplicitlyInheritDataProvider(typeDefinition.BaseType) || (xmlDocs != null && xmlDocs.HasInheritDoc)) {
+                        var baseModel = GetOrConvert(typeDefinition.BaseType, detailLevel);
+                        memberDataProvider.Add(new CodeDocMemberDataProvider(baseModel));
+                    }
                 }
 
                 var model = typeDefinition != null && typeDefinition.IsDelegateType()
