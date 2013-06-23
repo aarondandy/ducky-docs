@@ -1,0 +1,46 @@
+﻿@using DandyDoc.CodeDoc
+@inherits ServiceStack.Razor.ViewPage<CodeDocNamespace>
+@{
+  Layout = "_ApiDocsLayout";
+
+  var regularTypes = new List<ICodeDocMember>();
+  var delegateTypes = new List<ICodeDocMember>();
+  foreach (var type in Model.Types) {
+    if ("DELEGATE".Equals(type.SubTitle, StringComparison.OrdinalIgnoreCase)) {
+      delegateTypes.Add(type);
+    }
+    else {
+      regularTypes.Add(type);
+    }
+  }
+  var memberSets = new[]{
+    new { Title = "Types", Types = regularTypes},
+    new { Title = "Delegates", Types = delegateTypes}
+  }.Where(ms => ms.Types.Count > 0);
+
+  if (Model.Assemblies.Count > 0) {
+  <section>
+    @if (Model.Assemblies.Count == 1) {
+      <div>Assembly: @Model.Assemblies.Single().AssemblyFileName</div>
+    }
+    else {
+      <div>
+        Assemblies:
+        <ul class="inline">
+          @foreach (var asm in Model.Assemblies) {
+            <li>@asm.AssemblyFileName</li>
+          }
+        </ul>
+      </div>
+    }
+  </section>
+  }
+  
+  foreach (var memberSet in memberSets) {
+    <section>
+      <h2>@memberSet.Title</h2>
+      <div>TODO: members</div>
+    </section>
+  }
+  
+}

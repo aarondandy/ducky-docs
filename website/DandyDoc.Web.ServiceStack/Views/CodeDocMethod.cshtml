@@ -1,0 +1,13 @@
+﻿@using DandyDoc.CodeDoc
+@inherits ServiceStack.Razor.ViewPage<CodeDocMethod>
+@{
+  Layout = "_ApiDocsLayout";
+  if (Model.HasGenericParameters) {
+    <section>
+      <h2>Generic Parameters</h2>
+      TODO: generic parameter list
+    </section>
+  }
+}
+
+@Html.Partial("CodeDocInvokablePartial", Model)

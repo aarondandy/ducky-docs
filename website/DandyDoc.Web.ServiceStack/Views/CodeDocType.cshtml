@@ -1,0 +1,96 @@
+﻿@using DandyDoc.CodeDoc
+@inherits ServiceStack.Razor.ViewPage<CodeDocType>
+@{
+  Layout = "_ApiDocsLayout";
+
+  var isEnum = Model.IsEnum.GetValueOrDefault();
+  var codeDocInvokable = Model as ICodeDocInvokable;
+  var isInvokable = codeDocInvokable != null;
+  
+  // get and filter all the member sets for the type
+  var memberSets = new[] {
+    new {Title = "Nested Types", Members = Model.NestedTypes},
+    new {Title = "Delegates", Members = Model.NestedDelegates},
+    new {Title = "Constructors", Members = Model.Constructors},
+    new {Title = "Properties", Members = Model.Properties},
+    new {Title = "Fields", Members = Model.Fields},
+    new {Title = "Methods", Members = Model.Methods},
+    new {Title = "Events", Members = Model.Events},
+    new {Title = "Operators", Members = Model.Operators}
+  }.Where(set => set.Members != null && set.Members.Count > 0).ToList();
+
+  // special handling for enum types
+  if (isEnum) {
+    // if the type is an enumeration we must show only the fields
+    var fieldMemberSet = memberSets.FirstOrDefault(ms => ms.Title == "Fields");
+    memberSets.Clear();
+    if (fieldMemberSet != null) {
+      // the member set title should be changed
+      memberSets.Add(new {Title = "Values", fieldMemberSet.Members});
+    }
+  }
+  
+  if (isInvokable) {
+    memberSets.Clear();
+  }
+  
+  if (!isEnum && (Model.HasBaseChain || Model.HasInterfaces)) {
+    <section>
+      <h2>Inheritance</h2>
+      @if (Model.HasBaseChain) {
+        <dl>
+          <dt>Base Types</dt>
+          <dd>TODO: list of links to types</dd>
+        </dl>
+      }
+      @if (Model.HasInterfaces) {
+        <dl>
+          <dt>Implements</dt>
+          <dd>TODO: list of links to types</dd>
+        </dl>
+      }
+    </section>
+  }
+  
+  if (!isEnum && Model.HasGenericParameters) {
+    <section>
+      <h2>Generic Parameters</h2>
+      TODO: generic parameter list
+    </section>
+  }
+
+  foreach (var memberSet in memberSets) {
+    <section>
+      <h2>@memberSet.Title</h2>
+      <div>TODO: members</div>
+    </section>
+  }
+  
+  if (isInvokable) {
+    if (codeDocInvokable.HasParameters) {
+      <section>
+        <h2>Parameters</h2>
+        TODO: parameter list
+      </section>
+    }
+    if (codeDocInvokable.HasReturn) {
+      <section>
+        <h2>Returns</h2>
+        TODO: return parameter
+      </section>
+    }
+    if (codeDocInvokable.HasExceptions) {
+      <section>
+        <h2>Exceptions</h2>
+        TODO: exception listing
+      </section>
+    }
+    if (codeDocInvokable.HasNormalTerminationEnsures) {
+      <section>
+        <h2>Ensures on Successful Execution</h2>
+        TODO: normal ensures listing
+      </section>
+    }
+  }
+  
+}

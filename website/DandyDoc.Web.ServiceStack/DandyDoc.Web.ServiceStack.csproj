@@ -122,6 +122,8 @@
     <Content Include="js\bootstrap.min.js" />
     <Content Include="Global.asax" />
     <Content Include="js\jquery-1.10.1.min.js" />
+    <Content Include="Views\CodeDocInvokablePartial.cshtml" />
+    <None Include="Views\CodeDocMethod.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -138,6 +140,15 @@
   <ItemGroup>
     <Content Include="packages.config" />
     <Content Include="index.cshtml" />
+    <Content Include="Views\CodeDocType.cshtml" />
+    <Content Include="Docs\_Layout.cshtml" />
+    <Content Include="Views\_DocsLayout.cshtml" />
+    <Content Include="Views\_ApiDocsLayout.cshtml" />
+    <Content Include="Views\CodeDocDelegate.cshtml" />
+    <Content Include="Views\CodeDocEvent.cshtml" />
+    <Content Include="Views\CodeDocField.cshtml" />
+    <Content Include="Views\CodeDocNamespace.cshtml" />
+    <Content Include="Views\CodeDocProperty.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -164,10 +175,12 @@
       <Project>{a09f4dac-290c-4abe-b053-071ec966008f}</Project>
       <Name>DandyDoc.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\tests\TestLibrary1\TestLibrary1.csproj">
+      <Project>{f83f4c52-a886-4b9e-8164-e95e1f22f929}</Project>
+      <Name>TestLibrary1</Name>
+    </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Docs\" />
-  </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

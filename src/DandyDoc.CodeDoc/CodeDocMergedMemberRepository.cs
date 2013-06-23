@@ -52,7 +52,12 @@ namespace DandyDoc.CodeDoc
         }
 
         public ICodeDocMember GetMemberModel(CRefIdentifier cRef, CodeDocRepositorySearchContext searchContext = null, CodeDocMemberDetailLevel detailLevel = CodeDocMemberDetailLevel.Full) {
-            return this.Select(r => r.GetMemberModel(cRef, searchContext, detailLevel)).FirstOrDefault(m => m != null);
+            foreach (var subRepo in this) {
+                var subResult = subRepo.GetMemberModel(cRef, searchContext, detailLevel);
+                if (subResult != null)
+                    return subResult;
+            }
+            return null;
         }
 
         private void ClearAssemblyNamespaceCache() {

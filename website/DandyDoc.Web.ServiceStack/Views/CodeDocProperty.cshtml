@@ -1,0 +1,24 @@
+﻿@using DandyDoc.CodeDoc
+@inherits ServiceStack.Razor.ViewPage<CodeDocProperty>
+@{
+  Layout = "_ApiDocsLayout";
+}
+<section>
+  <h2>Value</h2>
+  <p><b>Type:</b> TODO: value type link</p>
+  @if (Model.HasValueDescriptionContents) {
+    <text>TODO: Render value description contents</text>
+  }
+</section>
+@if (Model.HasGetter && true /*CodeDocAccessorIsWorthDisplaying*/) {
+  <section>
+    <h2>Getter</h2>
+    TODO: accessor
+  </section>
+}
+@if (Model.HasSetter && true /*CodeDocAccessorIsWorthDisplaying*/) {
+  <section>
+    <h2>Setter</h2>
+    TODO: accessor
+  </section>
+}

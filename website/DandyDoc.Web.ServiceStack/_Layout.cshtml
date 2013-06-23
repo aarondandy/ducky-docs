@@ -1,3 +1,8 @@
 ﻿@inherits ServiceStack.Razor.ViewPage
-@{Layout = "_SiteLayout";}
+@{
+  // This layout will be the default layout and simply redirect to the site layout.
+  // Using this method allows different folders to have their own default layout but
+  // still allows for the site layout to be referenced by name.
+  Layout = "_SiteLayout";
+}
 @RenderBody()
