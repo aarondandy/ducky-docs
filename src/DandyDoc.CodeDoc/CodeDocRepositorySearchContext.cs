@@ -11,39 +11,39 @@ namespace DandyDoc.CodeDoc
     {
 
         public CodeDocRepositorySearchContext(IEnumerable<ICodeDocMemberRepository> allRepositories, CodeDocMemberDetailLevel detailLevel = CodeDocMemberDetailLevel.Full)
-            : this(allRepositories.ToArray(), detailLevel){
+            : this(new ReadOnlyCollection<ICodeDocMemberRepository>(allRepositories.ToArray()), detailLevel){
             Contract.Requires(allRepositories != null);
         }
 
-        private CodeDocRepositorySearchContext(ICodeDocMemberRepository[] allRepositories, CodeDocMemberDetailLevel detailLevel = CodeDocMemberDetailLevel.Full) {
+        public CodeDocRepositorySearchContext(ICodeDocMemberRepository repository, CodeDocMemberDetailLevel detailLevel = CodeDocMemberDetailLevel.Full)
+            : this(new ReadOnlyCollection<ICodeDocMemberRepository>(new[] { repository }), detailLevel) {
+            if(repository == null) throw new ArgumentNullException("repository");
+            Contract.EndContractBlock();
+        }
+
+        private CodeDocRepositorySearchContext(ReadOnlyCollection<ICodeDocMemberRepository> allRepositories, CodeDocMemberDetailLevel detailLevel = CodeDocMemberDetailLevel.Full) {
             Contract.Requires(allRepositories != null);
             _visitedRepositories = new HashSet<ICodeDocMemberRepository>();
-            _allRepositories = allRepositories.ToArray();
+            AllRepositories = allRepositories;
             DetailLevel = detailLevel;
         }
 
         [ContractInvariantMethod]
         private void CodeContractInvariants() {
             Contract.Invariant(_visitedRepositories != null);
-            Contract.Invariant(_allRepositories != null);
+            Contract.Invariant(AllRepositories != null);
         }
 
         private readonly HashSet<ICodeDocMemberRepository> _visitedRepositories;
-        private readonly ICodeDocMemberRepository[] _allRepositories;
 
         public CodeDocMemberDetailLevel DetailLevel { get; set; }
 
         [Pure]
         public bool IsReferenced(ICodeDocMemberRepository repository) {
-            return _allRepositories.Contains(repository);
+            return AllRepositories.Contains(repository);
         }
 
-        public ReadOnlyCollection<ICodeDocMemberRepository> AllRepositories {
-            get {
-                Contract.Ensures(Contract.Result<ReadOnlyCollection<ICodeDocMemberRepository>>() != null);
-                return new ReadOnlyCollection<ICodeDocMemberRepository>(_allRepositories);
-            }
-        }
+        public ReadOnlyCollection<ICodeDocMemberRepository> AllRepositories { get; private set; }
 
         public bool Visit(ICodeDocMemberRepository repository) {
             if(repository == null) throw new ArgumentNullException("repository");
@@ -64,10 +64,8 @@ namespace DandyDoc.CodeDoc
             get {
                 Contract.Ensures(Contract.Result<IEnumerable<ICodeDocMemberRepository>>() != null);
                 if(_visitedRepositories.Count == 0)
-                    return new ReadOnlyCollection<ICodeDocMemberRepository>(_allRepositories);
-                if (_visitedRepositories.Count == _allRepositories.Length)
-                    return Enumerable.Empty<ICodeDocMemberRepository>(); // assumes all visited items exist in _allRepositories
-                return _allRepositories.Where(r => !_visitedRepositories.Contains(r));
+                    return new ReadOnlyCollection<ICodeDocMemberRepository>(AllRepositories);
+                return AllRepositories.Where(r => !_visitedRepositories.Contains(r));
             }
         }
 
@@ -83,7 +81,7 @@ namespace DandyDoc.CodeDoc
         }
 
         public CodeDocRepositorySearchContext CloneWithoutVisits(CodeDocMemberDetailLevel detailLevel) {
-            return new CodeDocRepositorySearchContext(_allRepositories, detailLevel);
+            return new CodeDocRepositorySearchContext(AllRepositories, detailLevel);
         }
 
         public CodeDocRepositorySearchContext CloneWithSingleVisit(ICodeDocMemberRepository repository) {

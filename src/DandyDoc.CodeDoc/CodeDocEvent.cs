@@ -1,4 +1,5 @@
-﻿using DandyDoc.CRef;
+﻿using System.Runtime.Serialization;
+using DandyDoc.CRef;
 using System.Diagnostics.Contracts;
 
 namespace DandyDoc.CodeDoc
@@ -7,6 +8,7 @@ namespace DandyDoc.CodeDoc
     /// <summary>
     /// A code doc model for an event member.
     /// </summary>
+    [DataContract]
     public class CodeDocEvent : CodeDocMemberContentBase
     {
 
@@ -21,6 +23,7 @@ namespace DandyDoc.CodeDoc
         /// <summary>
         /// The delegate type of the event.
         /// </summary>
+        [DataMember]
         public CodeDocType DelegateType { get; set; }
 
     }

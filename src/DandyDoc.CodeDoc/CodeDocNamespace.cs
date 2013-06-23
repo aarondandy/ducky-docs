@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Runtime.Serialization;
 using DandyDoc.CRef;
 
 namespace DandyDoc.CodeDoc
@@ -8,6 +9,7 @@ namespace DandyDoc.CodeDoc
     /// <summary>
     /// A code doc namespace model.
     /// </summary>
+    [DataContract]
     public class CodeDocNamespace : CodeDocSimpleNamespace
     {
 
@@ -22,11 +24,13 @@ namespace DandyDoc.CodeDoc
         /// <summary>
         /// All exposed types within this namespace.
         /// </summary>
+        [DataMember]
         public IList<CodeDocType> Types { get; set; }
 
         /// <summary>
         /// All assemblies for the exposed types within this namespace.
         /// </summary>
+        [DataMember]
         public IList<CodeDocSimpleAssembly> Assemblies { get; set; }
 
     }

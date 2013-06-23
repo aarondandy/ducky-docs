@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Runtime.Serialization;
 using DandyDoc.XmlDoc;
 
 namespace DandyDoc.CodeDoc
@@ -8,6 +9,7 @@ namespace DandyDoc.CodeDoc
     /// <summary>
     /// A code doc exception model.
     /// </summary>
+    [DataContract]
     public class CodeDocException
     {
 
@@ -29,26 +31,31 @@ namespace DandyDoc.CodeDoc
         /// <summary>
         /// The exception type model.
         /// </summary>
+        [DataMember]
         public CodeDocType ExceptionType { get; private set; }
 
         /// <summary>
         /// Indicates that the exception has conditions.
         /// </summary>
+        [IgnoreDataMember]
         public bool HasConditions { get { return Conditions != null && Conditions.Count > 0; } }
 
         /// <summary>
         /// Gets the exception conditions.
         /// </summary>
+        [IgnoreDataMember]
         public IList<XmlDocNode> Conditions { get; set; }
 
         /// <summary>
         /// Indicates that there are ensures contracts associated with this exception.
         /// </summary>
+        [IgnoreDataMember]
         public bool HasEnsures { get { return Ensures != null && Ensures.Count > 0; } }
 
         /// <summary>
         /// Gets the ensures contracts associated with this exception.
         /// </summary>
+        [IgnoreDataMember]
         public IList<XmlDocNode> Ensures { get; set; }
     }
 }

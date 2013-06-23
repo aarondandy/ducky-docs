@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Runtime.Serialization;
 using DandyDoc.ExternalVisibility;
 using DandyDoc.XmlDoc;
 

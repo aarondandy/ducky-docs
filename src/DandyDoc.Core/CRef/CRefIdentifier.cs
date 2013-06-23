@@ -14,9 +14,21 @@ namespace DandyDoc.CRef
         /// <summary>
         /// The core parser regular expression.
         /// </summary>
-        private static readonly Regex CRefRegex = new Regex(
-            @"((?<targetType>\w)[:])?(?<coreName>[^():]+)([(](?<params>.*)[)])?([~](?<returnType>.+))?",
-            RegexOptions.Compiled);
+        private static readonly Regex CRefRegex;
+        private static readonly CRefIdentifier InvalidValue;
+        public static CRefIdentifier Invalid {
+            get {
+                Contract.Ensures(Contract.Result<CRefIdentifier>() != null);
+                return InvalidValue;
+            }
+        }
+
+        static CRefIdentifier() {
+            CRefRegex = new Regex(
+                @"((?<targetType>\w)[:])?(?<coreName>[^():]+)([(](?<params>.*)[)])?([~](?<returnType>.+))?",
+                RegexOptions.Compiled);
+            InvalidValue = new CRefIdentifier("!:");
+        }
 
         public static bool TryParse(Uri uri, out CRefIdentifier cRef) {
             if (uri != null) {
@@ -32,6 +44,7 @@ namespace DandyDoc.CRef
             cRef = null;
             return false;
         }
+
 
         /// <summary>
         /// Creates a new code reference identifier by parsing it from a given string.
