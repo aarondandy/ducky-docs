@@ -1,13 +1,87 @@
-﻿@inherits ServiceStack.Razor.ViewPage<DandyDoc.CodeDoc.CodeDocSimpleMember>
+﻿@using DandyDoc.CodeDoc
+@inherits ServiceStack.Razor.ViewPage<CodeDocSimpleMember>
 @{
   Layout = "_DocsLayout";
-  ViewBag.Title = Model.Title;
-  ViewBag.SubTitle = Model.SubTitle;
+  var entityTitle = Model.Title;
+  var entitySubTitle = Model.SubTitle;
+  var contentModel = Model as CodeDocMemberContentBase;
+  ViewBag.SubTitle = "API Reference";
 }
 <div class="container">
   <div class="row">
     <div class="span12">
+      <h1>
+        @entityTitle
+        @if (!String.IsNullOrWhiteSpace(entitySubTitle)) {
+          <small>@entitySubTitle</small>
+        }
+      </h1>
+      
+      @if (Model.HasSummaryContents) {
+        <div>TODO: summary</div>
+      }
+      
+      <div>TODO: flair table</div>
+      
+      @if (contentModel != null) {
+        
+        if (contentModel.Namespace != null) {
+          <div>Namespace: TODO namespace link</div>
+        }
+        
+        if (contentModel.Assembly != null) {
+          var assemblyText = contentModel.Assembly.AssemblyFileName;
+          if (String.IsNullOrWhiteSpace(assemblyText)) {
+            assemblyText = contentModel.Assembly.Title;
+          }
+          if (!String.IsNullOrWhiteSpace(assemblyText)) {
+            <div>Assembly: @assemblyText</div>
+          }
+        }
+        
+        if (contentModel.DeclaringType != null) {
+          <div>Declaring Type: TODO type link</div>
+        }
+        
+      }
+
       @RenderBody()
+      
+      @if (contentModel != null) {
+        
+        if (contentModel.HasExamples) {
+          <section>
+            <h2>Examples</h2>
+            @foreach (var section in contentModel.Examples.Where(x => x.HasChildren)) {
+              <div>
+                TODO: XML DOC rendering
+              </div>
+            }
+          </section>
+        }
+
+        if (contentModel.HasSeeAlso) {
+          <section>
+            <h2>See Also</h2>
+            <ul>
+              @foreach (var section in contentModel.SeeAlso) {
+                <li>
+                  TODO: XML DOC link
+                </li>
+              }
+            </ul>
+          </section>
+        }
+        
+      }
+      
+      @{
+        var uriString = new UriBuilder("https://github.com/aarondandy/dandy-doc/issues/new") {
+          Query = String.Format("title=[docs]:+{0}&body=CRef:+{0}", Uri.EscapeDataString(Model.CRef.ToString()))
+        }.ToString();
+        <div class="muted pull-right"><a href="@uriString" target="_blank" title="Report an issue with this documentation." rel="nofollow"><i class="icon-exclamation-sign"></i></a></div>
+      }
+
     </div>
   </div>
 </div>

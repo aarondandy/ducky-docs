@@ -1,17 +1,23 @@
 ﻿@inherits ServiceStack.Razor.ViewPage
+@{
+  string pageTitle = ViewBag.Title;
+  if (String.IsNullOrWhiteSpace(pageTitle)) {
+    pageTitle = "Dandy Doc";
+  }
+}
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>@ViewBag.Title</title>
-  <link type="text/css" rel="stylesheet" href="~/css/bootstrap.cosmo.min.css"/>
-  <link type="text/css" rel="stylesheet" href="~/css/bootstrap-responsive.min.css"/>
+  <title>@pageTitle</title>
+  <link type="text/css" rel="stylesheet" href="~/css/bootstrap.cosmo.min.css" />
+  <link type="text/css" rel="stylesheet" href="~/css/bootstrap-responsive.min.css" />
 </head>
 <body>
   <div class="container">
     <div class="row">
       <header class="span12">
-        <h1>@ViewBag.Title</h1>
+        <h1>@pageTitle</h1>
         @if (!String.IsNullOrWhiteSpace(ViewBag.SubTitle)) {<p class="lead">@ViewBag.SubTitle</p>}
       </header>
     </div>
@@ -20,7 +26,6 @@
   <div class="container">
     <div class="row">
       <footer class="span12">
-        
       </footer>
     </div>
   </div>

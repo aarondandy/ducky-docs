@@ -155,7 +155,7 @@
     <None Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
-    <Content Include="_SiteLayout.cshtml" />
+    <Content Include="Views\_SiteLayout.cshtml" />
     <Content Include="_Layout.cshtml" />
   </ItemGroup>
   <ItemGroup>
