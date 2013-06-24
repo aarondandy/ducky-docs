@@ -1,11 +1,10 @@
 ﻿@using DandyDoc.CodeDoc
+@using DandyDoc.Web.ServiceStack
 @inherits ServiceStack.Razor.ViewPage<CodeDocType>
 @{
   Layout = "_ApiDocsLayout";
 
   var isEnum = Model.IsEnum.GetValueOrDefault();
-  var codeDocInvokable = Model as ICodeDocInvokable;
-  var isInvokable = codeDocInvokable != null;
   
   // get and filter all the member sets for the type
   var memberSets = new[] {
@@ -30,10 +29,6 @@
     }
   }
   
-  if (isInvokable) {
-    memberSets.Clear();
-  }
-  
   if (!isEnum && (Model.HasBaseChain || Model.HasInterfaces)) {
     <section>
       <h2>Inheritance</h2>
@@ -55,42 +50,15 @@
   if (!isEnum && Model.HasGenericParameters) {
     <section>
       <h2>Generic Parameters</h2>
-      TODO: generic parameter list
+      @this.CodeDocParameters(Model.GenericParameters)
     </section>
   }
 
   foreach (var memberSet in memberSets) {
     <section>
       <h2>@memberSet.Title</h2>
-      <div>TODO: members</div>
+      @this.CodeDocEntityTable(memberSet.Members)
     </section>
-  }
-  
-  if (isInvokable) {
-    if (codeDocInvokable.HasParameters) {
-      <section>
-        <h2>Parameters</h2>
-        TODO: parameter list
-      </section>
-    }
-    if (codeDocInvokable.HasReturn) {
-      <section>
-        <h2>Returns</h2>
-        TODO: return parameter
-      </section>
-    }
-    if (codeDocInvokable.HasExceptions) {
-      <section>
-        <h2>Exceptions</h2>
-        TODO: exception listing
-      </section>
-    }
-    if (codeDocInvokable.HasNormalTerminationEnsures) {
-      <section>
-        <h2>Ensures on Successful Execution</h2>
-        TODO: normal ensures listing
-      </section>
-    }
   }
   
 }

@@ -1,4 +1,5 @@
 ﻿@using DandyDoc.CodeDoc
+@using DandyDoc.Web.ServiceStack
 @inherits ServiceStack.Razor.ViewPage<CodeDocNamespace>
 @{
   Layout = "_ApiDocsLayout";
@@ -39,7 +40,7 @@
   foreach (var memberSet in memberSets) {
     <section>
       <h2>@memberSet.Title</h2>
-      <div>TODO: members</div>
+      @this.CodeDocEntityTable(memberSet.Types)
     </section>
   }
   

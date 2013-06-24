@@ -758,9 +758,7 @@ namespace DandyDoc.Web.Mvc4.Helpers
                             break;
                     }
                 }
-
             }
-
         }
 
         private static IEnumerable<FlairItem> GetFlair(CodeDocParameter parameter){

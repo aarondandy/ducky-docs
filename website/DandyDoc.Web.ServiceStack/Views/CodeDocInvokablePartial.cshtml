@@ -1,32 +1,33 @@
 ﻿@using DandyDoc.CodeDoc
+@using DandyDoc.Web.ServiceStack
 @inherits ServiceStack.Razor.ViewPage<ICodeDocInvokable>
 @{
   
   if (Model.HasParameters) {
     <section>
       <h2>Parameters</h2>
-      TODO: parameter list
+      @this.CodeDocParameters(Model.Parameters)
     </section>
   }
   
   if (Model.HasReturn) {
     <section>
       <h2>Returns</h2>
-      TODO: return parameter
+      @this.CodeDocParameterDetails(Model.Return)
     </section>
   }
   
   if (Model.HasExceptions) {
     <section>
       <h2>Exceptions</h2>
-      TODO: exception listing
+      @this.CodeDocExceptions(Model.Exceptions)
     </section>
   }
   
   if (Model.HasNormalTerminationEnsures) {
     <section>
       <h2>Ensures on Successful Execution</h2>
-      TODO: normal ensures listing
+      @this.CodeDocSimpleCodeContractTable(Model.NormalTerminationEnsures)
     </section>
   }
   

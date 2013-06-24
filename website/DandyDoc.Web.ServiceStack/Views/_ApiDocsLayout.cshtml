@@ -19,7 +19,7 @@
       </h2>
       
       @if (Model.HasSummaryContents) {
-        <div>TODO: summary</div>
+        <p class="lead">@this.XmlDocHtml(Model.SummaryContents)</p>
       }
       
       <div>TODO: flair table</div>
@@ -50,12 +50,23 @@
       
       @if (contentModel != null) {
         
+        if (contentModel.HasRemarks) {
+          <section>
+            <h2>Remarks</h2>
+            @foreach (var section in contentModel.Remarks.Where(x => x.HasChildren)) {
+              <div>
+                @this.XmlDocHtml(section.Children)
+              </div>
+            }
+          </section>
+        }
+        
         if (contentModel.HasExamples) {
           <section>
             <h2>Examples</h2>
             @foreach (var section in contentModel.Examples.Where(x => x.HasChildren)) {
               <div>
-                TODO: XML DOC rendering
+                @this.XmlDocHtml(section.Children)
               </div>
             }
           </section>
