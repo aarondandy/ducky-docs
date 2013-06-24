@@ -1,4 +1,5 @@
 ﻿@using DandyDoc.CodeDoc
+@using DandyDoc.Web.ServiceStack
 @inherits ServiceStack.Razor.ViewPage<CodeDocSimpleMember>
 @{
   Layout = "_DocsLayout";
@@ -9,13 +10,13 @@
 }
 <div class="container">
   <div class="row">
-    <div class="span12">
-      <h1>
-        @entityTitle
+    <section class="span12">
+      <h2>
+        @Html.BreakIntoCodeNamePartElements(entityTitle)
         @if (!String.IsNullOrWhiteSpace(entitySubTitle)) {
           <small>@entitySubTitle</small>
         }
-      </h1>
+      </h2>
       
       @if (Model.HasSummaryContents) {
         <div>TODO: summary</div>
@@ -82,6 +83,6 @@
         <div class="muted pull-right"><a href="@uriString" target="_blank" title="Report an issue with this documentation." rel="nofollow"><i class="icon-exclamation-sign"></i></a></div>
       }
 
-    </div>
+    </section>
   </div>
 </div>

@@ -114,8 +114,11 @@
   <ItemGroup>
     <Content Include="css\bootstrap-responsive.css" />
     <Content Include="css\bootstrap-responsive.min.css" />
+    <Content Include="css\bootstrap.cosmo.css" />
+    <Content Include="css\bootstrap.cosmo.min.css" />
     <Content Include="css\bootstrap.css" />
     <Content Include="css\bootstrap.min.css" />
+    <Content Include="css\site.css" />
     <Content Include="img\glyphicons-halflings-white.png" />
     <Content Include="img\glyphicons-halflings.png" />
     <Content Include="js\bootstrap.js" />
@@ -132,6 +135,7 @@
     <Compile Include="CecilMemberRepository.cs" />
     <Compile Include="CodeDocApi.cs" />
     <Compile Include="CodeDocRepositories.cs" />
+    <Compile Include="DandyDocHelpers.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

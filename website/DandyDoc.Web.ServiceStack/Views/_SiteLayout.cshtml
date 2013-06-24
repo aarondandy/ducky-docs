@@ -10,16 +10,19 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>@pageTitle</title>
-  <link type="text/css" rel="stylesheet" href="~/css/bootstrap.cosmo.min.css" />
-  <link type="text/css" rel="stylesheet" href="~/css/bootstrap-responsive.min.css" />
+  <link type="text/css" rel="stylesheet" href="/css/bootstrap.cosmo.min.css" />
+  <link type="text/css" rel="stylesheet" href="/css/bootstrap-responsive.min.css" />
+  <link type="text/css" rel="stylesheet" href="/css/site.css" />
 </head>
 <body>
   <div class="container">
     <div class="row">
-      <header class="span12">
-        <h1>@pageTitle</h1>
-        @if (!String.IsNullOrWhiteSpace(ViewBag.SubTitle)) {<p class="lead">@ViewBag.SubTitle</p>}
-      </header>
+      <div class="span12">
+        <header>
+          <h1>@pageTitle</h1>
+          @if (!String.IsNullOrWhiteSpace(ViewBag.SubTitle)) {<p class="lead">@ViewBag.SubTitle</p>}
+        </header>
+      </div>
     </div>
   </div>
   @RenderBody()
@@ -29,7 +32,7 @@
       </footer>
     </div>
   </div>
-  <script type="text/javascript" src="~/js/jquery-1.10.1.min.js"></script>
-  <script type="text/javascript" src="~/js/bootstrap.min.js"></script>
+  <script type="text/javascript" src="/js/jquery-1.10.1.min.js"></script>
+  <script type="text/javascript" src="/js/bootstrap.min.js"></script>
 </body>
 </html>
