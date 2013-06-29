@@ -689,13 +689,11 @@ namespace DandyDoc.Web.ServiceStack
         }
 
         private static string LocalMemberUri<T>(this ViewPage<T> viewPage, CRefIdentifier cRef) where T : class {
-            Contract.Requires(cRef != null);
-            var htmlhelper = viewPage.Html;
-            var appHost = viewPage.AppHost;
-            var config = appHost.Config;
-            var routes = appHost.Routes;
-
-            throw new NotImplementedException();
+            var cRefUri = "/Docs/Api?cRef=" + Uri.EscapeDataString(cRef.FullCRef);
+            var htmlHelper = viewPage.Html;
+            var requestPath = htmlHelper.HttpRequest.PathInfo;
+            var relative = VirtualPathUtility.MakeRelative(requestPath, cRefUri);
+            return relative;
         }
 
         public static HtmlString LinkTextFull(ICodeDocMember member) {

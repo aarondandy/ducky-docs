@@ -8,16 +8,16 @@
   <h2>Value</h2>
   <p><b>Type:</b> TODO: value type link</p>
   @if (Model.HasValueDescriptionContents) {
-    @this.XmlDocHtml(Model.ValueDescriptionContents)
+    this.XmlDocHtml(Model.ValueDescriptionContents);
   }
 </section>
-@if (Model.HasGetter && true /*CodeDocAccessorIsWorthDisplaying*/) {
+@if (Model.HasGetter && DandyDocHelpers.CodeDocAccessorIsWorthDisplaying(Model.Getter)) {
   <section>
     <h2>Getter</h2>
     @this.CodeDocAccessor(Model.Getter)
   </section>
 }
-@if (Model.HasSetter && true /*CodeDocAccessorIsWorthDisplaying*/) {
+@if (Model.HasSetter && DandyDocHelpers.CodeDocAccessorIsWorthDisplaying(Model.Setter)) {
   <section>
     <h2>Setter</h2>
     @this.CodeDocAccessor(Model.Setter)
