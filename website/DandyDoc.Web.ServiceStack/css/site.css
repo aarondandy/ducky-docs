@@ -18,6 +18,10 @@ h1 small, h2 small {
     color: #555;
 }
 
+.navbar .navbar-inner {
+    background-color: #345;
+}
+
 .nuget-badge code {
     -moz-border-radius: 5px;
     -webkit-border-radius: 5px;

@@ -1,4 +1,5 @@
-﻿@inherits ServiceStack.Razor.ViewPage
+﻿@using DandyDoc.Web.ServiceStack
+@inherits ServiceStack.Razor.ViewPage
 @{
   string pageTitle = ViewBag.Title;
   if (String.IsNullOrWhiteSpace(pageTitle)) {
@@ -22,6 +23,39 @@
           <h1>@pageTitle</h1>
           @if (!String.IsNullOrWhiteSpace(ViewBag.SubTitle)) {<p class="lead">@ViewBag.SubTitle</p>}
         </header>
+        <nav class="navbar">
+          <div class="navbar-inner">
+            <div class="container">
+              <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </a>
+              <div class="nav-collapse collapse">
+                <ul class="nav">
+                  <li><a href="@this.CorrectRelativeUri("/")"><i class="icon-home"></i> Index</a></li>
+                  <li><a href="@this.CorrectRelativeUri("/Docs/")"><i class="icon-play"></i> Get Started</a></li>
+                  <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-book"></i> API Reference<b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                      <li><a href="#">All Namespaces</a></li>
+                      @{
+                        var codeDocRepositories = this.AppHost.TryResolve<CodeDocRepositories>();
+                        if (codeDocRepositories != null) {
+                          <li class="divider"></li>
+                          foreach (var ns in codeDocRepositories.TargetRepository.Namespaces) {
+                            <li>@(this.ActionLink(ns))</li>
+                          }
+                        }
+                      }
+                    </ul>
+                  </li>
+                  <li><a href="http://github.com/aarondandy/dandy-doc/"><i class="icon-pencil"></i> Project</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </nav>
       </div>
     </div>
   </div>

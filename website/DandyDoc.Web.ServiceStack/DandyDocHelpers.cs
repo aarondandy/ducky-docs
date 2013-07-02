@@ -9,10 +9,8 @@ using DandyDoc.CRef;
 using DandyDoc.CodeDoc;
 using DandyDoc.ExternalVisibility;
 using DandyDoc.XmlDoc;
-using ServiceStack;
 using ServiceStack.Html;
 using ServiceStack.Razor;
-using ServiceStack.WebHost.Endpoints;
 
 namespace DandyDoc.Web.ServiceStack
 {
@@ -671,7 +669,7 @@ namespace DandyDoc.Web.ServiceStack
 
         #region Member Linking
 
-        private static string MemberUri<T>(this ViewPage<T> viewPage, ICodeDocMember member) where T:class {
+        private static string MemberUri<T>(this ViewPageBase<T> viewPage, ICodeDocMember member) where T:class {
             Contract.Requires(member != null);
 
             var uri = member.Uri;
@@ -688,12 +686,27 @@ namespace DandyDoc.Web.ServiceStack
             return viewPage.LocalMemberUri(member.CRef);
         }
 
-        private static string LocalMemberUri<T>(this ViewPage<T> viewPage, CRefIdentifier cRef) where T : class {
+        private static string LocalMemberUri<T>(this ViewPageBase<T> viewPage, CRefIdentifier cRef) where T : class {
             var cRefUri = "/Docs/Api?cRef=" + Uri.EscapeDataString(cRef.FullCRef);
-            var htmlHelper = viewPage.Html;
-            var requestPath = htmlHelper.HttpRequest.PathInfo;
-            var relative = VirtualPathUtility.MakeRelative(requestPath, cRefUri);
+            return viewPage.CorrectRelativeUri(cRefUri);
+        }
+
+        public static string CorrectRelativeUri<T>(this ViewPageBase<T> viewPage, string appUri) where T : class {
+            return viewPage.GetRelativeUri(viewPage.FixAbsoluteUri(appUri));
+        }
+
+        public static string GetRelativeUri<T>(this ViewPageBase<T> viewPage, string appUri) where T:class {
+            var requestPath = viewPage.Request.PathInfo;
+            var relative = VirtualPathUtility.MakeRelative(requestPath, appUri);
             return relative;
+        }
+
+        public static string FixAbsoluteUri<T>(this ViewPageBase<T> viewPage, string appUri) where T : class {
+            if (appUri == "/")
+                return "/index.cshtml";
+            if ("/Docs/".Equals(appUri, StringComparison.OrdinalIgnoreCase) || "/Docs".Equals(appUri, StringComparison.OrdinalIgnoreCase))
+                return "/Docs/index.cshtml";
+            return appUri;
         }
 
         public static HtmlString LinkTextFull(ICodeDocMember member) {
@@ -721,13 +734,17 @@ namespace DandyDoc.Web.ServiceStack
             return viewPage.ActionLink(member, LinkTextFull(member));
         }
 
-        public static HtmlString ActionLink<T>(this ViewPage<T> viewPage, ICodeDocMember member) where T:class {
+        public static HtmlString ActionLink(this ViewPage viewPage, ICodeDocMember member) {
+            return ActionLink<dynamic>(viewPage, member);
+        }
+
+        public static HtmlString ActionLink<T>(this ViewPageBase<T> viewPage, ICodeDocMember member) where T:class {
             Contract.Requires(member != null);
             Contract.Ensures(Contract.Result<HtmlString>() != null);
             return viewPage.ActionLink(member, LinkTextShort(member));
         }
 
-        public static HtmlString ActionLink<T>(this ViewPage<T> viewPage, ICodeDocMember member, HtmlString linkText) where T :class {
+        public static HtmlString ActionLink<T>(this ViewPageBase<T> viewPage, ICodeDocMember member, HtmlString linkText) where T :class {
             Contract.Requires(member != null);
             Contract.Ensures(Contract.Result<HtmlString>() != null);
 
