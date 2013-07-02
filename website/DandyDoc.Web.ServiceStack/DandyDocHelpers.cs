@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
+using System.Web.Hosting;
 using DandyDoc.CRef;
 using DandyDoc.CodeDoc;
 using DandyDoc.ExternalVisibility;
 using DandyDoc.XmlDoc;
 using ServiceStack.Html;
 using ServiceStack.Razor;
+using ServiceStack.ServiceHost;
 
 namespace DandyDoc.Web.ServiceStack
 {
@@ -25,7 +28,7 @@ namespace DandyDoc.Web.ServiceStack
             return CodeNameSplitRegex.Split(title);
         }
 
-        public static HtmlString BreakIntoCodeNamePartElements(this HtmlHelper helper, string name, string tagName = "span") {
+        public static HtmlString BreakIntoCodeNamePartElements(string name, string tagName = "span") {
             var htmlBuilder = new StringBuilder();
             var openTag = '<' + tagName + '>';
             var closeTag = "</" + tagName + '>';
@@ -37,14 +40,14 @@ namespace DandyDoc.Web.ServiceStack
             return new HtmlString(htmlBuilder.ToString());
         }
 
-        public static HtmlString XmlDocHtml<T>(this ViewPage<T> viewPage, IEnumerable<XmlDocNode> nodes) where T:class {
+        public static HtmlString XmlDocHtml<T>(this ViewPageBase<T> viewPage, IEnumerable<XmlDocNode> nodes) where T:class {
             var htmlBuilder = new StringBuilder();
             foreach (var node in nodes)
                 htmlBuilder.Append(viewPage.XmlDocHtml(node));
             return new HtmlString(htmlBuilder.ToString());
         }
 
-        public static HtmlString XmlDocHtml<T>(this ViewPage<T> viewPage, XmlDocNode node) where T:class {
+        public static HtmlString XmlDocHtml<T>(this ViewPageBase<T> viewPage, XmlDocNode node) where T:class {
             if (node is XmlDocTextNode)
                 return new HtmlString(node.Node.OuterXml);
             if (node is XmlDocNameElement)
@@ -65,7 +68,7 @@ namespace DandyDoc.Web.ServiceStack
             return viewPage.XmlDocHtml(node.Children);
         }
 
-        public static HtmlString XmlDocHtml<T>(this ViewPage<T> viewPage, XmlDocNameElement element) where T:class {
+        public static HtmlString XmlDocHtml<T>(this ViewPageBase<T> viewPage, XmlDocNameElement element) where T:class {
             var targetName = element.TargetName;
             if (String.IsNullOrWhiteSpace(targetName))
                 targetName = "parameter";
@@ -80,7 +83,7 @@ namespace DandyDoc.Web.ServiceStack
                 : new HtmlString(targetName);
         }
 
-        public static HtmlString XmlDocHtml<T>(this ViewPage<T> viewPage, XmlDocCodeElement element) where T:class {
+        public static HtmlString XmlDocHtml<T>(this ViewPageBase<T> viewPage, XmlDocCodeElement element) where T:class {
             if (!element.HasChildren)
                 return EmptyHtmlString;
             var tagName = element.IsInline ? "code" : "pre";
@@ -92,7 +95,7 @@ namespace DandyDoc.Web.ServiceStack
             return new HtmlString(codeTag.ToString());
         }
 
-        public static HtmlString XmlDocHtml<T>(this ViewPage<T> viewPage, XmlDocRefElement element) where T:class {
+        public static HtmlString XmlDocHtml<T>(this ViewPageBase<T> viewPage, XmlDocRefElement element) where T:class {
             var linkText = element.HasChildren
                 ? viewPage.XmlDocHtml(element.Children)
                 : null;
@@ -122,7 +125,7 @@ namespace DandyDoc.Web.ServiceStack
             return new HtmlString(hrefTagBuilder.ToString());
         }
 
-        public static HtmlString XmlDocHtml<T>(this ViewPage<T> viewPage, XmlDocDefinitionList element) where T:class {
+        public static HtmlString XmlDocHtml<T>(this ViewPageBase<T> viewPage, XmlDocDefinitionList element) where T:class {
             if (!element.HasItems)
                 return EmptyHtmlString;
             if ("NUMBER".Equals(element.ListType, StringComparison.OrdinalIgnoreCase))
@@ -132,7 +135,7 @@ namespace DandyDoc.Web.ServiceStack
             return viewPage.XmlDocHtmlAsTable(element);
         }
 
-        private static HtmlString XmlDocHtmlAsTable<T>(this ViewPage<T> viewPage, XmlDocDefinitionList element) where T:class {
+        private static HtmlString XmlDocHtmlAsTable<T>(this ViewPageBase<T> viewPage, XmlDocDefinitionList element) where T:class {
             var tableTag = new TagBuilder("table");
             tableTag.MergeAttribute("class", "table table-bordered table-condensed");
             var tableGutsBuilder = new StringBuilder();
@@ -158,7 +161,7 @@ namespace DandyDoc.Web.ServiceStack
             return new HtmlString(tableTag.ToString());
         }
 
-        private static HtmlString XmlDocHtmlAsList<T>(this ViewPage<T> viewPage, XmlDocDefinitionList element, string listType) where T:class {
+        private static HtmlString XmlDocHtmlAsList<T>(this ViewPageBase<T> viewPage, XmlDocDefinitionList element, string listType) where T:class {
             var listTag = new TagBuilder(listType);
             var listItemsHtmlBuilder = new StringBuilder();
             foreach (var item in element.Items) {
@@ -179,7 +182,7 @@ namespace DandyDoc.Web.ServiceStack
             return new HtmlString(listTag.ToString());
         }
 
-        public static HtmlString CodeDocParameterDetails<T>(this ViewPage<T> viewPage, CodeDocParameter parameter) where T:class {
+        public static HtmlString CodeDocParameterDetails<T>(this ViewPageBase<T> viewPage, CodeDocParameter parameter) where T:class {
             var htmlBuilder = new StringBuilder();
             if (parameter.HasSummaryContents) {
                 htmlBuilder.Append("<div>");
@@ -194,7 +197,7 @@ namespace DandyDoc.Web.ServiceStack
             return new HtmlString(htmlBuilder.ToString());
         }
 
-        public static HtmlString CodeDocParameters<T>(this ViewPage<T> viewPage, IEnumerable<CodeDocParameter> parameters) where T:class {
+        public static HtmlString CodeDocParameters<T>(this ViewPageBase<T> viewPage, IEnumerable<CodeDocParameter> parameters) where T:class {
             var tagBuilder = new TagBuilder("dl");
             var innerHtmlBuilder = new StringBuilder();
             foreach (var parameter in parameters) {
@@ -209,7 +212,7 @@ namespace DandyDoc.Web.ServiceStack
             return new HtmlString(tagBuilder.ToString());
         }
 
-        public static HtmlString CodeDocParameters<T>(this ViewPage<T> viewPage, IEnumerable<CodeDocGenericParameter> parameters) where T:class {
+        public static HtmlString CodeDocParameters<T>(this ViewPageBase<T> viewPage, IEnumerable<CodeDocGenericParameter> parameters) where T:class {
             var tagBuilder = new TagBuilder("dl");
             var innerHtmlBuilder = new StringBuilder();
             foreach (var parameter in parameters) {
@@ -256,7 +259,7 @@ namespace DandyDoc.Web.ServiceStack
             return new HtmlString(tagBuilder.ToString());
         }
 
-        public static HtmlString CodeDocExceptions<T>(this ViewPage<T> viewPage, IEnumerable<CodeDocException> exceptions, object tableTagAttributes = null) where T:class {
+        public static HtmlString CodeDocExceptions<T>(this ViewPageBase<T> viewPage, IEnumerable<CodeDocException> exceptions, object tableTagAttributes = null) where T:class {
             var tagBuilder = new TagBuilder("table");
 
             if (tableTagAttributes == null)
@@ -298,7 +301,7 @@ namespace DandyDoc.Web.ServiceStack
             return new HtmlString(tagBuilder.ToString());
         }
 
-        private static HtmlString XmlDocHtmlChildListOrSingle<T>(this ViewPage<T> viewPage, IList<XmlDocNode> nodes) where T:class {
+        private static HtmlString XmlDocHtmlChildListOrSingle<T>(this ViewPageBase<T> viewPage, IList<XmlDocNode> nodes) where T:class {
             Contract.Requires(nodes != null);
             if (nodes.Count == 0)
                 return EmptyHtmlString;
@@ -315,7 +318,7 @@ namespace DandyDoc.Web.ServiceStack
             return new HtmlString(tagBuilder.ToString());
         }
 
-        public static HtmlString CodeDocSimpleCodeContractTable<T>(this ViewPage<T> viewPage, IEnumerable<XmlDocContractElement> contracts, object tableTagAttributes = null) where T:class {
+        public static HtmlString CodeDocSimpleCodeContractTable<T>(this ViewPageBase<T> viewPage, IEnumerable<XmlDocContractElement> contracts, object tableTagAttributes = null) where T:class {
             var tagBuilder = new TagBuilder("table");
 
             if (tableTagAttributes == null)
@@ -341,7 +344,7 @@ namespace DandyDoc.Web.ServiceStack
             return new HtmlString(tagBuilder.ToString());
         }
 
-        public static HtmlString CodeDocAccessor<T>(this ViewPage<T> viewPage, CodeDocMethod accessor) where T :class {
+        public static HtmlString CodeDocAccessor<T>(this ViewPageBase<T> viewPage, CodeDocMethod accessor) where T :class {
             var htmlBuilder = new StringBuilder();
 
             htmlBuilder.Append(FlairTable(accessor));
@@ -641,7 +644,7 @@ namespace DandyDoc.Web.ServiceStack
             return count > 0;
         }
 
-        public static HtmlString CodeDocEntityTable<T>(this ViewPage<T> viewPage, IEnumerable<ICodeDocMember> entities, object tableTagAttributes = null) where T :class {
+        public static HtmlString CodeDocEntityTable<T>(this ViewPageBase<T> viewPage, IEnumerable<ICodeDocMember> entities, object tableTagAttributes = null) where T :class {
             var builder = new TagBuilder("table");
 
             if (tableTagAttributes == null)
@@ -692,20 +695,23 @@ namespace DandyDoc.Web.ServiceStack
         }
 
         public static string CorrectRelativeUri<T>(this ViewPageBase<T> viewPage, string appUri) where T : class {
-            return viewPage.GetRelativeUri(viewPage.FixAbsoluteUri(appUri));
+            var fixedAbsolute = viewPage.FixAbsoluteUri(appUri);
+            return viewPage.GetRelativeUri(fixedAbsolute);
         }
 
         public static string GetRelativeUri<T>(this ViewPageBase<T> viewPage, string appUri) where T:class {
+            // first get the actual app relative path as requested
             var requestPath = viewPage.Request.PathInfo;
+            if (viewPage.Request.OriginalRequest is HttpRequest)
+                requestPath = ((HttpRequest)viewPage.Request.OriginalRequest).AppRelativeCurrentExecutionFilePath;
+
             var relative = VirtualPathUtility.MakeRelative(requestPath, appUri);
             return relative;
         }
 
         public static string FixAbsoluteUri<T>(this ViewPageBase<T> viewPage, string appUri) where T : class {
-            if (appUri == "/")
-                return "/index.cshtml";
-            if ("/Docs/".Equals(appUri, StringComparison.OrdinalIgnoreCase) || "/Docs".Equals(appUri, StringComparison.OrdinalIgnoreCase))
-                return "/Docs/index.cshtml";
+            /*if (appUri.EndsWith("/"))
+                return appUri + "default";*/
             return appUri;
         }
 
@@ -728,14 +734,10 @@ namespace DandyDoc.Web.ServiceStack
             return new HtmlString(HttpUtility.HtmlEncode(member.ShortName));
         }
 
-        public static HtmlString ActionLinkFull<T>(this ViewPage<T> viewPage, ICodeDocMember member) where T:class {
+        public static HtmlString ActionLinkFull<T>(this ViewPageBase<T> viewPage, ICodeDocMember member) where T:class {
             Contract.Requires(member != null);
             Contract.Ensures(Contract.Result<HtmlString>() != null);
             return viewPage.ActionLink(member, LinkTextFull(member));
-        }
-
-        public static HtmlString ActionLink(this ViewPage viewPage, ICodeDocMember member) {
-            return ActionLink<dynamic>(viewPage, member);
         }
 
         public static HtmlString ActionLink<T>(this ViewPageBase<T> viewPage, ICodeDocMember member) where T:class {
@@ -758,7 +760,7 @@ namespace DandyDoc.Web.ServiceStack
             return new HtmlString(linkBuilder.ToString());
         }
 
-        public static HtmlString ActionLink<T>(this ViewPage<T> viewPage, CRefIdentifier cRef, HtmlString linkText) where T:class {
+        public static HtmlString ActionLink<T>(this ViewPageBase<T> viewPage, CRefIdentifier cRef, HtmlString linkText) where T:class {
             Contract.Requires(viewPage != null);
             Contract.Requires(cRef != null);
 
@@ -781,7 +783,7 @@ namespace DandyDoc.Web.ServiceStack
             return new HtmlString(linkBuilder.ToString());
         }
 
-        public static HtmlString ActionLinkList<T>(this ViewPage<T> viewPage, IEnumerable<ICodeDocMember> entities, object ulTagAttributes = null, object liTagAttributes = null) where T:class {
+        public static HtmlString ActionLinkList<T>(this ViewPageBase<T> viewPage, IEnumerable<ICodeDocMember> entities, object ulTagAttributes = null, object liTagAttributes = null) where T:class {
             var tagBuilder = new TagBuilder("ul");
 
             if (ulTagAttributes == null)

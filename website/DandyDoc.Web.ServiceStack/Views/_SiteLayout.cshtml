@@ -9,7 +9,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>@pageTitle</title>
   <link type="text/css" rel="stylesheet" href="/css/bootstrap.cosmo.min.css" />
   <link type="text/css" rel="stylesheet" href="/css/bootstrap-responsive.min.css" />
@@ -23,7 +23,7 @@
           <h1>@pageTitle</h1>
           @if (!String.IsNullOrWhiteSpace(ViewBag.SubTitle)) {<p class="lead">@ViewBag.SubTitle</p>}
         </header>
-        <nav class="navbar">
+        <nav class="navbar navbar-inverse">
           <div class="navbar-inner">
             <div class="container">
               <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
@@ -33,18 +33,18 @@
               </a>
               <div class="nav-collapse collapse">
                 <ul class="nav">
-                  <li><a href="@this.CorrectRelativeUri("/")"><i class="icon-home"></i> Index</a></li>
+                  <li><a href="@this.CorrectRelativeUri("/")"><i class="icon-home"></i> About</a></li>
                   <li><a href="@this.CorrectRelativeUri("/Docs/")"><i class="icon-play"></i> Get Started</a></li>
                   <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-book"></i> API Reference<b class="caret"></b></a>
+                    <a href="@this.CorrectRelativeUri("/Docs/Api/namespaces")" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-book"></i> API Reference<b class="caret"></b></a>
                     <ul class="dropdown-menu">
-                      <li><a href="#">All Namespaces</a></li>
+                      <li><a href="@this.CorrectRelativeUri("/Docs/Api/namespaces")">All Namespaces</a></li>
                       @{
                         var codeDocRepositories = this.AppHost.TryResolve<CodeDocRepositories>();
                         if (codeDocRepositories != null) {
                           <li class="divider"></li>
                           foreach (var ns in codeDocRepositories.TargetRepository.Namespaces) {
-                            <li>@(this.ActionLink(ns))</li>
+                            <li>@this.ActionLink(ns)</li>
                           }
                         }
                       }

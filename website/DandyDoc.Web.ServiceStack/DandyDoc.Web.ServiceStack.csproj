@@ -126,6 +126,8 @@
     <Content Include="Global.asax" />
     <Content Include="js\jquery-1.10.1.min.js" />
     <Content Include="Views\CodeDocInvokablePartial.cshtml" />
+    <Content Include="Docs\Api\namespaces.cshtml" />
+    <Content Include="Docs\default.cshtml" />
     <None Include="Views\CodeDocMethod.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -143,7 +145,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
-    <Content Include="index.cshtml" />
+    <Content Include="default.cshtml" />
     <Content Include="Views\CodeDocType.cshtml" />
     <Content Include="Docs\_Layout.cshtml" />
     <Content Include="Views\_DocsLayout.cshtml" />

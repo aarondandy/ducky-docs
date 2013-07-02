@@ -21,7 +21,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestLibrary1", "tests\TestL
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{8C888A75-C3A5-49EA-A747-C03D1A5FF3F7}"
 	ProjectSection(SolutionItems) = preProject
-		build\dandy-doc.nuspec = build\dandy-doc.nuspec
+		build\DandyDoc.CodeDoc.Cecil.nuspec = build\DandyDoc.CodeDoc.Cecil.nuspec
+		build\DandyDoc.CodeDoc.nuspec = build\DandyDoc.CodeDoc.nuspec
+		build\DandyDoc.Core.Cecil.nuspec = build\DandyDoc.Core.Cecil.nuspec
+		build\DandyDoc.Core.nuspec = build\DandyDoc.Core.nuspec
 		rakefile = rakefile
 	EndProjectSection
 EndProject
