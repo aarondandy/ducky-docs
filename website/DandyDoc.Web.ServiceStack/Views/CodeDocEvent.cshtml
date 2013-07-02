@@ -1,11 +1,12 @@
 ﻿@using DandyDoc.CodeDoc
+@using DandyDoc.Web.ServiceStack
 @inherits ServiceStack.Razor.ViewPage<CodeDocEvent>
 @{
   Layout = "_ApiDocsLayout";
 }
 <section>
   <dl>
-    <dt>Type</dt>
-    <dd>TODO: link to Model.DelegateType</dd>
+    <dt>Delegate Type</dt>
+    <dd>@this.ActionLinkFull(Model.DelegateType)</dd>
   </dl>
 </section>

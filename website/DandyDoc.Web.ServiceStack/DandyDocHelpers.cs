@@ -745,11 +745,10 @@ namespace DandyDoc.Web.ServiceStack
             Contract.Requires(viewPage != null);
             Contract.Requires(cRef != null);
 
-            Func<CRefIdentifier, ICodeDocMember> cRefToMember = null;
-            throw new NotImplementedException();// cRefToMember = helper.ViewBag.CRefToMinimumModel;
+            var repositories = viewPage.AppHost.TryResolve<CodeDocRepositories>();
 
-            if (cRefToMember != null) {
-                var member = cRefToMember(cRef);
+            if (repositories != null) {
+                var member = repositories.GetModel(cRef);
                 if (member != null) {
                     return viewPage.ActionLink(member, linkText);
                 }

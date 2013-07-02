@@ -11,23 +11,21 @@
 <div class="container">
   <div class="row">
     <section class="span12">
-      <h2>
+      <h1>
         @Html.BreakIntoCodeNamePartElements(entityTitle)
         @if (!String.IsNullOrWhiteSpace(entitySubTitle)) {
           <small>@entitySubTitle</small>
         }
-      </h2>
+      </h1>
       
       @if (Model.HasSummaryContents) {
         <p class="lead">@this.XmlDocHtml(Model.SummaryContents)</p>
       }
       
-      <div>TODO: flair table</div>
-      
       @if (contentModel != null) {
         
         if (contentModel.Namespace != null) {
-          <div>Namespace: TODO namespace link</div>
+          <div>Namespace: @this.ActionLinkFull(contentModel.Namespace)</div>
         }
         
         if (contentModel.Assembly != null) {
@@ -41,10 +39,12 @@
         }
         
         if (contentModel.DeclaringType != null) {
-          <div>Declaring Type: TODO type link</div>
+          <div>Declaring Type: @this.ActionLinkFull(contentModel.DeclaringType)</div>
         }
         
       }
+      
+      @DandyDocHelpers.FlairTable(Model)
 
       @RenderBody()
       
@@ -78,7 +78,7 @@
             <ul>
               @foreach (var section in contentModel.SeeAlso) {
                 <li>
-                  TODO: XML DOC link
+                  @this.XmlDocHtml(section)
                 </li>
               }
             </ul>

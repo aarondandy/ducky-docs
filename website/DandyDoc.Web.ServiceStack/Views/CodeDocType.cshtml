@@ -35,13 +35,13 @@
       @if (Model.HasBaseChain) {
         <dl>
           <dt>Base Types</dt>
-          <dd>TODO: list of links to types</dd>
+          <dd>@this.ActionLinkList(Model.BaseChain)</dd>
         </dl>
       }
       @if (Model.HasInterfaces) {
         <dl>
           <dt>Implements</dt>
-          <dd>TODO: list of links to types</dd>
+          <dd>@this.ActionLinkList(Model.Interfaces)</dd>
         </dl>
       }
     </section>

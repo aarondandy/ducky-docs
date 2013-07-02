@@ -6,9 +6,13 @@
 }
 <section>
   <h2>Value</h2>
-  <p><b>Type:</b> TODO: value type link</p>
+  <dl>
+    <dt>Type</dt>
+    <dd>@this.ActionLinkFull(Model.ValueType)</dd>
+  </dl>
+
   @if (Model.HasValueDescriptionContents) {
-    this.XmlDocHtml(Model.ValueDescriptionContents);
+    <div>@this.XmlDocHtml(Model.ValueDescriptionContents)</div>
   }
 </section>
 @if (Model.HasGetter && DandyDocHelpers.CodeDocAccessorIsWorthDisplaying(Model.Getter)) {

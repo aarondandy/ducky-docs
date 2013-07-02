@@ -5,16 +5,16 @@
     color: #dedede;
 }
 
-    header h1 {
-        color: #fefefe;
-    }
+header h1 {
+    color: #fefefe;
+}
 
 h1 span, h2 span {
     display: inline-block;
     word-break: break-all;
 }
 
-h2 small {
+h1 small, h2 small {
     color: #555;
 }
 
