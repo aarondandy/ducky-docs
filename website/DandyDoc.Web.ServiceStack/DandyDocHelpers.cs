@@ -760,14 +760,14 @@ namespace DandyDoc.Web.ServiceStack
             return new HtmlString(linkBuilder.ToString());
         }
 
-        public static HtmlString ActionLink<T>(this ViewPageBase<T> viewPage, CRefIdentifier cRef, HtmlString linkText) where T:class {
+        public static HtmlString ActionLink<T>(this ViewPageBase<T> viewPage, CRefIdentifier cRef, HtmlString linkText = null) where T:class {
             Contract.Requires(viewPage != null);
             Contract.Requires(cRef != null);
 
             var repositories = viewPage.AppHost.TryResolve<CodeDocRepositories>();
 
             if (repositories != null) {
-                var member = repositories.GetModel(cRef);
+                var member = repositories.GetModel(cRef, CodeDocMemberDetailLevel.Minimum);
                 if (member != null) {
                     return viewPage.ActionLink(member, linkText);
                 }

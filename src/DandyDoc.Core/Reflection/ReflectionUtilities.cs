@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
+using DandyDoc.CRef;
 using DandyDoc.Utility;
 
 namespace DandyDoc.Reflection
@@ -473,6 +475,8 @@ namespace DandyDoc.Reflection
             Contract.Requires(methodInfo != null);
             return methodInfo.ReturnParameter != null && methodInfo.ReturnType != typeof(void);
         }
+
+  
 
     }
 }

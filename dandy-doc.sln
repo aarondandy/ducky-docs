@@ -60,6 +60,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DandyDoc.Generator.Nancy", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DandyDoc.Generator.ServiceStack", "website\DandyDoc.Generator.ServiceStack\DandyDoc.Generator.ServiceStack.csproj", "{F68BE8FB-293D-4311-BF29-100FE6B2FE53}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleStaticSiteGenerator", "samples\SimpleStaticSiteGenerator\SimpleStaticSiteGenerator.csproj", "{0B7478DB-3EE2-4960-950C-ADA4F2D130FD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -163,6 +165,12 @@ Global
 		{F68BE8FB-293D-4311-BF29-100FE6B2FE53}.DebugCC|Any CPU.Build.0 = Debug|Any CPU
 		{F68BE8FB-293D-4311-BF29-100FE6B2FE53}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F68BE8FB-293D-4311-BF29-100FE6B2FE53}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B7478DB-3EE2-4960-950C-ADA4F2D130FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B7478DB-3EE2-4960-950C-ADA4F2D130FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B7478DB-3EE2-4960-950C-ADA4F2D130FD}.DebugCC|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B7478DB-3EE2-4960-950C-ADA4F2D130FD}.DebugCC|Any CPU.Build.0 = Debug|Any CPU
+		{0B7478DB-3EE2-4960-950C-ADA4F2D130FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B7478DB-3EE2-4960-950C-ADA4F2D130FD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -184,5 +192,6 @@ Global
 		{2A348591-F682-47D9-80FA-267AB039EFF8} = {5B2C4D63-9F42-4C27-BF95-52E7257A6C7A}
 		{C16CAFE5-A3F9-4772-920C-F52623D929D4} = {5B2C4D63-9F42-4C27-BF95-52E7257A6C7A}
 		{F68BE8FB-293D-4311-BF29-100FE6B2FE53} = {5B2C4D63-9F42-4C27-BF95-52E7257A6C7A}
+		{0B7478DB-3EE2-4960-950C-ADA4F2D130FD} = {4CAD2057-6EBD-471D-B57A-A755FB8B361A}
 	EndGlobalSection
 EndGlobal

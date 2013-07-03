@@ -29,10 +29,10 @@ namespace DandyDoc.Web.ServiceStack
         }
 
         public CodeDocRepositories() {
-            //var msdnRepository = new MsdnCodeDocMemberRepository();
+            var msdnRepository = new MsdnCodeDocMemberRepository();
             var cecilRepository = new CecilMemberRepository();
             var supportingRepositories = new CodeDocMergedMemberRepository(
-                //msdnRepository,
+                msdnRepository,
                 cecilRepository);
             var targetRepository = new ReflectionCodeDocMemberRepository(
                 new ReflectionCRefLookup(
@@ -67,10 +67,10 @@ namespace DandyDoc.Web.ServiceStack
             return GetModel(new CRefIdentifier(cRef));
         }
 
-        public ICodeDocMember GetModel(CRefIdentifier cRef) {
+        public ICodeDocMember GetModel(CRefIdentifier cRef, CodeDocMemberDetailLevel detailLevel = CodeDocMemberDetailLevel.Full) {
             if(cRef == null) throw new ArgumentNullException("cRef");
             Contract.EndContractBlock();
-            return new CodeDocRepositorySearchContext(AllRepositories).Search(cRef);
+            return new CodeDocRepositorySearchContext(AllRepositories, detailLevel).Search(cRef);
         }
 
     }

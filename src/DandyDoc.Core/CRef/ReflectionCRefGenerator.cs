@@ -31,6 +31,13 @@ namespace DandyDoc.CRef
         public static readonly ReflectionCRefGenerator WithPrefix = new ReflectionCRefGenerator(true);
 
         /// <summary>
+        /// A code reference generator that creates generic definition code references.
+        /// </summary>
+        public static readonly ReflectionCRefGenerator WithPrefixGenericDefinition = new ReflectionCRefGenerator(true) {
+            ForceGenericDefinition = true
+        };
+
+        /// <summary>
         /// A code reference generator that does not append a prefix and performs generic parameter type expansion.
         /// </summary>
         /// <remarks>
@@ -53,6 +60,23 @@ namespace DandyDoc.CRef
         public ReflectionCRefGenerator(bool includeTypePrefix)
             : base(includeTypePrefix) {
             ForceGenericExpansion = false;
+            ForceGenericDefinition = false;
+        }
+
+        private ReflectionCRefGenerator Clone() {
+            return new ReflectionCRefGenerator(IncludeTypePrefix) {
+                ForceGenericDefinition = ForceGenericDefinition,
+                ForceGenericExpansion = ForceGenericExpansion
+            };
+        }
+
+        private ReflectionCRefGenerator WithoutPrefix() {
+            if (!IncludeTypePrefix)
+                return this;
+
+            var clone = this.Clone();
+            clone.IncludeTypePrefix = false;
+            return clone;
         }
 
         /// <summary>
@@ -63,6 +87,8 @@ namespace DandyDoc.CRef
         /// This flag assists with the proper encoding of parameter types.
         /// </remarks>
         protected bool ForceGenericExpansion { get; set; }
+
+        protected bool ForceGenericDefinition { get; set; }
 
         /// <inheritdoc/>
         public override string GetCRef(object entity) {
@@ -87,16 +113,14 @@ namespace DandyDoc.CRef
 
             var type = info.DeclaringType;
             Contract.Assume(null != type);
-            var typeCRef = NoPrefix.GetCRef(type);
+            var typeCRef = WithoutPrefix().GetCRef(type);
             Contract.Assume(!String.IsNullOrEmpty(info.Name));
             var memberCRef = info.Name.Replace('.','#');
 
             char crefTypePrefix = '!';
             var methodBase = info as MethodBase;
             if (null != methodBase) {
-                /*if (methodInfo is ConstructorInfo && memberCRef.Length > 1 && memberCRef[0] == '.')
-                    memberCRef = '#' + memberCRef.Substring(1);
-                else */if (methodBase.IsGenericMethod)
+                if (methodBase.IsGenericMethod)
                     memberCRef += String.Concat("``", methodBase.GetGenericArguments().Length);
 
                 var methodParameters = methodBase.GetParameters();
@@ -179,12 +203,17 @@ namespace DandyDoc.CRef
                     if (tickIndex >= 0)
                         currentTypeName = currentTypeName.Substring(0, tickIndex);
 
-                    currentTypeName = String.Concat(
-                        currentTypeName,
-                        '{',
-                        String.Join(",", type.GetGenericArguments().Select(NoPrefixForceGenericExpansion.GetCRef)),
-                        '}'
-                    );
+                    if (ForceGenericDefinition) {
+                        currentTypeName = String.Concat(currentTypeName, '`', type.GetGenericArguments().Length);
+                    }
+                    else {
+                        currentTypeName = String.Concat(
+                            currentTypeName,
+                            '{',
+                            String.Join(",", type.GetGenericArguments().Select(NoPrefixForceGenericExpansion.GetCRef)),
+                            '}'
+                        );
+                    }
                 }
 
                 typeParts.Insert(0, currentTypeName);

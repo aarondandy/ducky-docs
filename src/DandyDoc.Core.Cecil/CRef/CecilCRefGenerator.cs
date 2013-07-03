@@ -31,6 +31,13 @@ namespace DandyDoc.CRef
         public static readonly CecilCRefGenerator WithPrefix = new CecilCRefGenerator(true);
 
         /// <summary>
+        /// A code reference generator that creates generic definition code references.
+        /// </summary>
+        public static readonly CecilCRefGenerator WithPrefixGenericDefinition = new CecilCRefGenerator(true) {
+            ForceGenericDefinition = true
+        };
+
+        /// <summary>
         /// Creates a code reference generator that will include a cref type prefix.
         /// </summary>
         public CecilCRefGenerator()
@@ -41,7 +48,26 @@ namespace DandyDoc.CRef
         /// </summary>
         /// <param name="includeTypePrefix">A flag indicating if generated crefs contain a type prefix.</param>
         public CecilCRefGenerator(bool includeTypePrefix)
-            : base(includeTypePrefix) { }
+            : base(includeTypePrefix) {
+            ForceGenericDefinition = false;
+        }
+
+        private CecilCRefGenerator Clone() {
+            return new CecilCRefGenerator(IncludeTypePrefix) {
+                ForceGenericDefinition = ForceGenericDefinition
+            };
+        }
+
+        private CecilCRefGenerator WithoutPrefix() {
+            if (!IncludeTypePrefix)
+                return this;
+
+            var clone = this.Clone();
+            clone.IncludeTypePrefix = false;
+            return clone;
+        }
+
+        protected bool ForceGenericDefinition { get; set; }
 
         /// <inheritdoc/>
         public override string GetCRef(object entity) {
@@ -66,7 +92,7 @@ namespace DandyDoc.CRef
 
             var type = reference.DeclaringType;
             Contract.Assume(null != type);
-            var typeCRef = NoPrefix.GetCRef(type);
+            var typeCRef = WithoutPrefix().GetCRef(type);
             var memberCRef = reference.Name.Replace('.','#');
             Contract.Assume(!String.IsNullOrEmpty(memberCRef));
 

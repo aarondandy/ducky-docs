@@ -1,4 +1,5 @@
-﻿@using DandyDoc.Web.ServiceStack
+﻿@using DandyDoc.CRef
+@using DandyDoc.Web.ServiceStack
 @inherits ServiceStack.Razor.ViewPage
 @{
   ViewBag.SubTitle = "Documentation";
@@ -7,6 +8,138 @@
   <div class="row">
     <div class="span12">
       <h1>Getting Started</h1>
+
+      <section>
+        <h2>Step 1: Assemblies &amp; Related Data</h2>
+        <p>
+          First start with your data. With Dandy Doc a .NET assembly and its accompanying files are the primary source of your documentation data.
+        </p>
+        <pre class="prettyprint">
+// just find some random assembly to document either from another file or one that is already loaded
+var assemblyToDocument = typeof (Program).Assembly;
+
+// locate the XML doc file by first finding the assembly file then change the extension
+var assemblyFilePath = Uri.UnescapeDataString(assemblyToDocument.GetFilePath()); // TODO: remove UnescapeDataString after 5.1.3
+var xmlDocFilePath = Path.ChangeExtension(assemblyFilePath, "XML");
+          
+// a collection of XML doc files that can be joined to the reflected information
+var xmlDocs = new XmlAssemblyDocumentCollection();
+if(File.Exists(xmlDocFilePath)) // if the file was found, use it
+    xmlDocs.Add(new XmlAssemblyDocument(xmlDocFilePath));
+
+// create a code reference lookup from the assembly which allows us to identify a .NET type/member by code reference
+var cRefLookup = new ReflectionCRefLookup(assemblyToDocument);
+</pre>
+        
+        <h2>Step 2: Code Documentation Repositories</h2>
+        <p>
+          Code documentation repositories are used to store, retrieve, or generate code documentation models.
+          Their primary use is to generate code documentation models from core reference (CRef) identifiers
+          but they can also allow you to enumerate the namespaces and assemblies covered by them.
+          The easiest way to get started is to use the @this.ActionLink(new CRefIdentifier("T:DandyDoc.CodeDoc.ReflectionCodeDocMemberRepository")) class.
+          It is possible to merge repositories and create custom ones as well. In this example we will document one of our assemblies
+          but merge inherited information from MSDN.
+        </p>
+        <pre class="prettyprint">
+// bring all those things together to make a repository for our types
+var myRepository = new ReflectionCodeDocMemberRepository(cRefLookup, xmlDocs);
+
+// lets make an msdn repository too so we can merge information from there
+var msdnRepository = new MsdnCodeDocMemberRepository();
+var searchContext = new CodeDocRepositorySearchContext(new ICodeDocMemberRepository[]{myRepository, msdnRepository});
+</pre>
+
+        <h2>Step 3: Presentation</h2>
+        <p>
+          You are own your own for this part but that is the whole point.
+          Here is a quick example that will list some types.
+        </p>
+        <pre class="prettyprint">
+foreach (var namespaceModel in myRepository.Namespaces) {
+    Console.WriteLine("Namespace: {0}", namespaceModel.FullName);
+    foreach (var typeCRef in namespaceModel.TypeCRefs) {
+        var model = searchContext.CloneWithOneUnvisited(myRepository).Search(typeCRef);
+        Console.WriteLine("Type: {0} {1}", model.Title, model.SubTitle);
+        if(model.HasSummaryContents)
+            Console.WriteLine(String.Concat("\t",String.Concat(model.SummaryContents.Select(x => x.Node.OuterXml))));
+    }
+}
+</pre>
+        
+
+      </section>
+      <section>
+        <h2>A Simple Sample.</h2>
+        <figure>
+          <figcaption>A simple example that outputs types to the console.</figcaption>
+          <pre class="prettyprint">
+using System;
+using System.IO;
+using System.Linq;
+using DandyDoc.CRef;
+using DandyDoc.CodeDoc;
+using DandyDoc.Reflection;
+using DandyDoc.XmlDoc;
+
+namespace ConsoleApplication2
+{
+
+    /// &lt;summary&gt;
+    /// Just a thing.
+    /// &lt;/summary&gt;
+    public class Thing1 { }
+
+    public class Thing2 : Thing1 { }
+      
+    /// &lt;inheritdoc/&gt;
+    public class MyObject : object { }
+
+    class Program
+    {
+        static void Main(string[] args) {
+
+            // just find some random assembly to document either from another file or one that is already loaded
+            var assemblyToDocument = typeof (Program).Assembly;
+
+            // locate the XML doc file by first finding the assembly file then change the extension
+            var assemblyFilePath = Uri.UnescapeDataString(assemblyToDocument.GetFilePath()); // TODO: remove UnescapeDataString after 5.1.3
+            var xmlDocFilePath = Path.ChangeExtension(assemblyFilePath, "XML");
+          
+            // a collection of XML doc files that can be joined to the reflected information
+            var xmlDocs = new XmlAssemblyDocumentCollection();
+            if(File.Exists(xmlDocFilePath)) // if the file was found, use it
+                xmlDocs.Add(new XmlAssemblyDocument(xmlDocFilePath));
+
+            // create a code reference lookup from the assembly which allows us to identify a .NET type/member by code reference
+            var cRefLookup = new ReflectionCRefLookup(assemblyToDocument);
+
+            // bring all those things together to make a repository for our types
+            var myRepository = new ReflectionCodeDocMemberRepository(cRefLookup, xmlDocs);
+
+            // lets make an msdn repository too so we can merge information from there
+            var msdnRepository = new MsdnCodeDocMemberRepository();
+            var searchContext = new CodeDocRepositorySearchContext(new ICodeDocMemberRepository[]{myRepository, msdnRepository});
+
+            // just spit out all the namespaces and types as an example
+            foreach (var namespaceModel in myRepository.Namespaces) {
+                Console.WriteLine("Namespace: {0}", namespaceModel.FullName);
+                foreach (var typeCRef in namespaceModel.TypeCRefs) {
+                    var model = searchContext.CloneWithOneUnvisited(myRepository).Search(typeCRef);
+                    Console.WriteLine("Type: {0} {1}", model.Title, model.SubTitle);
+                    if(model.HasSummaryContents)
+                        Console.WriteLine(String.Concat("\t",String.Concat(model.SummaryContents.Select(x => x.Node.OuterXml))));
+                }
+            }
+            
+            Console.WriteLine("Press the [Any] key to terminate.");
+            Console.ReadKey();
+
+        }
+    }
+}
+</pre>
+        </figure>
+      </section>
     </div>
   </div>
 </div>

@@ -38,6 +38,12 @@ namespace DandyDoc.CodeDoc
                 IncludeNamespaceForTypes = true
             };
 
+        protected static CRefIdentifier GetGenericDefinitionCRefIdentifier(MemberInfo memberInfo) {
+            Contract.Requires(memberInfo != null);
+            Contract.Ensures(Contract.Result<CRefIdentifier>() != null);
+            return new CRefIdentifier(ReflectionCRefGenerator.WithPrefixGenericDefinition.GetCRef(memberInfo));
+        }
+
         protected static CRefIdentifier GetCRefIdentifier(MemberInfo memberInfo){
             Contract.Requires(memberInfo != null);
             Contract.Ensures(Contract.Result<CRefIdentifier>() != null);
@@ -487,7 +493,7 @@ namespace DandyDoc.CodeDoc
                         memberInfo = methodInfo.GetGenericMethodDefinition();
                 }
 
-                var cRef = GetCRefIdentifier(memberInfo);
+                var cRef = GetGenericDefinitionCRefIdentifier(memberInfo);
                 if(cRef.TargetType == "T"){
                     if(cRef.FullCRef.EndsWith("&") || cRef.FullCRef.EndsWith("@"))
                         cRef = new CRefIdentifier(cRef.FullCRef.Substring(0,cRef.FullCRef.Length-1));
@@ -763,7 +769,7 @@ namespace DandyDoc.CodeDoc
 
                 if (methodBase.IsConstructor)
                     model.SubTitle = "Constructor";
-                else if (model.Parameters.Count == 1 && model.HasReturn && CSharpOperatorNameSymbolMap.IsConversionOperatorMethodName(methodBase.Name)) {
+                else if (model.Parameters != null && model.Parameters.Count == 1 && model.HasReturn && CSharpOperatorNameSymbolMap.IsConversionOperatorMethodName(methodBase.Name)) {
                     model.SubTitle = "Conversion";
 
                     string conversionOperationName;

@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{0B7478DB-3EE2-4960-950C-ADA4F2D130FD}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SimpleStaticSiteGenerator</RootNamespace>
+    <AssemblyName>SimpleStaticSiteGenerator</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\DandyDoc.CodeDoc.Cecil\DandyDoc.CodeDoc.Cecil.csproj">
+      <Project>{800519b7-8f27-4f5d-94cc-9868add9559f}</Project>
+      <Name>DandyDoc.CodeDoc.Cecil</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\DandyDoc.CodeDoc\DandyDoc.CodeDoc.csproj">
+      <Project>{01cce4b1-8bd1-4c4f-8080-9a9bb19f05a9}</Project>
+      <Name>DandyDoc.CodeDoc</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\DandyDoc.Core.Cecil\DandyDoc.Core.Cecil.csproj">
+      <Project>{d231f05e-033a-4666-8c40-6837bfc8a989}</Project>
+      <Name>DandyDoc.Core.Cecil</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\DandyDoc.Core\DandyDoc.Core.csproj">
+      <Project>{a09f4dac-290c-4abe-b053-071ec966008f}</Project>
+      <Name>DandyDoc.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\tests\TestLibrary1\TestLibrary1.csproj">
+      <Project>{f83f4c52-a886-4b9e-8164-e95e1f22f929}</Project>
+      <Name>TestLibrary1</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
