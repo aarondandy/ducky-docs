@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Web;
 using System.Web.Hosting;
 using DandyDoc.CRef;
 using DandyDoc.CodeDoc;
@@ -39,14 +36,13 @@ namespace DandyDoc.Web.ServiceStack
                     typeof (ReflectionCRefLookup).Assembly,
                     typeof (ICodeDocMemberRepository).Assembly,
                     Assembly.ReflectionOnlyLoadFrom(HostingEnvironment.MapPath("~/bin/DandyDoc.Core.Cecil.dll")),
-                    Assembly.ReflectionOnlyLoadFrom(HostingEnvironment.MapPath("~/bin/DandyDoc.CodeDoc.Cecil.dll")),
-                    Assembly.ReflectionOnlyLoadFrom(HostingEnvironment.MapPath("~/bin/TestLibrary1.dll"))
-                    ),
-                new XmlAssemblyDocument(HostingEnvironment.MapPath("~/bin/DandyDoc.Core.XML")),
-                new XmlAssemblyDocument(HostingEnvironment.MapPath("~/bin/DandyDoc.Core.Cecil.XML")),
-                new XmlAssemblyDocument(HostingEnvironment.MapPath("~/bin/DandyDoc.CodeDoc.XML")),
-                new XmlAssemblyDocument(HostingEnvironment.MapPath("~/bin/DandyDoc.CodeDoc.Cecil.XML")),
-                new XmlAssemblyDocument(HostingEnvironment.MapPath("~/bin/TestLibrary1.XML"))
+                    Assembly.ReflectionOnlyLoadFrom(HostingEnvironment.MapPath("~/bin/DandyDoc.CodeDoc.Cecil.dll"))
+                ),
+                // the bin/bin folder is used due to an odd publish quirk
+                new XmlAssemblyDocument(HostingEnvironment.MapPath("~/bin/bin/DandyDoc.Core.XML")),
+                new XmlAssemblyDocument(HostingEnvironment.MapPath("~/bin/bin/DandyDoc.Core.Cecil.XML")),
+                new XmlAssemblyDocument(HostingEnvironment.MapPath("~/bin/bin/DandyDoc.CodeDoc.XML")),
+                new XmlAssemblyDocument(HostingEnvironment.MapPath("~/bin/bin/DandyDoc.CodeDoc.Cecil.XML"))
             );
 
             var allRepositories = new CodeDocMergedMemberRepository(

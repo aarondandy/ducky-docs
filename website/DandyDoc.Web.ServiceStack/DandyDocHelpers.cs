@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
-using System.Web.Hosting;
 using DandyDoc.CRef;
 using DandyDoc.CodeDoc;
 using DandyDoc.ExternalVisibility;
 using DandyDoc.XmlDoc;
 using ServiceStack.Html;
 using ServiceStack.Razor;
-using ServiceStack.ServiceHost;
 
 namespace DandyDoc.Web.ServiceStack
 {
@@ -701,11 +698,17 @@ namespace DandyDoc.Web.ServiceStack
 
         public static string GetRelativeUri<T>(this ViewPageBase<T> viewPage, string appUri) where T:class {
             // first get the actual app relative path as requested
-            var requestPath = viewPage.Request.PathInfo;
+            var requestPath = viewPage.Request.RawUrl;
+            var applicationPath =  "/";
             if (viewPage.Request.OriginalRequest is HttpRequest)
-                requestPath = ((HttpRequest)viewPage.Request.OriginalRequest).AppRelativeCurrentExecutionFilePath;
+                applicationPath = ((HttpRequest) viewPage.Request.OriginalRequest).ApplicationPath;
 
-            var relative = VirtualPathUtility.MakeRelative(requestPath, appUri);
+            if (appUri.StartsWith("/") && applicationPath.EndsWith("/"))
+                applicationPath = applicationPath.Substring(0, applicationPath.Length - 1);
+
+            var fullAppPath = applicationPath + appUri;
+
+            var relative = VirtualPathUtility.MakeRelative(requestPath, fullAppPath);
             return relative;
         }
 

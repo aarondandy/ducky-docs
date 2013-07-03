@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.Caching;
-using System.Web;
 using DandyDoc.CRef;
 using DandyDoc.CodeDoc;
 using Mono.Cecil;

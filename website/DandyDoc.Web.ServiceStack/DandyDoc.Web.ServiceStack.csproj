@@ -112,6 +112,18 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="bin\DandyDoc.CodeDoc.Cecil.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="bin\DandyDoc.CodeDoc.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="bin\DandyDoc.Core.Cecil.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="bin\DandyDoc.Core.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="css\bootstrap-responsive.css" />
     <Content Include="css\bootstrap-responsive.min.css" />
     <Content Include="css\bootstrap.cosmo.css" />
@@ -128,12 +140,16 @@
     <Content Include="Views\CodeDocInvokablePartial.cshtml" />
     <Content Include="Docs\Api\namespaces.cshtml" />
     <Content Include="Docs\default.cshtml" />
-    <None Include="Views\CodeDocMethod.cshtml" />
+    <None Include="Properties\PublishProfiles\gearhost.pubxml" />
+    <Content Include="Views\CodeDocMethod.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="CecilMemberRepository.cs" />
     <Compile Include="CodeDocApi.cs" />
     <Compile Include="CodeDocRepositories.cs" />
@@ -144,6 +160,18 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="bin\DandyDoc.Core.xml">
+      <Link>xml\DandyDoc.Core.xml</Link>
+    </Content>
+    <Content Include="bin\DandyDoc.Core.Cecil.xml">
+      <Link>xml\DandyDoc.Core.Cecil.xml</Link>
+    </Content>
+    <Content Include="bin\DandyDoc.CodeDoc.xml">
+      <Link>xml\DandyDoc.CodeDoc.xml</Link>
+    </Content>
+    <Content Include="bin\DandyDoc.CodeDoc.Cecil.xml">
+      <Link>xml\DandyDoc.CodeDoc.Cecil.xml</Link>
+    </Content>
     <Content Include="packages.config" />
     <Content Include="default.cshtml" />
     <Content Include="Views\CodeDocType.cshtml" />
@@ -202,7 +230,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>4090</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:15933/</IISUrl>
+          <IISUrl>http://localhost:15934/dookie</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
