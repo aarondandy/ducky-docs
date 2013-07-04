@@ -11,9 +11,9 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>@pageTitle</title>
-  <link type="text/css" rel="stylesheet" href="@this.CorrectRelativeUri("/css/bootstrap.cosmo.min.css")" />
-  <link type="text/css" rel="stylesheet" href="@this.CorrectRelativeUri("/css/bootstrap-responsive.min.css")" />
-  <link type="text/css" rel="stylesheet" href="@this.CorrectRelativeUri("/css/site.css")" />
+  <link type="text/css" rel="stylesheet" href="@Url.Content("~/css/bootstrap.cosmo.min.css")" />
+  <link type="text/css" rel="stylesheet" href="@Url.Content("~/css/bootstrap-responsive.min.css")" />
+  <link type="text/css" rel="stylesheet" href="@Url.Content("~/css/site.css")" />
 </head>
 <body>
   <div class="container">
@@ -33,12 +33,12 @@
               </a>
               <div class="nav-collapse collapse">
                 <ul class="nav">
-                  <li><a href="@this.CorrectRelativeUri("/")"><i class="icon-home"></i> About</a></li>
-                  <li><a href="@this.CorrectRelativeUri("/Docs/")"><i class="icon-play"></i> Get Started</a></li>
+                  <li><a href="@Url.Content("~/")"><i class="icon-home"></i> About</a></li>
+                  <li><a href="@Url.Content("~/Docs/")"><i class="icon-play"></i> Get Started</a></li>
                   <li class="dropdown">
-                    <a href="@this.CorrectRelativeUri("/Docs/Api/namespaces")" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-book"></i> API Reference<b class="caret"></b></a>
+                    <a href="@Url.Content("~/Docs/Api/namespaces")" class="dropdown-toggle" data-toggle="dropdown"><i class="icon-book"></i> API Reference<b class="caret"></b></a>
                     <ul class="dropdown-menu">
-                      <li><a href="@this.CorrectRelativeUri("/Docs/Api/namespaces")">All Namespaces</a></li>
+                      <li><a href="@Url.Content("~/Docs/Api/namespaces")">All Namespaces</a></li>
                       @{
                         var codeDocRepositories = this.AppHost.TryResolve<CodeDocRepositories>();
                         if (codeDocRepositories != null) {
@@ -66,7 +66,7 @@
       </footer>
     </div>
   </div>
-  <script type="text/javascript" src="@this.CorrectRelativeUri("/js/jquery-1.10.1.min.js")"></script>
-  <script type="text/javascript" src="@this.CorrectRelativeUri("/js/bootstrap.min.js")"></script>
+  <script type="text/javascript" src="@Url.Content("~/js/jquery-1.10.1.min.js")"></script>
+  <script type="text/javascript" src="@Url.Content("~/js/bootstrap.min.js")"></script>
 </body>
 </html>

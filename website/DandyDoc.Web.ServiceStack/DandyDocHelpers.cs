@@ -687,35 +687,8 @@ namespace DandyDoc.Web.ServiceStack
         }
 
         private static string LocalMemberUri<T>(this ViewPageBase<T> viewPage, CRefIdentifier cRef) where T : class {
-            var cRefUri = "/Docs/Api?cRef=" + Uri.EscapeDataString(cRef.FullCRef);
-            return viewPage.CorrectRelativeUri(cRefUri);
-        }
-
-        public static string CorrectRelativeUri<T>(this ViewPageBase<T> viewPage, string appUri) where T : class {
-            var fixedAbsolute = viewPage.FixAbsoluteUri(appUri);
-            return viewPage.GetRelativeUri(fixedAbsolute);
-        }
-
-        public static string GetRelativeUri<T>(this ViewPageBase<T> viewPage, string appUri) where T:class {
-            // first get the actual app relative path as requested
-            var requestPath = viewPage.Request.RawUrl;
-            var applicationPath =  "/";
-            if (viewPage.Request.OriginalRequest is HttpRequest)
-                applicationPath = ((HttpRequest) viewPage.Request.OriginalRequest).ApplicationPath;
-
-            if (appUri.StartsWith("/") && applicationPath.EndsWith("/"))
-                applicationPath = applicationPath.Substring(0, applicationPath.Length - 1);
-
-            var fullAppPath = applicationPath + appUri;
-
-            var relative = VirtualPathUtility.MakeRelative(requestPath, fullAppPath);
-            return relative;
-        }
-
-        public static string FixAbsoluteUri<T>(this ViewPageBase<T> viewPage, string appUri) where T : class {
-            /*if (appUri.EndsWith("/"))
-                return appUri + "default";*/
-            return appUri;
+            var cRefUri = "~/Docs/Api?cRef=" + Uri.EscapeDataString(cRef.FullCRef);
+            return viewPage.Url.Content(cRefUri);
         }
 
         public static HtmlString LinkTextFull(ICodeDocMember member) {

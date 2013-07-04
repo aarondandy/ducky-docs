@@ -38,7 +38,7 @@ namespace DandyDoc.Web.ServiceStack
                     Assembly.ReflectionOnlyLoadFrom(HostingEnvironment.MapPath("~/bin/DandyDoc.Core.Cecil.dll")),
                     Assembly.ReflectionOnlyLoadFrom(HostingEnvironment.MapPath("~/bin/DandyDoc.CodeDoc.Cecil.dll"))
                 ),
-                // the bin/bin folder is used due to an odd publish quirk
+                // the /bin/bin folder is used due to an odd publish quirk
                 new XmlAssemblyDocument(HostingEnvironment.MapPath("~/bin/bin/DandyDoc.Core.XML")),
                 new XmlAssemblyDocument(HostingEnvironment.MapPath("~/bin/bin/DandyDoc.Core.Cecil.XML")),
                 new XmlAssemblyDocument(HostingEnvironment.MapPath("~/bin/bin/DandyDoc.CodeDoc.XML")),

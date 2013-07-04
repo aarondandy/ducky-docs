@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using DandyDoc.CRef;
 
@@ -8,30 +7,23 @@ namespace DandyDoc.CodeDoc
     /// <summary>
     /// A locking code doc repository wrapper.
     /// </summary>
-    public class ThreadSafeCodeDocRepositoryWrapper : ICodeDocMemberRepository
+    public class ThreadSafeCodeDocRepositoryWrapper : CodeDocRepositoryWrapperBase
     {
 
         /// <summary>
         /// Creates a new locking wrapper for another repository.
         /// </summary>
         /// <param name="repository">The repository to wrap.</param>
-        public ThreadSafeCodeDocRepositoryWrapper(ICodeDocMemberRepository repository) {
-            if(repository == null) throw new ArgumentNullException("repository");
-            Contract.EndContractBlock();
-            Repository = repository;
+        public ThreadSafeCodeDocRepositoryWrapper(ICodeDocMemberRepository repository) : base(repository)
+        {
+            Contract.Requires(repository != null);
             _mutex = new object();
         }
 
         [ContractInvariantMethod]
         private void CodeContractInvariants() {
-            Contract.Invariant(Repository != null);
             Contract.Invariant(_mutex != null);
         }
-
-        /// <summary>
-        /// The wrapped repository.
-        /// </summary>
-        protected ICodeDocMemberRepository Repository { get; private set; }
 
         private readonly object _mutex;
 
@@ -40,7 +32,7 @@ namespace DandyDoc.CodeDoc
         /// </summary>
         /// <param name="cRef">The code reference.</param>
         /// <returns>The member model.</returns>
-        public ICodeDocMember GetMemberModel(CRefIdentifier cRef, CodeDocRepositorySearchContext searchContext = null, CodeDocMemberDetailLevel detailLevel = CodeDocMemberDetailLevel.Full) {
+        public override ICodeDocMember GetMemberModel(CRefIdentifier cRef, CodeDocRepositorySearchContext searchContext = null, CodeDocMemberDetailLevel detailLevel = CodeDocMemberDetailLevel.Full) {
             lock (_mutex) {
                 return Repository.GetMemberModel(cRef, searchContext, detailLevel);
             }
@@ -49,7 +41,7 @@ namespace DandyDoc.CodeDoc
         /// <summary>
         /// A locked request to the wrapped repository for assemblies.
         /// </summary>
-        public IList<CodeDocSimpleAssembly> Assemblies {
+        public override IList<CodeDocSimpleAssembly> Assemblies {
             get {
                 lock (_mutex) {
                     return Repository.Assemblies;
@@ -60,7 +52,7 @@ namespace DandyDoc.CodeDoc
         /// <summary>
         /// A locked request to the wrapped repository for namespaces.
         /// </summary>
-        public IList<CodeDocSimpleNamespace> Namespaces {
+        public override IList<CodeDocSimpleNamespace> Namespaces {
             get {
                 lock (_mutex) {
                     return Repository.Namespaces;
