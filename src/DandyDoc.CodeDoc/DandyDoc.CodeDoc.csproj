@@ -162,6 +162,7 @@
     <Compile Include="CodeDocMemberXmlDataProvider.cs" />
     <Compile Include="CodeDocMemberInfoDataProvider.cs" />
     <Compile Include="CodeDocMergedMemberRepository.cs" />
+    <Compile Include="CodeDocRepositoryFailureProtectionWrapper.cs" />
     <Compile Include="CodeDocRepositorySearchContext.cs" />
     <Compile Include="CodeDocRepositoryWrapperBase.cs" />
     <Compile Include="CodeDocSimpleAssembly.cs" />

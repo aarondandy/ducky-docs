@@ -26,7 +26,7 @@ namespace DandyDoc.Web.ServiceStack
         }
 
         public CodeDocRepositories() {
-            var msdnRepository = new MsdnCodeDocMemberRepository();
+            var msdnRepository = new CodeDocRepositoryFailureProtectionWrapper(new MsdnCodeDocMemberRepository(), new TimeSpan(0,0,10));
             var cecilRepository = new CecilMemberRepository();
             var supportingRepositories = new CodeDocMergedMemberRepository(
                 msdnRepository,
