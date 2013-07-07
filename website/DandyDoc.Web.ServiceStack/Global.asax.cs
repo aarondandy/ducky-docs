@@ -15,14 +15,6 @@ namespace DandyDoc.Web.ServiceStack
     public class Global : HttpApplication
     {
 
-        private static Assembly ReflectionOnlyResolveEventHandler(object sender, ResolveEventArgs args) {
-            var assemblyName = new AssemblyName(args.Name);
-            var binPath = HostingEnvironment.MapPath(String.Format("~/bin/{0}.dll", assemblyName.Name));
-            if (File.Exists(binPath))
-                return Assembly.ReflectionOnlyLoadFrom(binPath);
-            return Assembly.ReflectionOnlyLoad(args.Name);
-        }
-
         public class AppHost : AppHostBase
         {
             public AppHost() : base("dandy-doc", typeof(AppHost).Assembly) { }
