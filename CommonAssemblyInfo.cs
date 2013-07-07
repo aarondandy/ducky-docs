@@ -1,6 +1,4 @@
-﻿using System;
-using System.Reflection;
-using System.Runtime.InteropServices;
+﻿using System.Reflection;
 
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Aaron Dandy")]
@@ -9,5 +7,5 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
-[assembly: AssemblyVersion("0.5.2.*")]
+[assembly: AssemblyVersion("0.5.3.*")]
 //[assembly: AssemblyFileVersion("1.0.0.0")]
