@@ -743,7 +743,7 @@ namespace DandyDoc.Web.ServiceStack
             var repositories = viewPage.AppHost.TryResolve<CodeDocRepositories>();
 
             if (repositories != null) {
-                var member = repositories.GetModel(cRef, CodeDocMemberDetailLevel.Minimum);
+                var member = repositories.GetModelFromAny(cRef, CodeDocMemberDetailLevel.Minimum);
                 if (member != null) {
                     return viewPage.ActionLink(member, linkText);
                 }

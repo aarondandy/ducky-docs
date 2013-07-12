@@ -24,7 +24,6 @@ namespace DandyDoc.Web.ServiceStack
 
                 JsConfig.EmitCamelCaseNames = true;
 
-                // these are some supporting repositories that will help with any references to System.* or Mono.Cecil
                 container.Register(c => new CodeDocRepositories());
             }
         }

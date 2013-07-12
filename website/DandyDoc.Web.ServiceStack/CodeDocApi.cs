@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 using System.Net;
+using DandyDoc.CRef;
 using DandyDoc.CodeDoc;
 using ServiceStack.Common.Web;
 using ServiceStack.ServiceHost;
@@ -26,7 +27,8 @@ namespace DandyDoc.Web.ServiceStack
             if(request == null) throw new ArgumentNullException("request");
             if(String.IsNullOrEmpty(request.CRef)) throw new ArgumentException("Code reference (CRef) not provided.","request");
             Contract.EndContractBlock();
-            var model = Repositories.GetModel(request.CRef) as CodeDocSimpleMember;
+
+            var model = Repositories.GetModelFromTarget(new CRefIdentifier(request.CRef)) as CodeDocSimpleMember;
             if (model == null)
                 throw new HttpError(HttpStatusCode.NotFound, "Documentation model could not be found.");
             return model;

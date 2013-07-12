@@ -28,10 +28,11 @@ namespace DandyDoc.Web.ServiceStack
         public CodeDocRepositories() {
             var msdnRepository = new CodeDocRepositoryFailureProtectionWrapper(new MsdnCodeDocMemberRepository(), new TimeSpan(0,0,10));
             var cecilRepository = new CecilMemberRepository();
-            var supportingRepositories = new CodeDocMergedMemberRepository(
+            SupportingRepository = new CodeDocMergedMemberRepository(
                 msdnRepository,
                 cecilRepository);
-            var targetRepository = new ReflectionCodeDocMemberRepository(
+
+            TargetRepository = new ReflectionCodeDocMemberRepository(
                 new ReflectionCRefLookup(
                     typeof (ReflectionCRefLookup).Assembly,
                     typeof (ICodeDocMemberRepository).Assembly,
@@ -45,28 +46,24 @@ namespace DandyDoc.Web.ServiceStack
                 new XmlAssemblyDocument(HostingEnvironment.MapPath("~/bin/bin/DandyDoc.CodeDoc.Cecil.XML"))
             );
 
-            var allRepositories = new CodeDocMergedMemberRepository(
-                targetRepository,
-                supportingRepositories);
-
-            TargetRepository = targetRepository;
-            AllRepositories = allRepositories;
         }
 
         public ICodeDocMemberRepository TargetRepository { get; private set; }
 
-        public ICodeDocMemberRepository AllRepositories { get; private set; }
+        public ICodeDocMemberRepository SupportingRepository { get; private set; }
 
-        public ICodeDocMember GetModel(string cRef) {
-            if (String.IsNullOrEmpty(cRef))
-                return null;
-            return GetModel(new CRefIdentifier(cRef));
+        public ICodeDocMember GetModelFromTarget(CRefIdentifier cRef, CodeDocMemberDetailLevel detailLevel = CodeDocMemberDetailLevel.Full) {
+            if (cRef == null) throw new ArgumentNullException("cRef");
+            Contract.EndContractBlock();
+            return new CodeDocRepositorySearchContext(new[] { TargetRepository, SupportingRepository }, detailLevel)
+                .CloneWithOneUnvisited(TargetRepository)
+                .Search(cRef);
         }
 
-        public ICodeDocMember GetModel(CRefIdentifier cRef, CodeDocMemberDetailLevel detailLevel = CodeDocMemberDetailLevel.Full) {
-            if(cRef == null) throw new ArgumentNullException("cRef");
+        public ICodeDocMember GetModelFromAny(CRefIdentifier cRef, CodeDocMemberDetailLevel detailLevel = CodeDocMemberDetailLevel.Full) {
+            if (cRef == null) throw new ArgumentNullException("cRef");
             Contract.EndContractBlock();
-            return new CodeDocRepositorySearchContext(AllRepositories, detailLevel).Search(cRef);
+            return new CodeDocRepositorySearchContext(new[] { TargetRepository, SupportingRepository }, detailLevel).Search(cRef);
         }
 
     }
