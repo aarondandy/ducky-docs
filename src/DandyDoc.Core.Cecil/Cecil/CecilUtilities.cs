@@ -11,13 +11,12 @@ namespace DandyDoc.Cecil
 {
 
     /// <summary>
-    /// Various method and extension methods related to Cecil.
+    /// Various helper methods and extension methods related to Cecil.
     /// </summary>
     public static class CecilUtilities
     {
 
-        private static readonly ReadOnlyCollection<ParameterDefinition> EmptyParameterDefinitionCollection
-            = new ReadOnlyCollection<ParameterDefinition>(new ParameterDefinition[0]);
+        private static readonly ParameterDefinition[] EmptyParameterDefinitionCollection = new ParameterDefinition[0];
 
         /// <summary>
         /// Gets the full file path for a given assembly definition.
