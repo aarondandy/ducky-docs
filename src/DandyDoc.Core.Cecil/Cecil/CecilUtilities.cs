@@ -92,7 +92,7 @@ namespace DandyDoc.Cecil
         /// </summary>
         /// <param name="typeDefinition">The type definition to test.</param>
         /// <returns><c>true</c> when the type is a delegate.</returns>
-        public static bool IsDelegateType(this TypeDefinition typeDefinition) {
+        [Pure] public static bool IsDelegateType(this TypeDefinition typeDefinition) {
             Contract.Requires(typeDefinition != null);
             var baseType = typeDefinition.BaseType;
             if (baseType == null)
@@ -347,6 +347,7 @@ namespace DandyDoc.Cecil
         /// <param name="typeDefinition">The type to get members for.</param>
         /// <param name="filter">An optional filter for the members.</param>
         /// <param name="skipInheritance">Indicates if inherited types should be checked for members.</param>
+        /// <param name="inheritStatic">Indicates if static members should be inherited.</param>
         /// <returns>Members that are found for the type.</returns>
         public static List<EventDefinition> GetAllEvents(this TypeDefinition typeDefinition, Func<EventDefinition, bool> filter = null, bool skipInheritance = false, bool inheritStatic = false) {
             Contract.Requires(typeDefinition != null);
@@ -365,6 +366,7 @@ namespace DandyDoc.Cecil
         /// <param name="typeDefinition">The type to get members for.</param>
         /// <param name="filter">An optional filter for the members.</param>
         /// <param name="skipInheritance">Indicates if inherited types should be checked for members.</param>
+        /// <param name="inheritStatic">Indicates if static members should be inherited.</param>
         /// <returns>Members that are found for the type.</returns>
         public static List<FieldDefinition> GetAllFields(this TypeDefinition typeDefinition, Func<FieldDefinition, bool> filter = null, bool skipInheritance = false, bool inheritStatic = false) {
             Contract.Requires(typeDefinition != null);
@@ -383,6 +385,7 @@ namespace DandyDoc.Cecil
         /// <param name="typeDefinition">The type to get members for.</param>
         /// <param name="filter">An optional filter for the members.</param>
         /// <param name="skipInheritance">Indicates if inherited types should be checked for members.</param>
+        /// <param name="inheritStatic">Indicates if static members should be inherited.</param>
         /// <returns>Members that are found for the type.</returns>
         public static List<MethodDefinition> GetAllMethods(this TypeDefinition typeDefinition, Func<MethodDefinition, bool> filter = null, bool skipInheritance = false, bool inheritStatic = false) {
             Contract.Requires(typeDefinition != null);
@@ -401,6 +404,7 @@ namespace DandyDoc.Cecil
         /// <param name="typeDefinition">The type to get members for.</param>
         /// <param name="filter">An optional filter for the members.</param>
         /// <param name="skipInheritance">Indicates if inherited types should be checked for members.</param>
+        /// <param name="inheritStatic">Indicates if static members should be inherited.</param>
         /// <returns>Members that are found for the type.</returns>
         public static List<PropertyDefinition> GetAllProperties(this TypeDefinition typeDefinition, Func<PropertyDefinition, bool> filter = null, bool skipInheritance = false, bool inheritStatic = false) {
             Contract.Requires(typeDefinition != null);
@@ -489,6 +493,11 @@ namespace DandyDoc.Cecil
                 && typeReference.Namespace == "System";
         }
 
+        /// <summary>
+        /// Returns the ancestor of a property if found.
+        /// </summary>
+        /// <param name="propertyDefinition">The property to find the ancestor property of.</param>
+        /// <returns>A property or <c>null</c> if an ancestor was not found.</returns>
         public static PropertyDefinition FindNextAncestor(this PropertyDefinition propertyDefinition) {
             Contract.Requires(propertyDefinition != null);
             var propertyName = propertyDefinition.Name;
@@ -507,6 +516,11 @@ namespace DandyDoc.Cecil
             return null;
         }
 
+        /// <summary>
+        /// Returns the ancestor of an event if one is found.
+        /// </summary>
+        /// <param name="eventDefinition">The event to find the ancestor event of.</param>
+        /// <returns>An event or <c>null</c> if an ancestor was not found.</returns>
         public static EventDefinition FindNextAncestor(this EventDefinition eventDefinition) {
             Contract.Requires(eventDefinition != null);
             var eventName = eventDefinition.Name;
@@ -554,6 +568,11 @@ namespace DandyDoc.Cecil
                 && ParameterTypesAreEqual(parameterTypes, m.Parameters.Select(p => p.ParameterType).ToArray()));
         }
 
+        /// <summary>
+        /// Returns the ancestor of a method if found.
+        /// </summary>
+        /// <param name="methodDefinition">The method to find the ancestor of.</param>
+        /// <returns>A method or <c>null</c> if an ancestor was not found.</returns>
         public static MethodDefinition FindNextAncestor(this MethodDefinition methodDefinition) {
             Contract.Requires(methodDefinition != null);
             var methodName = methodDefinition.Name;

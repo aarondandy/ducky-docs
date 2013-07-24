@@ -67,6 +67,9 @@ namespace DandyDoc.CRef
             return clone;
         }
 
+        /// <summary>
+        /// Indicates if generation of a generic definition should be forced.
+        /// </summary>
         protected bool ForceGenericDefinition { get; set; }
 
         /// <inheritdoc/>

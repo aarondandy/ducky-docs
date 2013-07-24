@@ -3,16 +3,24 @@ using System.Diagnostics.Contracts;
 
 namespace DandyDoc.CRef
 {
+    /// <summary>
+    /// A transformation that can be applied to code references.
+    /// </summary>
     public class CRefTransformer
     {
 
-        private static readonly CRefTransformer _fullSimplification = new CRefTransformer {
-            GenericInstanceToDefinition = true,
-            RemoveArraySuffix = true,
-            RemoveRefOutSuffix = true
-        };
+        static CRefTransformer() {
+            FullSimplification = new CRefTransformer {
+                GenericInstanceToDefinition = true,
+                RemoveArraySuffix = true,
+                RemoveRefOutSuffix = true
+            };
+        }
 
-        public static CRefTransformer  FullSimplification { get { return _fullSimplification;}}
+        /// <summary>
+        /// A default full simplification transformer.
+        /// </summary>
+        public static CRefTransformer FullSimplification { get; private set; }
 
         bool GenericInstanceToDefinition { get; set; }
 
@@ -20,6 +28,11 @@ namespace DandyDoc.CRef
 
         bool RemoveRefOutSuffix { get; set; }
 
+        /// <summary>
+        /// Applies a transformation to a code reference.
+        /// </summary>
+        /// <param name="cRef">The code reference to transform.</param>
+        /// <returns>The resulting transformed code reference.</returns>
         public CRefIdentifier Transform(CRefIdentifier cRef) {
             if(cRef == null) throw new ArgumentNullException("cRef");
             Contract.Ensures(Contract.Result<CRefIdentifier>() != null);

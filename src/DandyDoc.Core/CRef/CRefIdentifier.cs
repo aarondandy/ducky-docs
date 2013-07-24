@@ -15,21 +15,25 @@ namespace DandyDoc.CRef
         /// The core parser regular expression.
         /// </summary>
         private static readonly Regex CRefRegex;
-        private static readonly CRefIdentifier InvalidValue;
-        public static CRefIdentifier Invalid {
-            get {
-                Contract.Ensures(Contract.Result<CRefIdentifier>() != null);
-                return InvalidValue;
-            }
-        }
+
+        /// <summary>
+        /// An invalid code reference identifier.
+        /// </summary>
+        public static CRefIdentifier Invalid { get; private set; }
 
         static CRefIdentifier() {
             CRefRegex = new Regex(
                 @"((?<targetType>\w)[:])?(?<coreName>[^():]+)([(](?<params>.*)[)])?([~](?<returnType>.+))?",
                 RegexOptions.Compiled);
-            InvalidValue = new CRefIdentifier("!:");
+            Invalid = new CRefIdentifier("!:");
         }
 
+        /// <summary>
+        /// Attempts to parse a code reference from a URI.
+        /// </summary>
+        /// <param name="uri">The URI that encodes a code reference.</param>
+        /// <param name="cRef">The resulting code reference if generation is possible.</param>
+        /// <returns><c>true</c> if a code reference was extracted from the URI.</returns>
         public static bool TryParse(Uri uri, out CRefIdentifier cRef) {
             if (uri != null) {
                 var scheme = uri.Scheme;
@@ -62,10 +66,12 @@ namespace DandyDoc.CRef
             ReturnTypePart = String.Empty;
 
             if ("N:".Equals(cRef)) {
+                Contract.Assume(cRef.Length == 2);
                 CoreName = cRef.Substring(2);
                 TargetType = "N";
             }
             else if (cRef.StartsWith("A:", StringComparison.InvariantCultureIgnoreCase)) {
+                Contract.Assume(cRef.Length == 2);
                 CoreName = cRef.Substring(2);
                 TargetType = "A";
             }
@@ -95,6 +101,7 @@ namespace DandyDoc.CRef
         [ContractInvariantMethod]
         private void CodeContractInvariant() {
             Contract.Invariant(!String.IsNullOrEmpty(FullCRef));
+            Contract.Invariant(Invalid != null);
         }
 
         /// <summary>
@@ -213,11 +220,20 @@ namespace DandyDoc.CRef
             return obj.FullCRef == FullCRef;
         }
 
+        /// <summary>
+        /// Gets a URI representation of this code reference.
+        /// </summary>
+        /// <returns>A URI for the given code reference.</returns>
         public Uri ToUri() {
             Contract.Ensures(Contract.Result<Uri>() != null);
             return new Uri("cref:" + Uri.EscapeDataString(FullCRef), UriKind.Absolute);
         }
 
+        /// <summary>
+        /// Creates a new code reference with the same core name but with the given target type.
+        /// </summary>
+        /// <param name="targetType">The desired target type for the derived code reference.</param>
+        /// <returns>A code reference based on this code reference with the given target type.</returns>
         public CRefIdentifier WithTargetType(string targetType){
             if(String.IsNullOrWhiteSpace(targetType))
                 targetType = "!";

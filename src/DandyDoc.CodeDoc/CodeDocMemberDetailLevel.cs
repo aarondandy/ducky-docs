@@ -2,6 +2,9 @@
 
 namespace DandyDoc.CodeDoc
 {
+    /// <summary>
+    /// A desired detail level used for code documentation member model generation.
+    /// </summary>
     [Flags]
     public enum CodeDocMemberDetailLevel : byte
     {
@@ -30,7 +33,9 @@ namespace DandyDoc.CodeDoc
         /// Includes all available information.
         /// </summary>
         Full = Minimum | Summary | AdditionalContents | Members | Inheritance,
-
+        /// <summary>
+        /// A "medium" level that includes <see cref="Minimum"/>, <see cref="Summary"/>, and <see cref="Inheritance"/>.
+        /// </summary>
         QuickSummary = Minimum | Summary | Inheritance
 
     }
