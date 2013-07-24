@@ -183,6 +183,7 @@
     <Content Include="Views\CodeDocField.cshtml" />
     <Content Include="Views\CodeDocNamespace.cshtml" />
     <Content Include="Views\CodeDocProperty.cshtml" />
+    <None Include="Properties\PublishProfiles\Public.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -214,7 +215,9 @@
       <Name>TestLibrary1</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="xml\" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
