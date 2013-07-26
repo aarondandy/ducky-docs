@@ -214,7 +214,7 @@ namespace DandyDoc.Web.ServiceStack
             var innerHtmlBuilder = new StringBuilder();
             foreach (var parameter in parameters) {
                 innerHtmlBuilder.Append("<dt>");
-                innerHtmlBuilder.Append(parameter.Name);
+                innerHtmlBuilder.Append(HttpUtility.HtmlEncode(parameter.Name));
                 innerHtmlBuilder.Append("</dt><dd>");
 
                 if (parameter.HasSummaryContents) {
