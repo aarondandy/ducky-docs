@@ -54,6 +54,11 @@ namespace DandyDoc.CRef
             return GetMember(new CRefIdentifier(cRef));
         }
 
+        /// <summary>
+        /// Locates a member based on a code reference.
+        /// </summary>
+        /// <param name="cRef">The code reference to search for.</param>
+        /// <returns>The member if found.</returns>
         public virtual TMember GetMember(CRefIdentifier cRef) {
             if (cRef == null) throw new ArgumentNullException("cRef");
             Contract.EndContractBlock();

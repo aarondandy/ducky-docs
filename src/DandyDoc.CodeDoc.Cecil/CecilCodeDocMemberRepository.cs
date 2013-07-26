@@ -348,7 +348,8 @@ namespace DandyDoc.CodeDoc
             /// Converts a Cecil member to a code doc model.
             /// </summary>
             /// <param name="memberReference">A Cecil member.</param>
-            /// <param name="lite">Indicates that the generated model should be a lite version.</param>
+            /// <param name="detailLevel">Indicates the desired detail level of the generated model.</param>
+            /// <param name="extraMemberDataProvider">A member data provider to include additional information that may be be easily obtained from normal sources.</param>
             /// <returns>A code doc model for the given member.</returns>
             protected virtual CodeDocMemberContentBase ConvertToModel(MemberReference memberReference, CodeDocMemberDetailLevel detailLevel, ICodeDocMemberDataProvider extraMemberDataProvider = null) {
                 if (memberReference == null) throw new ArgumentNullException("memberReference");

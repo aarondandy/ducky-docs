@@ -7,12 +7,16 @@ using DandyDoc.CRef;
 
 namespace DandyDoc.CodeDoc
 {
+
+    /// <summary>
+    /// Merges multiple repositories into one single repository.
+    /// </summary>
     public class CodeDocMergedMemberRepository :
         Collection<ICodeDocMemberRepository>,
         ICodeDocMemberRepository
     {
 
-        protected class MergedAssembliesAndNamespaces
+        private class MergedAssembliesAndNamespaces
         {
 
             public MergedAssembliesAndNamespaces(IEnumerable<CodeDocSimpleAssembly> assemblies, IEnumerable<CodeDocSimpleNamespace> namespaces) {
@@ -36,13 +40,24 @@ namespace DandyDoc.CodeDoc
 
         private Lazy<MergedAssembliesAndNamespaces> _assembliesAndNamespaces;
 
+        /// <summary>
+        /// Creates a default empty merged repository.
+        /// </summary>
         public CodeDocMergedMemberRepository() : this(null) { }
 
+        /// <summary>
+        /// Creates a merged repository from the given repositories.
+        /// </summary>
+        /// <param name="repositories">The initial repositories to merge.</param>
         public CodeDocMergedMemberRepository(IEnumerable<ICodeDocMemberRepository> repositories)
             : base(repositories == null ? new List<ICodeDocMemberRepository>() : repositories.ToList()) {
             ClearAssemblyNamespaceCache();
         }
 
+        /// <summary>
+        /// Creates a merged repository from the given repositories.
+        /// </summary>
+        /// <param name="repositories">The initial repositories to merge.</param>
         public CodeDocMergedMemberRepository(params ICodeDocMemberRepository[] repositories)
             : this((IEnumerable<ICodeDocMemberRepository>)repositories) { }
 
@@ -51,6 +66,7 @@ namespace DandyDoc.CodeDoc
             Contract.Invariant(_assembliesAndNamespaces != null);
         }
 
+        /// <inheritdoc/>
         public ICodeDocMember GetMemberModel(CRefIdentifier cRef, CodeDocRepositorySearchContext searchContext = null, CodeDocMemberDetailLevel detailLevel = CodeDocMemberDetailLevel.Full) {
             foreach (var subRepo in this) {
                 var subResult = subRepo.GetMemberModel(cRef, searchContext, detailLevel);
@@ -109,30 +125,40 @@ namespace DandyDoc.CodeDoc
 
         }
 
+        /// <inheritdoc/>
         protected override void ClearItems() {
             base.ClearItems();
             ClearAssemblyNamespaceCache();
         }
 
+        /// <inheritdoc/>
         protected override void InsertItem(int index, ICodeDocMemberRepository item) {
             base.InsertItem(index, item);
             ClearAssemblyNamespaceCache();
         }
 
+        /// <inheritdoc/>
         protected override void RemoveItem(int index) {
             base.RemoveItem(index);
             ClearAssemblyNamespaceCache();
         }
 
+        /// <inheritdoc/>
         protected override void SetItem(int index, ICodeDocMemberRepository item) {
             base.SetItem(index, item);
             ClearAssemblyNamespaceCache();
         }
 
+        /// <summary>
+        /// All assemblies referenced by the merged repositories.
+        /// </summary>
         public IList<CodeDocSimpleAssembly> Assemblies {
             get { return _assembliesAndNamespaces.Value.Assemblies; }
         }
 
+        /// <summary>
+        /// A collection of merged namespaces.
+        /// </summary>
         public IList<CodeDocSimpleNamespace> Namespaces {
             get { return _assembliesAndNamespaces.Value.Namespaces; }
         }

@@ -13,6 +13,8 @@ namespace DandyDoc.CodeDoc
         /// Gets a member model for a code reference.
         /// </summary>
         /// <param name="cRef">The code reference.</param>
+        /// <param name="searchContext">The search context to use when locating other models.</param>
+        /// <param name="detailLevel">Indicates the desired detail level of the generated model.</param>
         /// <returns>The member model if found.</returns>
         ICodeDocMember GetMemberModel(CRefIdentifier cRef, CodeDocRepositorySearchContext searchContext = null, CodeDocMemberDetailLevel detailLevel = CodeDocMemberDetailLevel.Full);
 

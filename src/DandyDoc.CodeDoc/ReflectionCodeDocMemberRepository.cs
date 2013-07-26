@@ -38,18 +38,36 @@ namespace DandyDoc.CodeDoc
                 IncludeNamespaceForTypes = true
             };
 
+        /// <summary>
+        /// Gets a code reference identifier that is forced to a generic definition.
+        /// </summary>
+        /// <param name="memberInfo">The member to generate a code reference for.</param>
+        /// <returns>A code reference.</returns>
         protected static CRefIdentifier GetGenericDefinitionCRefIdentifier(MemberInfo memberInfo) {
             Contract.Requires(memberInfo != null);
             Contract.Ensures(Contract.Result<CRefIdentifier>() != null);
             return new CRefIdentifier(ReflectionCRefGenerator.WithPrefixGenericDefinition.GetCRef(memberInfo));
         }
-
+        
+        /// <summary>
+        /// Gets a standard code reference identifier for a given member.
+        /// </summary>
+        /// <param name="memberInfo">The member to generate a code reference for.</param>
+        /// <returns>A code reference.</returns>
         protected static CRefIdentifier GetCRefIdentifier(MemberInfo memberInfo){
             Contract.Requires(memberInfo != null);
             Contract.Ensures(Contract.Result<CRefIdentifier>() != null);
             return new CRefIdentifier(ReflectionCRefGenerator.WithPrefix.GetCRef(memberInfo));
         }
 
+        /// <summary>
+        /// Gets a code reference for the given assembly.
+        /// </summary>
+        /// <param name="assembly">An assembly to generate a code reference for.</param>
+        /// <returns>A code reference.</returns>
+        /// <remarks>
+        /// There is no standard for assembly code references so do not use them across different implementations.
+        /// </remarks>
         protected static CRefIdentifier GetCRefIdentifier(Assembly assembly) {
             Contract.Requires(assembly != null);
             Contract.Ensures(Contract.Result<CRefIdentifier>() != null);
@@ -93,6 +111,10 @@ namespace DandyDoc.CodeDoc
             Contract.Invariant(CRefLookup != null);
         }
 
+        /// <summary>
+        /// Generates the core collection of related namespaces and assemblies.
+        /// </summary>
+        /// <returns>The related assemblies and namespaces.</returns>
         protected override SimpleAssemblyNamespaceColleciton CreateSimpleAssemblyNamespaceCollection() {
             var assemblyModels = new List<CodeDocSimpleAssembly>();
             var namespaceModels = new Dictionary<string, CodeDocSimpleNamespace>();
@@ -288,19 +310,35 @@ namespace DandyDoc.CodeDoc
             return true;
         }
 
+        /// <summary>
+        /// Creates a member generator that uses the given search context.
+        /// </summary>
+        /// <param name="searchContext">The search context that is to be used by the member generator.</param>
+        /// <returns>A member generator that is used to create member models.</returns>
         protected override MemberGeneratorBase CreateGenerator(CodeDocRepositorySearchContext searchContext) {
             return new MemberGenerator(this, searchContext);
         }
 
+        /// <summary>
+        /// The model generation core for reflected members.
+        /// </summary>
         protected class MemberGenerator : MemberGeneratorBase
         {
 
+            /// <summary>
+            /// Creates a new member generator using the given repository and search context.
+            /// </summary>
+            /// <param name="repository">The repository that is used to generate the models.</param>
+            /// <param name="searchContext">The search context used to get other models from.</param>
             public MemberGenerator(ReflectionCodeDocMemberRepository repository, CodeDocRepositorySearchContext searchContext)
                 : base(repository, searchContext){
                 Contract.Requires(repository != null);
             }
 
-            public ReflectionCodeDocMemberRepository ReflectionRepository {
+            /// <summary>
+            /// The core repository cast as a <see cref="ReflectionCodeDocMemberRepository"/>.
+            /// </summary>
+            protected ReflectionCodeDocMemberRepository ReflectionRepository {
                 get {
                     Contract.Ensures(Contract.Result<ReflectionCodeDocMemberRepository>() != null);
                     return (ReflectionCodeDocMemberRepository)(Repository);
@@ -331,7 +369,7 @@ namespace DandyDoc.CodeDoc
             /// Gets a code doc model for a reflected member.
             /// </summary>
             /// <param name="cRef">The code reference of a reflected member to create a model from.</param>
-            /// <param name="lite">Indicates that the model should be lite.</param>
+            /// <param name="detailLevel">Indicates the desired detail level of the model.</param>
             /// <returns>A code doc model.</returns>
             public override ICodeDocMember GetMemberModel(CRefIdentifier cRef, CodeDocMemberDetailLevel detailLevel) {
                 if (cRef == null) throw new ArgumentNullException("cRef");
@@ -353,7 +391,8 @@ namespace DandyDoc.CodeDoc
             /// Converts a reflected member to a code doc model.
             /// </summary>
             /// <param name="memberInfo">A reflected member.</param>
-            /// <param name="lite">Indicates that the generated model should be lite.</param>
+            /// <param name="detailLevel">Indicates the desired detail level of the model.</param>
+            /// <param name="extraMemberDataProvider">A member data provider to include additional information that may be be easily obtained from normal sources.</param>
             /// <returns>A code doc model for the given member.</returns>
             protected virtual CodeDocMemberContentBase ConvertToModel(MemberInfo memberInfo, CodeDocMemberDetailLevel detailLevel, ICodeDocMemberDataProvider extraMemberDataProvider = null) {
                 if (memberInfo == null) throw new ArgumentNullException("memberInfo");
@@ -480,7 +519,14 @@ namespace DandyDoc.CodeDoc
                 return model;
             }
 
+            /// <summary>
+            /// Gets a URI that links to or identifies a given member.
+            /// </summary>
+            /// <param name="memberInfo">The member to get a URI for.</param>
+            /// <returns>A URI representing the given member.</returns>
             protected virtual Uri GetUri(MemberInfo memberInfo) {
+                if (memberInfo == null)
+                    return null;
 
                 if (memberInfo is Type) {
                     var type = memberInfo as Type;
@@ -499,8 +545,10 @@ namespace DandyDoc.CodeDoc
                         cRef = new CRefIdentifier(cRef.FullCRef.Substring(0,cRef.FullCRef.Length-1));
                     if(cRef.FullCRef.EndsWith("]")){
                         var lastOpenSquareBracket = cRef.FullCRef.LastIndexOf('[');
-                        if(lastOpenSquareBracket >= 0){
-                            cRef = new CRefIdentifier(cRef.FullCRef.Substring(0, lastOpenSquareBracket));
+                        if(lastOpenSquareBracket >= 0) {
+                            var toLastSquareBracket = cRef.FullCRef.Substring(0, lastOpenSquareBracket);
+                            Contract.Assume(!String.IsNullOrEmpty(toLastSquareBracket));
+                            cRef = new CRefIdentifier(toLastSquareBracket);
                         }
                     }
                 }

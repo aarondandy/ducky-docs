@@ -221,6 +221,7 @@ namespace DandyDoc.Reflection
         /// Gets all methods for the given <paramref name="type"/>.
         /// </summary>
         /// <param name="type">The type to extract members from.</param>
+        /// <param name="inheritStatic">Indicates if static members should be inherited.</param>
         /// <returns>The requested members from the type.</returns>
         /// <remarks>
         /// This methods will not return constructors.
@@ -240,6 +241,7 @@ namespace DandyDoc.Reflection
         /// Gets all properties for the given <paramref name="type"/>.
         /// </summary>
         /// <param name="type">The type to extract members from.</param>
+        /// <param name="inheritStatic">Indicates if static members should be inherited.</param>
         /// <returns>The requested members from the type.</returns>
         public static PropertyInfo[] GetAllProperties(this Type type, bool inheritStatic = false) {
             if (type == null) throw new ArgumentNullException("type");
@@ -256,6 +258,7 @@ namespace DandyDoc.Reflection
         /// Gets all fields for the given <paramref name="type"/>.
         /// </summary>
         /// <param name="type">The type to extract members from.</param>
+        /// <param name="inheritStatic">Indicates if static members should be inherited.</param>
         /// <returns>The requested members from the type.</returns>
         public static FieldInfo[] GetAllFields(this Type type, bool inheritStatic = false) {
             if (type == null) throw new ArgumentNullException("type");
@@ -272,6 +275,7 @@ namespace DandyDoc.Reflection
         /// Gets all events for the given <paramref name="type"/>.
         /// </summary>
         /// <param name="type">The type to extract members from.</param>
+        /// <param name="inheritStatic">Indicates if static members should be inherited.</param>
         /// <returns>The requested members from the type.</returns>
         public static EventInfo[] GetAllEvents(this Type type, bool inheritStatic = false) {
             if (type == null) throw new ArgumentNullException("type");
@@ -383,10 +387,10 @@ namespace DandyDoc.Reflection
         }
 
         /// <summary>
-        /// Returns the base property of a property if found.
+        /// Returns the ancestor of a property if found.
         /// </summary>
-        /// <param name="propertyInfo">The property to find the base property of.</param>
-        /// <returns>A property or <c>null</c> if a base was not found.</returns>
+        /// <param name="propertyInfo">The property to find the ancestor property of.</param>
+        /// <returns>A property or <c>null</c> if an ancestor was not found.</returns>
         public static PropertyInfo FindNextAncestor(this PropertyInfo propertyInfo) {
             Contract.Requires(propertyInfo != null);
             var propertyName = propertyInfo.Name;
@@ -405,10 +409,10 @@ namespace DandyDoc.Reflection
         }
 
         /// <summary>
-        /// Returns the base of an event if one is found.
+        /// Returns the ancestor of an event if one is found.
         /// </summary>
-        /// <param name="eventInfo">The event to find the base event of.</param>
-        /// <returns>An event or <c>null</c> if a base was not found.</returns>
+        /// <param name="eventInfo">The event to find the ancestor event of.</param>
+        /// <returns>An event or <c>null</c> if an ancestor was not found.</returns>
         public static EventInfo FindNextAncestor(this EventInfo eventInfo) {
             Contract.Requires(eventInfo != null);
             var eventName = eventInfo.Name;
@@ -427,6 +431,11 @@ namespace DandyDoc.Reflection
             return null;
         }
 
+        /// <summary>
+        /// Returns the ancestor of a method if found.
+        /// </summary>
+        /// <param name="methodInfo">The method to find the ancestor of.</param>
+        /// <returns>A method or <c>null</c> if an ancestor was not found.</returns>
         public static MethodInfo FindNextAncestor(this MethodInfo methodInfo) {
             Contract.Requires(methodInfo != null);
             var methodName = methodInfo.Name;

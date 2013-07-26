@@ -37,6 +37,7 @@ namespace DandyDoc.CodeDoc
         /// </summary>
         public TimeSpan DeactivationTimeSpan { get; set; }
 
+        /// <inheritdoc/>
         public override ICodeDocMember GetMemberModel(CRef.CRefIdentifier cRef, CodeDocRepositorySearchContext searchContext = null, CodeDocMemberDetailLevel detailLevel = CodeDocMemberDetailLevel.Full) {
             if (!ActivatedCheck())
                 return null;
@@ -45,11 +46,12 @@ namespace DandyDoc.CodeDoc
                 return Repository.GetMemberModel(cRef, searchContext, detailLevel);
             }
             catch (Exception ex) {
-                Deactivate();
+                Deactivate(ex);
                 return null;
             }
         }
 
+        /// <inheritdoc/>
         public override IList<CodeDocSimpleAssembly> Assemblies {
             get {
                 if (!ActivatedCheck())
@@ -59,12 +61,13 @@ namespace DandyDoc.CodeDoc
                     return Repository.Assemblies;
                 }
                 catch (Exception ex) {
-                    Deactivate();
+                    Deactivate(ex);
                     return new CodeDocSimpleAssembly[0];
                 }
             }
         }
 
+        /// <inheritdoc/>
         public override IList<CodeDocSimpleNamespace> Namespaces {
             get {
                 if (!ActivatedCheck())
@@ -74,7 +77,7 @@ namespace DandyDoc.CodeDoc
                     return Repository.Namespaces;
                 }
                 catch (Exception ex) {
-                    Deactivate();
+                    Deactivate(ex);
                     return new CodeDocSimpleNamespace[0];
                 }
             }
@@ -93,9 +96,18 @@ namespace DandyDoc.CodeDoc
             return false;
         }
 
-        private void Deactivate() {
+        private void Deactivate(Exception ex) {
             _active = false;
             _deactivatedTime = DateTime.Now;
+            OnDeactivated(ex);
+        }
+
+        /// <summary>
+        /// Invoked when the wrapper is deactivated due to an exception.
+        /// </summary>
+        /// <param name="ex">The exception that caused the deactivation.</param>
+        protected virtual void OnDeactivated(Exception ex) {
+            ;
         }
 
     }

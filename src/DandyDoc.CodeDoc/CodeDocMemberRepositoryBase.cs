@@ -15,9 +15,17 @@ namespace DandyDoc.CodeDoc
     public abstract class CodeDocMemberRepositoryBase : ICodeDocMemberRepository
     {
 
+        /// <summary>
+        /// A collection of related assemblies and namespaces.
+        /// </summary>
         protected class SimpleAssemblyNamespaceColleciton
         {
 
+            /// <summary>
+            /// Creates a related assembly and namespace collection for the given assemblies and namespaces.
+            /// </summary>
+            /// <param name="assemblies">The assemblies.</param>
+            /// <param name="namespaces">The namespaces.</param>
             public SimpleAssemblyNamespaceColleciton(IList<CodeDocSimpleAssembly> assemblies, IList<CodeDocSimpleNamespace> namespaces){
                 if(assemblies == null) throw new ArgumentNullException("assemblies");
                 if(namespaces == null) throw new ArgumentNullException("namespaces");
@@ -26,12 +34,20 @@ namespace DandyDoc.CodeDoc
                 Namespaces = new ReadOnlyCollection<CodeDocSimpleNamespace>(namespaces);
             }
 
+            [ContractInvariantMethod]
             private void CodeContractInvariant(){
                 Contract.Invariant(Assemblies != null);
                 Contract.Invariant(Namespaces != null);
             }
 
+            /// <summary>
+            /// The assemblies.
+            /// </summary>
             public ReadOnlyCollection<CodeDocSimpleAssembly> Assemblies { get; private set; }
+
+            /// <summary>
+            /// The namespaces.
+            /// </summary>
             public ReadOnlyCollection<CodeDocSimpleNamespace> Namespaces { get; private set; }
         }
 
@@ -52,6 +68,10 @@ namespace DandyDoc.CodeDoc
             Contract.Invariant(_simpleAssemblyNamespaceCollection != null);
         }
 
+        /// <summary>
+        /// Generates the related assembly and namespace models.
+        /// </summary>
+        /// <returns>A collection of namespaces and assemblies.</returns>
         protected abstract SimpleAssemblyNamespaceColleciton CreateSimpleAssemblyNamespaceCollection();
 
         /// <summary>
@@ -77,12 +97,17 @@ namespace DandyDoc.CodeDoc
         /// </summary>
         /// <param name="cRef">The code reference to generate a model for.</param>
         /// <param name="searchContext">The serach context to use when locating related members.</param>
-        /// <param name="lite">Indicates if a lite version of the model should be generated.</param>
+        /// <param name="detailLevel">Indicates the desired detail level of the generated model.</param>
         /// <returns>The generated member if possible.</returns>
         public virtual ICodeDocMember GetMemberModel(CRefIdentifier cRef, CodeDocRepositorySearchContext searchContext = null, CodeDocMemberDetailLevel detailLevel = CodeDocMemberDetailLevel.Full) {
             return CreateGenerator(searchContext).GetMemberModel(cRef, detailLevel);
         }
 
+        /// <summary>
+        /// Creates the core code doc generator using the given search context.
+        /// </summary>
+        /// <param name="searchContext">The search context to use when locating other models.</param>
+        /// <returns>A member generator.</returns>
         protected abstract MemberGeneratorBase CreateGenerator(CodeDocRepositorySearchContext searchContext);
 
 
@@ -96,6 +121,7 @@ namespace DandyDoc.CodeDoc
                 SearchContext = searchContext;
             }
 
+            [ContractInvariantMethod]
             private void CodeContractInvariants() {
                 Contract.Invariant(Repository != null);
             }
@@ -174,7 +200,7 @@ namespace DandyDoc.CodeDoc
             /// Creates a member model for the given code reference.
             /// </summary>
             /// <param name="cRef">The code reference to generate a model for.</param>
-            /// <param name="lite">Indicates if a lite version of the model should be generated.</param>
+            /// <param name="detailLevel">Indicates the desired detail level of the generated model.</param>
             /// <returns>The generated member if possible.</returns>
             public abstract ICodeDocMember GetMemberModel(CRefIdentifier cRef, CodeDocMemberDetailLevel detailLevel);
 
@@ -312,7 +338,7 @@ namespace DandyDoc.CodeDoc
             /// Gets a model for the given code reference or creates a new one.
             /// </summary>
             /// <param name="cRef">The code reference to get a model for.</param>
-            /// <param name="lite">Indicates that the model should be lite.</param>
+            /// <param name="detailLevel">Indicates the desired detail level of the generated model.</param>
             /// <returns>A code doc model for the given code reference.</returns>
             protected ICodeDocMember GetOrConvert(CRefIdentifier cRef, CodeDocMemberDetailLevel detailLevel) {
                 Contract.Requires(cRef != null);
@@ -325,7 +351,7 @@ namespace DandyDoc.CodeDoc
             /// Gets a type model for the given code reference or creates a new one.
             /// </summary>
             /// <param name="cRef">The code reference to get a model for.</param>
-            /// <param name="lite">Indicates that the model should be lite.</param>
+            /// <param name="detailLevel">Indicates the desired detail level of the generated model.</param>
             /// <returns>A code doc model for the given code reference.</returns>
             protected CodeDocType GetOrConvertType(CRefIdentifier cRef, CodeDocMemberDetailLevel detailLevel) {
                 Contract.Requires(cRef != null);

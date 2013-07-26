@@ -26,6 +26,8 @@ task :default => [:build,:make_nupkg]
 
 task :make_nupkg => [:make_nupkg_core,:make_nupkg_core_cecil,:make_nupkg_code_doc,:make_nupkg_code_doc_cecil]
 
+task :push_nupkg => [:push_nupkg_core,:push_nupkg_core_cecil,:push_nupkg_code_doc,:push_nupkg_code_doc_cecil]
+
 msbuild :build do |msb|
 	msb.targets = [:Clean, :Build]
 	msb.solution = "./dandy-doc.sln"
@@ -40,6 +42,14 @@ exec :make_nupkg_core do |cmd|
 	puts cmd.parameters
 end
 
+exec :push_nupkg_core do |cmd|
+	asmVersion3 = extract_assembly_version "./CommonAssemblyInfo.cs"
+	puts "Version: #{asmVersion3}"
+	cmd.command = "./.nuget/nuget.exe"
+	cmd.parameters = "push ./build/packed/DandyDoc.Core.#{asmVersion3}.nupkg"
+	puts cmd.parameters
+end
+
 exec :make_nupkg_core_cecil do |cmd|
 	asmVersion3 = extract_assembly_version "./CommonAssemblyInfo.cs"
 	puts "Version: #{asmVersion3}"
@@ -47,6 +57,14 @@ exec :make_nupkg_core_cecil do |cmd|
 	puts "Cecil Version: #{cecilVersion}"
 	cmd.command = "./.nuget/nuget.exe"
 	cmd.parameters = "pack build/DandyDoc.Core.Cecil.nuspec -Verbosity detailed -Version #{asmVersion3} -Symbols -OutputDirectory ./build/packed/ -Properties Configuration=Release;cecilVersion=#{cecilVersion}"
+end
+
+exec :push_nupkg_core_cecil do |cmd|
+	asmVersion3 = extract_assembly_version "./CommonAssemblyInfo.cs"
+	puts "Version: #{asmVersion3}"
+	cmd.command = "./.nuget/nuget.exe"
+	cmd.parameters = "push build/packed/DandyDoc.Core.Cecil.#{asmVersion3}.nupkg"
+	puts cmd.parameters
 end
 
 exec :make_nupkg_code_doc do |cmd|
@@ -57,6 +75,14 @@ exec :make_nupkg_code_doc do |cmd|
 	puts cmd.parameters
 end
 
+exec :push_nupkg_code_doc do |cmd|
+	asmVersion3 = extract_assembly_version "./CommonAssemblyInfo.cs"
+	puts "Version: #{asmVersion3}"
+	cmd.command = "./.nuget/nuget.exe"
+	cmd.parameters = "push build/packed/DandyDoc.CodeDoc.#{asmVersion3}.nupkg"
+	puts cmd.parameters
+end
+
 exec :make_nupkg_code_doc_cecil do |cmd|
 	asmVersion3 = extract_assembly_version "./CommonAssemblyInfo.cs"
 	puts "Version: #{asmVersion3}"
@@ -64,4 +90,12 @@ exec :make_nupkg_code_doc_cecil do |cmd|
 	puts "Cecil Version: #{cecilVersion}"
 	cmd.command = "./.nuget/nuget.exe"
 	cmd.parameters = "pack build/DandyDoc.CodeDoc.Cecil.nuspec -Verbosity detailed -Version #{asmVersion3} -Symbols -OutputDirectory ./build/packed/ -Properties Configuration=Release;cecilVersion=#{cecilVersion}"
+end
+
+exec :push_nupkg_code_doc_cecil do |cmd|
+	asmVersion3 = extract_assembly_version "./CommonAssemblyInfo.cs"
+	puts "Version: #{asmVersion3}"
+	cmd.command = "./.nuget/nuget.exe"
+	cmd.parameters = "push build/packed/DandyDoc.CodeDoc.Cecil.#{asmVersion3}.nupkg"
+	puts cmd.parameters
 end

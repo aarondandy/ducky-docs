@@ -31,6 +31,8 @@ namespace DandyDoc.CodeDoc
         /// A locked request to the wrapped repository for a member model.
         /// </summary>
         /// <param name="cRef">The code reference.</param>
+        /// <param name="searchContext">The search context to use when locating other models.</param>
+        /// <param name="detailLevel">Indicates the desired detail level of the generated model.</param>
         /// <returns>The member model.</returns>
         public override ICodeDocMember GetMemberModel(CRefIdentifier cRef, CodeDocRepositorySearchContext searchContext = null, CodeDocMemberDetailLevel detailLevel = CodeDocMemberDetailLevel.Full) {
             lock (_mutex) {

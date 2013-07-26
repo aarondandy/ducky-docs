@@ -88,6 +88,9 @@ namespace DandyDoc.CRef
         /// </remarks>
         protected bool ForceGenericExpansion { get; set; }
 
+        /// <summary>
+        /// Indicates if generation of a generic definition should be forced.
+        /// </summary>
         protected bool ForceGenericDefinition { get; set; }
 
         /// <inheritdoc/>

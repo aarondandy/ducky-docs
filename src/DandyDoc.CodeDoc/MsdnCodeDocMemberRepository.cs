@@ -16,6 +16,9 @@ using DandyDoc.XmlDoc;
 
 namespace DandyDoc.CodeDoc
 {
+    /// <summary>
+    /// A code doc repository that generates member models from extracted MTPS/MSDN data.
+    /// </summary>
     public class MsdnCodeDocMemberRepository : ICodeDocMemberRepository
     {
 
@@ -256,6 +259,9 @@ namespace DandyDoc.CodeDoc
 
         }
 
+        /// <summary>
+        /// The default root asset ID for the .NET framework 4.5.
+        /// </summary>
         public static string DefaultRootAssetId{
             get{
                 Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
@@ -263,6 +269,9 @@ namespace DandyDoc.CodeDoc
             }
         }
 
+        /// <summary>
+        /// The default documentation version for VS11 (2012).
+        /// </summary>
         public static string DefaultVersion{
             get{
                 Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
@@ -270,6 +279,9 @@ namespace DandyDoc.CodeDoc
             }
         }
 
+        /// <summary>
+        /// The default locale of US English.
+        /// </summary>
         public static string DefaultLocale{
             get{
                 Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
@@ -277,6 +289,9 @@ namespace DandyDoc.CodeDoc
             }
         }
 
+        /// <summary>
+        /// The default MTPS SOAP service endpoint.
+        /// </summary>
         public static string DefaultServiceUrl{
             get{
                 Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
@@ -284,6 +299,13 @@ namespace DandyDoc.CodeDoc
             }
         }
 
+        /// <summary>
+        /// Creates a new MTPS member model repository.
+        /// </summary>
+        /// <param name="rootAssetId">The root asset ID for the .NET framework.</param>
+        /// <param name="version">The desired documentation version.</param>
+        /// <param name="locale">The desired documentation locale.</param>
+        /// <param name="serviceUrl">The MTPS service URL.</param>
         public MsdnCodeDocMemberRepository(string rootAssetId = null, string version = null, string locale = null, string serviceUrl = null) {
             RootAssetId = String.IsNullOrEmpty(rootAssetId) ? DefaultRootAssetId : rootAssetId;
             Version = String.IsNullOrEmpty(version) ? DefaultVersion : version;
@@ -301,6 +323,7 @@ namespace DandyDoc.CodeDoc
             );
         }
 
+        [ContractInvariantMethod]
         private void CodeContractInvariants(){
             Contract.Invariant(!String.IsNullOrEmpty(RootAssetId));
             Contract.Invariant(!String.IsNullOrEmpty(Version));
@@ -334,19 +357,48 @@ namespace DandyDoc.CodeDoc
 
         private readonly appId _appId;
 
+        /// <summary>
+        /// The root asset ID.
+        /// </summary>
+        /// <remarks>
+        /// This should be set to the asset ID of the .NET framework.
+        /// </remarks>
         public string RootAssetId { get; private set; }
 
+        /// <summary>
+        /// The targeted documentation version.
+        /// </summary>
         public string Version { get; private set; }
 
+        /// <summary>
+        /// The desired locale for documentation.
+        /// </summary>
         public string Locale { get; private set; }
 
+        /// <summary>
+        /// The MTPS service URL.
+        /// </summary>
         public string ServiceUrl { get; private set; }
 
+        /// <summary>
+        /// Generates a model that is extracted from MTPS data.
+        /// </summary>
+        /// <param name="cRef">The code reference to search for.</param>
+        /// <param name="searchContext">The search context for locating related items.</param>
+        /// <param name="detailLevel">The desired detail level of the generated model.</param>
+        /// <returns>A code doc member model if found.</returns>
         public ICodeDocMember GetMemberModel(string cRef, CodeDocRepositorySearchContext searchContext = null, CodeDocMemberDetailLevel detailLevel = CodeDocMemberDetailLevel.Full) {
             Contract.Requires(!String.IsNullOrEmpty(cRef));
             return GetMemberModel(new CRefIdentifier(cRef), searchContext, detailLevel);
         }
 
+        /// <summary>
+        /// Generates a model that is extracted from MTPS data.
+        /// </summary>
+        /// <param name="cRef">The code reference to search for.</param>
+        /// <param name="searchContext">The search context for locating related items.</param>
+        /// <param name="detailLevel">The desired detail level of the generated model.</param>
+        /// <returns>A code doc member model if found.</returns>
         public ICodeDocMember GetMemberModel(CRefIdentifier cRef, CodeDocRepositorySearchContext searchContext = null, CodeDocMemberDetailLevel detailLevel = CodeDocMemberDetailLevel.Full) {
             if(cRef == null) throw new ArgumentNullException("cRef");
             Contract.EndContractBlock();

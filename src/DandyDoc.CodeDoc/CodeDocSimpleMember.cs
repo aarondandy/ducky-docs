@@ -49,6 +49,9 @@ namespace DandyDoc.CodeDoc
             }
         }
 
+        /// <summary>
+        /// Exposes the code reference (<see cref="CRef"/>) as a text property.
+        /// </summary>
         [DataMember]
         public string CRefText {
             get { return _cRef.FullCRef; }
