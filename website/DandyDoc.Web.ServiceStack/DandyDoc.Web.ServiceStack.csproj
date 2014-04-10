@@ -140,6 +140,7 @@
     <Content Include="Views\CodeDocInvokablePartial.cshtml" />
     <Content Include="Docs\Api\namespaces.cshtml" />
     <Content Include="Docs\default.cshtml" />
+    <None Include="Properties\PublishProfiles\Folder.pubxml" />
     <None Include="Properties\PublishProfiles\gearhost.pubxml" />
     <Content Include="Views\CodeDocMethod.cshtml" />
     <Content Include="Web.config">
