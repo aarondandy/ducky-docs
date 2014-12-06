@@ -2,7 +2,7 @@
 
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Aaron Dandy")]
-[assembly: AssemblyProduct("Dandy Doc")]
+[assembly: AssemblyProduct("Ducky Docs")]
 [assembly: AssemblyCopyright("Copyright © 2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

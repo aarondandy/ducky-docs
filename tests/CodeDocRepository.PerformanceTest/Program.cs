@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using DandyDoc.CRef;
-using DandyDoc.Cecil;
 using DandyDoc.CodeDoc;
 using DandyDoc.Reflection;
 using DandyDoc.XmlDoc;
@@ -28,20 +27,8 @@ namespace CodeDocRepository.PerformanceTest
             );
         }
 
-        static CecilCodeDocMemberRepository CreateCecilRepository() {
-            //var testLib1Asm = AssemblyDefinition.ReadAssembly(@".\TestLibrary1.dll", CecilImmediateAssemblyResolver.CreateReaderParameters());
-            var testLib1Asm = AssemblyDefinition.ReadAssembly(@".\TestLibrary1.dll");
-            var testLib1AsmPath = testLib1Asm.GetFilePath();
-            var testLib1XmlPath = Path.ChangeExtension(testLib1AsmPath, "XML");
-            return new CecilCodeDocMemberRepository(
-                new CecilCRefLookup(testLib1Asm),
-                new XmlAssemblyDocument(testLib1XmlPath)
-            );
-        }
-
         static ICodeDocMemberRepository CreateRepository() {
-            //return CreateReflectionRepository();
-            return CreateCecilRepository();
+            return CreateReflectionRepository();
         }
 
         static void Main(string[] args) {

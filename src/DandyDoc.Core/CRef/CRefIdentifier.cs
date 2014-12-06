@@ -66,12 +66,12 @@ namespace DandyDoc.CRef
             ReturnTypePart = String.Empty;
 
             if ("N:".Equals(cRef)) {
-                Contract.Assume(cRef.Length == 2);
+                Contract.Assume(cRef.Length >= 2);
                 CoreName = cRef.Substring(2);
                 TargetType = "N";
             }
             else if (cRef.StartsWith("A:", StringComparison.InvariantCultureIgnoreCase)) {
-                Contract.Assume(cRef.Length == 2);
+                Contract.Assume(cRef.Length >= 2);
                 CoreName = cRef.Substring(2);
                 TargetType = "A";
             }
