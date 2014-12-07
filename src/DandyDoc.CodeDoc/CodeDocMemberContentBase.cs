@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
-using DandyDoc.CRef;
+using DuckyDocs.CRef;
 using System.Diagnostics.Contracts;
-using DandyDoc.XmlDoc;
+using DuckyDocs.XmlDoc;
 
-namespace DandyDoc.CodeDoc
+namespace DuckyDocs.CodeDoc
 {
 
     /// <summary>

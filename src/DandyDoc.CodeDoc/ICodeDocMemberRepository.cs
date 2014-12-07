@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using DandyDoc.CRef;
+using DuckyDocs.CRef;
 
-namespace DandyDoc.CodeDoc
+namespace DuckyDocs.CodeDoc
 {
     /// <summary>
     /// A repository that creates or retrieves code doc members.

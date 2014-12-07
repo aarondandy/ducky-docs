@@ -4,7 +4,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Xml;
 
-namespace DandyDoc.XmlDoc
+namespace DuckyDocs.XmlDoc
 {
 
     /// <summary>
@@ -92,7 +92,7 @@ namespace DandyDoc.XmlDoc
         /// </summary>
         /// <remarks>
         /// Be aware that this may skip some XML doc nodes that are not elements
-        /// such as <seealso cref="DandyDoc.XmlDoc.XmlDocTextNode"/>.
+        /// such as <seealso cref="DuckyDocs.XmlDoc.XmlDocTextNode"/>.
         /// </remarks>
         public IEnumerable<XmlDocElement> PriorElements {
             get {
@@ -114,7 +114,7 @@ namespace DandyDoc.XmlDoc
         /// </summary>
         /// <remarks>
         /// Be aware that this may skip some XML doc nodes that are not elements
-        /// such as <seealso cref="DandyDoc.XmlDoc.XmlDocTextNode"/>.
+        /// such as <seealso cref="DuckyDocs.XmlDoc.XmlDocTextNode"/>.
         /// </remarks>
         public IEnumerable<XmlDocElement> NextElements {
             get {

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Runtime.Serialization;
-using DandyDoc.CRef;
-using DandyDoc.XmlDoc;
+using DuckyDocs.CRef;
+using DuckyDocs.XmlDoc;
 
-namespace DandyDoc.CodeDoc
+namespace DuckyDocs.CodeDoc
 {
     /// <summary>
     /// A code doc model for a method member.

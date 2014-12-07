@@ -5,7 +5,7 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace DandyDoc.Utility
+namespace DuckyDocs.Utility
 {
     internal static class TextUtility
     {

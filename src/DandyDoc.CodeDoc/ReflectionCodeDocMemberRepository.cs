@@ -5,15 +5,15 @@ using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using DandyDoc.CRef;
-using DandyDoc.CodeDoc.Utility;
-using DandyDoc.DisplayName;
-using DandyDoc.ExternalVisibility;
-using DandyDoc.Reflection;
-using DandyDoc.Utility;
-using DandyDoc.XmlDoc;
+using DuckyDocs.CRef;
+using DuckyDocs.CodeDoc.Utility;
+using DuckyDocs.DisplayName;
+using DuckyDocs.ExternalVisibility;
+using DuckyDocs.Reflection;
+using DuckyDocs.Utility;
+using DuckyDocs.XmlDoc;
 
-namespace DandyDoc.CodeDoc
+namespace DuckyDocs.CodeDoc
 {
 
     /// <summary>

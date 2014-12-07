@@ -1,21 +1,23 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using DandyDoc.Reflection;
-using DandyDoc.XmlDoc;
+using DuckyDocs.Reflection;
+using DuckyDocs.XmlDoc;
 using NUnit.Framework;
 using TestLibrary1;
 
 #pragma warning disable 1591
 
-namespace DandyDoc.Core.Tests
+namespace DuckyDocs.Core.Tests
 {
     [TestFixture]
     public class XmlDocTests
     {
 
         public XmlDocTests() {
-            Docs = new XmlAssemblyDocument("./TestLibrary1.XML");
+            var testDllLocation = typeof(TestLibrary1.FlagsEnum).Assembly.Location;
+            var textXmlLocation = Path.ChangeExtension(testDllLocation, "XML");
+            Docs = new XmlAssemblyDocument(textXmlLocation);
         }
 
         public XmlAssemblyDocument Docs { get; private set; }

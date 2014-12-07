@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using DandyDoc.CRef;
+using DuckyDocs.CRef;
 
-namespace DandyDoc.CodeDoc
+namespace DuckyDocs.CodeDoc
 {
     /// <summary>
     /// A locking code doc repository wrapper.

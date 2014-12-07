@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using DandyDoc.CRef;
-using DandyDoc.CodeDoc;
-using DandyDoc.Reflection;
-using DandyDoc.XmlDoc;
+using DuckyDocs.CRef;
+using DuckyDocs.CodeDoc;
+using DuckyDocs.Reflection;
+using DuckyDocs.XmlDoc;
 using Mono.Cecil;
 using TestLibrary1;
 

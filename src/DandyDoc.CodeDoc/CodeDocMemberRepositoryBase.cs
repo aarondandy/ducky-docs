@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using DandyDoc.CRef;
-using DandyDoc.ExternalVisibility;
-using DandyDoc.XmlDoc;
+using DuckyDocs.CRef;
+using DuckyDocs.ExternalVisibility;
+using DuckyDocs.XmlDoc;
 
-namespace DandyDoc.CodeDoc
+namespace DuckyDocs.CodeDoc
 {
     /// <summary>
     /// A base code doc repository intended for the reflection and Cecil repositories.

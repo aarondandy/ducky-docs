@@ -2,13 +2,13 @@
 using System.Diagnostics.Contracts;
 using System.Reflection;
 
-namespace DandyDoc.ExternalVisibility
+namespace DuckyDocs.ExternalVisibility
 {
 
     /// <summary>
     /// Determines general external visibility for reflected members.
     /// </summary>
-    /// <seealso cref="DandyDoc.ExternalVisibility.ExternalVisibilityKind"/>
+    /// <seealso cref="DuckyDocs.ExternalVisibility.ExternalVisibilityKind"/>
     public static class ReflectionExternalVisibility
     {
 

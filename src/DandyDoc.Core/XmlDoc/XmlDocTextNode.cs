@@ -3,7 +3,7 @@ using System.Diagnostics.Contracts;
 using System.Web;
 using System.Xml;
 
-namespace DandyDoc.XmlDoc
+namespace DuckyDocs.XmlDoc
 {
 
     /// <summary>

@@ -1,9 +1,9 @@
-﻿namespace DandyDoc.CRef
+﻿namespace DuckyDocs.CRef
 {
     /// <summary>
     /// Generates a code reference (cref) given a supported member.
     /// </summary>
-    /// <seealso cref="DandyDoc.CRef.CRefIdentifier"/>
+    /// <seealso cref="DuckyDocs.CRef.CRefIdentifier"/>
     public interface ICRefGenerator
     {
 

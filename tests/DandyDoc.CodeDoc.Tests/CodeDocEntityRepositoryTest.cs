@@ -2,15 +2,15 @@
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
-using DandyDoc.CRef;
-using DandyDoc.Reflection;
-using DandyDoc.XmlDoc;
+using DuckyDocs.CRef;
+using DuckyDocs.Reflection;
+using DuckyDocs.XmlDoc;
 using NUnit.Framework;
 using TestLibrary1;
 
 #pragma warning disable 1591
 
-namespace DandyDoc.CodeDoc.Tests
+namespace DuckyDocs.CodeDoc.Tests
 {
 
     [TestFixture]

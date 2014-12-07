@@ -7,8 +7,8 @@
     <ProjectGuid>{9F83F6BE-7F93-4B79-A667-14FE0C09F40A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DandyDoc.Core.Tests</RootNamespace>
-    <AssemblyName>DandyDoc.Core.Tests</AssemblyName>
+    <RootNamespace>DuckyDocs.Core.Tests</RootNamespace>
+    <AssemblyName>DuckyDocs.Core.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
@@ -100,9 +100,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\DandyDoc.Core\DandyDoc.Core.csproj">
+    <ProjectReference Include="..\..\src\DandyDoc.Core\DuckyDocs.Core.csproj">
       <Project>{a09f4dac-290c-4abe-b053-071ec966008f}</Project>
-      <Name>DandyDoc.Core</Name>
+      <Name>DuckyDocs.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\TestLibrary1\TestLibrary1.csproj">
       <Project>{f83f4c52-a886-4b9e-8164-e95e1f22f929}</Project>

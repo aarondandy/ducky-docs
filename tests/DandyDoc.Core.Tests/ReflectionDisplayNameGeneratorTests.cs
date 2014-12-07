@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Reflection;
-using DandyDoc.CRef;
-using DandyDoc.DisplayName;
+using DuckyDocs.CRef;
+using DuckyDocs.DisplayName;
 using NUnit.Framework;
 using TestLibrary1;
 
 #pragma warning disable 1591
 
-namespace DandyDoc.Core.Tests
+namespace DuckyDocs.Core.Tests
 {
 
     [TestFixture]

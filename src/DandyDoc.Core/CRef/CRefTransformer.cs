@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
 
-namespace DandyDoc.CRef
+namespace DuckyDocs.CRef
 {
     /// <summary>
     /// A transformation that can be applied to code references.

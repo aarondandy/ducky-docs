@@ -5,7 +5,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Xml;
 
-namespace DandyDoc.XmlDoc
+namespace DuckyDocs.XmlDoc
 {
 
     /// <summary>

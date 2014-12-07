@@ -1,11 +1,11 @@
-﻿namespace DandyDoc.CRef
+﻿namespace DuckyDocs.CRef
 {
     /// <summary>
     /// The base code reference generator class which can be inherited
     /// from to create a specific implementation.
     /// </summary>
-    /// <seealso cref="DandyDoc.CRef.ReflectionCRefGenerator"/>
-    /// <seealso cref="T:DandyDoc.CRef.CecilCRefGenerator"/>
+    /// <seealso cref="DuckyDocs.CRef.ReflectionCRefGenerator"/>
+    /// <seealso cref="T:DuckyDocs.CRef.CecilCRefGenerator"/>
     public abstract class CRefGeneratorBase : ICRefGenerator
     {
         /// <summary>
@@ -19,7 +19,7 @@
         /// <summary>
         /// A flag indicating if this generator adds a code reference type prefix.
         /// </summary>
-        /// <seealso cref="DandyDoc.CRef.CRefIdentifier.TargetType"/>
+        /// <seealso cref="DuckyDocs.CRef.CRefIdentifier.TargetType"/>
         public bool IncludeTypePrefix { get; protected set; }
 
         /// <summary>

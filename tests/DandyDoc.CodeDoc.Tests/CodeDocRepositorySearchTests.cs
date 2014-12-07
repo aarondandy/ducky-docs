@@ -2,13 +2,13 @@
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
-using DandyDoc.CRef;
-using DandyDoc.Reflection;
-using DandyDoc.XmlDoc;
+using DuckyDocs.CRef;
+using DuckyDocs.Reflection;
+using DuckyDocs.XmlDoc;
 using TestLibrary1;
 using NUnit.Framework;
 
-namespace DandyDoc.CodeDoc.Tests
+namespace DuckyDocs.CodeDoc.Tests
 {
 
     [TestFixture]
@@ -61,11 +61,11 @@ namespace DandyDoc.CodeDoc.Tests
 
             var generic1FieldType = ((CodeDocField) model.Fields.Single()).ValueType as CodeDocType;
             Assert.IsNotNull(generic1FieldType);
-            Assert.That(generic1FieldType.Assembly.TypeCRefs.Contains(generic1FieldType.CRef));
+            Assert.AreEqual("T:TestLibrary1.Generic1{System.Int32,System.Int32[]}", generic1FieldType.CRef.FullCRef);
 
             var class1PropertyType = ((CodeDocProperty) model.Properties.Single()).ValueType as CodeDocType;
             Assert.IsNotNull(class1PropertyType);
-            Assert.That(class1PropertyType.Assembly.TypeCRefs.Contains(class1PropertyType.CRef));
+            Assert.AreEqual("T:TestLibrary1.Class1", class1PropertyType.CRef.FullCRef);
         }
 
 

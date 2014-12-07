@@ -1,7 +1,7 @@
-﻿using DandyDoc.CRef;
+﻿using DuckyDocs.CRef;
 using NUnit.Framework;
 
-namespace DandyDoc.Core.Tests
+namespace DuckyDocs.Core.Tests
 {
 
     [TestFixture]

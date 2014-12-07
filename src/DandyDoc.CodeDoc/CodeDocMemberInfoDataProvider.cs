@@ -2,10 +2,10 @@
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
-using DandyDoc.ExternalVisibility;
-using DandyDoc.Reflection;
+using DuckyDocs.ExternalVisibility;
+using DuckyDocs.Reflection;
 
-namespace DandyDoc.CodeDoc
+namespace DuckyDocs.CodeDoc
 {
     /// <summary>
     /// Provides code doc member attributes for a reflected member info.

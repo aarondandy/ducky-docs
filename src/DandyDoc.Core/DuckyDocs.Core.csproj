@@ -7,8 +7,8 @@
     <ProjectGuid>{A09F4DAC-290C-4ABE-B053-071EC966008F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DandyDoc</RootNamespace>
-    <AssemblyName>DandyDoc.Core</AssemblyName>
+    <RootNamespace>DuckyDocs</RootNamespace>
+    <AssemblyName>DuckyDocs.Core</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <CodeContractsAssemblyMode>0</CodeContractsAssemblyMode>
@@ -23,7 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\artifacts\bin\Debug\DandyDoc.Core.XML</DocumentationFile>
+    <DocumentationFile>..\..\artifacts\bin\Debug\DuckyDocs.Core.XML</DocumentationFile>
     <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
     <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
     <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
@@ -65,7 +65,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\artifacts\bin\Release\DandyDoc.Core.XML</DocumentationFile>
+    <DocumentationFile>..\..\artifacts\bin\Release\DuckyDocs.Core.XML</DocumentationFile>
     <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
     <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
     <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
@@ -104,7 +104,7 @@
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\..\artifacts\bin\DebugCC\</OutputPath>
     <DefineConstants>CODE_ANALYSIS;DEBUG;TRACE</DefineConstants>
-    <DocumentationFile>..\..\artifacts\bin\DebugCC\DandyDoc.Core.XML</DocumentationFile>
+    <DocumentationFile>..\..\artifacts\bin\DebugCC\DuckyDocs.Core.XML</DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <RunCodeAnalysis>true</RunCodeAnalysis>

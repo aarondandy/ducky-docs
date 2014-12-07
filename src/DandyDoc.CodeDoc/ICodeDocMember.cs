@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using DandyDoc.CRef;
-using DandyDoc.ExternalVisibility;
-using DandyDoc.XmlDoc;
+using DuckyDocs.CRef;
+using DuckyDocs.ExternalVisibility;
+using DuckyDocs.XmlDoc;
 
-namespace DandyDoc.CodeDoc
+namespace DuckyDocs.CodeDoc
 {
 
     /// <summary>

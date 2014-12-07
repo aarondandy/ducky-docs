@@ -1,8 +1,8 @@
 ﻿using System.Runtime.Serialization;
-using DandyDoc.CRef;
+using DuckyDocs.CRef;
 using System.Diagnostics.Contracts;
 
-namespace DandyDoc.CodeDoc
+namespace DuckyDocs.CodeDoc
 {
 
     /// <summary>

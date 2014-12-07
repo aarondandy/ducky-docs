@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
-using DandyDoc.CRef;
-using DandyDoc.Utility;
+using DuckyDocs.CRef;
+using DuckyDocs.Utility;
 
-namespace DandyDoc.Reflection
+namespace DuckyDocs.Reflection
 {
     /// <summary>
     /// Various methods and extension methods related to reflection.

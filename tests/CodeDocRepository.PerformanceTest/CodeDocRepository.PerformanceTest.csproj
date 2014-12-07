@@ -71,13 +71,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\DandyDoc.CodeDoc\DandyDoc.CodeDoc.csproj">
+    <ProjectReference Include="..\..\src\DandyDoc.CodeDoc\DuckyDocs.CodeDoc.csproj">
       <Project>{01cce4b1-8bd1-4c4f-8080-9a9bb19f05a9}</Project>
-      <Name>DandyDoc.CodeDoc</Name>
+      <Name>DuckyDocs.CodeDoc</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\DandyDoc.Core\DandyDoc.Core.csproj">
+    <ProjectReference Include="..\..\src\DandyDoc.Core\DuckyDocs.Core.csproj">
       <Project>{a09f4dac-290c-4abe-b053-071ec966008f}</Project>
-      <Name>DandyDoc.Core</Name>
+      <Name>DuckyDocs.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\TestLibrary1\TestLibrary1.csproj">
       <Project>{f83f4c52-a886-4b9e-8164-e95e1f22f929}</Project>

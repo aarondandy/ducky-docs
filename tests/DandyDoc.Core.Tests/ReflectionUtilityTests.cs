@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using DandyDoc.Reflection;
+using DuckyDocs.Reflection;
 using NUnit.Framework;
 using TestLibrary1.Seal;
 
-namespace DandyDoc.Core.Tests
+namespace DuckyDocs.Core.Tests
 {
 
 

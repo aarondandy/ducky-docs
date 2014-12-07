@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace DandyDoc.Utility
+namespace DuckyDocs.Utility
 {
     internal static class NameUtility
     {

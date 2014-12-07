@@ -1,4 +1,4 @@
-﻿namespace DandyDoc.ExternalVisibility
+﻿namespace DuckyDocs.ExternalVisibility
 {
     /// <summary>
     /// Utility methods for external visibility.

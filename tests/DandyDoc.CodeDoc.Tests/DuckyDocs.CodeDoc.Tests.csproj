@@ -4,20 +4,22 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{01CCE4B1-8BD1-4C4F-8080-9A9BB19F05A9}</ProjectGuid>
+    <ProjectGuid>{2E91C452-7777-4ACD-83E5-A79B5D217389}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DandyDoc.CodeDoc</RootNamespace>
-    <AssemblyName>DandyDoc.CodeDoc</AssemblyName>
+    <RootNamespace>DuckyDocs.CodeDoc.Tests</RootNamespace>
+    <AssemblyName>DuckyDocs.CodeDoc.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <CodeContractsAssemblyMode>0</CodeContractsAssemblyMode>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\artifacts\bin\Debug\</OutputPath>
+    <OutputPath>..\..\artifacts\bin\Debug\tests\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -53,16 +55,15 @@
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
     <CodeContractsReferenceAssembly>DoNotBuild</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
-    <DocumentationFile>..\..\artifacts\bin\Debug\DandyDoc.CodeDoc.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\artifacts\bin\Release\</OutputPath>
-    <DefineConstants>TRACE;CODE_ANALYSIS</DefineConstants>
+    <OutputPath>..\..\artifacts\bin\Release\tests\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\artifacts\bin\Release\DandyDoc.CodeDoc.XML</DocumentationFile>
     <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
     <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
     <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
@@ -84,7 +85,7 @@
     <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
     <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
     <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
-    <CodeContractsEmitXMLDocs>True</CodeContractsEmitXMLDocs>
+    <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
     <CodeContractsCustomRewriterAssembly />
     <CodeContractsCustomRewriterClass />
     <CodeContractsLibPaths />
@@ -93,24 +94,26 @@
     <CodeContractsBaseLineFile />
     <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
-    <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
+    <CodeContractsReferenceAssembly>DoNotBuild</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugCC|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\artifacts\bin\DebugCC\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS;CODE_ANALYSIS</DefineConstants>
+    <OutputPath>..\..\artifacts\bin\DebugCC\tests\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <CodeContractsEnableRuntimeChecking>True</CodeContractsEnableRuntimeChecking>
+    <CodeContractsEnableRuntimeChecking>False</CodeContractsEnableRuntimeChecking>
     <CodeContractsRuntimeOnlyPublicSurface>False</CodeContractsRuntimeOnlyPublicSurface>
     <CodeContractsRuntimeThrowOnFailure>True</CodeContractsRuntimeThrowOnFailure>
     <CodeContractsRuntimeCallSiteRequires>False</CodeContractsRuntimeCallSiteRequires>
     <CodeContractsRuntimeSkipQuantifiers>False</CodeContractsRuntimeSkipQuantifiers>
-    <CodeContractsRunCodeAnalysis>True</CodeContractsRunCodeAnalysis>
+    <CodeContractsRunCodeAnalysis>False</CodeContractsRunCodeAnalysis>
     <CodeContractsNonNullObligations>False</CodeContractsNonNullObligations>
     <CodeContractsBoundsObligations>False</CodeContractsBoundsObligations>
     <CodeContractsArithmeticObligations>False</CodeContractsArithmeticObligations>
@@ -126,7 +129,7 @@
     <CodeContractsRunInBackground>True</CodeContractsRunInBackground>
     <CodeContractsShowSquigglies>True</CodeContractsShowSquigglies>
     <CodeContractsUseBaseLine>False</CodeContractsUseBaseLine>
-    <CodeContractsEmitXMLDocs>True</CodeContractsEmitXMLDocs>
+    <CodeContractsEmitXMLDocs>False</CodeContractsEmitXMLDocs>
     <CodeContractsCustomRewriterAssembly />
     <CodeContractsCustomRewriterClass />
     <CodeContractsLibPaths />
@@ -135,17 +138,16 @@
     <CodeContractsBaseLineFile />
     <CodeContractsCacheAnalysisResults>True</CodeContractsCacheAnalysisResults>
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
-    <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
+    <CodeContractsReferenceAssembly>DoNotBuild</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
-    <DocumentationFile>..\..\artifacts\bin\DebugCC\DandyDoc.CodeDoc.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="nunit.framework, Version=2.6.2.12296, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\NUnit.2.6.2\lib\nunit.framework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Runtime.Caching" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -153,128 +155,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\CommonAssemblyInfo.cs">
-      <Link>Properties\CommonAssemblyInfo.cs</Link>
-    </Compile>
-    <Compile Include="CodeDocMemberDataProvider.cs" />
-    <Compile Include="CodeDocMemberDataProviderCollection.cs" />
-    <Compile Include="CodeDocMemberDetailLevel.cs" />
-    <Compile Include="CodeDocMemberXmlDataProvider.cs" />
-    <Compile Include="CodeDocMemberInfoDataProvider.cs" />
-    <Compile Include="CodeDocMergedMemberRepository.cs" />
-    <Compile Include="CodeDocRepositoryFailureProtectionWrapper.cs" />
-    <Compile Include="CodeDocRepositorySearchContext.cs" />
-    <Compile Include="CodeDocRepositoryWrapperBase.cs" />
-    <Compile Include="CodeDocSimpleAssembly.cs" />
-    <Compile Include="CodeDocDelegate.cs" />
-    <Compile Include="CodeDocMemberContentBase.cs" />
-    <Compile Include="CodeDocMemberRepositoryBase.cs" />
-    <Compile Include="CodeDocEvent.cs" />
-    <Compile Include="CodeDocException.cs" />
-    <Compile Include="CodeDocField.cs" />
-    <Compile Include="CodeDocGenericParameter.cs" />
-    <Compile Include="CodeDocMethod.cs" />
-    <Compile Include="CodeDocNamespace.cs" />
-    <Compile Include="CodeDocSimpleNamespace.cs" />
-    <Compile Include="CodeDocParameter.cs" />
-    <Compile Include="CodeDocProperty.cs" />
-    <Compile Include="CodeDocSimpleMember.cs" />
-    <Compile Include="CodeDocType.cs" />
-    <Compile Include="ICodeDocMember.cs" />
-    <Compile Include="ICodeDocMemberDataProvider.cs" />
-    <Compile Include="ICodeDocMemberRepository.cs" />
-    <Compile Include="ICodeDocInvokable.cs" />
-    <Compile Include="ICodeDocValueMember.cs" />
-    <Compile Include="MsdnCodeDocMemberRepository.cs" />
+    <Compile Include="CodeDocRepositorySearchTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ReflectionCodeDocMemberRepository.cs" />
-    <Compile Include="Service References\MtpsServiceReference\Reference.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Compile>
-    <Compile Include="ThreadSafeCodeDocRepositoryWrapper.cs" />
-    <Compile Include="Utility\EnumerableUtility.cs" />
-    <Compile Include="Utility\ListUtility.cs" />
+    <Compile Include="CodeDocEntityRepositoryTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DandyDoc.Core\DandyDoc.Core.csproj">
+    <ProjectReference Include="..\..\src\DandyDoc.CodeDoc\DuckyDocs.CodeDoc.csproj">
+      <Project>{01cce4b1-8bd1-4c4f-8080-9a9bb19f05a9}</Project>
+      <Name>DuckyDocs.CodeDoc</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\DandyDoc.Core\DuckyDocs.Core.csproj">
       <Project>{a09f4dac-290c-4abe-b053-071ec966008f}</Project>
-      <Name>DandyDoc.Core</Name>
+      <Name>DuckyDocs.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TestLibrary1\TestLibrary1.csproj">
+      <Project>{f83f4c52-a886-4b9e-8164-e95e1f22f929}</Project>
+      <Name>TestLibrary1</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <WCFMetadata Include="Service References\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="Service References\MtpsServiceReference\atoms.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\MtpsServiceReference\atoms1.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\MtpsServiceReference\atoms2.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\MtpsServiceReference\atoms3.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\MtpsServiceReference\atoms4.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\MtpsServiceReference\atoms5.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\MtpsServiceReference\atoms6.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\MtpsServiceReference\atoms7.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\MtpsServiceReference\atoms8.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\MtpsServiceReference\ContentService.wsdl" />
-    <None Include="Service References\MtpsServiceReference\DandyDoc.CodeDoc.MtpsServiceReference.getContentResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\MtpsServiceReference\DandyDoc.CodeDoc.MtpsServiceReference.getNavigationPathsResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </None>
-    <None Include="Service References\MtpsServiceReference\default.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\MtpsServiceReference\default1.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\MtpsServiceReference\default2.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\MtpsServiceReference\default3.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\MtpsServiceReference\urn_msdn_com_public_content_syndication_2006_09_common.xsd">
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadataStorage Include="Service References\MtpsServiceReference\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Service References\MtpsServiceReference\ContentService.disco" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Service References\MtpsServiceReference\configuration91.svcinfo" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Service References\MtpsServiceReference\configuration.svcinfo" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Service References\MtpsServiceReference\Reference.svcmap">
-      <Generator>WCF Proxy Generator</Generator>
-      <LastGenOutput>Reference.cs</LastGenOutput>
-    </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

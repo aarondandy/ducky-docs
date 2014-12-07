@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 
-namespace DandyDoc.CodeDoc.Utility
+namespace DuckyDocs.CodeDoc.Utility
 {
     internal static class ListUtility
     {

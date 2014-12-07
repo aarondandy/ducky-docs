@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
-using DandyDoc.Reflection;
-using DandyDoc.Utility;
+using DuckyDocs.Reflection;
+using DuckyDocs.Utility;
 
-namespace DandyDoc.CRef
+namespace DuckyDocs.CRef
 {
 
     /// <summary>

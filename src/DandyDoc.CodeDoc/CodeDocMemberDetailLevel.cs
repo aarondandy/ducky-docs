@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DandyDoc.CodeDoc
+namespace DuckyDocs.CodeDoc
 {
     /// <summary>
     /// A desired detail level used for code documentation member model generation.

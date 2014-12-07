@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
-using DandyDoc.ExternalVisibility;
+using DuckyDocs.ExternalVisibility;
 using NUnit.Framework;
 
-namespace DandyDoc.CodeDoc.Mtps.IntegrationTests
+namespace DuckyDocs.CodeDoc.Mtps.IntegrationTests
 {
     [TestFixture]
     public class MsdnSimpleUsages

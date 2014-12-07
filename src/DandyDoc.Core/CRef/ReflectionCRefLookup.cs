@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
-using DandyDoc.Reflection;
+using DuckyDocs.Reflection;
 
-namespace DandyDoc.CRef
+namespace DuckyDocs.CRef
 {
 
     /// <summary>

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using DandyDoc.XmlDoc;
+using DuckyDocs.XmlDoc;
 
-namespace DandyDoc.CodeDoc
+namespace DuckyDocs.CodeDoc
 {
 
     /// <summary>

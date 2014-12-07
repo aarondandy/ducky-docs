@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
-using DandyDoc.XmlDoc;
+using DuckyDocs.XmlDoc;
 
-namespace DandyDoc.CodeDoc
+namespace DuckyDocs.CodeDoc
 {
 
     /// <summary>

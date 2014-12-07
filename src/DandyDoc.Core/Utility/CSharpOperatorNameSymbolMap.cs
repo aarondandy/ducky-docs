@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace DandyDoc.Utility
+namespace DuckyDocs.Utility
 {
     /// <summary>
     /// A utility class which provides a mapping between C# operator

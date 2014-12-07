@@ -4,7 +4,7 @@ using System.Diagnostics.Contracts;
 using System.Text.RegularExpressions;
 using System.Xml;
 
-namespace DandyDoc.XmlDoc
+namespace DuckyDocs.XmlDoc
 {
 
     /// <summary>

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Text.RegularExpressions;
 
-namespace DandyDoc.CRef
+namespace DuckyDocs.CRef
 {
     /// <summary>
     /// A code reference (cref) identifier with parsed segments.

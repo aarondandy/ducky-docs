@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
-using DandyDoc.Reflection;
-using DandyDoc.Utility;
+using DuckyDocs.Reflection;
+using DuckyDocs.Utility;
 
-namespace DandyDoc.DisplayName
+namespace DuckyDocs.DisplayName
 {
 
     /// <summary>
@@ -16,7 +16,7 @@ namespace DandyDoc.DisplayName
     /// <para>
     /// Note: the resulting display name can not be resolved back into the
     /// generating declaration or reference as it may be missing critical information.
-    /// Use <see cref="DandyDoc.CRef.ReflectionCRefGenerator"/> if a unique and reversible
+    /// Use <see cref="DuckyDocs.CRef.ReflectionCRefGenerator"/> if a unique and reversible
     /// identifying name is required.
     /// </para>
     /// </remarks>

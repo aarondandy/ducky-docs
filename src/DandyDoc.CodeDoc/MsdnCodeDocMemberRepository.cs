@@ -9,12 +9,12 @@ using System.Runtime.Caching;
 using System.ServiceModel;
 using System.Text;
 using System.Xml;
-using DandyDoc.CRef;
-using DandyDoc.CodeDoc.MtpsServiceReference;
-using DandyDoc.ExternalVisibility;
-using DandyDoc.XmlDoc;
+using DuckyDocs.CRef;
+using DuckyDocs.CodeDoc.MtpsServiceReference;
+using DuckyDocs.ExternalVisibility;
+using DuckyDocs.XmlDoc;
 
-namespace DandyDoc.CodeDoc
+namespace DuckyDocs.CodeDoc
 {
     /// <summary>
     /// A code doc repository that generates member models from extracted MTPS/MSDN data.

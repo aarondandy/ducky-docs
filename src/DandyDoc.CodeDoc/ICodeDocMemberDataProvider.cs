@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using DandyDoc.ExternalVisibility;
-using DandyDoc.XmlDoc;
+using DuckyDocs.ExternalVisibility;
+using DuckyDocs.XmlDoc;
 
-namespace DandyDoc.CodeDoc
+namespace DuckyDocs.CodeDoc
 {
 
     /// <summary>

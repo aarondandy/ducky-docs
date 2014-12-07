@@ -19,7 +19,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\artifacts\bin\Debug\samples\</OutputPath>
+    <OutputPath>..\..\artifacts\bin\Debug\tests\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -55,12 +55,13 @@
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
-    <DocumentationFile>..\..\artifacts\bin\Debug\samples\TestLibrary1.XML</DocumentationFile>
+    <DocumentationFile>..\..\artifacts\bin\Debug\tests\TestLibrary1.XML</DocumentationFile>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\artifacts\bin\Release\samples\</OutputPath>
+    <OutputPath>..\..\artifacts\bin\Release\tests\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -96,13 +97,13 @@
     <CodeContractsRuntimeCheckingLevel>Full</CodeContractsRuntimeCheckingLevel>
     <CodeContractsReferenceAssembly>Build</CodeContractsReferenceAssembly>
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
-    <DocumentationFile>..\..\artifacts\bin\Release\samples\TestLibrary1.XML</DocumentationFile>
+    <DocumentationFile>..\..\artifacts\bin\Release\tests\TestLibrary1.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugCC|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\artifacts\bin\DebugCC\samples\</OutputPath>
+    <OutputPath>..\..\artifacts\bin\DebugCC\tests\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DocumentationFile>..\..\artifacts\bin\DebugCC\samples\TestLibrary1.XML</DocumentationFile>
+    <DocumentationFile>..\..\artifacts\bin\DebugCC\tests\TestLibrary1.XML</DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>

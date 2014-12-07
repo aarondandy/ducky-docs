@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
-using DandyDoc.CRef;
+using DuckyDocs.CRef;
 
-namespace DandyDoc.CodeDoc
+namespace DuckyDocs.CodeDoc
 {
     /// <summary>
     /// A code doc namespace model containing only code references.

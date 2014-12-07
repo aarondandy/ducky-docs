@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("DandyDoc.CodeDoc")]
+[assembly: AssemblyTitle("DuckyDocs.CodeDoc")]
 [assembly: AssemblyDescription("Dandy Doc simple code documentation library.")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 

@@ -2,7 +2,7 @@
 using System.Diagnostics.Contracts;
 using System.Xml;
 
-namespace DandyDoc.XmlDoc
+namespace DuckyDocs.XmlDoc
 {
     /// <summary>
     /// An XML doc element that targets something by name.

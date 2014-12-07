@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
 
-namespace DandyDoc.CRef
+namespace DuckyDocs.CRef
 {
     /// <summary>
     /// Base code reference (cref) lookup class.

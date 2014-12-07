@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Linq;
 using System.Reflection;
-using DandyDoc.CRef;
+using DuckyDocs.CRef;
 using NUnit.Framework;
 using TestLibrary1;
 
 #pragma warning disable 1591
 
-namespace DandyDoc.Core.Tests
+namespace DuckyDocs.Core.Tests
 {
     [TestFixture]
     public class ReflectionCRefLookupTests

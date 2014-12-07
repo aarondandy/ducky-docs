@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 
-namespace DandyDoc.Utility
+namespace DuckyDocs.Utility
 {
     internal static class CollectionUtility
     {

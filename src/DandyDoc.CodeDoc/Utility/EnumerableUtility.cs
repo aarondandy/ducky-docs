@@ -2,7 +2,7 @@
 using System.Diagnostics.Contracts;
 using System.Linq;
 
-namespace DandyDoc.CodeDoc.Utility
+namespace DuckyDocs.CodeDoc.Utility
 {
     internal static class EnumerableUtility
     {

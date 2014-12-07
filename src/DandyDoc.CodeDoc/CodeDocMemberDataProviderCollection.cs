@@ -2,10 +2,10 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics.Contracts;
 using System.Linq;
-using DandyDoc.CodeDoc.Utility;
-using DandyDoc.XmlDoc;
+using DuckyDocs.CodeDoc.Utility;
+using DuckyDocs.XmlDoc;
 
-namespace DandyDoc.CodeDoc
+namespace DuckyDocs.CodeDoc
 {
     /// <summary>
     /// A code doc member data provider that aggregates attributes from multiple providers.

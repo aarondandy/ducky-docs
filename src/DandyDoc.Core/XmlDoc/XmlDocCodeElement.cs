@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Xml;
-using DandyDoc.Utility;
+using DuckyDocs.Utility;
 
-namespace DandyDoc.XmlDoc
+namespace DuckyDocs.XmlDoc
 {
     /// <summary>
     /// An XML doc code element.

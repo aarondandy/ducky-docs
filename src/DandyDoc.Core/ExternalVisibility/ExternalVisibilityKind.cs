@@ -1,4 +1,4 @@
-﻿namespace DandyDoc.ExternalVisibility
+﻿namespace DuckyDocs.ExternalVisibility
 {
     /// <summary>
     /// Specifies the level of external visibility for a member.

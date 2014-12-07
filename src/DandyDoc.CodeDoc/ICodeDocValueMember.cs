@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using DandyDoc.XmlDoc;
+using DuckyDocs.XmlDoc;
 
-namespace DandyDoc.CodeDoc
+namespace DuckyDocs.CodeDoc
 {
     /// <summary>
     /// Defines a value based member such as a field or property.

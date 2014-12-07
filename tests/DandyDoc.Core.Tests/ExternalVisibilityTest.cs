@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using DandyDoc.CRef;
-using DandyDoc.ExternalVisibility;
-using DandyDoc.Reflection;
+using DuckyDocs.CRef;
+using DuckyDocs.ExternalVisibility;
+using DuckyDocs.Reflection;
 using NUnit.Framework;
 using TestLibrary1;
 
 #pragma warning disable 1591
 
-namespace DandyDoc.Core.Tests
+namespace DuckyDocs.Core.Tests
 {
     [TestFixture]
     public class ExternalVisibilityTest

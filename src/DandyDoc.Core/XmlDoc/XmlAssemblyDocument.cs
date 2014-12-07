@@ -2,9 +2,9 @@
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Xml;
-using DandyDoc.Utility;
+using DuckyDocs.Utility;
 
-namespace DandyDoc.XmlDoc
+namespace DuckyDocs.XmlDoc
 {
     /// <summary>
     /// An assembly XML document.
