@@ -5,10 +5,10 @@ using Xunit;
 
 namespace DuckyDocs.Core.Tests
 {
-    public class XmlDocCodeContracts
+    public class XmlDocCodeContractsFacts
     {
 
-        public XmlDocCodeContracts() {
+        public XmlDocCodeContractsFacts() {
             var testDllLocation = typeof(TestLibrary1.FlagsEnum).Assembly.Location;
             var textXmlLocation = Path.ChangeExtension(testDllLocation, "XML");
             Docs = new XmlAssemblyDocument(textXmlLocation);

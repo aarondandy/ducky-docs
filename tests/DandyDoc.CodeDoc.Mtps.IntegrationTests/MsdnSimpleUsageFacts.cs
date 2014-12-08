@@ -7,11 +7,9 @@ using FluentAssertions;
 
 namespace DuckyDocs.CodeDoc.Mtps.IntegrationTests
 {
-
-    public class MsdnSimpleUsages
+    public class MsdnSimpleUsageFacts
     {
-
-        public MsdnSimpleUsages() {
+        public MsdnSimpleUsageFacts() {
             SharedRepository = new MsdnCodeDocMemberRepository();
         }
 
@@ -29,25 +27,24 @@ namespace DuckyDocs.CodeDoc.Mtps.IntegrationTests
         [Fact]
         public void cache_performance_test(){
             var repository = new MsdnCodeDocMemberRepository();
+            var requestNames = new[] { "System.Guid", "System.Object", "System.Array"};
 
-            var firstSingleRequestStopwatch = new Stopwatch();
-            firstSingleRequestStopwatch.Start();
-            var modelGuid = repository.GetMemberModel("System.Guid");
-            Assert.NotNull(modelGuid);
-            firstSingleRequestStopwatch.Stop();
+            var firstRequestStopwatch = new Stopwatch();
+            firstRequestStopwatch.Start();
+            var firstRequests = Array.ConvertAll(requestNames, x => repository.GetMemberModel(x));
+            firstRequests.Should().NotContainNulls();
+            firstRequestStopwatch.Stop();
 
-            var secondDoubleRequestStopwatch = new Stopwatch();
-            secondDoubleRequestStopwatch.Start();
+            var secondRequestStopwatch = new Stopwatch();
+            secondRequestStopwatch.Start();
             // the request is a different code reference but for the same member
-            var modelGuidSecond = repository.GetMemberModel("T:System.Guid");
-            Assert.NotNull(modelGuidSecond);
-            var modelObject = repository.GetMemberModel("T:System.Object");
-            Assert.NotNull(modelObject);
-            secondDoubleRequestStopwatch.Stop();
+            var secondRequests = Array.ConvertAll(requestNames, x => repository.GetMemberModel("T:" + x));
+            secondRequests.Should().NotContainNulls();
+            secondRequestStopwatch.Stop();
 
-            // the second set of requests should be less than 3/4 of the first request
-            var secondRequestTargetTime = new TimeSpan(firstSingleRequestStopwatch.Elapsed.Ticks * 4 / 5);
-            secondDoubleRequestStopwatch.Elapsed.Should().BeLessThan(secondRequestTargetTime);
+            // the second set of requests should be (a lot) less than 3/4 of the first request
+            var secondRequestTargetTime = new TimeSpan(firstRequestStopwatch.Elapsed.Ticks * 3 / 4);
+            secondRequestStopwatch.Elapsed.Should().BeLessThan(secondRequestTargetTime);
         }
 
         [Fact]
@@ -65,6 +62,5 @@ namespace DuckyDocs.CodeDoc.Mtps.IntegrationTests
             Assert.NotNull(member);
             Assert.Equal(ExternalVisibilityKind.Protected, member.ExternalVisibility);
         }
-
     }
 }

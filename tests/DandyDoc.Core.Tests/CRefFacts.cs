@@ -4,7 +4,7 @@ using Xunit;
 namespace DuckyDocs.Core.Tests
 {
 
-    public class CRefTests
+    public class CRefFacts
     {
         [Fact]
         public void generic_type_instance_to_definition_cref() {

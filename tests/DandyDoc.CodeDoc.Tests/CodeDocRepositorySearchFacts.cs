@@ -10,7 +10,7 @@ using Xunit;
 
 namespace DuckyDocs.CodeDoc.Tests
 {
-    public class CodeDocRepositorySearchTests
+    public class CodeDocRepositorySearchFacts
     {
         private ReflectionCodeDocMemberRepository TestLibrary1Repository {
             get {

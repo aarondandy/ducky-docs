@@ -172,9 +172,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CodeDocRepositorySearchTests.cs" />
+    <Compile Include="CodeDocRepositorySearchFacts.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="CodeDocEntityRepositoryTest.cs" />
+    <Compile Include="CodeDocEntityRepositoryFacts.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\DandyDoc.CodeDoc\DuckyDocs.CodeDoc.csproj">

@@ -10,7 +10,7 @@ using Xunit;
 
 namespace DuckyDocs.Core.Tests
 {
-    public class ReflectionCRefGeneratorTests
+    public class ReflectionCRefGeneratorFacts
     {
         private class DoABunchOfHorribleNullStuff : ReflectionCRefGenerator
         {

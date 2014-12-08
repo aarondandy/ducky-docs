@@ -10,7 +10,7 @@ using Xunit;
 
 namespace DuckyDocs.CodeDoc.Tests
 {
-    public class CodeDocEntityRepositoryTest
+    public class CodeDocEntityRepositoryFacts
     {
 
         public virtual ICodeDocMemberRepository TestLibrary1Repository {

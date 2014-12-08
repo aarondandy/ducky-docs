@@ -12,10 +12,10 @@ using Xunit;
 
 namespace DuckyDocs.Core.Tests
 {
-    public class ExternalVisibilityTest
+    public class ExternalVisibilityFacts
     {
 
-        public ExternalVisibilityTest() {
+        public ExternalVisibilityFacts() {
             Assembly = typeof(Class1).Assembly;
         }
 

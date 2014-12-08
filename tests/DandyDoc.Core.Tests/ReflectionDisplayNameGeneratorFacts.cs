@@ -7,13 +7,13 @@ using Xunit;
 
 namespace DuckyDocs.Core.Tests
 {
-    public class ReflectionDisplayNameGeneratorTests
+    public class ReflectionDisplayNameGeneratorFacts
     {
         private static Assembly GetAssembly() {
             return typeof(Class1).Assembly;
         }
 
-        public ReflectionDisplayNameGeneratorTests() {
+        public ReflectionDisplayNameGeneratorFacts() {
             Default = new StandardReflectionDisplayNameGenerator();
             Full = new StandardReflectionDisplayNameGenerator {
                 IncludeNamespaceForTypes = true,

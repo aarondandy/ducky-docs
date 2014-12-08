@@ -7,9 +7,9 @@ using Xunit;
 
 namespace DuckyDocs.Core.Tests
 {
-    public class ReflectionCRefLookupTests
+    public class ReflectionCRefLookupFacts
     {
-        public ReflectionCRefLookupTests() {
+        public ReflectionCRefLookupFacts() {
             Assembly = typeof(Class1).Assembly;
         }
 

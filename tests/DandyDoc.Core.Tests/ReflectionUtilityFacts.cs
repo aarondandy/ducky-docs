@@ -9,7 +9,7 @@ using Xunit;
 
 namespace DuckyDocs.Core.Tests
 {
-    public class ReflectionUtilityTests
+    public class ReflectionUtilityFacts
     {
 
         public interface IFace
