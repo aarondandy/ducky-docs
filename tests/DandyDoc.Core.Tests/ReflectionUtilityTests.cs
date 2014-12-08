@@ -4,14 +4,11 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using DuckyDocs.Reflection;
-using NUnit.Framework;
 using TestLibrary1.Seal;
+using Xunit;
 
 namespace DuckyDocs.Core.Tests
 {
-
-
-    [TestFixture]
     public class ReflectionUtilityTests
     {
 
@@ -57,37 +54,37 @@ namespace DuckyDocs.Core.Tests
         public static readonly MethodInfo BMethod2 = typeof(B).GetMethod("Method2", new Type[0]);
         public static readonly MethodInfo CMethod2 = typeof(C).GetMethod("Method2", new Type[0]);
 
-        [Test]
+        [Fact]
         public void test_get_property_base_from_override() {
             var actual = CMethod.FindNextAncestor();
-            Assert.AreEqual(AMethod.DeclaringType, actual.DeclaringType);
-            Assert.AreEqual(AMethod.Name, actual.Name);
+            Assert.Equal(AMethod.DeclaringType, actual.DeclaringType);
+            Assert.Equal(AMethod.Name, actual.Name);
         }
 
-        [Test]
+        [Fact]
         public void test_find_interface_ancestor() {
             var actual = AMethod.FindNextAncestor();
-            Assert.AreEqual(IFaceMethod.DeclaringType, actual.DeclaringType);
-            Assert.AreEqual(IFaceMethod.Name, actual.Name);
+            Assert.Equal(IFaceMethod.DeclaringType, actual.DeclaringType);
+            Assert.Equal(IFaceMethod.Name, actual.Name);
         }
 
-        [Test]
+        [Fact]
         public void test_find_ancestor_from_the_middle() {
             var actual = BMethod.FindNextAncestor(); // this is really AMethod but with a different reflected type
-            Assert.AreEqual(AMethod.DeclaringType, actual.DeclaringType);
-            Assert.AreEqual(AMethod.Name, actual.Name);
+            Assert.Equal(AMethod.DeclaringType, actual.DeclaringType);
+            Assert.Equal(AMethod.Name, actual.Name);
         }
 
-        [Test]
+        [Fact]
         public void test_dont_skip_abstract_override() {
             var actual = CMethod2.FindNextAncestor();
-            Assert.AreEqual(BMethod2.DeclaringType, actual.DeclaringType);
-            Assert.AreEqual(BMethod2.Name, actual.Name);
+            Assert.Equal(BMethod2.DeclaringType, actual.DeclaringType);
+            Assert.Equal(BMethod2.Name, actual.Name);
         }
 
-        [Test]
+        [Fact]
         public void dont_go_over_the_top() {
-            Assert.IsNull(AMethod2.FindNextAncestor());
+            Assert.Null(AMethod2.FindNextAncestor());
         }
 
     }

@@ -5,14 +5,13 @@ using System.Reflection;
 using DuckyDocs.CRef;
 using DuckyDocs.ExternalVisibility;
 using DuckyDocs.Reflection;
-using NUnit.Framework;
 using TestLibrary1;
+using Xunit;
 
 #pragma warning disable 1591
 
 namespace DuckyDocs.Core.Tests
 {
-    [TestFixture]
     public class ExternalVisibilityTest
     {
 
@@ -54,39 +53,39 @@ namespace DuckyDocs.Core.Tests
             }
         }
 
-        [Test]
+        [Fact]
         public void min_kind() {
-            Assert.AreEqual(ExternalVisibilityKind.Hidden, ExternalVisibilityOperations.LeastVisible(ExternalVisibilityKind.Hidden, ExternalVisibilityKind.Hidden));
-            Assert.AreEqual(ExternalVisibilityKind.Hidden, ExternalVisibilityOperations.LeastVisible(ExternalVisibilityKind.Hidden, ExternalVisibilityKind.Protected));
-            Assert.AreEqual(ExternalVisibilityKind.Hidden, ExternalVisibilityOperations.LeastVisible(ExternalVisibilityKind.Hidden, ExternalVisibilityKind.Public));
-            Assert.AreEqual(ExternalVisibilityKind.Hidden, ExternalVisibilityOperations.LeastVisible(ExternalVisibilityKind.Protected, ExternalVisibilityKind.Hidden));
-            Assert.AreEqual(ExternalVisibilityKind.Protected, ExternalVisibilityOperations.LeastVisible(ExternalVisibilityKind.Protected, ExternalVisibilityKind.Protected));
-            Assert.AreEqual(ExternalVisibilityKind.Protected, ExternalVisibilityOperations.LeastVisible(ExternalVisibilityKind.Protected, ExternalVisibilityKind.Public));
-            Assert.AreEqual(ExternalVisibilityKind.Hidden, ExternalVisibilityOperations.LeastVisible(ExternalVisibilityKind.Public, ExternalVisibilityKind.Hidden));
-            Assert.AreEqual(ExternalVisibilityKind.Protected, ExternalVisibilityOperations.LeastVisible(ExternalVisibilityKind.Public, ExternalVisibilityKind.Protected));
-            Assert.AreEqual(ExternalVisibilityKind.Public, ExternalVisibilityOperations.LeastVisible(ExternalVisibilityKind.Public, ExternalVisibilityKind.Public));
+            Assert.Equal(ExternalVisibilityKind.Hidden, ExternalVisibilityOperations.LeastVisible(ExternalVisibilityKind.Hidden, ExternalVisibilityKind.Hidden));
+            Assert.Equal(ExternalVisibilityKind.Hidden, ExternalVisibilityOperations.LeastVisible(ExternalVisibilityKind.Hidden, ExternalVisibilityKind.Protected));
+            Assert.Equal(ExternalVisibilityKind.Hidden, ExternalVisibilityOperations.LeastVisible(ExternalVisibilityKind.Hidden, ExternalVisibilityKind.Public));
+            Assert.Equal(ExternalVisibilityKind.Hidden, ExternalVisibilityOperations.LeastVisible(ExternalVisibilityKind.Protected, ExternalVisibilityKind.Hidden));
+            Assert.Equal(ExternalVisibilityKind.Protected, ExternalVisibilityOperations.LeastVisible(ExternalVisibilityKind.Protected, ExternalVisibilityKind.Protected));
+            Assert.Equal(ExternalVisibilityKind.Protected, ExternalVisibilityOperations.LeastVisible(ExternalVisibilityKind.Protected, ExternalVisibilityKind.Public));
+            Assert.Equal(ExternalVisibilityKind.Hidden, ExternalVisibilityOperations.LeastVisible(ExternalVisibilityKind.Public, ExternalVisibilityKind.Hidden));
+            Assert.Equal(ExternalVisibilityKind.Protected, ExternalVisibilityOperations.LeastVisible(ExternalVisibilityKind.Public, ExternalVisibilityKind.Protected));
+            Assert.Equal(ExternalVisibilityKind.Public, ExternalVisibilityOperations.LeastVisible(ExternalVisibilityKind.Public, ExternalVisibilityKind.Public));
         }
 
-        [Test]
+        [Fact]
         public void max_kind() {
-            Assert.AreEqual(ExternalVisibilityKind.Hidden, ExternalVisibilityOperations.MostVisible(ExternalVisibilityKind.Hidden, ExternalVisibilityKind.Hidden));
-            Assert.AreEqual(ExternalVisibilityKind.Protected, ExternalVisibilityOperations.MostVisible(ExternalVisibilityKind.Hidden, ExternalVisibilityKind.Protected));
-            Assert.AreEqual(ExternalVisibilityKind.Public, ExternalVisibilityOperations.MostVisible(ExternalVisibilityKind.Hidden, ExternalVisibilityKind.Public));
-            Assert.AreEqual(ExternalVisibilityKind.Protected, ExternalVisibilityOperations.MostVisible(ExternalVisibilityKind.Protected, ExternalVisibilityKind.Hidden));
-            Assert.AreEqual(ExternalVisibilityKind.Protected, ExternalVisibilityOperations.MostVisible(ExternalVisibilityKind.Protected, ExternalVisibilityKind.Protected));
-            Assert.AreEqual(ExternalVisibilityKind.Public, ExternalVisibilityOperations.MostVisible(ExternalVisibilityKind.Protected, ExternalVisibilityKind.Public));
-            Assert.AreEqual(ExternalVisibilityKind.Public, ExternalVisibilityOperations.MostVisible(ExternalVisibilityKind.Public, ExternalVisibilityKind.Hidden));
-            Assert.AreEqual(ExternalVisibilityKind.Public, ExternalVisibilityOperations.MostVisible(ExternalVisibilityKind.Public, ExternalVisibilityKind.Protected));
-            Assert.AreEqual(ExternalVisibilityKind.Public, ExternalVisibilityOperations.MostVisible(ExternalVisibilityKind.Public, ExternalVisibilityKind.Public));
+            Assert.Equal(ExternalVisibilityKind.Hidden, ExternalVisibilityOperations.MostVisible(ExternalVisibilityKind.Hidden, ExternalVisibilityKind.Hidden));
+            Assert.Equal(ExternalVisibilityKind.Protected, ExternalVisibilityOperations.MostVisible(ExternalVisibilityKind.Hidden, ExternalVisibilityKind.Protected));
+            Assert.Equal(ExternalVisibilityKind.Public, ExternalVisibilityOperations.MostVisible(ExternalVisibilityKind.Hidden, ExternalVisibilityKind.Public));
+            Assert.Equal(ExternalVisibilityKind.Protected, ExternalVisibilityOperations.MostVisible(ExternalVisibilityKind.Protected, ExternalVisibilityKind.Hidden));
+            Assert.Equal(ExternalVisibilityKind.Protected, ExternalVisibilityOperations.MostVisible(ExternalVisibilityKind.Protected, ExternalVisibilityKind.Protected));
+            Assert.Equal(ExternalVisibilityKind.Public, ExternalVisibilityOperations.MostVisible(ExternalVisibilityKind.Protected, ExternalVisibilityKind.Public));
+            Assert.Equal(ExternalVisibilityKind.Public, ExternalVisibilityOperations.MostVisible(ExternalVisibilityKind.Public, ExternalVisibilityKind.Hidden));
+            Assert.Equal(ExternalVisibilityKind.Public, ExternalVisibilityOperations.MostVisible(ExternalVisibilityKind.Public, ExternalVisibilityKind.Protected));
+            Assert.Equal(ExternalVisibilityKind.Public, ExternalVisibilityOperations.MostVisible(ExternalVisibilityKind.Public, ExternalVisibilityKind.Public));
         }
 
-        [Test]
+        [Fact]
         public void type_visibility() {
             foreach (var tuple in AllClasses)
-                Assert.AreEqual(tuple.Item1, GetVisibility(tuple.Item2));
+                Assert.Equal(tuple.Item1, GetVisibility(tuple.Item2));
         }
 
-        [Test]
+        [Fact]
         public void field_visibility() {
             var fields = new[] {
 				new {Vis = ExternalVisibilityKind.Hidden, Name = "PrivateField"},
@@ -101,12 +100,12 @@ namespace DuckyDocs.Core.Tests
                 foreach (var fieldSet in fields) {
                     var fieldDefinition = type.GetAllFields().Single(x => x.Name == fieldSet.Name);
                     var expectedVis = ExternalVisibilityOperations.LeastVisible(typeVis, fieldSet.Vis);
-                    Assert.AreEqual(expectedVis, GetVisibility(fieldDefinition));
+                    Assert.Equal(expectedVis, GetVisibility(fieldDefinition));
                 }
             }
         }
 
-        [Test]
+        [Fact]
         public void method_visibility() {
             var methods = new[] {
 				new {Vis = ExternalVisibilityKind.Hidden, Name = "PrivateMethod"},
@@ -121,12 +120,12 @@ namespace DuckyDocs.Core.Tests
                 foreach (var methodSet in methods) {
                     var methodDefinition = type.GetAllMethods().Single(x => x.Name == methodSet.Name);
                     var expectedVis = ExternalVisibilityOperations.LeastVisible(typeVis, methodSet.Vis);
-                    Assert.AreEqual(expectedVis, GetVisibility(methodDefinition));
+                    Assert.Equal(expectedVis, GetVisibility(methodDefinition));
                 }
             }
         }
 
-        [Test]
+        [Fact]
         public void delegate_visibility() {
             var delegates = new[] {
                 new {Vis = ExternalVisibilityKind.Hidden, Name = "PrivateDelegate"},
@@ -141,12 +140,12 @@ namespace DuckyDocs.Core.Tests
                 foreach (var delegateSet in delegates) {
                     var delegateDefinition = type.GetAllNestedTypes().Single(x => x.Name == delegateSet.Name);
                     var expectedVis = ExternalVisibilityOperations.LeastVisible(typeVis, delegateSet.Vis);
-                    Assert.AreEqual(expectedVis, GetVisibility(delegateDefinition));
+                    Assert.Equal(expectedVis, GetVisibility(delegateDefinition));
                 }
             }
         }
 
-        [Test]
+        [Fact]
         public void event_visibility() {
             var events = new[] {
 				new {Vis = ExternalVisibilityKind.Hidden, Name = "PrivateEvent"},
@@ -161,12 +160,12 @@ namespace DuckyDocs.Core.Tests
                 foreach (var eventSet in events) {
                     var eventDefinition = type.GetAllEvents().Single(x => x.Name == eventSet.Name);
                     var expectedVis = ExternalVisibilityOperations.LeastVisible(typeVis, eventSet.Vis);
-                    Assert.AreEqual(expectedVis, GetVisibility(eventDefinition));
+                    Assert.Equal(expectedVis, GetVisibility(eventDefinition));
                 }
             }
         }
 
-        [Test]
+        [Fact]
         public void property_visibility() {
             var props = new[] {
                 new{Name = "PropPubPub", Get = ExternalVisibilityKind.Public, Set = ExternalVisibilityKind.Public},
@@ -201,9 +200,9 @@ namespace DuckyDocs.Core.Tests
                     var expectedPropVis = ExternalVisibilityOperations.LeastVisible(
                         typeVis,
                         ExternalVisibilityOperations.MostVisible(propSet.Get, propSet.Set));
-                    Assert.AreEqual(expectedGetVis, GetVisibility(propDef.GetGetMethod(true)));
-                    Assert.AreEqual(expectedSetVis, GetVisibility(propDef.GetSetMethod(true)));
-                    Assert.AreEqual(expectedPropVis, GetVisibility(propDef));
+                    Assert.Equal(expectedGetVis, GetVisibility(propDef.GetGetMethod(true)));
+                    Assert.Equal(expectedSetVis, GetVisibility(propDef.GetSetMethod(true)));
+                    Assert.Equal(expectedPropVis, GetVisibility(propDef));
                 }
             }
         }

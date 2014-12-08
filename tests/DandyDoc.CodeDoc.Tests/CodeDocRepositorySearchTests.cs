@@ -6,15 +6,12 @@ using DuckyDocs.CRef;
 using DuckyDocs.Reflection;
 using DuckyDocs.XmlDoc;
 using TestLibrary1;
-using NUnit.Framework;
+using Xunit;
 
 namespace DuckyDocs.CodeDoc.Tests
 {
-
-    [TestFixture]
     public class CodeDocRepositorySearchTests
     {
-
         private ReflectionCodeDocMemberRepository TestLibrary1Repository {
             get {
                 var testLib1Asm = typeof(Class1).Assembly;
@@ -48,7 +45,7 @@ namespace DuckyDocs.CodeDoc.Tests
             return new TypeRestrictedRepository(TestLibrary1Repository, typeName);
         }
 
-        [Test]
+        [Fact]
         public void search_three_repositories_for_types(){
             var class1Repo = GetTypeRestrictedTestLibrary1Repository("Class1");
             var generic1Repo = GetTypeRestrictedTestLibrary1Repository("Generic1`2");
@@ -57,15 +54,15 @@ namespace DuckyDocs.CodeDoc.Tests
             var searchContext = new CodeDocRepositorySearchContext(new[] { class1Repo, generic1Repo, userOtherStuffRepo});
 
             var model = searchContext.Search(new CRefIdentifier("T:TestLibrary1.UsesOtherStuff")) as CodeDocType;
-            Assert.IsNotNull(model);
+            Assert.NotNull(model);
 
             var generic1FieldType = ((CodeDocField) model.Fields.Single()).ValueType as CodeDocType;
-            Assert.IsNotNull(generic1FieldType);
-            Assert.AreEqual("T:TestLibrary1.Generic1{System.Int32,System.Int32[]}", generic1FieldType.CRef.FullCRef);
+            Assert.NotNull(generic1FieldType);
+            Assert.Equal("T:TestLibrary1.Generic1{System.Int32,System.Int32[]}", generic1FieldType.CRef.FullCRef);
 
             var class1PropertyType = ((CodeDocProperty) model.Properties.Single()).ValueType as CodeDocType;
-            Assert.IsNotNull(class1PropertyType);
-            Assert.AreEqual("T:TestLibrary1.Class1", class1PropertyType.CRef.FullCRef);
+            Assert.NotNull(class1PropertyType);
+            Assert.Equal("T:TestLibrary1.Class1", class1PropertyType.CRef.FullCRef);
         }
 
 

@@ -1,13 +1,10 @@
 ﻿using System.Linq;
 using DuckyDocs.XmlDoc;
-using NUnit.Framework;
 using System.IO;
-
-#pragma warning disable 1591
+using Xunit;
 
 namespace DuckyDocs.Core.Tests
 {
-    [TestFixture]
     public class XmlDocCodeContracts
     {
 
@@ -19,81 +16,80 @@ namespace DuckyDocs.Core.Tests
 
         public XmlAssemblyDocument Docs { get; private set; }
 
-        [Test]
+        [Fact]
         public void check_purity() {
             var docs = Docs.GetMember("M:TestLibrary1.ClassWithContracts.SomeStuff");
-            Assert.IsNotNull(docs);
-            Assert.IsTrue(docs.HasPureElement);
+            Assert.NotNull(docs);
+            Assert.True(docs.HasPureElement);
         }
 
-        [Test]
+        [Fact]
         public void check_invariant() {
             var docs = Docs.GetMember("T:TestLibrary1.ClassWithContracts");
-            Assert.IsNotNull(docs);
+            Assert.NotNull(docs);
             var invariant = docs.InvariantElements.Single();
-            Assert.IsTrue(invariant.IsInvariant);
-            Assert.AreEqual("!String.IsNullOrEmpty(Text)", invariant.Node.InnerXml);
+            Assert.True(invariant.IsInvariant);
+            Assert.Equal("!String.IsNullOrEmpty(Text)", invariant.Node.InnerXml);
         }
 
-        [Test]
+        [Fact]
         public void check_requires_method() {
             var docs = Docs.GetMember("M:TestLibrary1.ClassWithContracts.#ctor(System.String)");
-            Assert.IsNotNull(docs);
+            Assert.NotNull(docs);
             var requires = docs.RequiresElements.ToList();
-            Assert.IsTrue(requires.All(r => r.IsRequires));
+            Assert.True(requires.All(r => r.IsRequires));
             var firstRequire = requires.First();
-            Assert.AreEqual("!IsNullOrEmpty(text)", firstRequire.CSharp);
-            Assert.AreEqual("Not IsNullOrEmpty(text)", firstRequire.VisualBasic);
-            Assert.AreEqual("!string.IsNullOrEmpty(text)", firstRequire.Element.InnerXml);
-            Assert.AreEqual("T:System.ArgumentException", firstRequire.CRef);
-            Assert.IsFalse(firstRequire.RequiresParameterNotEqualNull("text"));
-            Assert.IsTrue(firstRequire.RequiresParameterNotNullOrEmpty("text"));
-            Assert.IsFalse(firstRequire.RequiresParameterNotNullOrWhiteSpace("text"));
-            Assert.IsTrue(firstRequire.RequiresParameterNotEverNull("text"));
+            Assert.Equal("!IsNullOrEmpty(text)", firstRequire.CSharp);
+            Assert.Equal("Not IsNullOrEmpty(text)", firstRequire.VisualBasic);
+            Assert.Equal("!string.IsNullOrEmpty(text)", firstRequire.Element.InnerXml);
+            Assert.Equal("T:System.ArgumentException", firstRequire.CRef);
+            Assert.False(firstRequire.RequiresParameterNotEqualNull("text"));
+            Assert.True(firstRequire.RequiresParameterNotNullOrEmpty("text"));
+            Assert.False(firstRequire.RequiresParameterNotNullOrWhiteSpace("text"));
+            Assert.True(firstRequire.RequiresParameterNotEverNull("text"));
         }
 
-        [Test]
+        [Fact]
         public void check_ensures_property() {
             var docs = Docs.GetMember("P:TestLibrary1.ClassWithContracts.Text");
-            Assert.IsNotNull(docs);
-            Assert.IsTrue(docs.HasGetterElement);
+            Assert.NotNull(docs);
+            Assert.True(docs.HasGetterElement);
             var ensures = docs.GetterElement.EnsuresElements.Single();
-            Assert.IsTrue(ensures.IsNormalEnsures);
-            Assert.AreEqual("!IsNullOrEmpty(result)", ensures.CSharp);
-            Assert.AreEqual("Not IsNullOrEmpty(result)", ensures.VisualBasic);
-            Assert.AreEqual("!string.IsNullOrEmpty(result)", ensures.Element.InnerXml);
-            Assert.IsFalse(ensures.EnsuresResultNotEqualNull);
-            Assert.IsTrue(ensures.EnsuresResultNotNullOrEmpty);
-            Assert.IsFalse(ensures.EnsuresResultNotNullOrWhiteSpace);
-            Assert.IsTrue(ensures.EnsuresResultNotEverNull);
+            Assert.True(ensures.IsNormalEnsures);
+            Assert.Equal("!IsNullOrEmpty(result)", ensures.CSharp);
+            Assert.Equal("Not IsNullOrEmpty(result)", ensures.VisualBasic);
+            Assert.Equal("!string.IsNullOrEmpty(result)", ensures.Element.InnerXml);
+            Assert.False(ensures.EnsuresResultNotEqualNull);
+            Assert.True(ensures.EnsuresResultNotNullOrEmpty);
+            Assert.False(ensures.EnsuresResultNotNullOrWhiteSpace);
+            Assert.True(ensures.EnsuresResultNotEverNull);
         }
 
-        [Test]
+        [Fact]
         public void check_property_not_nulls() {
             var docs = Docs.GetMember("P:TestLibrary1.ClassWithContracts.Stuff");
-            Assert.IsNotNull(docs);
-            Assert.IsTrue(docs.HasGetterElement);
+            Assert.NotNull(docs);
+            Assert.True(docs.HasGetterElement);
             var ensures = docs.GetterElement.EnsuresElements.Single();
-            Assert.IsTrue(ensures.EnsuresResultNotEqualNull);
-            Assert.IsTrue(docs.HasSetterElement);
+            Assert.True(ensures.EnsuresResultNotEqualNull);
+            Assert.True(docs.HasSetterElement);
             var requires = docs.SetterElement.RequiresElements.Single();
-            Assert.IsTrue(requires.RequiresParameterNotEqualNull("value"));
+            Assert.True(requires.RequiresParameterNotEqualNull("value"));
 
         }
 
-        [Test]
+        [Fact]
         public void check_requires_has_related_exception() {
             var docs = Docs.GetMember("M:TestLibrary1.ClassWithContracts.#ctor(System.String)");
-            Assert.IsNotNull(docs);
-            Assert.IsTrue(docs.RequiresElements.First().RequiresParameterNotNullOrEmpty("text"));
+            Assert.NotNull(docs);
+            Assert.True(docs.RequiresElements.First().RequiresParameterNotNullOrEmpty("text"));
             var secondRequires = docs.RequiresElements.Skip(1).Single();
-            Assert.AreEqual("!text.Equals(\"nope\")", secondRequires.Node.InnerText);
+            Assert.Equal("!text.Equals(\"nope\")", secondRequires.Node.InnerText);
             var priorSibling = secondRequires.PriorElement;
-            Assert.IsNotNull(priorSibling);
+            Assert.NotNull(priorSibling);
             var exception = priorSibling as XmlDocRefElement;
-            Assert.IsNotNull(exception);
-            Assert.AreEqual("T:System.ArgumentException", exception.CRef);
+            Assert.NotNull(exception);
+            Assert.Equal("T:System.ArgumentException", exception.CRef);
         }
-
     }
 }

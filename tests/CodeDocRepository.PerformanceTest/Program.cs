@@ -7,10 +7,7 @@ using DuckyDocs.CRef;
 using DuckyDocs.CodeDoc;
 using DuckyDocs.Reflection;
 using DuckyDocs.XmlDoc;
-using Mono.Cecil;
 using TestLibrary1;
-
-#pragma warning disable 1591
 
 namespace CodeDocRepository.PerformanceTest
 {
@@ -58,6 +55,5 @@ namespace CodeDocRepository.PerformanceTest
             }
             return count;
         }
-
     }
 }
