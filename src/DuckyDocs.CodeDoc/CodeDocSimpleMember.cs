@@ -79,7 +79,7 @@ namespace DuckyDocs.CodeDoc
         public string FullName { get; set; }
 
         /// <inheritdoc/>
-        [Obsolete("This is redundant with Namesapce.Something")]
+        [Obsolete("This is redundant with Namesapce.FullName")]
         [DataMember]
         public string NamespaceName { get; set; }
 
