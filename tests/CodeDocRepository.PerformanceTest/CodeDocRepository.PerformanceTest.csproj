@@ -59,11 +59,11 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\DandyDoc.CodeDoc\DuckyDocs.CodeDoc.csproj">
+    <ProjectReference Include="..\..\src\DuckyDocs.CodeDoc\DuckyDocs.CodeDoc.csproj">
       <Project>{01cce4b1-8bd1-4c4f-8080-9a9bb19f05a9}</Project>
       <Name>DuckyDocs.CodeDoc</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\DandyDoc.Core\DuckyDocs.Core.csproj">
+    <ProjectReference Include="..\..\src\DuckyDocs.Core\DuckyDocs.Core.csproj">
       <Project>{a09f4dac-290c-4abe-b053-071ec966008f}</Project>
       <Name>DuckyDocs.Core</Name>
     </ProjectReference>
