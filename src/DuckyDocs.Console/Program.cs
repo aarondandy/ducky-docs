@@ -24,18 +24,20 @@ namespace DuckyDocs.Console
             public bool Help { get; set; }
         }
 
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
             var parsedArgs = Args.Parse<ProgramArgs>(args);
             if (parsedArgs == null)
             {
-                return;
+                return (int)ExitCodes.QuackQuackQuackQuackQuack;
             }
 
             if (!parsedArgs.NoSplash)
             {
                 new Splash().Print();
             }
+
+            return (int)ExitCodes.LuckyDuck;
         }
     }
 }
