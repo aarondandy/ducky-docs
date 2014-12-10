@@ -10,6 +10,7 @@ namespace DuckyDocs.Console
     {
         static void Main(string[] args)
         {
+            new Splash().Print();
         }
     }
 }
