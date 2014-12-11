@@ -35,6 +35,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DuckyDocs.Console", "src\Du
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DuckyDocs.SiteBuilder", "src\DuckyDocs.SiteBuilder\DuckyDocs.SiteBuilder.csproj", "{63734F51-130A-4514-B510-E8080956E670}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DuckyDocs.SiteBuilder.Tests", "tests\DuckyDocs.SiteBuilder.Tests\DuckyDocs.SiteBuilder.Tests.csproj", "{2EAD6C50-4FD1-4F14-8362-4B0E0F7BB401}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -96,6 +98,12 @@ Global
 		{63734F51-130A-4514-B510-E8080956E670}.DebugCC|Any CPU.Build.0 = DebugCC|Any CPU
 		{63734F51-130A-4514-B510-E8080956E670}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{63734F51-130A-4514-B510-E8080956E670}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2EAD6C50-4FD1-4F14-8362-4B0E0F7BB401}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2EAD6C50-4FD1-4F14-8362-4B0E0F7BB401}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2EAD6C50-4FD1-4F14-8362-4B0E0F7BB401}.DebugCC|Any CPU.ActiveCfg = DebugCC|Any CPU
+		{2EAD6C50-4FD1-4F14-8362-4B0E0F7BB401}.DebugCC|Any CPU.Build.0 = DebugCC|Any CPU
+		{2EAD6C50-4FD1-4F14-8362-4B0E0F7BB401}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2EAD6C50-4FD1-4F14-8362-4B0E0F7BB401}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -110,5 +118,6 @@ Global
 		{9F83F6BE-7F93-4B79-A667-14FE0C09F40A} = {4D0172D3-2623-4DD8-BAF8-D8B385D299C2}
 		{6BEFC8B2-2866-48A1-A74F-285F4533B416} = {8B7A42CE-D0A8-4E32-AAD0-260E6398A06A}
 		{63734F51-130A-4514-B510-E8080956E670} = {8B7A42CE-D0A8-4E32-AAD0-260E6398A06A}
+		{2EAD6C50-4FD1-4F14-8362-4B0E0F7BB401} = {4D0172D3-2623-4DD8-BAF8-D8B385D299C2}
 	EndGlobalSection
 EndGlobal
