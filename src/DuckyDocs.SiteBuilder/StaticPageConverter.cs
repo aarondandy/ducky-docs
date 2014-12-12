@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommonMark;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.IO;
@@ -13,65 +14,74 @@ namespace DuckyDocs.SiteBuilder
 
         public string DestinationRoot { get; set; }
 
-        public async Task<IEnumerable<StaticPageBuilderResponse>> ConvertAsync(StaticBuilderRequest request)
+        public IEnumerable<StaticPageBuilderResponse> Convert(StaticBuilderRequest request)
         {
             if (request == null) throw new ArgumentNullException("request");
 
-            var sourceFile = new FileInfo(request.Source);
-            if (sourceFile.Exists)
+            DirectoryInfo requestSourceRoot;
+            IEnumerable<FileInfo> sourceFiles;
+
+            var requestSourceFile = new FileInfo(request.Source);
+            if (requestSourceFile.Exists)
             {
-                var singleResponse = await ConvertFileAsync(request, sourceFile);
-                return new[] { singleResponse };
-            }
-
-            var sourceDirectory = new DirectoryInfo(request.Source);
-            if (sourceDirectory.Exists)
-            {
-                return await ConvertDirectoryAsync(request, sourceDirectory);
-            }
-
-            return Enumerable.Empty<StaticPageBuilderResponse>();
-        }
-
-        private Task<StaticPageBuilderResponse> ConvertFileAsync(StaticBuilderRequest request, FileInfo sourceFile)
-        {
-            // TODO: find the thing to use for the conversion
-            return ConvertFileAsync(request, sourceFile, null);
-        }
-
-        private async Task<StaticPageBuilderResponse> ConvertFileAsync(StaticBuilderRequest request, FileInfo sourceFile, object fileConverter)
-        {
-            throw new NotImplementedException();
-        }
-
-        private async Task<IEnumerable<StaticPageBuilderResponse>> ConvertDirectoryAsync(StaticBuilderRequest request, DirectoryInfo sourceDirectory)
-        {
-            IEnumerable<DirectoryInfo> directories;
-            if (request.Recursive)
-            {
-                directories = SearchAllDirectories(sourceDirectory);
+                requestSourceRoot = requestSourceFile.Directory;
+                sourceFiles = new[] { requestSourceFile };
             }
             else
             {
-                directories = new[] { sourceDirectory };
+                requestSourceRoot = new DirectoryInfo(request.Source);
+                if (requestSourceRoot.Exists)
+                {
+                    var directories = request.Recursive
+                        ? SearchAllDirectories(requestSourceRoot)
+                        : new[] { requestSourceRoot };
+                    sourceFiles = directories.SelectMany(d => d.EnumerateFiles("*.md"));
+                }
+                else
+                {
+                    sourceFiles = Enumerable.Empty<FileInfo>();
+                }
             }
 
+            CommonMarkSettings settings = null;
+            var sourceRootUri = new Uri(requestSourceRoot.FullName + Path.DirectorySeparatorChar);
             var results = new List<StaticPageBuilderResponse>();
-            var sourceFullPath = sourceDirectory.FullName;
-            foreach (var directory in directories)
+            foreach (var sourceFile in sourceFiles)
             {
-                var directoryFullName = directory.FullName;
-                Contract.Assume(directoryFullName.StartsWith(sourceFullPath));
-                var relativePath = directoryFullName.Remove(sourceFullPath.Length);
-
-                foreach (var file in directory.EnumerateFiles())
+                var localFileUri = new Uri(sourceFile.FullName);
+                var relativeSourceFilePath = sourceRootUri.MakeRelative(localFileUri);
+                if (Path.DirectorySeparatorChar != '/')
                 {
-                    var result = await ConvertFileAsync(request, file);
-                    if (result != null)
-                    {
-                        results.Add(result);
-                    }
+                    relativeSourceFilePath = relativeSourceFilePath.Replace('/', Path.DirectorySeparatorChar);
                 }
+
+                var relativeTargetFilePath = Path.ChangeExtension(relativeSourceFilePath, "html");
+                var targetFile = new FileInfo(Path.Combine(request.RelativeDestination, relativeTargetFilePath));
+
+                CommonMark.Syntax.Block parsedDocument;
+                using (var sourceStream = File.Open(sourceFile.FullName, FileMode.Open, FileAccess.Read, FileShare.Read))
+                using (var reader = new StreamReader(sourceStream))
+                {
+                    parsedDocument = CommonMarkConverter.ProcessStage1(reader, settings);
+                }
+
+                CommonMarkConverter.ProcessStage2(parsedDocument, settings);
+
+                if (!targetFile.Directory.Exists)
+                {
+                    targetFile.Directory.Create();
+                }
+
+                using (var targetStream = File.Open(targetFile.FullName, FileMode.Create, FileAccess.ReadWrite, FileShare.None))
+                using (var writer = new StreamWriter(targetStream))
+                {
+                    CommonMarkConverter.ProcessStage3(parsedDocument, writer, settings);
+                }
+
+                results.Add(new StaticPageBuilderResponse
+                {
+                    ResultFile = targetFile
+                });
             }
 
             return results;
