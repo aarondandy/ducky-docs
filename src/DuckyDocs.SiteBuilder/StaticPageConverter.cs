@@ -25,6 +25,7 @@ namespace DuckyDocs.SiteBuilder
         public IEnumerable<StaticPageBuilderResponse> Convert(StaticBuilderRequest request)
         {
             if (request == null) throw new ArgumentNullException("request");
+            Contract.EndContractBlock();
 
             DirectoryInfo requestSourceRoot;
             IEnumerable<FileInfo> sourceFiles;
@@ -56,9 +57,6 @@ namespace DuckyDocs.SiteBuilder
             if (templateFile != null && templateFile.Exists)
             {
                 razorTemplateCacheKey = templateFile.FullName;
-                /*var config = new FluentTemplateServiceConfiguration(c => c
-                    .IncludeNamespaces("RazorEngine.Templating"));
-                Razor.SetTemplateService(new TemplateService(config));*/
                 Razor.Compile(File.ReadAllText(templateFile.FullName), typeof(TemplateModel), razorTemplateCacheKey);
             }
 

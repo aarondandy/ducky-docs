@@ -71,6 +71,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CodeDocHtmlGenerationFacts.cs" />
     <Compile Include="DirectoryLifetimeManager.cs" />
     <Compile Include="MarkdownFileConversionFacts.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
