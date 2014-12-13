@@ -1,7 +1,11 @@
 ﻿using CommonMark;
+using RazorEngine;
+using RazorEngine.Configuration;
+using RazorEngine.Templating;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -11,6 +15,10 @@ namespace DuckyDocs.SiteBuilder
 {
     public class StaticPageConverter
     {
+        public class TemplateModel
+        {
+            public string ContentHtml { get; set; }
+        }
 
         public string DestinationRoot { get; set; }
 
@@ -41,6 +49,17 @@ namespace DuckyDocs.SiteBuilder
                 {
                     sourceFiles = Enumerable.Empty<FileInfo>();
                 }
+            }
+
+            var templateFile = requestSourceRoot.EnumerateFiles("_template.cshtml").FirstOrDefault();
+            string razorTemplateCacheKey = null;
+            if (templateFile != null && templateFile.Exists)
+            {
+                razorTemplateCacheKey = templateFile.FullName;
+                /*var config = new FluentTemplateServiceConfiguration(c => c
+                    .IncludeNamespaces("RazorEngine.Templating"));
+                Razor.SetTemplateService(new TemplateService(config));*/
+                Razor.Compile(File.ReadAllText(templateFile.FullName), typeof(TemplateModel), razorTemplateCacheKey);
             }
 
             CommonMarkSettings settings = null;
@@ -75,7 +94,22 @@ namespace DuckyDocs.SiteBuilder
                 using (var targetStream = File.Open(targetFile.FullName, FileMode.Create, FileAccess.ReadWrite, FileShare.None))
                 using (var writer = new StreamWriter(targetStream))
                 {
-                    CommonMarkConverter.ProcessStage3(parsedDocument, writer, settings);
+                    if (razorTemplateCacheKey != null)
+                    {
+                        var markdownText = new StringBuilder();
+                        using (var markdownWriter = new StringWriter(markdownText))
+                        {
+                            CommonMarkConverter.ProcessStage3(parsedDocument, markdownWriter, settings);
+                        }
+                        var htmlResultText = Razor.Run(razorTemplateCacheKey, new TemplateModel{
+                            ContentHtml = markdownText.ToString()
+                        });
+                        writer.Write(htmlResultText);
+                    }
+                    else
+                    {
+                        CommonMarkConverter.ProcessStage3(parsedDocument, writer, settings);
+                    }
                 }
 
                 results.Add(new StaticPageBuilderResponse

@@ -13,58 +13,80 @@ namespace DuckyDocs.SiteBuilder.Tests
 {
     public static class MarkdownFileConversionFacts
     {
-        private static DirectoryInfo PrepareDirectory(string path)
-        {
-            var directory = new DirectoryInfo(path);
-            if (directory.Exists)
-            {
-                directory.Delete(true);
-                Thread.Sleep(10);
-            }
-
-            directory.Create();
-            Thread.Sleep(10);
-            return directory;
-        }
-
 
         [Fact]
         public static void convert_empty_directory()
         {
-            var sourceFolder = PrepareDirectory("./source");
-            var targetFolder = PrepareDirectory("./target");
-            var request = new StaticBuilderRequest {
-                Recursive = true,
-                Source = sourceFolder.FullName,
-                RelativeDestination = targetFolder.FullName
-            };
-            var converter = new StaticPageConverter();
+            using (var testFolder = DirectoryLifetimeManager.Create())
+            {
+                var sourceFolder = testFolder.Directory.CreateSubdirectory("source");
+                var targetFolder = testFolder.Directory.CreateSubdirectory("target");
+                var request = new StaticBuilderRequest
+                {
+                    Recursive = true,
+                    Source = sourceFolder.FullName,
+                    RelativeDestination = targetFolder.FullName
+                };
+                var converter = new StaticPageConverter();
 
-            var resultingFiles = converter.Convert(request);
+                var resultingFiles = converter.Convert(request);
 
-            resultingFiles.Should().BeEmpty();
+                resultingFiles.Should().BeEmpty();
+            }
         }
 
         [Fact]
         public static void convert_nested_directories()
         {
-            var sourceFolder = PrepareDirectory("./source");
-            Directory.CreateDirectory(Path.Combine(sourceFolder.FullName, "poop"));
-            File.WriteAllText(Path.Combine(sourceFolder.FullName, "a.md"), "# poop");
-            File.WriteAllText(Path.Combine(sourceFolder.FullName, "poop", "b.md"), "`poop`");
-            var targetFolder = PrepareDirectory("./target");
-            var request = new StaticBuilderRequest
+            using (var testFolder = DirectoryLifetimeManager.Create())
             {
-                Recursive = true,
-                Source = sourceFolder.FullName,
-                RelativeDestination = targetFolder.FullName
-            };
-            var converter = new StaticPageConverter();
+                var sourceFolder = testFolder.Directory.CreateSubdirectory("source");
+                var poopFolder = sourceFolder.CreateSubdirectory("poop");
+                File.WriteAllText(Path.Combine(sourceFolder.FullName, "a.md"), "# poop");
+                File.WriteAllText(Path.Combine(sourceFolder.FullName, "poop", "b.md"), "`poop`");
+                var targetFolder = testFolder.Directory.CreateSubdirectory("target");
+                var request = new StaticBuilderRequest
+                {
+                    Recursive = true,
+                    Source = sourceFolder.FullName,
+                    RelativeDestination = targetFolder.FullName
+                };
+                var converter = new StaticPageConverter();
 
-            var resultingFiles = converter.Convert(request);
+                var resultingFiles = converter.Convert(request);
 
-            resultingFiles.Select(x => x.ResultFile.FullName).Should().Contain(Path.Combine(targetFolder.FullName, "a.html"));
-            resultingFiles.Select(x => x.ResultFile.FullName).Should().Contain(Path.Combine(targetFolder.FullName, @"poop\b.html"));
+                resultingFiles.Select(x => x.ResultFile.FullName).Should().Contain(Path.Combine(targetFolder.FullName, "a.html"));
+                resultingFiles.Select(x => x.ResultFile.FullName).Should().Contain(Path.Combine(targetFolder.FullName, @"poop\b.html"));
+            }
+        }
+
+        [Fact]
+        public static void convert_with_template()
+        {
+            using (var testFolder = DirectoryLifetimeManager.Create())
+            {
+                var sourceFolder = testFolder.Directory.CreateSubdirectory("source");
+                File.WriteAllText(Path.Combine(sourceFolder.FullName, "a.md"), "# poop");
+                File.WriteAllText(
+                    Path.Combine(sourceFolder.FullName, "_template.cshtml"),
+                    @"<html>@Raw(Model.ContentHtml)</html>");
+                var targetFolder = testFolder.Directory.CreateSubdirectory("target");
+                var request = new StaticBuilderRequest
+                {
+                    Recursive = true,
+                    Source = sourceFolder.FullName,
+                    RelativeDestination = targetFolder.FullName
+                };
+                var converter = new StaticPageConverter();
+
+                var resultingFiles = converter.Convert(request);
+                var resultingFileText = File.ReadAllText(resultingFiles.Single().ResultFile.FullName);
+
+                resultingFiles.Select(x => x.ResultFile.FullName).Should().OnlyContain(x => x == Path.Combine(targetFolder.FullName, "a.html"));
+                resultingFileText.Should().StartWith("<html>");
+                resultingFileText.Should().EndWith("</html>");
+                resultingFileText.Should().Contain("<h1>poop</h1>");
+            }
         }
 
     }
