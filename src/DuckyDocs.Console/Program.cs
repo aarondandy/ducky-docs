@@ -1,4 +1,5 @@
-﻿using PowerArgs;
+﻿using DuckyDocs.SiteBuilder;
+using PowerArgs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,8 +14,11 @@ namespace DuckyDocs.Console
         [ArgExceptionBehavior(ArgExceptionPolicy.StandardExceptionHandling)]
         public class ProgramArgs
         {
-            [ArgDescription("The configuration file to load")]
-            public string Config { get; set; }
+            [ArgDescription("The target assemblies to create API documentation for.")]
+            public string TargetAssemblies { get; set; }
+
+            [ArgDescription("Locations of XML API documentation files.")]
+            public string XmlDocFiles { get; set; }
 
             [ArgDescription("Disable the splash message")]
             [DefaultValue(false)]
@@ -22,6 +26,12 @@ namespace DuckyDocs.Console
 
             [HelpHook]
             public bool Help { get; set; }
+
+            public SiteBuilderRequest CreateBuilderRequest()
+            {
+                var result = new SiteBuilderRequest();
+                return result;
+            }
         }
 
         static int Main(string[] args)

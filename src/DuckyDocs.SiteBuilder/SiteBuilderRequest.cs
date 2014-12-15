@@ -11,7 +11,7 @@ namespace DuckyDocs.SiteBuilder
         /// <summary>
         /// Assemblies to generate documentation models for.
         /// </summary>
-        public List<string> Assemblies { get; set; }
+        public List<string> TargetAssemblies { get; set; }
 
         /// <summary>
         /// Locations of XML documentation files or folders containing the required XML documentation files.
@@ -19,13 +19,8 @@ namespace DuckyDocs.SiteBuilder
         public List<string> XmlDocLocations { get; set; }
 
         /// <summary>
-        /// Locations of PDB files or folders containing the required PDB files.
-        /// </summary>
-        public List<string> PdbLocations { get; set; }
-
-        /// <summary>
         /// Static content conversions.
         /// </summary>
-        public List<StaticBuilderRequest> StaticContent { get; set; }
+        public StaticBuilderRequest StaticContent { get; set; }
     }
 }
