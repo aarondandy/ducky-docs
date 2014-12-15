@@ -9,6 +9,6 @@ namespace DuckyDocs.Console
     public enum ExitCodes : int
     {
         LuckyDuck = 0,
-        QuackQuackQuackQuackQuack = 1
+        QuackQuackQuaaack = 1
     }
 }

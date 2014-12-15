@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DuckyDocs.SiteBuilder
 {
-    public class StaticBuilderRequest
+    public class StaticPageConverterRequest
     {
 
         /// <summary>

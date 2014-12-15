@@ -48,7 +48,12 @@ namespace DuckyDocs.SiteBuilder
 
         public ICodeDocMemberRepository SupportingRepository { get; set; }
 
-        public IEnumerable<FileInfo> GenerateForAllTargets(DynamicViewBag viewBag = null)
+        public IEnumerable<FileInfo> GenerateForAllTargets()
+        {
+            return GenerateForAllTargets((DynamicViewBag)null);
+        }
+
+        public IEnumerable<FileInfo> GenerateForAllTargets(DynamicViewBag viewBag)
         {
             viewBag = ApplyViewBag(viewBag);
 

@@ -21,7 +21,7 @@ namespace DuckyDocs.SiteBuilder.Tests
             {
                 var sourceFolder = testFolder.Directory.CreateSubdirectory("source");
                 var targetFolder = testFolder.Directory.CreateSubdirectory("target");
-                var request = new StaticBuilderRequest
+                var request = new StaticPageConverterRequest
                 {
                     Recursive = true,
                     Source = sourceFolder.FullName,
@@ -45,7 +45,7 @@ namespace DuckyDocs.SiteBuilder.Tests
                 File.WriteAllText(Path.Combine(sourceFolder.FullName, "a.md"), "# poop");
                 File.WriteAllText(Path.Combine(sourceFolder.FullName, "poop", "b.md"), "`poop`");
                 var targetFolder = testFolder.Directory.CreateSubdirectory("target");
-                var request = new StaticBuilderRequest
+                var request = new StaticPageConverterRequest
                 {
                     Recursive = true,
                     Source = sourceFolder.FullName,
@@ -71,7 +71,7 @@ namespace DuckyDocs.SiteBuilder.Tests
                     Path.Combine(sourceFolder.FullName, "_template.cshtml"),
                     @"<html>@Raw(Model.ContentHtml)</html>");
                 var targetFolder = testFolder.Directory.CreateSubdirectory("target");
-                var request = new StaticBuilderRequest
+                var request = new StaticPageConverterRequest
                 {
                     Recursive = true,
                     Source = sourceFolder.FullName,

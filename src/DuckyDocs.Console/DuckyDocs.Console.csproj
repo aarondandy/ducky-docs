@@ -48,8 +48,11 @@
     <Reference Include="ColoredConsole">
       <HintPath>..\..\packages\ColoredConsole.0.4.0\lib\net45\ColoredConsole.dll</HintPath>
     </Reference>
-    <Reference Include="PowerArgs">
-      <HintPath>..\..\packages\PowerArgs.2.3.2.0\lib\net40\PowerArgs.dll</HintPath>
+    <Reference Include="FluentCommandLineParser">
+      <HintPath>..\..\packages\FluentCommandLineParser.1.3.0\lib\net35\FluentCommandLineParser.dll</HintPath>
+    </Reference>
+    <Reference Include="Humanizer">
+      <HintPath>..\..\packages\Humanizer.1.31.0\lib\portable-win+net40+sl50+wp8+wpa81\Humanizer.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

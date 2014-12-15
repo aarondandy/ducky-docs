@@ -23,7 +23,7 @@ namespace DuckyDocs.Console
                 ConsoleColor.Yellow,
                 ConsoleColor.Yellow,
                 ConsoleColor.Cyan,
-                ConsoleColor.DarkMagenta};
+                ConsoleColor.DarkGreen};
             var hugeText = new string[] {
                 @" ____          _          ____              ",
                 @"|    \ _ _ ___| |_ _ _   |    \ ___ ___ ___ ",

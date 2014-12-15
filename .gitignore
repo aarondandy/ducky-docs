@@ -109,3 +109,5 @@ UpgradeLog*.XML
 
 /build/packed/*.nupkg
 *.pubxml
+
+/artifacts

@@ -20,9 +20,7 @@ namespace DuckyDocs.SiteBuilder
             public string ContentHtml { get; set; }
         }
 
-        public string DestinationRoot { get; set; }
-
-        public IEnumerable<StaticPageBuilderResponse> Convert(StaticBuilderRequest request)
+        public IEnumerable<StaticPageBuilderResponse> Convert(StaticPageConverterRequest request)
         {
             if (request == null) throw new ArgumentNullException("request");
             Contract.EndContractBlock();
