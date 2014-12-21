@@ -44,7 +44,10 @@ namespace DuckyDocs.Console
                     .Callback(items => result.DocsSources = items)
                     .WithDescription("The documentation sources to convert to HTML.");
                 parser.SetupHelp("?", "help")
-                    .Callback(help => System.Console.WriteLine(help));
+                    .Callback(help => {
+                        result.HelpRequested = true;
+                        System.Console.WriteLine(help);
+                    });
                 parser.Parse(args);
                 return result;
             }
@@ -60,6 +63,8 @@ namespace DuckyDocs.Console
             public string TemplatesDirectory { get; set; }
 
             public bool NoSplash { get; set; }
+
+            public bool HelpRequested { get; set; }
         }
 
         static int Error(string message)
@@ -74,6 +79,11 @@ namespace DuckyDocs.Console
             if (parsedArgs == null)
             {
                 return (int)ExitCodes.QuackQuackQuaaack;
+            }
+
+            if (parsedArgs.HelpRequested)
+            {
+                return (int)ExitCodes.LuckyDuck;
             }
 
             if (!parsedArgs.NoSplash)
