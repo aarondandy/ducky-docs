@@ -298,7 +298,7 @@ namespace DuckyDocs.SiteBuilder.Tests
 @"@using DuckyDocs.CodeDoc
 @using DuckyDocs.SiteBuilder
 <html><h1>@Model.ShortName</h1>@foreach(var field in Model.Fields.Cast<CodeDocField>()){
-    <div><a href=""@(StaticApiPageGenerator.CreateSlugName(field.CRefText)).html"">@field.ShortName</a></div>
+    <div><a href=""@(StaticApiPageGenerator.CreateSlugName(field.CRef)).html"">@field.ShortName</a></div>
 }</html>");
                 var apiPageGen = new StaticApiPageGenerator
                 {
@@ -331,7 +331,7 @@ namespace DuckyDocs.SiteBuilder.Tests
 @"@using DuckyDocs.CodeDoc
 @using DuckyDocs.SiteBuilder
 <html><h1>@Model.ShortName</h1>@foreach(var field in (Model.Fields ?? Enumerable.Empty<ICodeDocMember>()).Cast<CodeDocField>()){
-    <div><a href=""@(StaticApiPageGenerator.CreateSlugName(field.CRefText)).html"">@field.ShortName</a></div>
+    <div><a href=""@(StaticApiPageGenerator.CreateSlugName(field.CRef)).html"">@field.ShortName</a></div>
 }</html>");
                 File.WriteAllText(
                     Path.Combine(templateDirectory.FullName, "_namespace.cshtml"),
@@ -339,7 +339,7 @@ namespace DuckyDocs.SiteBuilder.Tests
 @using DuckyDocs.SiteBuilder
 <html><h1>@Model.ShortName</h1>@foreach(var typeCRef in Model.TypeCRefs){
     var typeModel = ViewBag.GetTargetPreviewModel(typeCRef);
-    <div><a href=""@(StaticApiPageGenerator.CreateSlugName(typeModel.CRefText)).html"">@typeModel.ShortName</a></div>
+    <div><a href=""@(StaticApiPageGenerator.CreateSlugName(typeModel.CRef)).html"">@typeModel.ShortName</a></div>
 }</html>");
                 foreach (var fileName in new[] {
                     "_delegate.cshtml",
@@ -367,11 +367,12 @@ namespace DuckyDocs.SiteBuilder.Tests
                 resultShortNames.Should().Contain("-N.html");
                 resultShortNames.Should().Contain("Test.Annotations-N.html");
                 resultShortNames.Should().Contain("TestLibrary1.Class1.Inner-T.html");
-                resultShortNames.Should().Contain("TestLibrary1.Class1.TrySomeOutRefStuff(System.Int32!,System.Int32!)-M.html");
-                resultShortNames.Should().Contain("TestLibrary1.Generic1!2.AMix!!1(!0,!!0)-M.html");
                 resultShortNames.Should().Contain("TestLibrary1.PublicExposedTestClass.ProtectedEvent-E.html");
                 resultShortNames.Should().Contain("TestLibrary1.ClassWithContracts.Stuff-P.html");
                 resultShortNames.Should().Contain("TestLibrary1.Class1.MyFunc-T.html");
+
+                resultShortNames.Any(x => x.StartsWith("TestLibrary1.Class1.TrySomeOutRefStuff-")).Should().BeTrue();
+                resultShortNames.Any(x => x.StartsWith("TestLibrary1.Generic1.AMix-")).Should().BeTrue();
 
                 resultShortNames.Should().NotContain("System.Attribute.GetHashCode-M.html");
                 resultShortNames.Should().NotContain("System.Object.ToString-M.html");

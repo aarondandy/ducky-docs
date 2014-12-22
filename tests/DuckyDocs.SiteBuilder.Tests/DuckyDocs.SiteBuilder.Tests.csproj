@@ -83,6 +83,7 @@
     <Compile Include="DirectoryLifetimeManager.cs" />
     <Compile Include="MarkdownFileConversionFacts.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SlugGenerationFacts.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\DuckyDocs.CodeDoc\DuckyDocs.CodeDoc.csproj">

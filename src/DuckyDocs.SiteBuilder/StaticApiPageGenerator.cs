@@ -14,30 +14,63 @@ namespace DuckyDocs.SiteBuilder
 {
     public class StaticApiPageGenerator
     {
-        public static string CreateSlugName(string cRef)
+        public static string CreateSlugName(CRefIdentifier cRef)
         {
-            var slug = cRef;
-            if (slug.Length >= 2 && Char.IsLetter(slug[0]) && slug[1] == ':')
-            {
-                var prefixLeffter = slug[0];
-                slug = String.Concat(slug.Substring(2), '-', prefixLeffter);
+            var fullCRefText = cRef.ToString();
+            var slugBuilder = new StringBuilder(fullCRefText);
+
+            if (cRef.HasTargetType) {
+                slugBuilder.Remove(0, cRef.TargetType.Length+1);
             }
 
-            var slugChars = slug.ToCharArray();
-            for (int i = 0; i < slugChars.Length; ++i)
-            {
-                var c = slugChars[i];
-                if (c == '#' || c == ':')
-                {
-                    slugChars[i] = '-';
+            bool requiresHash = false;
+            for (int i = 0; i < slugBuilder.Length; ++i) {
+                var c = slugBuilder[i];
+
+                if (c == '#' || c == ':' || c == '@' || c == '`' || c == '~') {
+                    // remove
+                    requiresHash = true;
+                    var nextIndex = i + 1;
+                    if (c == '`' && nextIndex < slugBuilder.Length && Char.IsNumber(slugBuilder[nextIndex])) {
+                        slugBuilder.Remove(i, 2);
+                        i -= 2;
+                    }
+                    else {
+                        slugBuilder.Remove(i, 1);
+                        i--;
+                    }
+                    continue;
                 }
-                else if (c == '@' || c == '`')
-                {
-                    slugChars[i] = '!';
+                else if (c == '(' || c == '{') {
+                    requiresHash = true;
+                    slugBuilder.Remove(i, slugBuilder.Length - i);
+                    break;
                 }
             }
 
-            return new string(slugChars);
+            if (requiresHash) {
+                var hash = CalculteSlugHash(fullCRefText); // NOTE: always hash the full cRef
+                slugBuilder.Append('-');
+                slugBuilder.Append(hash.ToString("X"));
+            }
+            else if(cRef.HasTargetType) {
+                slugBuilder.Append('-');
+                slugBuilder.Append(cRef.TargetType);
+            }
+
+            return slugBuilder.ToString();
+        }
+
+        private static uint CalculteSlugHash(string text) {
+            Contract.Requires(text != null);
+            var hash = (ulong)3074457345618258791;
+            foreach (var c in text) {
+                unchecked {
+                    hash += (ulong)c;
+                    hash *= (ulong)3074457345618258799;
+                }
+            }
+            return unchecked((uint)(hash >> 32) ^ (uint)hash);
         }
 
         public DirectoryInfo TemplateDirectory { get; set; }
@@ -251,7 +284,7 @@ namespace DuckyDocs.SiteBuilder
         {
             Contract.Requires(model != null);
             Contract.Ensures(Contract.Result<FileInfo>() != null);
-            var fileName = CreateSlugName(model.CRefText) + ".html";
+            var fileName = CreateSlugName(model.CRef) + ".html";
             return new FileInfo(Path.Combine(OutputDirectory.FullName, fileName));
         }
 
